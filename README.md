@@ -83,6 +83,80 @@ function fields_api_example_customizer_register( $wp_fields ) {
 add_action( 'fields_register', 'fields_api_example_customizer_register' );
 ```
 
+### Settings API
+
+```php
+function fields_api_example_settings_register( $wp_fields ) {
+
+	// This is a *new* API
+
+	// 1. Define a new section (if desired) to the Theme Customizer
+	$wp_fields->add_section( 'settings', 'mytheme_options',
+		array(
+			// Visible title of section
+			'title'       => __( 'MyTheme Options', 'mytheme' ),
+
+			// Determines what order this appears in
+			'priority'    => 35,
+
+			// Capability needed to tweak
+			'capability'  => 'edit_theme_options',
+
+			// Descriptive tooltip
+			'description' => __( 'Allows you to customize some example settings for MyTheme.', 'mytheme' )
+		)
+	);
+
+	// 2. Register new settings to the WP database...
+	$wp_fields->add_setting( 'settings', 'link_textcolor',
+		array(
+			// Default setting/value to save
+			'default'    => '#2BA6CB',
+
+			// Is this an 'option' or a 'theme_mod'?
+			'type'       => 'theme_mod',
+
+			// Optional. Special permissions for accessing this setting.
+			'capability' => 'edit_theme_options',
+
+			// What triggers a refresh of the setting? 'refresh' or 'postMessage' (instant)?
+			'transport'  => 'postMessage'
+		)
+	);
+
+	// 3. Finally, we define the control itself (which links a setting to a section and renders the HTML controls)...
+	$wp_fields->add_control( 'settings',
+		// Instantiate the color control class
+		new WP_Fields_API_Color_Control(
+			// Set a unique ID for the control
+			'mytheme_link_textcolor',
+		
+			array(
+				//Admin-visible name of the control
+				'label'    => __( 'Link Color', 'mytheme' ),
+
+				//ID of the section this control should render in (can be one of yours, or a WordPress default section)
+				'section'  => 'colors',
+
+				//Which setting to load and manipulate (serialized is okay)
+				'settings' => 'link_textcolor',
+
+				//Determines the order this control appears in for the specified section
+				'priority' => 10
+			)
+		)
+	);
+
+	// 4. We can also change built-in settings by modifying properties. For instance, let's make some stuff use live preview JS...
+	$wp_fields->get_setting( 'settings', 'blogname' )->transport         = 'postMessage';
+	$wp_fields->get_setting( 'settings', 'blogdescription' )->transport  = 'postMessage';
+	$wp_fields->get_setting( 'settings', 'header_textcolor' )->transport = 'postMessage';
+	$wp_fields->get_setting( 'settings', 'background_color' )->transport = 'postMessage';
+   
+}
+add_action( 'fields_register', 'fields_api_example_settings_register' );
+```
+
 ### Register fields to a Post Type
 
 ```php
@@ -228,7 +302,7 @@ function fields_api_example_user_field_register()  {
 	$wp_fields->get_setting( 'user', 'background_color' )->transport = 'postMessage';
 
 }
-add_action( 'init', 'fields_api_example_user_field_register' );
+add_action( 'fields_register', 'fields_api_example_user_field_register' );
 ```
 
 ## Contributing
