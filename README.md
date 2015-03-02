@@ -5,6 +5,15 @@ This is a core proposal for a new wide-reaching API for WordPress core. It is no
 
 This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark with oversight by WordPress core lead developer Helen Hou-Sandi.
 
+## Unknowns
+
+There are still a lot of areas the API is not represented in code or in examples.
+
+* register_meta and how this interacts behind the scenes with it
+* get/add/update/delete for Meta / Settings API interaction has not yet been determined
+* Examples below aren't fleshed out with use cases, only the initial [Customizer Example code](http://codex.wordpress.org/Theme_Customization_API) I pulled from the codex, the example panels / sections / settings / controls need to be fleshed out
+* Examples of how this API replaces existing core handling for the Post Editor or User area -- ex. Taxonomy / Page Attributes meta boxes etc 
+
 ## Examples - Fields, Sections, Controls
 
 ### Customizer
