@@ -5,7 +5,15 @@ This is a core proposal for a new wide-reaching API for WordPress core. It is no
 
 This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark with oversight by WordPress core lead developer Helen Hou-Sandi.
 
-This plugin is not in running condition, it is still in the early stages of development.
+Please note: This plugin is not in running condition, it is still in the early stages of development.
+
+## Why a Fields API?
+
+There are over a hundred (I stopped counting, sue me) plugins in the plugin repository that add meta boxes and fields to post types, settings, users, and even more if you include all of the themes and plugins that hook into the customizer. Many plugins build their own abstraction level for doing this, and custom field plugins are the biggest culprit of not following any standards for which to there is a significant need to unite these APIs to make them more consistent. At the same time, being able to provide a detailed structure for a site will take the capabilities of apps that extend WordPress (or interact with it) to the next level.
+
+## What about Fields UI?
+
+I am not focusing on any UI aspects at the moment besides implementation of the API underneath getting the field data for UI to use in core itself. It will be easier to tackle the API and the UI separately for both the purpose of development and core inclusion.
 
 ## Unknowns
 
@@ -351,7 +359,7 @@ If you are interested in contributing, feel free to contact me @sc0ttkclark on [
 
 ### Pull Requests
 
-To submit a pull request, please base it off of the `master` branch.is your oyster and we're eager to help you get those pearls!
+To submit a pull request, please base it off of the `master` branch.
 
 ## LICENSE
 
