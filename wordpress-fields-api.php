@@ -11,7 +11,20 @@ License: GPL2+
 
 /**
  * @package WordPress
+ * @subpackage Fields_API
  */
 
-// Include files
-include_once 'includes/WP_Fields_API.php';
+define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
+
+/**
+ * Include class and setup global
+ */
+function _wp_fields_api_include() {
+
+    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api.php' );
+
+	// Init Customize class
+	$GLOBALS['wp_fields'] = new WP_Fields_API;
+
+}
+add_action( 'plugins_loaded', '_wp_fields_api_include' );

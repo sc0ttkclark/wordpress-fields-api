@@ -3,6 +3,7 @@
  * Class WP_Fields_API
  *
  * @package WordPress
+ * @subpackage Fields_API
  */
 final class WP_Fields_API {
 
@@ -61,6 +62,42 @@ final class WP_Fields_API {
 	 * @var array
 	 */
 	protected static $prepared_ids = array();
+
+	/**
+	 * Constructor.
+	 *
+	 * @access public
+	 */
+	public function __construct() {
+
+	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-setting.php' );
+	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-panel.php' );
+	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-section.php' );
+	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-control.php' );
+
+		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
+		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
+
+		add_action( 'fields_register',      array( $this, 'register_controls' ) );
+		add_action( 'fields_controls_init', array( $this, 'prepare_controls' ) );
+
+	}
+
+	/**
+	 * Allow Settings, Sections, Panels, and Controls to be registered
+	 *
+	 * @access public
+	 */
+	public function wp_loaded() {
+
+		/**
+		 * Fires once WordPress has loaded, allowing scripts and styles to be initialized.
+		 *
+		 * @param WP_Fields_API $this WP_Fields_API instance.
+		 */
+		do_action( 'fields_register', $this );
+
+	}
 
 	/**
 	 * Get the registered settings.
