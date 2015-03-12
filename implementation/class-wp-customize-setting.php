@@ -179,6 +179,7 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 		$value = apply_filters( "customize_sanitize_js_{$this->id}", $value, $this );
 
 		return $value;
+
 	}
 
 	/**
