@@ -596,11 +596,19 @@ final class WP_Fields_API {
 	 */
 	protected final function _cmp_priority( $a, $b ) {
 
-		if ( $a->priority === $b->priority ) {
-			return $a->instance_number - $a->instance_number;
+		if ( is_int( $a->priority ) && is_int( $b->priority ) ) {
+			// Priority integers
+			$compare = $a->priority - $b->priority;
+
+			if ( $a->priority === $b->priority ) {
+				$compare = $a->instance_number - $a->instance_number;
+			}
+		} else {
+			// Priority strings
+			$compare = 0;
 		}
 
-		return $a->priority - $b->priority;
+		return $compare;
 
 	}
 
