@@ -14,7 +14,6 @@ class WP_Fields_API_Section {
 	 *
 	 * Used when sorting two instances whose priorities are equal.
 	 *
-	 * @since 4.1.0
 	 * @access protected
 	 * @var int
 	 */
@@ -23,7 +22,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Order in which this instance was created in relation to other instances.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 * @var int
 	 */
@@ -32,7 +30,6 @@ class WP_Fields_API_Section {
 	/**
 	 * WP_Customize_Manager instance.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var WP_Customize_Manager
 	 */
@@ -41,7 +38,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Unique identifier.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var string
 	 */
@@ -50,7 +46,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Priority of the section which informs load order of sections.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var integer
 	 */
@@ -59,7 +54,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Panel in which to show the section, making it a sub-section.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var string
 	 */
@@ -68,7 +62,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Capability required for the section.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var string
 	 */
@@ -77,7 +70,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Theme feature support for the section.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var string|array
 	 */
@@ -86,7 +78,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Title of the section to show in UI.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var string
 	 */
@@ -95,7 +86,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Description to show in the UI.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var string
 	 */
@@ -104,7 +94,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Customizer controls for this section.
 	 *
-	 * @since 3.4.0
 	 * @access public
 	 * @var array
 	 */
@@ -113,7 +102,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Type of this section.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 * @var string
 	 */
@@ -122,7 +110,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Active callback.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 *
 	 * @see WP_Customize_Section::active()
@@ -139,7 +126,6 @@ class WP_Fields_API_Section {
 	 *
 	 * Any supplied $args override class property defaults.
 	 *
-	 * @since 3.4.0
 	 *
 	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
 	 * @param string               $id      An specific ID of the section.
@@ -169,7 +155,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Check whether section is active to current Customizer preview.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 *
 	 * @return bool Whether the section is active to the current preview.
@@ -181,7 +166,6 @@ class WP_Fields_API_Section {
 		/**
 		 * Filter response of {@see WP_Customize_Section::active()}.
 		 *
-		 * @since 4.1.0
 		 *
 		 * @param bool                 $active  Whether the Customizer section is active.
 		 * @param WP_Customize_Section $section {@see WP_Customize_Section} instance.
@@ -197,7 +181,6 @@ class WP_Fields_API_Section {
 	 * Subclasses can override this with their specific logic, or they may provide
 	 * an 'active_callback' argument to the constructor.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 *
 	 * @return bool Always true.
@@ -209,7 +192,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Gather the parameters passed to client JavaScript via JSON.
 	 *
-	 * @since 4.1.0
 	 *
 	 * @return array The array to be exported to the client as JSON.
 	 */
@@ -225,7 +207,6 @@ class WP_Fields_API_Section {
 	 * Checks required user capabilities and whether the theme has the
 	 * feature support required by the section.
 	 *
-	 * @since 3.4.0
 	 *
 	 * @return bool False if theme doesn't support the section or user doesn't have the capability.
 	 */
@@ -244,7 +225,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Get the section's content template for insertion into the Customizer pane.
 	 *
-	 * @since 4.1.0
 	 *
 	 * @return string Contents of the section.
 	 */
@@ -259,7 +239,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Check capabilities and render the section.
 	 *
-	 * @since 3.4.0
 	 */
 	public final function maybe_render() {
 		if ( ! $this->check_capabilities() ) {
@@ -269,7 +248,6 @@ class WP_Fields_API_Section {
 		/**
 		 * Fires before rendering a Customizer section.
 		 *
-		 * @since 3.4.0
 		 *
 		 * @param WP_Customize_Section $this WP_Customize_Section instance.
 		 */
@@ -280,7 +258,6 @@ class WP_Fields_API_Section {
 		 * The dynamic portion of the hook name, `$this->id`, refers to the ID
 		 * of the specific Customizer section to be rendered.
 		 *
-		 * @since 3.4.0
 		 */
 		do_action( "customize_render_section_{$this->id}" );
 
@@ -290,7 +267,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Render the section, and the controls that have been added to it.
 	 *
-	 * @since 3.4.0
 	 */
 	protected function render() {
 		$classes = 'accordion-section control-section control-section-' . $this->type;
