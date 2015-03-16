@@ -64,6 +64,13 @@ final class WP_Fields_API {
 	protected static $prepared_ids = array();
 
 	/**
+	 * Unsanitized values for Settings.
+	 *
+	 * @var array|false
+	 */
+	private $_post_values;
+
+	/**
 	 * Constructor.
 	 *
 	 * @access public
@@ -804,6 +811,48 @@ final class WP_Fields_API {
 		}
 
 		return $found;
+
+	}
+
+	/**
+	 * Parse the incoming $_POST['customized'] JSON data and store the unsanitized
+	 * settings for subsequent post_value() lookups.
+	 *
+	 *
+	 * @return array
+	 */
+	public function unsanitized_post_values() {
+
+		if ( ! isset( $this->_post_values ) ) {
+			$this->_post_values = false;
+		}
+
+		if ( empty( $this->_post_values ) ) {
+			return array();
+		}
+
+		return $this->_post_values;
+
+	}
+
+	/**
+	 * Return the sanitized value for a given setting from the request's POST data.
+	 * Introduced 'default' parameter.
+	 *
+	 * @param WP_Fields_API_Setting $setting A WP_Fields_API_Setting derived object
+	 * @param mixed                $default value returned $setting has no post value (added in 4.2.0).
+	 *
+	 * @return string|mixed $post_value Sanitized value or the $default provided
+	 */
+	public function post_value( $setting, $default = null ) {
+
+		$post_values = $this->unsanitized_post_values();
+
+		if ( array_key_exists( $setting->id, $post_values ) ) {
+			return $setting->sanitize( $post_values[ $setting->id ] );
+		}
+
+		return $default;
 
 	}
 
