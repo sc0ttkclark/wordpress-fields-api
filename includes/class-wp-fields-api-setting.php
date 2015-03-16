@@ -495,7 +495,7 @@ class WP_Fields_API_Setting {
 	 *
 	 * @return bool False if user can't change setting, otherwise true.
 	 */
-	public final function check_capabilities() {
+	public function check_capabilities() {
 
 		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
 			return false;
