@@ -14,7 +14,6 @@ class WP_Fields_API_Panel {
 	 *
 	 * Used when sorting two instances whose priorities are equal.
 	 *
-	 * @since 4.1.0
 	 * @access protected
 	 * @var int
 	 */
@@ -23,7 +22,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Order in which this instance was created in relation to other instances.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 * @var int
 	 */
@@ -32,7 +30,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * WP_Customize_Manager instance.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var WP_Customize_Manager
 	 */
@@ -41,7 +38,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Unique identifier.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var string
 	 */
@@ -50,7 +46,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Priority of the panel, defining the display order of panels and sections.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var integer
 	 */
@@ -59,7 +54,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Capability required for the panel.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var string
 	 */
@@ -68,7 +62,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Theme feature support for the panel.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var string|array
 	 */
@@ -77,7 +70,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Title of the panel to show in UI.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var string
 	 */
@@ -86,7 +78,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Description to show in the UI.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var string
 	 */
@@ -95,7 +86,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Customizer sections for this panel.
 	 *
-	 * @since 4.0.0
 	 * @access public
 	 * @var array
 	 */
@@ -104,7 +94,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Type of this panel.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 * @var string
 	 */
@@ -113,7 +102,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Active callback.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 *
 	 * @see WP_Customize_Section::active()
@@ -130,7 +118,6 @@ class WP_Fields_API_Panel {
 	 *
 	 * Any supplied $args override class property defaults.
 	 *
-	 * @since 4.0.0
 	 *
 	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
 	 * @param string               $id      An specific ID for the panel.
@@ -160,7 +147,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Check whether panel is active to current Customizer preview.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 *
 	 * @return bool Whether the panel is active to the current preview.
@@ -172,7 +158,6 @@ class WP_Fields_API_Panel {
 		/**
 		 * Filter response of WP_Customize_Panel::active().
 		 *
-		 * @since 4.1.0
 		 *
 		 * @param bool               $active  Whether the Customizer panel is active.
 		 * @param WP_Customize_Panel $panel   {@see WP_Customize_Panel} instance.
@@ -188,7 +173,6 @@ class WP_Fields_API_Panel {
 	 * Subclasses can override this with their specific logic, or they may
 	 * provide an 'active_callback' argument to the constructor.
 	 *
-	 * @since 4.1.0
 	 * @access public
 	 *
 	 * @return bool Always true.
@@ -200,7 +184,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Gather the parameters passed to client JavaScript via JSON.
 	 *
-	 * @since 4.1.0
 	 *
 	 * @return array The array to be exported to the client as JSON.
 	 */
@@ -216,7 +199,6 @@ class WP_Fields_API_Panel {
 	 * Checks required user capabilities and whether the theme has the
 	 * feature support required by the panel.
 	 *
-	 * @since 4.0.0
 	 *
 	 * @return bool False if theme doesn't support the panel or the user doesn't have the capability.
 	 */
@@ -235,7 +217,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Get the panel's content template for insertion into the Customizer pane.
 	 *
-	 * @since 4.1.0
 	 *
 	 * @return string Content for the panel.
 	 */
@@ -250,7 +231,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Check capabilities and render the panel.
 	 *
-	 * @since 4.0.0
 	 */
 	public final function maybe_render() {
 		if ( ! $this->check_capabilities() ) {
@@ -260,7 +240,6 @@ class WP_Fields_API_Panel {
 		/**
 		 * Fires before rendering a Customizer panel.
 		 *
-		 * @since 4.0.0
 		 *
 		 * @param WP_Customize_Panel $this WP_Customize_Panel instance.
 		 */
@@ -272,7 +251,6 @@ class WP_Fields_API_Panel {
 		 * The dynamic portion of the hook name, `$this->id`, refers to
 		 * the ID of the specific Customizer panel to be rendered.
 		 *
-		 * @since 4.0.0
 		 */
 		do_action( "customize_render_panel_{$this->id}" );
 
@@ -282,7 +260,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Render the panel container, and then its contents.
 	 *
-	 * @since 4.0.0
 	 * @access protected
 	 */
 	protected function render() {
@@ -303,7 +280,6 @@ class WP_Fields_API_Panel {
 	/**
 	 * Render the sections that have been added to the panel.
 	 *
-	 * @since 4.1.0
 	 * @access protected
 	 */
 	protected function render_content() {
