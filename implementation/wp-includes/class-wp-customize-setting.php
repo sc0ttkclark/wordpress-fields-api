@@ -86,6 +86,8 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 		parent::__construct( $this->type, $id, $args );
 
 		// Add compatibility hooks
+		add_action( "fields_preview_{$this->id}",                                 array( $this, 'customize_preview_id' ) );
+		add_action( "fields_preview_{$this->type}",                               array( $this, 'customize_preview_type' ) );
 		add_action( 'fields_save_' . $this->type . '_' . $this->id_data['base'],  array( $this, 'customize_save' ) );
 		add_filter( "fields_sanitize_{$this->type}_{$this->id}",                  array( $this, 'customize_sanitize' ) );
 		add_filter( "fields_sanitize_js_{$this->type}_{$this->id}",               array( $this, 'customize_sanitize_js_value' ) );
@@ -218,7 +220,7 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 
 		// @todo Figure out 'final' use
 
-		if ( ! parent::check_capabilities() )
+		if ( ! parent::check_capabilities__() )
 			return false;
 
 		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) )
@@ -240,10 +242,14 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
  * @since 3.4.0
  */
 class WP_Customize_Filter_Setting extends WP_Customize_Setting {
+
 	/**
 	 * Update value
 	 */
 	public function update( $value ) {
+
+		// Nothing to see here
+
 	}
 }
 
