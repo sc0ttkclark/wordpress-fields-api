@@ -30,4 +30,4 @@ function _wp_fields_api_include() {
 	$GLOBALS['wp_fields'] = new WP_Fields_API;
 
 }
-add_action( 'plugins_loaded', '_wp_fields_api_include' );
+add_action( 'plugins_loaded', '_wp_fields_api_include', 9 );
