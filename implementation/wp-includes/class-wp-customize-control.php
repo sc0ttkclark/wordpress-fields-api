@@ -41,6 +41,12 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	public $id;
 
 	/**
+	 * @access public
+	 * @var string
+	 */
+	public $object;
+
+	/**
 	 * All settings tied to the control.
 	 *
 	 * @access public
@@ -136,36 +142,17 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 * @param array $args
 	 */
 	public function __construct( $manager, $id, $args = array() ) {
-		$keys = array_keys( get_object_vars( $this ) );
-		foreach ( $keys as $key ) {
-			if ( isset( $args[ $key ] ) ) {
-				$this->$key = $args[ $key ];
-			}
+		if ( isset( $args['type'] ) ) {
+			$this->type = $args['type'];
 		}
 
 		$this->manager = $manager;
-		$this->id = $id;
+
+		parent::__construct( $this->type, $id, $args );
+
 		if ( empty( $this->active_callback ) ) {
 			$this->active_callback = array( $this, 'active_callback' );
 		}
-		self::$instance_count += 1;
-		$this->instance_number = self::$instance_count;
-
-		// Process settings.
-		if ( empty( $this->settings ) ) {
-			$this->settings = $id;
-		}
-
-		$settings = array();
-		if ( is_array( $this->settings ) ) {
-			foreach ( $this->settings as $key => $setting ) {
-				$settings[ $key ] = $this->manager->get_setting( $setting );
-			}
-		} else {
-			$this->setting = $this->manager->get_setting( $this->settings );
-			$settings['default'] = $this->setting;
-		}
-		$this->settings = $settings;
 
 		add_action( 'fields_render_control_' . $this->object, array( $this, 'customize_render_control' ) );
 		add_action( 'fields_render_control_' . $this->object . '_' . $this->id, array( $this, 'customize_render_control_id' ) );
