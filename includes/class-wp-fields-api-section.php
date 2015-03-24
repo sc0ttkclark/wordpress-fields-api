@@ -108,85 +108,47 @@ class WP_Fields_API_Section {
 	public $type = 'default';
 
 	/**
-	 * Active callback.
-	 *
-	 * @access public
-	 *
-	 * @see WP_Customize_Section::active()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               {@see WP_Customize_Section}, and returns bool to indicate
-	 *               whether the section is active (such as it relates to the URL
-	 *               currently being previewed).
-	 */
-	public $active_callback = '';
-
-	/**
 	 * Constructor.
 	 *
-	 * Any supplied $args override class property defaults.
+	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
 	 *
-	 *
-	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
-	 * @param string               $id      An specific ID of the section.
-	 * @param array                $args    Section arguments.
+	 * @return WP_Fields_API_Section $setting
 	 */
-	public function __construct( $manager, $id, $args = array() ) {
+	public function __construct() {
+
+		call_user_func_array( array( $this, 'init' ), func_get_args() );
+
+	}
+
+	/**
+	 * Secondary constructor; Any supplied $args override class property defaults.
+	 *
+	 * @param string $object
+	 * @param string $id                    An specific ID of the setting. Can be a
+	 *                                      theme mod or option name.
+	 * @param array  $args                  Section arguments.
+	 *
+	 * @return WP_Fields_API_Section $setting
+	 */
+	public function init( $object, $id, $args = array() ) {
+
+		$this->object = $object;
+
 		$keys = array_keys( get_object_vars( $this ) );
+
 		foreach ( $keys as $key ) {
 			if ( isset( $args[ $key ] ) ) {
 				$this->$key = $args[ $key ];
 			}
 		}
 
-		$this->manager = $manager;
 		$this->id = $id;
-		if ( empty( $this->active_callback ) ) {
-			$this->active_callback = array( $this, 'active_callback' );
-		}
+
 		self::$instance_count += 1;
 		$this->instance_number = self::$instance_count;
 
 		$this->controls = array(); // Users cannot customize the $controls array.
 
-		return $this;
-	}
-
-	/**
-	 * Check whether section is active to current Customizer preview.
-	 *
-	 * @access public
-	 *
-	 * @return bool Whether the section is active to the current preview.
-	 */
-	public final function active() {
-		$section = $this;
-		$active = call_user_func( $this->active_callback, $this );
-
-		/**
-		 * Filter response of {@see WP_Customize_Section::active()}.
-		 *
-		 *
-		 * @param bool                 $active  Whether the Customizer section is active.
-		 * @param WP_Customize_Section $section {@see WP_Customize_Section} instance.
-		 */
-		$active = apply_filters( 'customize_section_active', $active, $section );
-
-		return $active;
-	}
-
-	/**
-	 * Default callback used when invoking {@see WP_Customize_Section::active()}.
-	 *
-	 * Subclasses can override this with their specific logic, or they may provide
-	 * an 'active_callback' argument to the constructor.
-	 *
-	 * @access public
-	 *
-	 * @return bool Always true.
-	 */
-	public function active_callback() {
-		return true;
 	}
 
 	/**
@@ -198,7 +160,6 @@ class WP_Fields_API_Section {
 	public function json() {
 		$array = wp_array_slice_assoc( (array) $this, array( 'title', 'description', 'priority', 'panel', 'type' ) );
 		$array['content'] = $this->get_content();
-		$array['active'] = $this->active();
 		$array['instanceNumber'] = $this->instance_number;
 		return $array;
 	}
@@ -210,12 +171,8 @@ class WP_Fields_API_Section {
 	 *
 	 * @return bool False if theme doesn't support the section or user doesn't have the capability.
 	 */
-	public final function check_capabilities() {
+	public function check_capabilities() {
 		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
-			return false;
-		}
-
-		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
 			return false;
 		}
 

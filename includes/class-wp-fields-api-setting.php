@@ -13,27 +13,27 @@ class WP_Fields_API_Setting {
 	 * @access public
 	 * @var string
 	 */
-	public $id;
+	public $id = '';
 
 	/**
 	 * @access public
 	 * @var string
 	 */
-	public $object;
+	public $object = '';
 
 	/**
 	 * Capability required to edit this setting.
 	 *
 	 * @var string
 	 */
-	public $capability;
+	public $capability = '';
 
 	/**
 	 * Server-side sanitization callback for the setting's value.
 	 *
 	 * @var callback
 	 */
-	public $sanitize_callback = '';
+	public $sanitize_callback    = '';
 	public $sanitize_js_callback = '';
 
 	protected $id_data = array();
