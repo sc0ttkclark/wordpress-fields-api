@@ -26,7 +26,6 @@ There are still a lot of areas the API is not represented in code or in examples
 * get/add/update/delete for Meta / Settings API interaction has not yet been determined
 * Examples below aren't fleshed out with use cases, only the initial [Customizer Example code](http://codex.wordpress.org/Theme_Customization_API) I pulled from the codex, the example panels / sections / settings / controls need to be fleshed out
 * Examples of how this API replaces existing core handling for the Post Editor or User area -- ex. Taxonomy / Page Attributes meta boxes etc
-* WP_Fields_API classes for Control / Section / Panel / Setting have not been implemented yet
 
 ## Examples - Fields, Sections, Controls
 
@@ -106,6 +105,74 @@ function fields_api_example_customizer_register( $wp_fields ) {
 add_action( 'fields_register', 'fields_api_example_customizer_register' );
 ```
 
+### Register fields to a User profile
+
+```php
+function fields_api_example_user_field_register()  {
+
+	// This is a *new* API
+
+	// 1. Define a new section (if desired) for User area
+	$wp_fields->add_section( 'user', 'mytheme_options',
+		array(
+			// Visible title of section
+			'title'       => __( 'MyTheme Options', 'mytheme' ),
+
+			// Determines what order this appears in
+			'priority'    => 35,
+
+			// Capability needed to tweak
+			'capability'  => 'edit_theme_options',
+
+			// Descriptive tooltip
+			'description' => __( 'Allows you to customize some example settings for MyTheme.', 'mytheme' )
+		)
+	);
+
+	// 2. Register new settings to the WP database...
+	$wp_fields->add_setting( 'user', 'link_textcolor',
+		array(
+			// Default setting/value to save
+			'default'    => '#2BA6CB',
+
+			// Is this an 'option' or a 'theme_mod'?
+			'type'       => 'theme_mod',
+
+			// Optional. Special permissions for accessing this setting.
+			'capability' => 'edit_theme_options',
+
+			// What triggers a refresh of the setting? 'refresh' or 'postMessage' (instant)?
+			'transport'  => 'postMessage'
+		)
+	);
+
+	// 3. Finally, we define the control itself (which links a setting to a section and renders the HTML controls)...
+	$wp_fields->add_control( 'user',
+		// Instantiate the color control class
+		new WP_Fields_API_Color_Control(
+			// Set a unique ID for the control
+			'mytheme_link_textcolor',
+		
+			array(
+				// Admin-visible name of the control
+				'label'    => __( 'Link Color', 'mytheme' ),
+
+				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
+				'section'  => 'mytheme_options',
+
+				// Which setting to load and manipulate (serialized is okay)
+				'settings' => 'link_textcolor',
+
+				// Determines the order this control appears in for the specified section
+				'priority' => 10
+			)
+		)
+	);
+
+}
+add_action( 'fields_register', 'fields_api_example_user_field_register' );
+```
+
 ### Settings API
 
 ```php
@@ -169,12 +236,6 @@ function fields_api_example_settings_register( $wp_fields ) {
 			)
 		)
 	);
-
-	// 4. We can also change built-in settings by modifying properties. For instance, let's make some stuff use live preview JS...
-	$wp_fields->get_setting( 'settings', 'blogname' )->transport         = 'postMessage';
-	$wp_fields->get_setting( 'settings', 'blogdescription' )->transport  = 'postMessage';
-	$wp_fields->get_setting( 'settings', 'header_textcolor' )->transport = 'postMessage';
-	$wp_fields->get_setting( 'settings', 'background_color' )->transport = 'postMessage';
    
 }
 add_action( 'fields_register', 'fields_api_example_settings_register' );
@@ -271,89 +332,9 @@ function fields_api_example_post_field_register( $wp_fields ) {
 			)
 		)
 	);
-
-	// 4. We can also change built-in settings by modifying properties. For instance, let's make some stuff use live preview JS...
-	$wp_fields->get_setting( 'post_type', 'my_cpt', 'blogname' )->transport         = 'postMessage';
-	$wp_fields->get_setting( 'post_type', 'my_cpt', 'blogdescription' )->transport  = 'postMessage';
-	$wp_fields->get_setting( 'post_type', 'my_cpt', 'header_textcolor' )->transport = 'postMessage';
-	$wp_fields->get_setting( 'post_type', 'my_cpt', 'background_color' )->transport = 'postMessage';
    
 }
 add_action( 'fields_register', 'fields_api_example_post_field_register' );
-```
-
-### Register fields to a User profile
-
-```php
-function fields_api_example_user_field_register()  {
-
-	// This is a *new* API
-
-	// 1. Define a new section (if desired) for User area
-	$wp_fields->add_section( 'user', 'mytheme_options',
-		array(
-			// Visible title of section
-			'title'       => __( 'MyTheme Options', 'mytheme' ),
-
-			// Determines what order this appears in
-			'priority'    => 35,
-
-			// Capability needed to tweak
-			'capability'  => 'edit_theme_options',
-
-			// Descriptive tooltip
-			'description' => __( 'Allows you to customize some example settings for MyTheme.', 'mytheme' )
-		)
-	);
-
-	// 2. Register new settings to the WP database...
-	$wp_fields->add_setting( 'user', 'link_textcolor',
-		array(
-			// Default setting/value to save
-			'default'    => '#2BA6CB',
-
-			// Is this an 'option' or a 'theme_mod'?
-			'type'       => 'theme_mod',
-
-			// Optional. Special permissions for accessing this setting.
-			'capability' => 'edit_theme_options',
-
-			// What triggers a refresh of the setting? 'refresh' or 'postMessage' (instant)?
-			'transport'  => 'postMessage'
-		)
-	);
-
-	// 3. Finally, we define the control itself (which links a setting to a section and renders the HTML controls)...
-	$wp_fields->add_control( 'user',
-		// Instantiate the color control class
-		new WP_Fields_API_Color_Control(
-			// Set a unique ID for the control
-			'mytheme_link_textcolor',
-		
-			array(
-				// Admin-visible name of the control
-				'label'    => __( 'Link Color', 'mytheme' ),
-
-				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
-				'section'  => 'mytheme_options',
-
-				// Which setting to load and manipulate (serialized is okay)
-				'settings' => 'link_textcolor',
-
-				// Determines the order this control appears in for the specified section
-				'priority' => 10
-			)
-		)
-	);
-
-	// 4. We can also change built-in settings by modifying properties. For instance, let's make some stuff use live preview JS...
-	$wp_fields->get_setting( 'user', 'blogname' )->transport         = 'postMessage';
-	$wp_fields->get_setting( 'user', 'blogdescription' )->transport  = 'postMessage';
-	$wp_fields->get_setting( 'user', 'header_textcolor' )->transport = 'postMessage';
-	$wp_fields->get_setting( 'user', 'background_color' )->transport = 'postMessage';
-
-}
-add_action( 'fields_register', 'fields_api_example_user_field_register' );
 ```
 
 ## Contributing
