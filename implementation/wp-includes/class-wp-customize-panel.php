@@ -109,28 +109,6 @@ class WP_Customize_Panel extends WP_Fields_API_Panel {
 	}
 
 	/**
-	 * Checks required user capabilities and whether the theme has the
-	 * feature support required by the panel.
-	 *
-	 * @since 4.0.0
-	 *
-	 * @return bool False if theme doesn't support the panel or the user doesn't have the capability.
-	 */
-	final public function check_capabilities() {
-
-		if ( ! parent::check_capabilities() ) {
-			return false;
-		}
-
-		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
-			return false;
-		}
-
-		return true;
-
-	}
-
-	/**
 	 * Render the sections that have been added to the panel.
 	 *
 	 * @since 4.1.0

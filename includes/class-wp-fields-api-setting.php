@@ -29,6 +29,42 @@ class WP_Fields_API_Setting {
 	public $capability = '';
 
 	/**
+	 * Theme feature support for the setting.
+	 *
+	 * @access public
+	 * @var string|array
+	 */
+	public $theme_supports = '';
+
+	/**
+	 * Default value for setting
+	 *
+	 * @var string
+	 */
+	public $default = '';
+
+	/**
+	 * Transport used for setting
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $transport = 'refresh';
+
+	/**
+	 * Whether or not the setting is initially dirty when created.
+	 *
+	 * This is used to ensure that a setting will be sent from the pane to the
+	 * preview when loading the Fields API. Normally a setting only is synced to
+	 * the preview if it has been changed. This allows the setting to be sent
+	 * from the start.
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public $dirty = false;
+
+	/**
 	 * Server-side sanitization callback for the setting's value.
 	 *
 	 * @var callback
@@ -214,6 +250,9 @@ class WP_Fields_API_Setting {
 	 */
 	public function _preview_filter( $original ) {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
 		global $wp_fields;
 
 		if ( ! $this->is_current_blog_previewed() ) {
@@ -269,7 +308,7 @@ class WP_Fields_API_Setting {
 	 *
 	 * @return mixed The default value on failure, otherwise the sanitized value.
 	 */
-	final public function post_value( $default = null ) {
+	public function post_value( $default = null ) {
 
 		global $wp_fields;
 
@@ -537,13 +576,15 @@ class WP_Fields_API_Setting {
 	/**
 	 * Validate user capabilities whether the theme supports the setting.
 	 *
-	 * @return bool False if user can't change setting, otherwise true.
+	 * @return bool False if theme doesn't support the section or user can't change section, otherwise true.
 	 */
 	public function check_capabilities() {
 
-		// @todo Figure out final
-
 		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
+			return false;
+		}
+
+		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
 			return false;
 		}
 

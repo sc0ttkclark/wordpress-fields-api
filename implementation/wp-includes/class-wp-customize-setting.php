@@ -17,6 +17,7 @@
  * @see WP_Customize_Manager
  */
 class WP_Customize_Setting extends WP_Fields_API_Setting {
+
 	/**
 	 * @access public
 	 * @var WP_Customize_Manager
@@ -27,54 +28,7 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 * @access public
 	 * @var string
 	 */
-	public $id;
-
-	/**
-	 * @access public
-	 * @var string
-	 */
 	public $type = 'theme_mod';
-
-	/**
-	 * Capability required to edit this setting.
-	 *
-	 * @var string
-	 */
-	public $capability = 'edit_theme_options';
-
-	/**
-	 * Feature a theme is required to support to enable this setting.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $theme_supports  = '';
-	public $default         = '';
-	public $transport       = 'refresh';
-
-	/**
-	 * Server-side sanitization callback for the setting's value.
-	 *
-	 * @var callback
-	 */
-	public $sanitize_callback    = '';
-	public $sanitize_js_callback = '';
-
-	/**
-	 * Whether or not the setting is initially dirty when created.
-	 *
-	 * This is used to ensure that a setting will be sent from the pane to the
-	 * preview when loading the Customizer. Normally a setting only is synced to
-	 * the preview if it has been changed. This allows the setting to be sent
-	 * from the start.
-	 *
-	 * @since 4.2.0
-	 * @access public
-	 * @var bool
-	 */
-	public $dirty = false;
-
-	protected $id_data = array();
 
 	/**
 	 * Cached and sanitized $_POST value for the setting.
@@ -107,8 +61,8 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 		parent::__construct( $this->type, $id, $args );
 
 		// Add compatibility hooks
-		add_action( "fields_preview_{$this->id}",                                 array( $this, 'customize_preview_id' ) ); // @todo Add method w/ filter map
-		add_action( "fields_preview_{$this->type}",                               array( $this, 'customize_preview_type' ) ); // @todo Add method w/ filter map
+		add_action( "fields_preview_{$this->id}",                                 array( $this, 'customize_preview_id' ) );
+		add_action( "fields_preview_{$this->type}",                               array( $this, 'customize_preview_type' ) );
 		add_action( 'fields_save_' . $this->type . '_' . $this->id_data['base'],  array( $this, 'customize_save' ) );
 		add_filter( "fields_sanitize_{$this->type}_{$this->id}",                  array( $this, 'customize_sanitize' ) );
 		add_filter( "fields_sanitize_js_{$this->type}_{$this->id}",               array( $this, 'customize_sanitize_js_value' ) );
@@ -285,41 +239,23 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 * @param mixed $default A default value which is used as a fallback. Default is null.
 	 * @return mixed The default value on failure, otherwise the sanitized value.
 	 */
-	final public function post_value__( $default = null ) {
+	final public function post_value( $default = null ) {
 
 		// @todo Figure out 'final' use
 
 		// Check for a cached value
-		if ( isset( $this->_post_value ) )
+		if ( isset( $this->_post_value ) ) {
 			return $this->_post_value;
+		}
 
 		// Call the manager for the post value
 		$result = $this->manager->post_value( $this );
 
-		if ( isset( $result ) )
+		if ( isset( $result ) ) {
 			return $this->_post_value = $result;
-		else
+		} else {
 			return $default;
-	}
-
-	/**
-	 * Validate user capabilities whether the theme supports the setting.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @return bool False if theme doesn't support the setting or user can't change setting, otherwise true.
-	 */
-	final public function check_capabilities__() {
-
-		// @todo Figure out 'final' use
-
-		if ( ! parent::check_capabilities__() )
-			return false;
-
-		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) )
-			return false;
-
-		return true;
+		}
 
 	}
 

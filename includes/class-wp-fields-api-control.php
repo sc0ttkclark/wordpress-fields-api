@@ -285,11 +285,15 @@ class WP_Fields_API_Control {
 	 */
 	final public function check_capabilities() {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
 		global $wp_fields;
 
 		foreach ( $this->settings as $setting ) {
-			if ( ! $setting->check_capabilities() )
+			if ( ! $setting->check_capabilities() ) {
 				return false;
+			}
 		}
 
 		$section = $wp_fields->get_section( $this->object, $this->section );

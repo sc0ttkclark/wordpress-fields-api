@@ -68,28 +68,6 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 	}
 
 	/**
-	 * Checks required user capabilities and whether the theme has the
-	 * feature support required by the section.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @return bool False if theme doesn't support the section or user doesn't have the capability.
-	 */
-	final public function check_capabilities() {
-
-		if ( ! parent::check_capabilities() ) {
-			return false;
-		}
-
-		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
-			return false;
-		}
-
-		return true;
-
-	}
-
-	/**
 	 * Backwards compatibility for fields_api_render_section
 	 */
 	public function customize_render_section() {

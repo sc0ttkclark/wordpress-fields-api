@@ -223,14 +223,20 @@ class WP_Fields_API_Section {
 	 * Checks required user capabilities and whether the theme has the
 	 * feature support required by the section.
 	 *
-	 * @return bool False if the user doesn't have the capability.
+	 * @return bool False if theme doesn't support the section or user can't change section, otherwise true.
 	 */
 	public function check_capabilities() {
+
 		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
 			return false;
 		}
 
+		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
+			return false;
+		}
+
 		return true;
+
 	}
 
 	/**
