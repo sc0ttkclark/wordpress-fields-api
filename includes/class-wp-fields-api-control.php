@@ -23,19 +23,19 @@ class WP_Fields_API_Control {
 	 * @access public
 	 * @var int
 	 */
-	public $instance_number;
+	public $instance_number = 0;
 
 	/**
 	 * @access public
 	 * @var string
 	 */
-	public $id;
+	public $id = '';
 
 	/**
 	 * @access public
 	 * @var string
 	 */
-	public $object;
+	public $object = '';
 
 	/**
 	 * All settings tied to the control.
@@ -43,7 +43,7 @@ class WP_Fields_API_Control {
 	 * @access public
 	 * @var array
 	 */
-	public $settings;
+	public $settings = array();
 
 	/**
 	 * The primary setting for the control (if there is one).
@@ -122,8 +122,6 @@ class WP_Fields_API_Control {
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
-	 *
-	 * @return WP_Fields_API_Control $setting
 	 */
 	public function __construct() {
 
@@ -138,8 +136,6 @@ class WP_Fields_API_Control {
 	 * @param string $id                    An specific ID of the setting. Can be a
 	 *                                      theme mod or option name.
 	 * @param array  $args                  Setting arguments.
-	 *
-	 * @return WP_Fields_API_Control $setting
 	 */
 	public function init( $object, $id, $args = array() ) {
 

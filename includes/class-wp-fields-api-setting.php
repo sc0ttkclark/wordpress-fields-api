@@ -166,10 +166,13 @@ class WP_Fields_API_Setting {
 	 * @return bool|null Returns null if preview() has not been called yet.
 	 */
 	public function is_current_blog_previewed() {
+
 		if ( ! isset( $this->_previewed_blog_id ) ) {
 			return null;
 		}
+
 		return ( get_current_blog_id() === $this->_previewed_blog_id );
+
 	}
 
 	/**
@@ -180,6 +183,7 @@ class WP_Fields_API_Setting {
 		if ( ! isset( $this->_original_value ) ) {
 			$this->_original_value = $this->value();
 		}
+
 		if ( ! isset( $this->_previewed_blog_id ) ) {
 			$this->_previewed_blog_id = get_current_blog_id();
 		}

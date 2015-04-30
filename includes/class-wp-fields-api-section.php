@@ -30,7 +30,7 @@ class WP_Fields_API_Section {
 	 * @access public
 	 * @var int
 	 */
-	public $instance_number;
+	public $instance_number = 0;
 
 	/**
 	 * Unique identifier.
@@ -38,7 +38,13 @@ class WP_Fields_API_Section {
 	 * @access public
 	 * @var string
 	 */
-	public $id;
+	public $id = '';
+
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $object = '';
 
 	/**
 	 * Priority of the section which informs load order of sections.
@@ -89,12 +95,12 @@ class WP_Fields_API_Section {
 	public $description = '';
 
 	/**
-	 * Customizer controls for this section.
+	 * Fields API controls for this section.
 	 *
 	 * @access public
 	 * @var array
 	 */
-	public $controls;
+	public $controls = array();
 
 	/**
 	 * Type of this section.
@@ -122,8 +128,6 @@ class WP_Fields_API_Section {
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
-	 *
-	 * @return WP_Fields_API_Section $setting
 	 */
 	public function __construct() {
 
@@ -138,8 +142,6 @@ class WP_Fields_API_Section {
 	 * @param string $id                    An specific ID of the setting. Can be a
 	 *                                      theme mod or option name.
 	 * @param array  $args                  Section arguments.
-	 *
-	 * @return WP_Fields_API_Section $setting
 	 */
 	public function init( $object, $id, $args = array() ) {
 

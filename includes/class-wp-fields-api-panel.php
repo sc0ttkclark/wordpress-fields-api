@@ -39,7 +39,13 @@ class WP_Fields_API_Panel {
 	 * @access public
 	 * @var string
 	 */
-	public $id;
+	public $id = '';
+
+	/**
+	 * @access public
+	 * @var string
+	 */
+	public $object = '';
 
 	/**
 	 * Priority of the panel, defining the display order of panels and sections.
@@ -87,7 +93,7 @@ class WP_Fields_API_Panel {
 	 * @access public
 	 * @var array
 	 */
-	public $sections;
+	public $sections = array();
 
 	/**
 	 * Type of this panel.
@@ -156,7 +162,7 @@ class WP_Fields_API_Panel {
 	}
 
 	/**
-	 * Check whether panel is active to current Customizer preview.
+	 * Check whether panel is active to current Fields API preview.
 	 *
 	 * @access public
 	 *
@@ -168,11 +174,11 @@ class WP_Fields_API_Panel {
 		$active = call_user_func( $this->active_callback, $this );
 
 		/**
-		 * Filter response of WP_Customize_Panel::active().
+		 * Filter response of WP_Fields_API_Panel::active().
 		 *
 		 *
-		 * @param bool               $active  Whether the Customizer panel is active.
-		 * @param WP_Customize_Panel $panel   {@see WP_Customize_Panel} instance.
+		 * @param bool                $active  Whether the Fields API panel is active.
+		 * @param WP_Fields_API_Panel $panel   {@see WP_Fields_API_Panel} instance.
 		 */
 		$active = apply_filters( 'fields_api_panel_active_' . $this->object, $active, $panel );
 
@@ -181,7 +187,7 @@ class WP_Fields_API_Panel {
 	}
 
 	/**
-	 * Default callback used when invoking {@see WP_Customize_Panel::active()}.
+	 * Default callback used when invoking {@see WP_Fields_API_Panel::active()}.
 	 *
 	 * Subclasses can override this with their specific logic, or they may
 	 * provide an 'active_callback' argument to the constructor.
@@ -265,7 +271,7 @@ class WP_Fields_API_Panel {
 		/**
 		 * Fires before rendering a Customizer panel.
 		 *
-		 * @param WP_Customize_Panel $this WP_Customize_Panel instance.
+		 * @param WP_Fields_API_Panel $this WP_Fields_API_Panel instance.
 		 */
 		do_action( "fields_api_render_panel_{$this->object}", $this );
 
