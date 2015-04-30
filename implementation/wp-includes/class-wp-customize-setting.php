@@ -241,8 +241,6 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 */
 	final public function post_value( $default = null ) {
 
-		// @todo Figure out 'final' use
-
 		// Check for a cached value
 		if ( isset( $this->_post_value ) ) {
 			return $this->_post_value;
@@ -251,11 +249,15 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 		// Call the manager for the post value
 		$result = $this->manager->post_value( $this );
 
+		$value = $default;
+
 		if ( isset( $result ) ) {
-			return $this->_post_value = $result;
-		} else {
-			return $default;
+			$this->_post_value = $value = $result;
+
+			return $value;
 		}
+
+		return $value;
 
 	}
 
