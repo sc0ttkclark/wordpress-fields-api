@@ -230,6 +230,19 @@ if ( ! IS_PROFILE_PAGE ) {
 <input type="hidden" name="checkuser_id" value="<?php echo get_current_user_id(); ?>" />
 </p>
 
+<?php
+/**
+ * WP Fields API implementation >>>
+ * Original Lines 233-573
+ */
+?>
+
+<?php
+/**
+ * <<< WP Fields API implementation
+ */
+?>
+
 <h3><?php _e('Personal Options'); ?></h3>
 
 <table class="form-table">
