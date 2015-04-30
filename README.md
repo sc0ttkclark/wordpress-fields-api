@@ -21,6 +21,7 @@ I am not focusing on any UI aspects at the moment besides implementation of the 
 
 There are still a lot of areas the API is not represented in code or in examples.
 
+* Customizer Manager (need to look at `add_dynamic_settings`, not sure if it needs to be abstracted into `$wp_fields`)
 * register_meta and how this interacts behind the scenes with it
 * get/add/update/delete for Meta / Settings API interaction has not yet been determined
 * Examples below aren't fleshed out with use cases, only the initial [Customizer Example code](http://codex.wordpress.org/Theme_Customization_API) I pulled from the codex, the example panels / sections / settings / controls need to be fleshed out
