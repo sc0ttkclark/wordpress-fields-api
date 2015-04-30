@@ -33,14 +33,6 @@ class WP_Fields_API_Section {
 	public $instance_number;
 
 	/**
-	 * WP_Customize_Manager instance.
-	 *
-	 * @access public
-	 * @var WP_Customize_Manager
-	 */
-	public $manager;
-
-	/**
 	 * Unique identifier.
 	 *
 	 * @access public
@@ -217,7 +209,6 @@ class WP_Fields_API_Section {
 	/**
 	 * Gather the parameters passed to client JavaScript via JSON.
 	 *
-	 *
 	 * @return array The array to be exported to the client as JSON.
 	 */
 	public function json() {
@@ -232,8 +223,7 @@ class WP_Fields_API_Section {
 	 * Checks required user capabilities and whether the theme has the
 	 * feature support required by the section.
 	 *
-	 *
-	 * @return bool False if theme doesn't support the section or user doesn't have the capability.
+	 * @return bool False if the user doesn't have the capability.
 	 */
 	public function check_capabilities() {
 		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
@@ -245,7 +235,6 @@ class WP_Fields_API_Section {
 
 	/**
 	 * Get the section's content template for insertion into the Fields UI.
-	 *
 	 *
 	 * @return string Contents of the section.
 	 */
