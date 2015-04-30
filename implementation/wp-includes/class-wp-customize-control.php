@@ -1,132 +1,24 @@
 <?php
 /**
- * Customize Control Class
+ * WordPress Customize Control classes
  *
  * @package WordPress
  * @subpackage Customize
  * @since 3.4.0
  */
+
+/**
+ * Customize Control class.
+ *
+ * @since 3.4.0
+ */
 class WP_Customize_Control extends WP_Fields_API_Control {
-
-	/**
-	 * Incremented with each new class instantiation, then stored in $instance_number.
-	 *
-	 * Used when sorting two instances whose priorities are equal.
-	 *
-	 * @since 4.1.0
-	 * @access protected
-	 * @var int
-	 */
-	protected static $instance_count = 0;
-
-	/**
-	 * Order in which this instance was created in relation to other instances.
-	 *
-	 * @since 4.1.0
-	 * @access public
-	 * @var int
-	 */
-	public $instance_number;
 
 	/**
 	 * @access public
 	 * @var WP_Customize_Manager
 	 */
 	public $manager;
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $id;
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $object;
-
-	/**
-	 * All settings tied to the control.
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $settings;
-
-	/**
-	 * The primary setting for the control (if there is one).
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $setting = 'default';
-
-	/**
-	 * @access public
-	 * @var int
-	 */
-	public $priority = 10;
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $section = '';
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $label = '';
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $description = '';
-
-	/**
-	 * @todo: Remove choices
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $choices = array();
-
-	/**
-	 * @access public
-	 * @var array
-	 */
-	public $input_attrs = array();
-
-	/**
-	 * @deprecated It is better to just call the json() method
-	 * @access public
-	 * @var array
-	 */
-	public $json = array();
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $type = 'text';
-
-	/**
-	 * Callback.
-	 *
-	 * @since 4.0.0
-	 * @access public
-	 *
-	 * @see WP_Customize_Control::active()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               WP_Customize_Control, and returns bool to indicate whether
-	 *               the control is active (such as it relates to the URL
-	 *               currently being previewed).
-	 */
-	public $active_callback = '';
 
 	/**
 	 * Constructor.
@@ -156,6 +48,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 
 		add_action( 'fields_render_control_' . $this->object, array( $this, 'customize_render_control' ) );
 		add_action( 'fields_render_control_' . $this->object . '_' . $this->id, array( $this, 'customize_render_control_id' ) );
+		add_filter( 'fields_control_active_' . $this->object . '_' . $this->id, array( $this, 'customize_control_active' ), 10, 2 );
 	}
 
 	/**
@@ -168,14 +61,14 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	/**
 	 * Check whether control is active to current Customizer preview.
 	 *
-	 * @since 4.0.0
 	 * @access public
+	 *
+	 * @param bool                  $active  Whether the Field control is active.
+	 * @param WP_Fields_API_Control $control WP_Fields_API_Control instance.
 	 *
 	 * @return bool Whether the control is active to the current preview.
 	 */
-	public final function active() {
-		$control = $this;
-		$active = call_user_func( $this->active_callback, $this );
+	public function customize_control_active( $active, $control ) {
 
 		/**
 		 * Filter response of WP_Customize_Control::active().
@@ -188,21 +81,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 		$active = apply_filters( 'customize_control_active', $active, $control );
 
 		return $active;
-	}
 
-	/**
-	 * Default callback used when invoking WP_Customize_Control::active().
-	 *
-	 * Subclasses can override this with their specific logic, or they may
-	 * provide an 'active_callback' argument to the constructor.
-	 *
-	 * @since 4.0.0
-	 * @access public
-	 *
-	 * @return bool Always true.
-	 */
-	public function active_callback() {
-		return true;
 	}
 
 	/**

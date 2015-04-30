@@ -1,12 +1,20 @@
 <?php
 /**
- * Customize Setting Class.
- *
- * Handles saving and sanitizing of settings.
+ * WordPress Customize Setting classes
  *
  * @package WordPress
  * @subpackage Customize
  * @since 3.4.0
+ */
+
+/**
+ * Customize Setting class.
+ *
+ * Handles saving and sanitizing of settings.
+ *
+ * @since 3.4.0
+ *
+ * @see WP_Customize_Manager
  */
 class WP_Customize_Setting extends WP_Fields_API_Setting {
 	/**
@@ -52,6 +60,20 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	public $sanitize_callback    = '';
 	public $sanitize_js_callback = '';
 
+	/**
+	 * Whether or not the setting is initially dirty when created.
+	 *
+	 * This is used to ensure that a setting will be sent from the pane to the
+	 * preview when loading the Customizer. Normally a setting only is synced to
+	 * the preview if it has been changed. This allows the setting to be sent
+	 * from the start.
+	 *
+	 * @since 4.2.0
+	 * @access public
+	 * @var bool
+	 */
+	public $dirty = false;
+
 	protected $id_data = array();
 
 	/**
@@ -73,7 +95,6 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 * @param string               $id      An specific ID of the setting. Can be a
 	 *                                      theme mod or option name.
 	 * @param array                $args    Setting arguments.
-	 * @return WP_Customize_Setting $setting
 	 */
 	public function __construct( $manager, $id, $args = array() ) {
 
@@ -86,13 +107,51 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 		parent::__construct( $this->type, $id, $args );
 
 		// Add compatibility hooks
-		add_action( "fields_preview_{$this->id}",                                 array( $this, 'customize_preview_id' ) );
-		add_action( "fields_preview_{$this->type}",                               array( $this, 'customize_preview_type' ) );
+		add_action( "fields_preview_{$this->id}",                                 array( $this, 'customize_preview_id' ) ); // @todo Add method w/ filter map
+		add_action( "fields_preview_{$this->type}",                               array( $this, 'customize_preview_type' ) ); // @todo Add method w/ filter map
 		add_action( 'fields_save_' . $this->type . '_' . $this->id_data['base'],  array( $this, 'customize_save' ) );
 		add_filter( "fields_sanitize_{$this->type}_{$this->id}",                  array( $this, 'customize_sanitize' ) );
 		add_filter( "fields_sanitize_js_{$this->type}_{$this->id}",               array( $this, 'customize_sanitize_js_value' ) );
 		add_action( "fields_update_{$this->type}",                                array( $this, 'customize_update' ) );
 		add_action( 'fields_value_' . $this->type . '_' . $this->id_data['base'], array( $this, 'customize_value' ) );
+
+	}
+
+	/**
+	 * Handle previewing the setting by ID.
+	 */
+	public function customize_preview_id() {
+
+		/**
+		 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
+		 * not handled as theme_mods or options.
+		 *
+		 * The dynamic portion of the hook name, `$this->id`, refers to the setting ID.
+		 *
+		 * @since 3.4.0
+		 *
+		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+		 */
+		return apply_filters( "customize_preview_{$this->id}", $this );
+
+	}
+
+	/**
+	 * Handle previewing the setting by typw.
+	 */
+	public function customize_preview_type( $value ) {
+
+		/**
+		 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
+		 * not handled as theme_mods or options.
+		 *
+		 * The dynamic portion of the hook name, `$this->type`, refers to the setting type.
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+		 */
+		return apply_filters( "customize_preview_{$this->object}", $value, $this );
 
 	}
 
@@ -104,8 +163,18 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 *
 	 * @return false|null False if cap check fails or value isn't set.
 	 */
-	public final function customize_save() {
+	final public function customize_save() {
 
+		/**
+		 * Fires when the WP_Customize_Setting::save() method is called.
+		 *
+		 * The dynamic portion of the hook name, `$this->id_data['base']` refers to
+		 * the base slug of the setting name.
+		 *
+		 * @since 3.4.0
+		 *
+		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+		 */
 		do_action( 'customize_save_' . $this->id_data['base'], $this );
 
 	}
@@ -142,6 +211,17 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 */
 	protected function customize_update( $value ) {
 
+		/**
+		 * Fires when the {@see WP_Customize_Setting::update()} method is called for settings
+		 * not handled as theme_mods or options.
+		 *
+		 * The dynamic portion of the hook name, `$this->type`, refers to the type of setting.
+		 *
+		 * @since 3.4.0
+		 *
+		 * @param mixed                $value Value of the setting.
+		 * @param WP_Customize_Setting $this  WP_Customize_Setting instance.
+		 */
 		do_action( 'customize_update_' . $this->type, $value, $this );
 
 	}
@@ -155,6 +235,19 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 */
 	public function customize_value( $default ) {
 
+		/**
+		 * Filter a Customize setting value not handled as a theme_mod or option.
+		 *
+		 * The dynamic portion of the hook name, `$this->id_date['base']`, refers to
+		 * the base slug of the setting name.
+		 *
+		 * For settings handled as theme_mods or options, see those corresponding
+		 * functions for available hooks.
+		 *
+		 * @since 3.4.0
+		 *
+		 * @param mixed $default The setting default value. Default empty.
+		 */
 		return apply_filters( 'customize_value_' . $this->id_data['base'], $default );
 
 	}
@@ -192,7 +285,7 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 * @param mixed $default A default value which is used as a fallback. Default is null.
 	 * @return mixed The default value on failure, otherwise the sanitized value.
 	 */
-	public final function post_value__( $default = null ) {
+	final public function post_value__( $default = null ) {
 
 		// @todo Figure out 'final' use
 
@@ -216,7 +309,7 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
 	 *
 	 * @return bool False if theme doesn't support the setting or user can't change setting, otherwise true.
 	 */
-	public final function check_capabilities__() {
+	final public function check_capabilities__() {
 
 		// @todo Figure out 'final' use
 
@@ -237,14 +330,16 @@ class WP_Customize_Setting extends WP_Fields_API_Setting {
  *
  * Results should be properly handled using another setting or callback.
  *
- * @package WordPress
- * @subpackage Customize
  * @since 3.4.0
+ *
+ * @see WP_Customize_Setting
  */
 class WP_Customize_Filter_Setting extends WP_Customize_Setting {
 
 	/**
 	 * Update value
+	 *
+	 * @since 3.4.0
 	 */
 	public function update( $value ) {
 
@@ -258,9 +353,9 @@ class WP_Customize_Filter_Setting extends WP_Customize_Setting {
  *
  * Results should be properly handled using another setting or callback.
  *
- * @package WordPress
- * @subpackage Customize
  * @since 3.4.0
+ *
+ * @see WP_Customize_Setting
  */
 final class WP_Customize_Header_Image_Setting extends WP_Customize_Setting {
 	public $id = 'header_image_data';
@@ -286,11 +381,11 @@ final class WP_Customize_Header_Image_Setting extends WP_Customize_Setting {
 }
 
 /**
- * Class WP_Customize_Background_Image_Setting
+ * Customizer Background Image Setting class.
  *
- * @package WordPress
- * @subpackage Customize
  * @since 3.4.0
+ *
+ * @see WP_Customize_Setting
  */
 final class WP_Customize_Background_Image_Setting extends WP_Customize_Setting {
 	public $id = 'background_image_thumb';

@@ -15,7 +15,7 @@ class WP_Fields_API_Control {
 	 * @access protected
 	 * @var int
 	 */
-	public static $instance_count = 0;
+	protected static $instance_count = 0;
 
 	/**
 	 * Order in which this instance was created in relation to other instances.
@@ -105,6 +105,20 @@ class WP_Fields_API_Control {
 	public $type = 'text';
 
 	/**
+	 * Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Control::active()
+	 *
+	 * @var callable Callback is called with one argument, the instance of
+	 *               WP_Fields_API_Control, and returns bool to indicate whether
+	 *               the control is active (such as it relates to the URL
+	 *               currently being previewed).
+	 */
+	public $active_callback = '';
+
+	/**
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
@@ -173,14 +187,53 @@ class WP_Fields_API_Control {
 	public function enqueue() {}
 
 	/**
+	 * Check whether control is active to current Customizer preview.
+	 *
+	 * @access public
+	 *
+	 * @return bool Whether the control is active to the current preview.
+	 */
+	final public function active() {
+
+		$control = $this;
+		$active = call_user_func( $this->active_callback, $this );
+
+		/**
+		 * Filter response of WP_Fields_API_Control::active().
+		 *
+		 * @param bool                  $active  Whether the Field control is active.
+		 * @param WP_Fields_API_Control $control WP_Fields_API_Control instance.
+		 */
+		$active = apply_filters( 'fields_control_active_' . $this->object, $active, $control );
+
+		return $active;
+
+	}
+
+	/**
+	 * Default callback used when invoking WP_Customize_Control::active().
+	 *
+	 * Subclasses can override this with their specific logic, or they may
+	 * provide an 'active_callback' argument to the constructor.
+	 *
+	 * @access public
+	 *
+	 * @return bool Always true.
+	 */
+	public function active_callback() {
+
+		return true;
+
+	}
+
+	/**
 	 * Fetch a setting's value.
 	 * Grabs the main setting by default.
-	 *
 	 *
 	 * @param string $setting_key
 	 * @return mixed The requested setting's value, if the setting exists.
 	 */
-	public final function value( $setting_key = 'default' ) {
+	final public function value( $setting_key = 'default' ) {
 
 		if ( isset( $this->settings[ $setting_key ] ) ) {
 			return $this->settings[ $setting_key ]->value();
@@ -203,6 +256,7 @@ class WP_Fields_API_Control {
 
 		$this->json['type'] = $this->type;
 		$this->json['priority'] = $this->priority;
+		$this->json['active'] = $this->active();
 		$this->json['section'] = $this->section;
 		$this->json['content'] = $this->get_content();
 		$this->json['label'] = $this->label;
@@ -213,7 +267,6 @@ class WP_Fields_API_Control {
 
 	/**
 	 * Get the data to export to the client via JSON.
-	 *
 	 *
 	 * @return array Array of parameters passed to the JavaScript.
 	 */
@@ -228,10 +281,9 @@ class WP_Fields_API_Control {
 	/**
 	 * Check if the theme supports the control and check user capabilities.
 	 *
-	 *
 	 * @return bool False if theme doesn't support the control or user doesn't have the required permissions, otherwise true.
 	 */
-	public final function check_capabilities() {
+	final public function check_capabilities() {
 
 		global $wp_fields;
 
@@ -253,10 +305,9 @@ class WP_Fields_API_Control {
 	/**
 	 * Get the control's content for insertion.
 	 *
-	 *
 	 * @return string Contents of the control.
 	 */
-	public final function get_content() {
+	final public function get_content() {
 
 		ob_start();
 
@@ -275,7 +326,7 @@ class WP_Fields_API_Control {
 	 *
 	 * @uses WP_Fields_API_Control::render()
 	 */
-	public final function maybe_render() {
+	final public function maybe_render() {
 
 		if ( ! $this->check_capabilities() ) {
 			return;
@@ -283,7 +334,6 @@ class WP_Fields_API_Control {
 
 		/**
 		 * Fires just before the current control is rendered.
-		 *
 		 *
 		 * @param WP_Fields_API_Control $this WP_Fields_API_Control instance.
 		 */
@@ -294,7 +344,6 @@ class WP_Fields_API_Control {
 		 *
 		 * The dynamic portion of the hook name, `$this->id`, refers to
 		 * the control ID.
-		 *
 		 *
 		 * @param WP_Fields_API_Control $this {@see WP_Fields_API_Control} instance.
 		 */

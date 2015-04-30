@@ -55,6 +55,15 @@ class WP_Fields_API_Setting {
 	protected $_original_value;
 
 	/**
+	 * The ID for the current blog when the preview() method was called.
+	 *
+	 * @since 4.2.0
+	 * @access protected
+	 * @var int
+	 */
+	protected $_previewed_blog_id;
+
+	/**
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
@@ -113,12 +122,30 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
+	 * Return true if the current blog is not the same as the previewed blog.
+	 *
+	 * @since 4.2.0
+	 * @access public
+	 *
+	 * @return bool|null Returns null if preview() has not been called yet.
+	 */
+	public function is_current_blog_previewed() {
+		if ( ! isset( $this->_previewed_blog_id ) ) {
+			return null;
+		}
+		return ( get_current_blog_id() === $this->_previewed_blog_id );
+	}
+
+	/**
 	 * Handle previewing the setting.
 	 */
 	public function preview() {
 
 		if ( ! isset( $this->_original_value ) ) {
 			$this->_original_value = $this->value();
+		}
+		if ( ! isset( $this->_previewed_blog_id ) ) {
+			$this->_previewed_blog_id = get_current_blog_id();
 		}
 
 		switch ( $this->object ) {
@@ -175,6 +202,10 @@ class WP_Fields_API_Setting {
 	/**
 	 * Callback function to filter the theme mods and options.
 	 *
+	 * If switch_to_blog() was called after the preview() method, and the current
+	 * blog is now not the same blog, then this method does a no-op and returns
+	 * the original value.
+	 *
 	 * @uses  WP_Fields_API_Setting::multidimensional_replace()
 	 *
 	 * @param mixed $original Old value.
@@ -184,6 +215,10 @@ class WP_Fields_API_Setting {
 	public function _preview_filter( $original ) {
 
 		global $wp_fields;
+
+		if ( ! $this->is_current_blog_previewed() ) {
+			return $original;
+		}
 
 		$undefined  = new stdClass(); // symbol hack
 		$post_value = $wp_fields->post_value( $this, $undefined );
@@ -204,7 +239,7 @@ class WP_Fields_API_Setting {
 	 *
 	 * @return false|null False if cap check fails or value isn't set.
 	 */
-	public final function save() {
+	final public function save() {
 
 		$value = $this->post_value();
 
@@ -234,7 +269,7 @@ class WP_Fields_API_Setting {
 	 *
 	 * @return mixed The default value on failure, otherwise the sanitized value.
 	 */
-	public final function post_value( $default = null ) {
+	final public function post_value( $default = null ) {
 
 		global $wp_fields;
 
@@ -267,7 +302,6 @@ class WP_Fields_API_Setting {
 
 		/**
 		 * Filter a Customize setting value in un-slashed form.
-		 *
 		 *
 		 * @param mixed                $value Value of the setting.
 		 * @param WP_Fields_API_Setting $this  WP_Fields_API_Setting instance.
@@ -506,6 +540,8 @@ class WP_Fields_API_Setting {
 	 * @return bool False if user can't change setting, otherwise true.
 	 */
 	public function check_capabilities() {
+
+		// @todo Figure out final
 
 		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
 			return false;
