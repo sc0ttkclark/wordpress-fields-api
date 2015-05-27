@@ -258,7 +258,7 @@ function fields_api_example_post_field_register( $wp_fields ) {
 	$wp_fields->add_field( 'post_type', 'my_cpt', 'my_custom_field',
 		array(
 			// Default field/value to save
-			'default'    => 'All about that field',
+			'default'    => 'All about that post',
 
 			// Optional. Special permissions for accessing this field.
 			'capability' => 'my_custom_capability',
