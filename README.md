@@ -20,18 +20,18 @@ I am not focusing on any UI aspects at the moment besides implementation of the 
 ## Progress so far
 
 * Fields API has been abstracted from the Customizer classes
-* All settings, panels, sections, and controls can now utilize late init. This is huge because it uses less memory on every page load and once this goes into WP core and is utilized by themes, plugins, and core itself -- there is potential for a large amount of things registered through this API, if used to it's full potential.
+* All fields, controls, sections, and screens can now utilize "late init". This is huge because it uses less memory on every page load and once this goes into WP core and is utilized by themes, plugins, and core itself -- there is potential for a large amount of things registered through this API, if used to it's full potential.
 
 ## Unknowns / To dos
 
 There are still a lot of areas the API is not represented in code or in examples.
 
 * Customizer Manager (need to look at `add_dynamic_settings`, not sure if it needs to be abstracted into `$wp_fields`)
+* `$wp_fields->add_field( ... )` needs more thought on how to universally handle global objects versus named objects (Customizer / Settings are global, where as Post Types and Taxonomies are named), need to think about the method parameters and how we want to approach it
 * Field types need fleshing out, you shouldn't have to init a class, late-init at the very least should be utilized where possible
 * register_meta and how this interacts behind the scenes with it
 * get/add/update/delete for Meta / Settings API interaction has not yet been determined
-* Examples below aren't fleshed out with use cases, only the initial [Customizer Example code](http://codex.wordpress.org/Theme_Customization_API) I pulled from the codex, the example panels / sections / settings / controls need to be fleshed out
-* Examples of how this API replaces existing core handling for the Post Editor or User area -- ex. Taxonomy / Page Attributes meta boxes etc
+* Examples of how this API replaces existing core handling for the Post Editor or User Profile -- ex. Taxonomy / Page Attributes meta boxes etc
 
 ## Examples - Fields, Sections, Controls
 
@@ -61,7 +61,7 @@ function fields_api_example_customizer_register( $wp_fields ) {
 		)
 	);
 
-	// 2. Register new settings to the WP database...
+	// 2. Register new fields
 	$wp_fields->add_field( 'customizer', 'link_textcolor',
 		array(
 			// Default setting/value to save
@@ -70,42 +70,38 @@ function fields_api_example_customizer_register( $wp_fields ) {
 			// Is this an 'option' or a 'theme_mod'?
 			'type'       => 'theme_mod',
 
-			// Optional. Special permissions for accessing this setting.
+			// Optional. Special permissions for accessing this field.
 			'capability' => 'edit_theme_options',
 
-			// What triggers a refresh of the setting? 'refresh' or 'postMessage' (instant)?
-			'transport'  => 'postMessage'
-		)
-	);
-
-	// 3. Finally, we define the control itself (which links a setting to a section and renders the HTML controls)...
-	$wp_fields->add_control( 'customizer',
-		// Instantiate the color control class
-		new WP_Fields_API_Color_Control(
-			// Set a unique ID for the control
-			'mytheme_link_textcolor',
-		
-			array(
+			// What triggers a refresh of the field? 'refresh' or 'postMessage' (instant)?
+			'transport'  => 'postMessage',
+			
+			// Optional. Add an associated control (otherwise it won't show up in the UI)
+			'control'    => array(
+				// Set a unique ID for the control
+				'id'       => 'mytheme_link_textcolor',
+				
 				// Admin-visible name of the control
 				'label'    => __( 'Link Color', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
 				'section'  => 'mytheme_options',
 
-				// Which setting to load and manipulate (serialized is okay)
-				'settings' => 'link_textcolor',
-
 				// Determines the order this control appears in for the specified section
 				'priority' => 10
+				
+				// Control type
+				'type'     => 'color'
 			)
 		)
 	);
 
-	// 4. We can also change built-in settings by modifying properties. For instance, let's make some stuff use live preview JS...
-	$wp_fields->get_setting( 'customizer', 'blogname' )->transport         = 'postMessage';
-	$wp_fields->get_setting( 'customizer', 'blogdescription' )->transport  = 'postMessage';
-	$wp_fields->get_setting( 'customizer', 'header_textcolor' )->transport = 'postMessage';
-	$wp_fields->get_setting( 'customizer', 'background_color' )->transport = 'postMessage';
+	// 3. We can also change built-in fields by modifying properties.
+	// 		For instance, let's make some stuff use live preview JS...
+	$wp_fields->get_field( 'customizer', 'blogname' )->transport         = 'postMessage';
+	$wp_fields->get_field( 'customizer', 'blogdescription' )->transport  = 'postMessage';
+	$wp_fields->get_field( 'customizer', 'header_textcolor' )->transport = 'postMessage';
+	$wp_fields->get_field( 'customizer', 'background_color' )->transport = 'postMessage';
    
 }
 add_action( 'fields_register', 'fields_api_example_customizer_register' );
@@ -119,58 +115,48 @@ function fields_api_example_user_field_register()  {
 	// This is a *new* API
 
 	// 1. Define a new section (if desired) for User area
-	$wp_fields->add_section( 'user', 'mytheme_options',
+	$wp_fields->add_section( 'user', 'mytheme_user_social_fields',
 		array(
 			// Visible title of section
-			'title'       => __( 'MyTheme Options', 'mytheme' ),
-
-			// Determines what order this appears in
-			'priority'    => 35,
-
-			// Capability needed to tweak
-			'capability'  => 'edit_theme_options',
-
-			// Descriptive tooltip
-			'description' => __( 'Allows you to customize some example settings for MyTheme.', 'mytheme' )
+			'title' => __( 'Social Fields', 'mytheme' )
 		)
 	);
 
-	// 2. Register new settings to the WP database...
-	$wp_fields->add_field( 'user', 'link_textcolor',
+	// 2. Register new fields
+	$wp_fields->add_field( 'user', 'twitter',
 		array(
-			// Default setting/value to save
-			'default'    => '#2BA6CB',
-
-			// Is this an 'option' or a 'theme_mod'?
-			'type'       => 'theme_mod',
-
-			// Optional. Special permissions for accessing this setting.
-			'capability' => 'edit_theme_options',
-
-			// What triggers a refresh of the setting? 'refresh' or 'postMessage' (instant)?
-			'transport'  => 'postMessage'
-		)
-	);
-
-	// 3. Finally, we define the control itself (which links a setting to a section and renders the HTML controls)...
-	$wp_fields->add_control( 'user',
-		// Instantiate the color control class
-		new WP_Fields_API_Color_Control(
-			// Set a unique ID for the control
-			'mytheme_link_textcolor',
-		
-			array(
+			// Optional. Add an associated control (otherwise it won't show up in the UI)
+			'control' => array(
+				// Set a unique ID for the control
+				'id'      => 'mytheme_user_twitter',
+				
 				// Admin-visible name of the control
-				'label'    => __( 'Link Color', 'mytheme' ),
+				'label'   => __( 'Twitter Username', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
-				'section'  => 'mytheme_options',
+				'section' => 'mytheme_user_social_fields',
+				
+				// Control type
+				'type'    => 'text'
+			)
+		)
+	);
+	
+	$wp_fields->add_field( 'user', 'google_plus',
+		array(
+			// Optional. Add an associated control (otherwise it won't show up in the UI)
+			'control' => array(
+				// Set a unique ID for the control
+				'id'      => 'mytheme_user_google_plus',
+				
+				// Admin-visible name of the control
+				'label'   => __( 'Google+ Profile URL', 'mytheme' ),
 
-				// Which setting to load and manipulate (serialized is okay)
-				'settings' => 'link_textcolor',
-
-				// Determines the order this control appears in for the specified section
-				'priority' => 10
+				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
+				'section' => 'mytheme_user_social_fields',
+				
+				// Control type
+				'type'    => 'text'
 			)
 		)
 	);
@@ -186,59 +172,56 @@ function fields_api_example_settings_register( $wp_fields ) {
 
 	// This is a *new* API
 
-	// 1. Define a new section for the Settings API
-	$wp_fields->add_section( 'settings', 'mytheme_options',
+	// 1. Define a new screen for the Settings
+	$wp_fields->add_screen( 'settings', 'mytheme_settings_sharing',
 		array(
 			// Visible title of section
-			'title'       => __( 'MyTheme Options', 'mytheme' ),
+			'title'      => __( 'Sharing', 'mytheme' ),
 
-			// Determines what order this appears in
-			'priority'    => 35,
+			// Alternative page title
+			'page_title' => __( 'MyTheme Sharing.', 'mytheme' )
 
 			// Capability needed to tweak
-			'capability'  => 'edit_theme_options',
+			'capability' => 'manage_options',
+		)
+	);
+	
+	// 2. Define a new section for the Settings
+	$wp_fields->add_section( 'settings', 'mytheme_setting_sharing',
+		array(
+			// Visible title of section
+			'title'      => __( 'Sharing', 'mytheme' ),
 
-			// Descriptive tooltip
-			'description' => __( 'Allows you to customize some example settings for MyTheme.', 'mytheme' )
+			// Capability needed to tweak
+			'capability' => 'manage_options'
 		)
 	);
 
-	// 2. Register new settings to the WP database...
-	$wp_fields->add_field( 'settings', 'link_textcolor',
+	// 3. Register new fields
+	$wp_fields->add_field( 'settings', 'mytheme_sharing_buttons',
 		array(
 			// Default setting/value to save
-			'default'    => '#2BA6CB',
-
-			// Is this an 'option' or a 'theme_mod'?
-			'type'       => 'theme_mod',
+			'default'    => '1',
 
 			// Optional. Special permissions for accessing this setting.
-			'capability' => 'edit_theme_options',
-
-			// What triggers a refresh of the setting? 'refresh' or 'postMessage' (instant)?
-			'transport'  => 'postMessage'
-		)
-	);
-
-	// 3. Finally, we define the control itself (which links a setting to a section and renders the HTML controls)...
-	$wp_fields->add_control( 'settings',
-		// Instantiate the color control class
-		new WP_Fields_API_Color_Control(
-			// Set a unique ID for the control
-			'mytheme_link_textcolor',
-		
-			array(
+			'capability' => 'manage_options',
+			
+			// Optional. Add an associated control (otherwise it won't show up in the UI)
+			'control'    => array(
+				// Don't set 'id' and it will automatically be generated for you as
+				// 'id' => 'fields_settings_mytheme_sharing_buttons',
+				
 				// Admin-visible name of the control
-				'label'    => __( 'Link Color', 'mytheme' ),
+				'label'       => __( 'Show Sharing Buttons?', 'mytheme' ),
+				
+				// Admin-visible name of the control
+				'description' => __( 'This will show sharing buttons below blog posts on singular templates', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
-				'section'  => 'mytheme_options',
-
-				// Which setting to load and manipulate (serialized is okay)
-				'settings' => 'link_textcolor',
-
-				// Determines the order this control appears in for the specified section
-				'priority' => 10
+				'section'     => 'mytheme_setting_sharing',
+				
+				// Control type
+				'type'        => 'checkbox'
 			)
 		)
 	);
@@ -254,7 +237,7 @@ function fields_api_example_post_field_register( $wp_fields ) {
 
 	// This is a *new* API
 
-	// 0. Define a new panel (meta box) for fields to appear in
+	// 1. Define a new section (meta box) for fields to appear in
 	$wp_fields->add_section( 'post_type', 'my_cpt', 'my_meta_box',
 		array(
 			// Visible title of section
@@ -264,35 +247,35 @@ function fields_api_example_post_field_register( $wp_fields ) {
 			'priority'    => 'high',
 
 			// Determines what order this appears in
-			'context'    => 'side',
+			'context'     => 'side',
 
 			// Capability needed to tweak
-			'capability'  => 'my_custom_capability',
-
-			// Descriptive tooltip
-			'description' => __( 'Allows you to customize some example settings for My CPT.', 'mytheme' )
+			'capability'  => 'my_custom_capability'
 		)
 	);
 
-	// 1. Register new fields
+	// 2. Register new fields
 	$wp_fields->add_field( 'post_type', 'my_cpt', 'my_custom_field',
 		array(
-			// Default setting/value to save
+			// Default field/value to save
 			'default'    => 'All about that field',
 
-			// Optional. Special permissions for accessing this setting.
+			// Optional. Special permissions for accessing this field.
 			'capability' => 'my_custom_capability',
 			
 			// Optional. Add an associated control (otherwise it won't show up in the UI)
 			'control' => array(
+				// Don't set 'id' and it will automatically be generated for you as
+				// 'id' => 'fields_post_type_my_cpt_my_custom_field',
+				
 				// Admin-visible name of the control
-				'label'    => __( 'My Custom Field', 'mytheme' ),
+				'label'   => __( 'My Custom Field', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
-				'section'  => 'my_meta_box',
+				'section' => 'my_meta_box',
 				
 				// Control type
-				'type'     => 'text'
+				'type'    => 'text'
 			)
 		)
 	);
@@ -303,7 +286,7 @@ add_action( 'fields_register', 'fields_api_example_post_field_register' );
 
 ## Contributing
 
-If you are interested in contributing, feel free to contact me @sc0ttkclark on [WordPress Slack](https://make.wordpress.org/chat/) and I'll help you get into the mix. There are also [GitHub issues](https://github.com/sc0ttkclark/wordpress-fields-api/issues) you can feel free to chime in on, or provide Pull Requests.
+If you are interested in contributing, feel free to contact us in #core-fields on [WordPress Slack](https://make.wordpress.org/chat/) and we'll help you get into the mix. There are also [GitHub issues](https://github.com/sc0ttkclark/wordpress-fields-api/issues) you can feel free to chime in on, or provide Pull Requests.
 
 ### Pull Requests
 
