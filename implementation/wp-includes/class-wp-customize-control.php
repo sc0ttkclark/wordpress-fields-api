@@ -21,11 +21,19 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	public $manager;
 
 	/**
+	 * @var array Internal mapping of backwards compatible properties
+	 */
+	private $property_map = array(
+		'settings' => 'fields',
+		'setting'  => 'field'
+	);
+
+	/**
 	 * Constructor.
 	 *
 	 * Supplied $args override class property defaults.
 	 *
-	 * If $args['settings'] is not defined, use the $id as the setting ID.
+	 * If $args['fields'] is not defined, use the $id as the field ID.
 	 *
 	 * @since 3.4.0
 	 *
@@ -87,12 +95,28 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	/**
 	 * Refresh the parameters passed to the JavaScript via JSON.
 	 *
-	 * @since 3.4.0
+	 * @deprecated x.x.x
 	 */
-	public function to_json() {
-		parent::to_json();
+	public function to_json() {}
 
-		$this->json['active'] = $this->active();
+	/**
+	 * Get the data to export to the client via JSON.
+	 *
+	 * @return array Array of parameters passed to the JavaScript.
+	 *
+	 * @since 3.2.0
+	 */
+	public function json() {
+
+		$array = parent::json();
+
+		$array['active'] = $this->active();
+
+		// Backwards compatibility
+		$array['panel'] = $array['screen'];
+
+		unset( $array['screen'] );
+
 	}
 
 	/**
@@ -141,18 +165,18 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	}
 
 	/**
-	 * Get the data link attribute for a setting.
+	 * Get the data link attribute for a field.
 	 *
 	 * @since 3.4.0
 	 *
 	 * @param string $setting_key
-	 * @return string Data link parameter, if $setting_key is a valid setting, empty string otherwise.
+	 * @return string Data link parameter, if $setting_key is a valid field, empty string otherwise.
 	 */
 	public function get_link( $setting_key = 'default' ) {
-		if ( ! isset( $this->settings[ $setting_key ] ) )
+		if ( ! isset( $this->fields[ $setting_key ] ) )
 			return '';
 
-		return 'data-customize-setting-link="' . esc_attr( $this->settings[ $setting_key ]->id ) . '"';
+		return 'data-customize-setting-link="' . esc_attr( $this->fields[ $setting_key ]->id ) . '"';
 	}
 
 	/**
@@ -305,6 +329,62 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 */
 	public function content_template() {}
 
+	/**
+	 * Magic method for handling backwards compatible properties
+	 *
+	 * @param string $get
+	 *
+	 * @return mixed|null
+	 */
+	public function __get( $get ){
+
+		if ( isset( $this->property_map[ $get ] ) ) {
+			$property = $this->property_map[ $get ];
+
+			return $this->{$property};
+		} elseif ( 'json' == $get ) {
+			return $this->json();
+		}
+
+		return null;
+
+	}
+
+	/**
+	 * Magic method for handling backwards compatible properties
+	 *
+	 * @param string $set
+	 * @param mixed  $val
+	 */
+	public function __set( $set, $val ) {
+
+		if ( isset( $this->property_map[ $set ] ) ) {
+			$property = $this->property_map[ $set ];
+
+			$this->{$property} = $val;
+		}
+
+	}
+
+	/**
+	 * Magic method for handling backwards compatible properties
+	 *
+	 * @param string $isset
+	 *
+	 * @return bool
+	 */
+	public function __isset( $isset ) {
+
+		if ( isset( $this->property_map[ $isset ] ) ) {
+			$property = $this->property_map[ $isset ];
+
+			return isset( $this->{$property} );
+		}
+
+		return false;
+
+	}
+
 }
 
 /**
@@ -361,7 +441,7 @@ class WP_Customize_Color_Control extends WP_Customize_Control {
 	public function to_json() {
 		parent::to_json();
 		$this->json['statuses'] = $this->statuses;
-		$this->json['defaultValue'] = $this->setting->default;
+		$this->json['defaultValue'] = $this->field->default;
 	}
 
 	/**
@@ -460,28 +540,28 @@ class WP_Customize_Upload_Control extends WP_Customize_Control {
 
 		$value = $this->value();
 
-		if ( is_object( $this->setting ) ) {
-			if ( $this->setting->default ) {
+		if ( is_object( $this->field ) ) {
+			if ( $this->field->default ) {
 				// Fake an attachment model - needs all fields used by template.
-				$type = in_array( substr( $this->setting->default, -3 ), array( 'jpg', 'png', 'gif', 'bmp' ) ) ? 'image' : 'document';
+				$type = in_array( substr( $this->field->default, -3 ), array( 'jpg', 'png', 'gif', 'bmp' ) ) ? 'image' : 'document';
 				$default_attachment = array(
 					'id' => 1,
-					'url' => $this->setting->default,
+					'url' => $this->field->default,
 					'type' => $type,
 					'icon' => wp_mime_type_icon( $type ),
-					'title' => basename( $this->setting->default ),
+					'title' => basename( $this->field->default ),
 				);
 
 				if ( 'image' === $type ) {
 					$default_attachment['sizes'] = array(
-						'full' => array( 'url' => $this->setting->default ),
+						'full' => array( 'url' => $this->field->default ),
 					);
 				}
 
 				$this->json['defaultAttachment'] = $default_attachment;
 			}
 
-			if ( $value && $this->setting->default && $value === $this->setting->default ) {
+			if ( $value && $this->field->default && $value === $this->field->default ) {
 				// Set the default as the attachment.
 				$this->json['attachment'] = $this->json['defaultAttachment'];
 			} elseif ( $value ) {
@@ -694,7 +774,7 @@ class WP_Customize_Header_Image_Control extends WP_Customize_Image_Control {
 	public function __construct( $manager ) {
 		parent::__construct( $manager, 'header_image', array(
 			'label'    => __( 'Header Image' ),
-			'settings' => array(
+			'fields' => array(
 				'default' => 'header_image',
 				'data'    => 'header_image_data',
 			),

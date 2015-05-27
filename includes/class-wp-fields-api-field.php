@@ -1,13 +1,13 @@
 <?php
 /**
- * Fields API Setting Class
+ * Fields API Field Class
  *
- * Handles saving and sanitizing of settings.
+ * Handles saving and sanitizing of fields.
  *
  * @package    WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Setting {
+class WP_Fields_API_Field {
 
 	/**
 	 * @access public
@@ -22,14 +22,14 @@ class WP_Fields_API_Setting {
 	public $object = '';
 
 	/**
-	 * Capability required to edit this setting.
+	 * Capability required to edit this field.
 	 *
 	 * @var string
 	 */
 	public $capability = '';
 
 	/**
-	 * Theme feature support for the setting.
+	 * Theme feature support for the field.
 	 *
 	 * @access public
 	 * @var string|array
@@ -37,14 +37,14 @@ class WP_Fields_API_Setting {
 	public $theme_supports = '';
 
 	/**
-	 * Default value for setting
+	 * Default value for field
 	 *
 	 * @var string
 	 */
 	public $default = '';
 
 	/**
-	 * Transport used for setting
+	 * Transport used for field
 	 *
 	 * @access public
 	 * @var string
@@ -52,11 +52,11 @@ class WP_Fields_API_Setting {
 	public $transport = 'refresh';
 
 	/**
-	 * Whether or not the setting is initially dirty when created.
+	 * Whether or not the field is initially dirty when created.
 	 *
-	 * This is used to ensure that a setting will be sent from the pane to the
-	 * preview when loading the Fields API. Normally a setting only is synced to
-	 * the preview if it has been changed. This allows the setting to be sent
+	 * This is used to ensure that a field will be sent from the screen to the
+	 * preview when loading the Fields API. Normally a field only is synced to
+	 * the preview if it has been changed. This allows the field to be sent
 	 * from the start.
 	 *
 	 * @access public
@@ -65,7 +65,7 @@ class WP_Fields_API_Setting {
 	public $dirty = false;
 
 	/**
-	 * Server-side sanitization callback for the setting's value.
+	 * Server-side sanitization callback for the field's value.
 	 *
 	 * @var callback
 	 */
@@ -75,7 +75,7 @@ class WP_Fields_API_Setting {
 	protected $id_data = array();
 
 	/**
-	 * Cached and sanitized $_POST value for the setting.
+	 * Cached and sanitized $_POST value for the field.
 	 *
 	 * @access private
 	 * @var mixed
@@ -104,7 +104,7 @@ class WP_Fields_API_Setting {
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
 	 *
-	 * @return WP_Fields_API_Setting $setting
+	 * @return WP_Fields_API_Field $field
 	 */
 	public function __construct() {
 
@@ -116,11 +116,11 @@ class WP_Fields_API_Setting {
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object
-	 * @param string $id                    An specific ID of the setting. Can be a
+	 * @param string $id                    A specific ID of the field. Can be a
 	 *                                      theme mod or option name.
-	 * @param array  $args                  Setting arguments.
+	 * @param array  $args                  Field arguments.
 	 *
-	 * @return WP_Fields_API_Setting $setting
+	 * @return WP_Fields_API_Field $field
 	 */
 	public function init( $object, $id, $args = array() ) {
 
@@ -176,7 +176,7 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Handle previewing the setting.
+	 * Handle previewing the field.
 	 */
 	public function preview() {
 
@@ -205,6 +205,7 @@ class WP_Fields_API_Setting {
 				break;
 
 			case 'post_type' :
+			case 'post' :
 				add_filter( 'get_post_metadata', array( $this, '_preview_filter' ) );
 				break;
 
@@ -215,24 +216,24 @@ class WP_Fields_API_Setting {
 			default :
 
 				/**
-				 * Fires when the {@see WP_Fields_API_Setting::preview()} method is called for settings
+				 * Fires when the {@see WP_Fields_API_Field::preview()} method is called for fields
 				 * not handled as theme_mods or options.
 				 *
-				 * The dynamic portion of the hook name, `$this->id`, refers to the setting ID.
+				 * The dynamic portion of the hook name, `$this->id`, refers to the field ID.
 				 *
 				 *
-				 * @param WP_Fields_API_Setting $this {@see WP_Fields_API_Setting} instance.
+				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 				 */
 				do_action( "fields_preview_{$this->object}_{$this->id}", $this );
 
 				/**
-				 * Fires when the {@see WP_Fields_API_Setting::preview()} method is called for settings
+				 * Fires when the {@see WP_Fields_API_Field::preview()} method is called for fields
 				 * not handled as theme_mods or options.
 				 *
-				 * The dynamic portion of the hook name, `$this->object`, refers to the setting type.
+				 * The dynamic portion of the hook name, `$this->object`, refers to the field type.
 				 *
 				 *
-				 * @param WP_Fields_API_Setting $this {@see WP_Fields_API_Setting} instance.
+				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 				 */
 				do_action( "fields_preview_{$this->object}", $this );
 		}
@@ -246,7 +247,7 @@ class WP_Fields_API_Setting {
 	 * blog is now not the same blog, then this method does a no-op and returns
 	 * the original value.
 	 *
-	 * @uses  WP_Fields_API_Setting::multidimensional_replace()
+	 * @uses  WP_Fields_API_Field::multidimensional_replace()
 	 *
 	 * @param mixed $original Old value.
 	 *
@@ -278,7 +279,7 @@ class WP_Fields_API_Setting {
 
 	/**
 	 * Check user capabilities and theme supports, and then save
-	 * the value of the setting.
+	 * the value of the field.
 	 *
 	 * @return false|null False if cap check fails or value isn't set.
 	 */
@@ -291,13 +292,13 @@ class WP_Fields_API_Setting {
 		}
 
 		/**
-		 * Fires when the WP_Fields_API_Setting::save() method is called.
+		 * Fires when the WP_Fields_API_Field::save() method is called.
 		 *
 		 * The dynamic portion of the hook name, `$this->id_data['base']` refers to
-		 * the base slug of the setting name.
+		 * the base slug of the field name.
 		 *
 		 *
-		 * @param WP_Fields_API_Setting $this {@see WP_Fields_API_Setting} instance.
+		 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 		 */
 		do_action( 'fields_save_' . $this->object . '_' . $this->id_data['base'], $this );
 
@@ -306,7 +307,7 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Fetch and sanitize the $_POST value for the setting.
+	 * Fetch and sanitize the $_POST value for the field.
 	 *
 	 * @param mixed $default A default value which is used as a fallback. Default is null.
 	 *
@@ -344,18 +345,17 @@ class WP_Fields_API_Setting {
 		$value = wp_unslash( $value );
 
 		/**
-		 * Filter a Customize setting value in un-slashed form.
+		 * Filter a Customize field value in un-slashed form.
 		 *
-		 * @param mixed                $value Value of the setting.
-		 * @param WP_Fields_API_Setting $this  WP_Fields_API_Setting instance.
+		 * @param mixed                $value Value of the field.
+		 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 		 */
-
 		return apply_filters( "fields_sanitize_{$this->object}_{$this->id}", $value, $this );
 
 	}
 
 	/**
-	 * Save the value of the setting, using the related API.
+	 * Save the value of the field, using the related API.
 	 *
 	 * @param mixed $value The value to update.
 	 *
@@ -368,11 +368,12 @@ class WP_Fields_API_Setting {
 			case 'theme_mod' :
 				return $this->_update_theme_mod( $value );
 
-			case 'settings' :
 			case 'option' :
+			case 'settings' :
 				return $this->_update_option( $value );
 
 			case 'post_type' :
+			case 'post' :
 				return $this->_update_post_meta( $value );
 
 			case 'user' :
@@ -381,14 +382,14 @@ class WP_Fields_API_Setting {
 			default :
 
 				/**
-				 * Fires when the {@see WP_Fields_API_Setting::update()} method is called for settings
+				 * Fires when the {@see WP_Fields_API_Field::update()} method is called for fields
 				 * not handled as theme_mods or options.
 				 *
-				 * The dynamic portion of the hook name, `$this->object`, refers to the type of setting.
+				 * The dynamic portion of the hook name, `$this->object`, refers to the type of field.
 				 *
 				 *
-				 * @param mixed                $value Value of the setting.
-				 * @param WP_Fields_API_Setting $this  WP_Fields_API_Setting instance.
+				 * @param mixed                $value Value of the field.
+				 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 				 */
 				return do_action( 'fields_update_' . $this->object, $value, $this );
 		}
@@ -399,21 +400,21 @@ class WP_Fields_API_Setting {
 	 *
 	 * @param mixed $value The value to update.
 	 *
-	 * @return mixed The result of saving the value.
+	 * @return null
 	 */
 	protected function _update_theme_mod( $value ) {
 
 		// Handle non-array theme mod.
 		if ( empty( $this->id_data['keys'] ) ) {
-			return set_theme_mod( $this->id_data['base'], $value );
-		}
+			set_theme_mod( $this->id_data['base'], $value );
+		} else {
+			// Handle array-based theme mod.
+			$mods = get_theme_mod( $this->id_data['base'] );
+			$mods = $this->multidimensional_replace( $mods, $this->id_data['keys'], $value );
 
-		// Handle array-based theme mod.
-		$mods = get_theme_mod( $this->id_data['base'] );
-		$mods = $this->multidimensional_replace( $mods, $this->id_data['keys'], $value );
-
-		if ( isset( $mods ) ) {
-			return set_theme_mod( $this->id_data['base'], $mods );
+			if ( isset( $mods ) ) {
+				set_theme_mod( $this->id_data['base'], $mods );
+			}
 		}
 
 		return null;
@@ -421,7 +422,7 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Update the option from the value of the setting.
+	 * Update the option from the value of the field.
 	 *
 	 * @param mixed $value The value to update.
 	 *
@@ -447,7 +448,7 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Update the option from the value of the setting.
+	 * Update the option from the value of the field.
 	 *
 	 * @param mixed $value The value to update.
 	 *
@@ -473,7 +474,7 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Update the option from the value of the setting.
+	 * Update the option from the value of the field.
 	 *
 	 * @param mixed $value The value to update.
 	 *
@@ -499,41 +500,46 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Fetch the value of the setting.
+	 * Fetch the value of the field.
 	 *
 	 * @return mixed The value.
 	 */
 	public function value() {
 
-		// Get the callback that corresponds to the setting type.
+		// Get the callback that corresponds to the field type.
 		switch ( $this->object ) {
 			case 'customizer' :
 			case 'theme_mod' :
 				$function = 'get_theme_mod';
 				break;
-			case 'settings' :
+
 			case 'option' :
+			case 'settings' :
 				$function = 'get_option';
 				break;
+
 			case 'post_type' :
+			case 'post' :
 				$function = 'get_post_meta';
 				break;
+
 			case 'user' :
 				$function = 'get_user_meta';
 				break;
+
 			default :
 
 				/**
-				 * Filter a Customize setting value not handled as a theme_mod or option.
+				 * Filter a Customize field value not handled as a theme_mod or option.
 				 *
 				 * The dynamic portion of the hook name, `$this->id_date['base']`, refers to
-				 * the base slug of the setting name.
+				 * the base slug of the field name.
 				 *
-				 * For settings handled as theme_mods or options, see those corresponding
+				 * For fields handled as theme_mods or options, see those corresponding
 				 * functions for available hooks.
 				 *
 				 *
-				 * @param mixed $default The setting default value. Default empty.
+				 * @param mixed $default The field default value. Default empty.
 				 */
 				return apply_filters( 'fields_value_' . $this->object . '_' . $this->id_data['base'], $this->default );
 		}
@@ -550,7 +556,7 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Sanitize the setting's value for use in JavaScript.
+	 * Sanitize the field's value for use in JavaScript.
 	 *
 	 * @return mixed The requested escaped value.
 	 */
@@ -559,13 +565,13 @@ class WP_Fields_API_Setting {
 		$value = $this->value();
 
 		/**
-		 * Filter a Customize setting value for use in JavaScript.
+		 * Filter a Customize field value for use in JavaScript.
 		 *
-		 * The dynamic portion of the hook name, `$this->id`, refers to the setting ID.
+		 * The dynamic portion of the hook name, `$this->id`, refers to the field ID.
 		 *
 		 *
-		 * @param mixed                $value The setting value.
-		 * @param WP_Fields_API_Setting $this  {@see WP_Fields_API_Setting} instance.
+		 * @param mixed                $value The field value.
+		 * @param WP_Fields_API_Field $this  {@see WP_Fields_API_Field} instance.
 		 */
 		$value = apply_filters( "fields_sanitize_js_{$this->object}_{$this->id}", $value, $this );
 
@@ -578,7 +584,7 @@ class WP_Fields_API_Setting {
 	}
 
 	/**
-	 * Validate user capabilities whether the theme supports the setting.
+	 * Validate user capabilities whether the theme supports the field.
 	 *
 	 * @return bool False if theme doesn't support the section or user can't change section, otherwise true.
 	 */
@@ -726,14 +732,14 @@ class WP_Fields_API_Setting {
 }
 
 /**
- * A setting that is used to filter a value, but will not save the results.
+ * A field that is used to filter a value, but will not save the results.
  *
- * Results should be properly handled using another setting or callback.
+ * Results should be properly handled using another field or callback.
  *
  * @package    WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Filter_Setting extends WP_Fields_API_Setting {
+class WP_Fields_API_Filter_Field extends WP_Fields_API_Field {
 
 	/**
 	 * Update value

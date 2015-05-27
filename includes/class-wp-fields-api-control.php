@@ -38,20 +38,20 @@ class WP_Fields_API_Control {
 	public $object = '';
 
 	/**
-	 * All settings tied to the control.
+	 * All fields tied to the control.
 	 *
 	 * @access public
 	 * @var array
 	 */
-	public $settings = array();
+	public $fields = array();
 
 	/**
-	 * The primary setting for the control (if there is one).
+	 * The primary field for the control (if there is one).
 	 *
 	 * @access public
 	 * @var string
 	 */
-	public $setting = 'default';
+	public $field = 'default';
 
 	/**
 	 * @access public
@@ -92,13 +92,6 @@ class WP_Fields_API_Control {
 	public $input_attrs = array();
 
 	/**
-	 * @deprecated It is better to just call the json() method
-	 * @access public
-	 * @var array
-	 */
-	public $json = array();
-
-	/**
 	 * @access public
 	 * @var string
 	 */
@@ -133,17 +126,29 @@ class WP_Fields_API_Control {
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object
-	 * @param string $id                    An specific ID of the setting. Can be a
-	 *                                      theme mod or option name.
-	 * @param array  $args                  Setting arguments.
+	 * @param string $id                    A specific ID of the control.
+	 * @param array  $args                  Field arguments.
 	 */
 	public function init( $object, $id, $args = array() ) {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
 		global $wp_fields;
 
 		$this->object = $object;
 
 		$keys = array_keys( get_object_vars( $this ) );
+
+		// Backwards compatibility for setting arg
+		if ( isset( $args['settings'] ) ) {
+			$args['fields'] = $args['settings'];
+		}
+
+		// Backwards compatibility for setting arg
+		if ( isset( $args['setting'] ) ) {
+			$args['field'] = $args['setting'];
+		}
 
 		foreach ( $keys as $key ) {
 			if ( isset( $args[ $key ] ) ) {
@@ -156,23 +161,24 @@ class WP_Fields_API_Control {
 		self::$instance_count += 1;
 		$this->instance_number = self::$instance_count;
 
-		// Process settings.
-		if ( empty( $this->settings ) ) {
-			$this->settings = $id;
+		// Process fields.
+		if ( empty( $this->fields ) ) {
+			$this->fields = $id;
 		}
 
-		$settings = array();
+		$fields = array();
 
-		if ( is_array( $this->settings ) ) {
-			foreach ( $this->settings as $key => $setting ) {
-				$settings[ $key ] = $wp_fields->get_setting( $this->object, $setting );
+		if ( is_array( $this->fields ) ) {
+			foreach ( $this->fields as $key => $field ) {
+				$fields[ $key ] = $wp_fields->get_field( $this->object, $field );
 			}
 		} else {
-			$this->setting = $wp_fields->get_setting( $this->object, $this->settings );
-			$settings['default'] = $this->setting;
+			$this->field = $wp_fields->get_field( $this->object, $this->fields );
+
+			$fields['default'] = $this->field;
 		}
 
-		$this->settings = $settings;
+		$this->fields = $fields;
 
 	}
 
@@ -183,7 +189,7 @@ class WP_Fields_API_Control {
 	public function enqueue() {}
 
 	/**
-	 * Check whether control is active to current Customizer preview.
+	 * Check whether control is active to current Fields API preview.
 	 *
 	 * @access public
 	 *
@@ -223,41 +229,19 @@ class WP_Fields_API_Control {
 	}
 
 	/**
-	 * Fetch a setting's value.
-	 * Grabs the main setting by default.
+	 * Fetch a field's value.
+	 * Grabs the main field by default.
 	 *
-	 * @param string $setting_key
-	 * @return mixed The requested setting's value, if the setting exists.
+	 * @param string $field_key
+	 * @return mixed The requested field's value, if the field exists.
 	 */
-	final public function value( $setting_key = 'default' ) {
+	final public function value( $field_key = 'default' ) {
 
-		if ( isset( $this->settings[ $setting_key ] ) ) {
-			return $this->settings[ $setting_key ]->value();
+		if ( isset( $this->fields[ $field_key ] ) ) {
+			return $this->fields[ $field_key ]->value();
 		}
 
 		return null;
-
-	}
-
-	/**
-	 * Refresh the parameters passed to the JavaScript via JSON.
-	 */
-	public function to_json() {
-
-		$this->json['settings'] = array();
-
-		foreach ( $this->settings as $key => $setting ) {
-			$this->json['settings'][ $key ] = $setting->id;
-		}
-
-		$this->json['type'] = $this->type;
-		$this->json['priority'] = $this->priority;
-		$this->json['active'] = $this->active();
-		$this->json['section'] = $this->section;
-		$this->json['content'] = $this->get_content();
-		$this->json['label'] = $this->label;
-		$this->json['description'] = $this->description;
-		$this->json['instanceNumber'] = $this->instance_number;
 
 	}
 
@@ -268,9 +252,24 @@ class WP_Fields_API_Control {
 	 */
 	public function json() {
 
-		$this->to_json();
+		$array = array();
 
-		return $this->json;
+		$array['fields'] = array();
+
+		foreach ( $this->fields as $key => $field ) {
+			$array['fields'][ $key ] = $field->id;
+		}
+
+		$array['type'] = $this->type;
+		$array['priority'] = $this->priority;
+		$array['active'] = $this->active();
+		$array['section'] = $this->section;
+		$array['content'] = $this->get_content();
+		$array['label'] = $this->label;
+		$array['description'] = $this->description;
+		$array['instanceNumber'] = $this->instance_number;
+
+		return $array;
 
 	}
 
@@ -286,8 +285,8 @@ class WP_Fields_API_Control {
 		 */
 		global $wp_fields;
 
-		foreach ( $this->settings as $setting ) {
-			if ( ! $setting->check_capabilities() ) {
+		foreach ( $this->fields as $field ) {
+			if ( ! $field->check_capabilities() ) {
 				return false;
 			}
 		}
@@ -369,19 +368,19 @@ class WP_Fields_API_Control {
 	}
 
 	/**
-	 * Get the data link attribute for a setting.
+	 * Get the data link attribute for a field.
 	 *
 	 *
-	 * @param string $setting_key
-	 * @return string Data link parameter, if $setting_key is a valid setting, empty string otherwise.
+	 * @param string $field_key
+	 * @return string Data link parameter, if $field_key is a valid field, empty string otherwise.
 	 */
-	public function get_link( $setting_key = 'default' ) {
+	public function get_link( $field_key = 'default' ) {
 
-		if ( ! isset( $this->settings[ $setting_key ] ) ) {
+		if ( ! isset( $this->fields[ $field_key ] ) ) {
 			return '';
 		}
 
-		return 'data-fields-setting-link="' . esc_attr( $this->settings[ $setting_key ]->id ) . '"';
+		return 'data-fields-field-link="' . esc_attr( $this->fields[ $field_key ]->id ) . '"';
 
 	}
 
@@ -390,11 +389,11 @@ class WP_Fields_API_Control {
 	 *
 	 * @uses WP_Fields_API_Control::get_link()
 	 *
-	 * @param string $setting_key
+	 * @param string $field_key
 	 */
-	public function link( $setting_key = 'default' ) {
+	public function link( $field_key = 'default' ) {
 
-		echo $this->get_link( $setting_key );
+		echo $this->get_link( $field_key );
 
 	}
 

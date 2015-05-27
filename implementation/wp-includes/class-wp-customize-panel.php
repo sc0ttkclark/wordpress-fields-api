@@ -16,7 +16,7 @@
  *
  * @see WP_Customize_Manager
  */
-class WP_Customize_Panel extends WP_Fields_API_Panel {
+class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 	/**
 	 * WP_Customize_Manager instance.
@@ -43,9 +43,9 @@ class WP_Customize_Panel extends WP_Fields_API_Panel {
 
 		parent::__construct( $this->type, $id, $args );
 
-		add_action( "fields_api_panel_active_{$this->object}", array( $this, 'customize_panel_active' ), 10, 2 );
-		add_action( "fields_api_render_panel_{$this->object}", array( $this, 'customize_render_panel' ) );
-		add_action( "fields_api_render_panel_{$this->object}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
+		add_action( "fields_api_screen_active_{$this->object}", array( $this, 'customize_panel_active' ), 10, 2 );
+		add_action( "fields_api_render_screen_{$this->object}", array( $this, 'customize_render_panel' ) );
+		add_action( "fields_api_render_screen_{$this->object}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
 
 	}
 
@@ -54,22 +54,22 @@ class WP_Customize_Panel extends WP_Fields_API_Panel {
 	 *
 	 * @access public
 	 *
-	 * @param bool                 $active  Whether the Fields API panel is active.
-	 * @param WP_Fields_API_Panel  $panel {@see WP_Fields_API_Panel} instance.
+	 * @param bool                 $active  Whether the Fields API screen is active.
+	 * @param WP_Fields_API_Screen  $screen {@see WP_Fields_API_Screen} instance.
 	 *
 	 * @return bool Whether the panel is active to the current preview.
 	 */
-	final public function customize_section_active( $active, $panel ) {
+	final public function customize_panel_active( $active, $screen ) {
 
 		/**
 		 * Filter response of {@see WP_Customize_Panel::active()}.
 		 *
 		 * @since 4.1.0
 		 *
-		 * @param bool                 $active  Whether the Customizer section is active.
-		 * @param WP_Customize_Section $section {@see WP_Customize_Panel} instance.
+		 * @param bool                 $active  Whether the Customizer panel is active.
+		 * @param WP_Customize_Panel   $screen {@see WP_Customize_Panel} instance.
 		 */
-		$active = apply_filters( 'customize_panel_active', $active, $panel );
+		$active = apply_filters( 'customize_panel_active', $active, $screen );
 
 		return $active;
 
@@ -106,6 +106,26 @@ class WP_Customize_Panel extends WP_Fields_API_Panel {
 		 */
 		do_action( "customize_render_panel_{$this->id}" );
 
+	}
+
+	/**
+	 * Render the screen container, and then its contents.
+	 *
+	 * @access protected
+	 */
+	protected function render() {
+		$classes = 'accordion-section control-section control-panel control-panel-' . $this->type;
+		?>
+		<li id="accordion-panel-<?php echo esc_attr( $this->id ); ?>" class="<?php echo esc_attr( $classes ); ?>">
+			<h3 class="accordion-section-title" tabindex="0">
+				<?php echo esc_html( $this->title ); ?>
+				<span class="panel-reader-text"><?php _e( 'Press return or enter to open this panel' ); ?></span>
+			</h3>
+			<ul class="accordion-sub-container control-panel-content">
+				<?php $this->render_content(); ?>
+			</ul>
+		</li>
+		<?php
 	}
 
 	/**

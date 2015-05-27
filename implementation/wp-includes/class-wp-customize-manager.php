@@ -349,7 +349,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_settings( 'customizer' );
+		return $wp_fields->get_fields( 'customizer' );
 
 	}
 
@@ -430,7 +430,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_panels( 'customizer' );
+		return $wp_fields->get_screens( 'customizer' );
 
 	}
 
@@ -669,7 +669,7 @@ final class WP_Customize_Manager {
 		$settings = $this->settings();
 
 		foreach ( $settings as $id => $setting ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'setting', $id ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'field', $id ) ) {
 				continue;
 			}
 
@@ -679,7 +679,7 @@ final class WP_Customize_Manager {
 		$panels = $this->panels();
 
 		foreach ( $panels as $id => $panel ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'panel', $id ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'screen', $id ) ) {
 				continue;
 			}
 
@@ -906,7 +906,7 @@ final class WP_Customize_Manager {
 	 * @param array $args                     Setting arguments; passed to WP_Customize_Setting
 	 *                                        constructor.
 	 *
-	 * @uses WP_Fields_API::add_setting
+	 * @uses WP_Fields_API::add_field
 	 */
 	public function add_setting( $id, $args = array() ) {
 
@@ -915,7 +915,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_setting( 'customizer', $id, $args );
+		$wp_fields->add_field( 'customizer', $id, $args );
 
 	}
 
@@ -990,7 +990,7 @@ final class WP_Customize_Manager {
 	 * @param string $id Customize Setting ID.
 	 * @return WP_Customize_Setting
 	 *
-	 * @uses WP_Fields_API::get_setting
+	 * @uses WP_Fields_API::get_field
 	 */
 	public function get_setting( $id ) {
 
@@ -999,7 +999,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_setting( 'customizer', $id );
+		return $wp_fields->get_field( 'customizer', $id );
 
 	}
 
@@ -1010,7 +1010,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @param string $id Customize Setting ID.
 	 *
-	 * @uses WP_Fields_API::remove_setting
+	 * @uses WP_Fields_API::remove_field
 	 */
 	public function remove_setting( $id ) {
 
@@ -1019,7 +1019,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_setting( 'customizer', $id );
+		$wp_fields->remove_field( 'customizer', $id );
 
 	}
 
@@ -1032,7 +1032,7 @@ final class WP_Customize_Manager {
 	 * @param WP_Customize_Panel|string $id   Customize Panel object, or Panel ID.
 	 * @param array                     $args Optional. Panel arguments. Default empty array.
 	 *
-	 * @uses WP_Fields_API::add_panel
+	 * @uses WP_Fields_API::add_screen
 	 */
 	public function add_panel( $id, $args = array() ) {
 
@@ -1041,7 +1041,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_panel( 'customizer', $id, $args );
+		$wp_fields->add_screen( 'customizer', $id, $args );
 
 	}
 
@@ -1054,7 +1054,7 @@ final class WP_Customize_Manager {
 	 * @param string $id Panel ID to get.
 	 * @return WP_Customize_Panel Requested panel instance.
 	 *
-	 * @uses WP_Fields_API::get_panel
+	 * @uses WP_Fields_API::get_screen
 	 */
 	public function get_panel( $id ) {
 
@@ -1063,7 +1063,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_panel( 'customizer', $id );
+		return $wp_fields->get_screen( 'customizer', $id );
 
 	}
 
@@ -1075,7 +1075,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @param string $id Panel ID to remove.
 	 *
-	 * @uses WP_Fields_API::remove_panel
+	 * @uses WP_Fields_API::remove_screen
 	 */
 	public function remove_panel( $id ) {
 
@@ -1084,7 +1084,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_panel( 'customizer', $id );
+		$wp_fields->remove_screen( 'customizer', $id );
 
 	}
 

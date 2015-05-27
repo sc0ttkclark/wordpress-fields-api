@@ -55,12 +55,12 @@ class WP_Fields_API_Section {
 	public $priority = 160;
 
 	/**
-	 * Panel in which to show the section, making it a sub-section.
+	 * Screen in which to show the section, making it a sub-section.
 	 *
 	 * @access public
 	 * @var string
 	 */
-	public $panel = '';
+	public $screen = '';
 
 	/**
 	 * Capability required for the section.
@@ -139,8 +139,7 @@ class WP_Fields_API_Section {
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object
-	 * @param string $id                    An specific ID of the setting. Can be a
-	 *                                      theme mod or option name.
+	 * @param string $id                    A specific ID of the section.
 	 * @param array  $args                  Section arguments.
 	 */
 	public function init( $object, $id, $args = array() ) {
@@ -214,7 +213,7 @@ class WP_Fields_API_Section {
 	 * @return array The array to be exported to the client as JSON.
 	 */
 	public function json() {
-		$array = wp_array_slice_assoc( (array) $this, array( 'title', 'description', 'priority', 'panel', 'type' ) );
+		$array = wp_array_slice_assoc( (array) $this, array( 'title', 'description', 'priority', 'screen', 'type' ) );
 		$array['content'] = $this->get_content();
 		$array['instanceNumber'] = $this->instance_number;
 		$array['active'] = $this->active();

@@ -1,19 +1,19 @@
 <?php
 /**
- * WordPress Fields API Panel classes
+ * WordPress Fields API Screen classes
  *
  * @package WordPress
  * @subpackage Fields_API
  */
 
 /**
- * Fields API Panel class.
+ * Fields API Screen class.
  *
  * A UI container for sections, managed by WP_Fields_API.
  *
  * @see WP_Fields_API
  */
-class WP_Fields_API_Panel {
+class WP_Fields_API_Screen {
 
 	/**
 	 * Incremented with each new class instantiation, then stored in $instance_number.
@@ -48,7 +48,7 @@ class WP_Fields_API_Panel {
 	public $object = '';
 
 	/**
-	 * Priority of the panel, defining the display order of panels and sections.
+	 * Priority of the screen, defining the display order of screens and sections.
 	 *
 	 * @access public
 	 * @var integer
@@ -56,7 +56,7 @@ class WP_Fields_API_Panel {
 	public $priority = 160;
 
 	/**
-	 * Capability required for the panel.
+	 * Capability required for the screen.
 	 *
 	 * @access public
 	 * @var string
@@ -64,7 +64,7 @@ class WP_Fields_API_Panel {
 	public $capability = 'edit_theme_options';
 
 	/**
-	 * Theme feature support for the panel.
+	 * Theme feature support for the screen.
 	 *
 	 * @access public
 	 * @var string|array
@@ -72,7 +72,7 @@ class WP_Fields_API_Panel {
 	public $theme_supports = '';
 
 	/**
-	 * Title of the panel to show in UI.
+	 * Title of the screen to show in UI.
 	 *
 	 * @access public
 	 * @var string
@@ -88,7 +88,7 @@ class WP_Fields_API_Panel {
 	public $description = '';
 
 	/**
-	 * Fields API sections for this panel.
+	 * Fields API sections for this screen.
 	 *
 	 * @access public
 	 * @var array
@@ -96,7 +96,7 @@ class WP_Fields_API_Panel {
 	public $sections = array();
 
 	/**
-	 * Type of this panel.
+	 * Type of this screen.
 	 *
 	 * @access public
 	 * @var string
@@ -132,8 +132,7 @@ class WP_Fields_API_Panel {
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object
-	 * @param string $id                    An specific ID of the setting. Can be a
-	 *                                      theme mod or option name.
+	 * @param string $id                    A specific ID of the screen.
 	 * @param array  $args                  Section arguments.
 	 */
 	public function init( $object, $id, $args = array() ) {
@@ -162,32 +161,32 @@ class WP_Fields_API_Panel {
 	}
 
 	/**
-	 * Check whether panel is active to current Fields API preview.
+	 * Check whether screen is active to current Fields API preview.
 	 *
 	 * @access public
 	 *
-	 * @return bool Whether the panel is active to the current preview.
+	 * @return bool Whether the screen is active to the current preview.
 	 */
 	final public function active() {
 
-		$panel = $this;
+		$screen = $this;
 		$active = call_user_func( $this->active_callback, $this );
 
 		/**
-		 * Filter response of WP_Fields_API_Panel::active().
+		 * Filter response of WP_Fields_API_Screen::active().
 		 *
 		 *
-		 * @param bool                $active  Whether the Fields API panel is active.
-		 * @param WP_Fields_API_Panel $panel   {@see WP_Fields_API_Panel} instance.
+		 * @param bool                $active  Whether the Fields API screen is active.
+		 * @param WP_Fields_API_Screen $screen   {@see WP_Fields_API_Screen} instance.
 		 */
-		$active = apply_filters( 'fields_api_panel_active_' . $this->object, $active, $panel );
+		$active = apply_filters( 'fields_api_screen_active_' . $this->object, $active, $screen );
 
 		return $active;
 
 	}
 
 	/**
-	 * Default callback used when invoking {@see WP_Fields_API_Panel::active()}.
+	 * Default callback used when invoking {@see WP_Fields_API_Screen::active()}.
 	 *
 	 * Subclasses can override this with their specific logic, or they may
 	 * provide an 'active_callback' argument to the constructor.
@@ -221,9 +220,9 @@ class WP_Fields_API_Panel {
 
 	/**
 	 * Checks required user capabilities and whether the theme has the
-	 * feature support required by the panel.
+	 * feature support required by the screen.
 	 *
-	 * @return bool False if theme doesn't support the panel or user can't change panel, otherwise true.
+	 * @return bool False if theme doesn't support the screen or user can't change screen, otherwise true.
 	 */
 	public function check_capabilities() {
 
@@ -240,9 +239,9 @@ class WP_Fields_API_Panel {
 	}
 
 	/**
-	 * Get the panel's content template for insertion into the Customizer pane.
+	 * Get the screen's content template for insertion into the Fields API screen.
 	 *
-	 * @return string Content for the panel.
+	 * @return string Content for the screen.
 	 */
 	final public function get_content() {
 
@@ -259,7 +258,7 @@ class WP_Fields_API_Panel {
 	}
 
 	/**
-	 * Check capabilities and render the panel.
+	 * Check capabilities and render the screen.
 	 *
 	 */
 	final public function maybe_render() {
@@ -269,38 +268,38 @@ class WP_Fields_API_Panel {
 		}
 
 		/**
-		 * Fires before rendering a Customizer panel.
+		 * Fires before rendering a Fields API screen.
 		 *
-		 * @param WP_Fields_API_Panel $this WP_Fields_API_Panel instance.
+		 * @param WP_Fields_API_Screen $this WP_Fields_API_Screen instance.
 		 */
-		do_action( "fields_api_render_panel_{$this->object}", $this );
+		do_action( "fields_api_render_screen_{$this->object}", $this );
 
 		/**
-		 * Fires before rendering a specific Customizer panel.
+		 * Fires before rendering a specific Fields API screen.
 		 *
 		 * The dynamic portion of the hook name, `$this->id`, refers to
-		 * the ID of the specific Customizer panel to be rendered.
+		 * the ID of the specific Fields API screen to be rendered.
 		 */
-		do_action( "fields_api_render_panel_{$this->object}_{$this->id}" );
+		do_action( "fields_api_render_screen_{$this->object}_{$this->id}" );
 
 		$this->render();
 
 	}
 
 	/**
-	 * Render the panel container, and then its contents.
+	 * Render the screen container, and then its contents.
 	 *
 	 * @access protected
 	 */
 	protected function render() {
-		$classes = 'accordion-section control-section control-panel control-panel-' . $this->type;
+		$classes = 'accordion-section control-section control-screen control-screen-' . $this->type;
 		?>
-		<li id="accordion-panel-<?php echo esc_attr( $this->id ); ?>" class="<?php echo esc_attr( $classes ); ?>">
+		<li id="accordion-screen-<?php echo esc_attr( $this->id ); ?>" class="<?php echo esc_attr( $classes ); ?>">
 			<h3 class="accordion-section-title" tabindex="0">
 				<?php echo esc_html( $this->title ); ?>
-				<span class="screen-reader-text"><?php _e( 'Press return or enter to open this panel' ); ?></span>
+				<span class="screen-reader-text"><?php _e( 'Press return or enter to open this screen' ); ?></span>
 			</h3>
-			<ul class="accordion-sub-container control-panel-content">
+			<ul class="accordion-sub-container control-screen-content">
 				<?php $this->render_content(); ?>
 			</ul>
 		</li>
@@ -308,17 +307,17 @@ class WP_Fields_API_Panel {
 	}
 
 	/**
-	 * Render the sections that have been added to the panel.
+	 * Render the sections that have been added to the screen.
 	 *
 	 * @access protected
 	 */
 	protected function render_content() {
 		?>
-		<li class="panel-meta accordion-section control-section<?php if ( empty( $this->description ) ) { echo ' cannot-expand'; } ?>">
+		<li class="screen-meta accordion-section control-section<?php if ( empty( $this->description ) ) { echo ' cannot-expand'; } ?>">
 			<div class="accordion-section-title" tabindex="0">
 				<span class="preview-notice"><?php
-					/* translators: %s is the site/panel title in the Fields API */
-					echo sprintf( __( 'You are editing %s' ), '<strong class="panel-title">' . esc_html( $this->title ) . '</strong>' );
+					/* translators: %s is the site/screen title in the Fields API */
+					echo sprintf( __( 'You are editing %s' ), '<strong class="screen-title">' . esc_html( $this->title ) . '</strong>' );
 				?></span>
 			</div>
 			<?php if ( ! empty( $this->description ) ) : ?>

@@ -8,12 +8,12 @@
 final class WP_Fields_API {
 
 	/**
-	 * Registered Settings
+	 * Registered Fields
 	 *
 	 * @access protected
 	 * @var array
 	 */
-	protected static $settings = array();
+	protected static $fields = array();
 
 	/**
 	 * Registered Containers
@@ -24,12 +24,12 @@ final class WP_Fields_API {
 	protected static $containers = array();
 
 	/**
-	 * Registered Panels
+	 * Registered Screens
 	 *
 	 * @access protected
 	 * @var array
 	 */
-	protected static $panels = array();
+	protected static $screens = array();
 
 	/**
 	 * Registered Sections
@@ -56,7 +56,7 @@ final class WP_Fields_API {
 	protected static $registered_control_types = array();
 
 	/**
-	 * IDs for Panels, Sections, and Controls which are valid and have been prepared.
+	 * IDs for Screens, Sections, and Controls which are valid and have been prepared.
 	 *
 	 * @access protected
 	 * @var array
@@ -64,7 +64,7 @@ final class WP_Fields_API {
 	protected static $prepared_ids = array();
 
 	/**
-	 * Unsanitized values for Settings.
+	 * Unsanitized values for Fields.
 	 *
 	 * @var array|false
 	 */
@@ -77,10 +77,10 @@ final class WP_Fields_API {
 	 */
 	public function __construct() {
 
-	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-setting.php' );
-	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-panel.php' );
-	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-section.php' );
+	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-field.php' );
 	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-control.php' );
+	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-section.php' );
+	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-screen.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
@@ -91,7 +91,7 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Allow Settings, Sections, Panels, and Controls to be registered
+	 * Allow Fields, Sections, Screens, and Controls to be registered
 	 *
 	 * @access public
 	 */
@@ -107,106 +107,132 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Get the registered settings.
+	 * Get the registered fields.
 	 *
 	 * @access public
 	 *
 	 * @param string $object Object type.
 	 *
-	 * @return array<WP_Fields_API_Setting>
+	 * @return array<WP_Fields_API_Field>
 	 */
-	public function get_settings( $object = null ) {
+	public function get_fields( $object = null ) {
 
-		$settings = array();
+		$fields = array();
 
 		if ( null === $object ) {
 			// Late init
-			foreach ( self::$settings as $object => $controls ) {
-				$this->get_settings( $object );
+			foreach ( self::$fields as $object => $controls ) {
+				$this->get_fields( $object );
 			}
 
-			$settings = self::$settings;
-		} elseif ( isset( self::$settings[ $object ] ) ) {
+			$fields = self::$fields;
+		} elseif ( isset( self::$fields[ $object ] ) ) {
 			// Late init
-			foreach ( self::$settings[ $object ] as $id => $setting ) {
-				if ( is_array( $setting ) ) {
-					self::$settings[ $object ][ $id ] = new WP_Fields_API_Setting( $object, $id, $setting );
+			foreach ( self::$fields[ $object ] as $id => $field ) {
+				if ( is_array( $field ) ) {
+					self::$fields[ $object ][ $id ] = new WP_Fields_API_Field( $object, $id, $field );
 				}
 			}
 
-			$settings = self::$settings[ $object ];
+			$fields = self::$fields[ $object ];
 		}
 
-		return $settings;
+		return $fields;
 
 	}
 
 	/**
-	 * Add a field setting.
+	 * Add a field.
 	 *
 	 * @access public
 	 *
 	 * @param string $object                    Object type.
-	 * @param WP_Fields_API_Setting|string $id  Fields API Setting object, or ID.
-	 * @param array $args                       Setting arguments; passed to WP_Fields_API_Setting
+	 * @param WP_Fields_API_Field|string $id  Fields API Field object, or ID.
+	 * @param array $args                       Field arguments; passed to WP_Fields_API_Field
 	 *                                          constructor.
 	 */
-	public function add_setting( $object, $id, $args = array() ) {
+	public function add_field( $object, $id, $args = array() ) {
 
-		if ( is_a( $id, 'WP_Fields_API_Setting' ) ) {
-			$setting = $id;
+		$control = false;
 
-			$id = $setting->id;
+		if ( is_a( $id, 'WP_Fields_API_Field' ) ) {
+			$field = $id;
+
+			$id = $field->id;
 		} else {
 			// Save for late init
-			$setting = $args;
+			$field = $args;
+
+			if ( isset( $field['control'] ) ) {
+				$control = $field['control'];
+
+				// Remove from field args
+				unset( $field['control'] );
+			}
 		}
 
-		self::$settings[ $object ] = self::$settings[ $object ] || array();
+		self::$fields[ $object ] = self::$fields[ $object ] || array();
 
-		self::$settings[ $object ][ $id ] = $setting;
+		self::$fields[ $object ][ $id ] = $field;
 
-	}
-
-	/**
-	 * Retrieve a field setting.
-	 *
-	 * @access public
-	 *
-	 * @param string $object Object type.
-	 * @param string $id     Field Setting ID.
-	 *
-	 * @return WP_Fields_API_Setting|null
-	 */
-	public function get_setting( $object, $id ) {
-
-		$setting = null;
-
-		if ( isset( self::$settings[ $object ][ $id ] ) ) {
-			// Late init
-			if ( is_array( self::$settings[ $object ][ $id ] ) ) {
-				self::$settings[ $object ][ $id ] = new WP_Fields_API_Setting( $object, $id, self::$settings[ $object ][ $id ] );
+		// Control handling
+		if ( $control ) {
+			// Generate Control ID if not set
+			if ( empty( $control['id'] ) ) {
+				$control['id'] = 'fields_' . sanitize_key( $object ) . '_' . sanitize_key( $id ) . '_' . sanitize_key( $field );
 			}
 
-			$setting = self::$settings[ $object ][ $id ];
-		}
+			// Get Control ID
+			$control_id = $control['id'];
 
-		return $setting;
+			// Remove ID from control args
+			unset( $control['id'] );
+
+			// Add control for field
+			$this->add_control( $object, $control_id, $control );
+		}
 
 	}
 
 	/**
-	 * Remove a field setting.
+	 * Retrieve a field.
 	 *
 	 * @access public
 	 *
 	 * @param string $object Object type.
-	 * @param string $id     Field Setting ID.
+	 * @param string $id     Field Field ID.
+	 *
+	 * @return WP_Fields_API_Field|null
 	 */
-	public function remove_setting( $object, $id ) {
+	public function get_field( $object, $id ) {
 
-		if ( isset( self::$settings[ $object ][ $id ] ) ) {
-			unset( self::$settings[ $object ][ $id ] );
+		$field = null;
+
+		if ( isset( self::$fields[ $object ][ $id ] ) ) {
+			// Late init
+			if ( is_array( self::$fields[ $object ][ $id ] ) ) {
+				self::$fields[ $object ][ $id ] = new WP_Fields_API_Field( $object, $id, self::$fields[ $object ][ $id ] );
+			}
+
+			$field = self::$fields[ $object ][ $id ];
+		}
+
+		return $field;
+
+	}
+
+	/**
+	 * Remove a field.
+	 *
+	 * @access public
+	 *
+	 * @param string $object Object type.
+	 * @param string $id     Field Field ID.
+	 */
+	public function remove_field( $object, $id ) {
+
+		if ( isset( self::$fields[ $object ][ $id ] ) ) {
+			unset( self::$fields[ $object ][ $id ] );
 		}
 
 	}
@@ -218,7 +244,7 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object Object type.
 	 *
-	 * @return array<WP_Fields_API_Panel|WP_Fields_API_Section>
+	 * @return array<WP_Fields_API_Screen|WP_Fields_API_Section>
 	 */
 	public function get_containers( $object = null ) {
 
@@ -235,103 +261,103 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Get the registered panels.
+	 * Get the registered screens.
 	 *
 	 * @access public
 	 *
 	 * @param string $object Object type.
 	 *
-	 * @return array<WP_Fields_API_Panel>
+	 * @return array<WP_Fields_API_Screen>
 	 */
-	public function get_panels( $object = null ) {
+	public function get_screens( $object = null ) {
 
-		$panels = array();
+		$screens = array();
 
 		if ( null === $object ) {
 			// Late init
-			foreach ( self::$panels as $object => $controls ) {
-				$this->get_panels( $object );
+			foreach ( self::$screens as $object => $controls ) {
+				$this->get_screens( $object );
 			}
 
-			$panels = self::$panels;
-		} elseif ( isset( self::$panels[ $object ] ) ) {
+			$screens = self::$screens;
+		} elseif ( isset( self::$screens[ $object ] ) ) {
 			// Late init
-			foreach ( self::$panels[ $object ] as $id => $panel ) {
-				if ( is_array( $panel ) ) {
-					self::$panels[ $object ][ $id ] = new WP_Fields_API_Panel( $object, $id, $panel );
+			foreach ( self::$screens[ $object ] as $id => $screen ) {
+				if ( is_array( $screen ) ) {
+					self::$screens[ $object ][ $id ] = new WP_Fields_API_Screen( $object, $id, $screen );
 				}
 			}
 
-			$panels = self::$panels[ $object ];
+			$screens = self::$screens[ $object ];
 		}
 
-		return $panels;
+		return $screens;
 
 	}
 
 	/**
-	 * Add a field panel.
+	 * Add a field screen.
 	 *
 	 * @access public
 	 *
 	 * @param string $object                  Object type.
-	 * @param WP_Fields_API_Panel|string $id  Field Panel object, or Panel ID.
-	 * @param array $args                     Optional. Panel arguments. Default empty array.
+	 * @param WP_Fields_API_Screen|string $id  Field Screen object, or Screen ID.
+	 * @param array $args                     Optional. Screen arguments. Default empty array.
 	 */
-	public function add_panel( $object, $id, $args = array() ) {
+	public function add_screen( $object, $id, $args = array() ) {
 
-		if ( is_a( $id, 'WP_Fields_API_Panel' ) ) {
-			$panel = $id;
+		if ( is_a( $id, 'WP_Fields_API_Screen' ) ) {
+			$screen = $id;
 
-			$id = $panel->id;
+			$id = $screen->id;
 		} else {
 			// Save for late init
-			$panel = $args;
+			$screen = $args;
 		}
 
-		self::$panels[ $id ] = $panel;
+		self::$screens[ $id ] = $screen;
 
 	}
 
 	/**
-	 * Retrieve a field panel.
+	 * Retrieve a field screen.
 	 *
 	 * @access public
 	 *
 	 * @param string $object       Object type.
-	 * @param string $id           Panel ID to get.
+	 * @param string $id           Screen ID to get.
 	 *
-	 * @return WP_Fields_API_Panel Requested panel instance.
+	 * @return WP_Fields_API_Screen Requested screen instance.
 	 */
-	public function get_panel( $object, $id ) {
+	public function get_screen( $object, $id ) {
 
-		$panel = null;
+		$screen = null;
 
-		if ( isset( self::$panels[ $object ][ $id ] ) ) {
+		if ( isset( self::$screens[ $object ][ $id ] ) ) {
 			// Late init
-			if ( is_array( self::$panels[ $object ][ $id ] ) ) {
-				self::$panels[ $object ][ $id ] = new WP_Fields_API_Panel( $object, $id, self::$settings[ $object ][ $id ] );
+			if ( is_array( self::$screens[ $object ][ $id ] ) ) {
+				self::$screens[ $object ][ $id ] = new WP_Fields_API_Screen( $object, $id, self::$fields[ $object ][ $id ] );
 			}
 
-			$panel = self::$panels[ $object ][ $id ];
+			$screen = self::$screens[ $object ][ $id ];
 		}
 
-		return $panel;
+		return $screen;
 
 	}
 
 	/**
-	 * Remove a field panel.
+	 * Remove a field screen.
 	 *
 	 * @access public
 	 *
 	 * @param string $object Object type.
-	 * @param string $id     Panel ID to remove.
+	 * @param string $id     Screen ID to remove.
 	 */
-	public function remove_panel( $object, $id ) {
+	public function remove_screen( $object, $id ) {
 
-		if ( isset( self::$panels[ $object ][ $id ] ) ) {
-			unset( self::$panels[ $object ][ $id ] );
+		if ( isset( self::$screens[ $object ][ $id ] ) ) {
+			unset( self::$screens[ $object ][ $id ] );
 		}
 
 	}
@@ -342,11 +368,11 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $object Object type.
-	 * @param string $panel  Panel ID.
+	 * @param string $screen  Screen ID.
 	 *
 	 * @return array<WP_Fields_API_Section>
 	 */
-	public function get_sections( $object = null, $panel = null ) {
+	public function get_sections( $object = null, $screen = null ) {
 
 		$sections = array();
 
@@ -367,17 +393,17 @@ final class WP_Fields_API {
 
 			$sections = self::$sections[ $object ];
 
-			// Get only sections for a specific panel
-			if ( $panel ) {
-				$panel_sections = array();
+			// Get only sections for a specific screen
+			if ( $screen ) {
+				$screen_sections = array();
 
 				foreach ( $sections as $id => $section ) {
-					if ( $panel == $section->panel ) {
-						$panel_sections[ $id ] = $section;
+					if ( $screen == $section->screen ) {
+						$screen_sections[ $id ] = $section;
 					}
 				}
 
-				$sections = $panel_sections;
+				$sections = $screen_sections;
 			}
 		}
 
@@ -460,7 +486,7 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $object Object type.
-	 * @param string $panel  Panel ID.
+	 * @param string $screen  Screen ID.
 	 *
 	 * @return array<WP_Fields_API_Control>
 	 */
@@ -596,8 +622,8 @@ final class WP_Fields_API {
 	 *
 	 * @access protected
 	 *
-	 * @param {WP_Fields_API_Panel|WP_Fields_API_Section|WP_Fields_API_Control} $a Object A.
-	 * @param {WP_Fields_API_Panel|WP_Fields_API_Section|WP_Fields_API_Control} $b Object B.
+	 * @param {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $a Object A.
+	 * @param {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $b Object B.
 	 *
 	 * @return int
 	 */
@@ -620,7 +646,7 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Prepare panels, sections, and controls for all objects.
+	 * Prepare screens, sections, and controls for all objects.
 	 *
 	 * For each, check if required related components exist,
 	 * whether the user has the necessary capabilities,
@@ -631,7 +657,7 @@ final class WP_Fields_API {
 	public function prepare_controls() {
 
 		// Get object types
-		$objects = array_keys( self::$settings );
+		$objects = array_keys( self::$fields );
 
 		// Prepare controls for all object types
 		foreach ( $objects as $object ) {
@@ -641,7 +667,7 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Prepare object panels, sections, and controls.
+	 * Prepare object screens, sections, and controls.
 	 *
 	 * For each, check if required related components exist,
 	 * whether the user has the necessary capabilities,
@@ -657,7 +683,7 @@ final class WP_Fields_API {
 		$prepared_ids = array(
 			'control'   => array(),
 			'section'   => array(),
-			'panel'     => array(),
+			'screen'     => array(),
 			'container' => array()
 		);
 
@@ -669,8 +695,8 @@ final class WP_Fields_API {
 		// Get sections
 		$sections = $this->get_sections( $object );
 
-		// Get panels
-		$panels = $this->get_panels( $object );
+		// Get screens
+		$screens = $this->get_screens( $object );
 
 		// Controls
 
@@ -678,10 +704,10 @@ final class WP_Fields_API {
 		uasort( $controls, array( $this, '_cmp_priority' ) );
 
 		foreach ( $controls as $id => $control ) {
-			// Check if section or panel exists
+			// Check if section or screen exists
 			if ( $control->section && ! isset( $sections[ $control->section ] ) ) {
 				continue;
-			} elseif ( $control->panel && ! isset( $panels[ $control->panel ] ) ) {
+			} elseif ( $control->screen && ! isset( $screens[ $control->screen ] ) ) {
 				continue;
 			}
 
@@ -696,9 +722,9 @@ final class WP_Fields_API {
 			if ( $control->section ) {
 				// Add control to section controls
 				$sections[ $control->section ]->controls[] = $control;
-			} elseif ( $control->panel ) {
-				// Add control to panel controls
-				$panels[ $control->panel ]->controls[] = $control;
+			} elseif ( $control->screen ) {
+				// Add control to screen controls
+				$screens[ $control->screen ]->controls[] = $control;
 			}
 		}
 
@@ -716,15 +742,15 @@ final class WP_Fields_API {
 			// Sort section controls by priority
 			usort( $section->controls, array( $this, '_cmp_priority' ) );
 
-			if ( ! $section->panel ) {
+			if ( ! $section->screen ) {
 				// Top-level section.
 
 				// Add to prepared IDs
 				$prepared_ids['section'][]   = $id;
 				$prepared_ids['container'][] = $id;
-			} elseif ( $section->panel && isset( $panels[ $section->panel ] ) ) {
-				// This section belongs to a panel.
-				$panels[ $section->panel ]->sections[ $id ] = $section;
+			} elseif ( $section->screen && isset( $screens[ $section->screen ] ) ) {
+				// This section belongs to a screen.
+				$screens[ $section->screen ]->sections[ $id ] = $section;
 
 				// Add to prepared IDs
 				$prepared_ids['section'][]   = $id;
@@ -732,27 +758,27 @@ final class WP_Fields_API {
 			}
 		}
 
-		// Panels
+		// Screens
 
-		// Sort panels by priority
-		uasort( $panels, array( $this, '_cmp_priority' ) );
+		// Sort screens by priority
+		uasort( $screens, array( $this, '_cmp_priority' ) );
 
-		foreach ( $panels as $id => $panel ) {
-			// Check if panel has sections or can be seen by user
-			if ( ! $panel->sections || ! $panel->check_capabilities() ) {
+		foreach ( $screens as $id => $screen ) {
+			// Check if screen has sections or can be seen by user
+			if ( ! $screen->sections || ! $screen->check_capabilities() ) {
 				continue;
 			}
 
-			// Sort panel sections by priority
-			uasort( $panel->sections, array( $this, '_cmp_priority' ) );
+			// Sort screen sections by priority
+			uasort( $screen->sections, array( $this, '_cmp_priority' ) );
 
 			// Add to prepared IDs
-			$prepared_ids['panel'][]     = $id;
+			$prepared_ids['screen'][]     = $id;
 			$prepared_ids['container'][] = $id;
 		}
 
-		// Merge panels and top-level sections together.
-		$containers = array_merge( $panels, $sections );
+		// Merge screens and top-level sections together.
+		$containers = array_merge( $screens, $sections );
 
 		// Sort containers by priority
 		uasort( $containers, array( $this, '_cmp_priority' ) );
@@ -765,8 +791,8 @@ final class WP_Fields_API {
 		// Save sections
 		self::$sections[ $object ] = $sections;
 
-		// Save panels
-		self::$panels[ $object ] = $panels;
+		// Save screens
+		self::$screens[ $object ] = $screens;
 
 		// Save containers
 		self::$containers[ $object ] = $containers;
@@ -797,7 +823,7 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $object Object type.
-	 * @param string $type   Type including panel, section, or setting.
+	 * @param string $type   Type including screen, section, or field.
 	 * @param string $id     Object ID.
 	 *
 	 * @return boolean
@@ -816,8 +842,7 @@ final class WP_Fields_API {
 
 	/**
 	 * Parse the incoming $_POST['customized'] JSON data and store the unsanitized
-	 * settings for subsequent post_value() lookups.
-	 *
+	 * fields for subsequent post_value() lookups.
 	 *
 	 * @return array
 	 */
@@ -836,20 +861,20 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Return the sanitized value for a given setting from the request's POST data.
+	 * Return the sanitized value for a given field from the request's POST data.
 	 * Introduced 'default' parameter.
 	 *
-	 * @param WP_Fields_API_Setting $setting A WP_Fields_API_Setting derived object
-	 * @param mixed                $default value returned $setting has no post value (added in 4.2.0).
+	 * @param WP_Fields_API_Field $field A WP_Fields_API_Field derived object
+	 * @param mixed                $default value returned $field has no post value (added in 4.2.0).
 	 *
 	 * @return string|mixed $post_value Sanitized value or the $default provided
 	 */
-	public function post_value( $setting, $default = null ) {
+	public function post_value( $field, $default = null ) {
 
 		$post_values = $this->unsanitized_post_values();
 
-		if ( array_key_exists( $setting->id, $post_values ) ) {
-			return $setting->sanitize( $post_values[ $setting->id ] );
+		if ( array_key_exists( $field->id, $post_values ) ) {
+			return $field->sanitize( $post_values[ $field->id ] );
 		}
 
 		return $default;

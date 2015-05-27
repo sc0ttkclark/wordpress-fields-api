@@ -16,7 +16,7 @@
  *
  * @see WP_Customize_Manager
  */
-class WP_Customize_Setting extends WP_Fields_API_Setting {
+class WP_Customize_Setting extends WP_Fields_API_Field {
 
 	/**
 	 * @access public

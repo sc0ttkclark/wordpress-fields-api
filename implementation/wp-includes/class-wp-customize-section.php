@@ -19,6 +19,13 @@
 class WP_Customize_Section extends WP_Fields_API_Section {
 
 	/**
+	 * @var array Internal mapping of backwards compatible properties
+	 */
+	private $property_map = array(
+		'panel' => 'screen'
+	);
+
+	/**
 	 * Constructor.
 	 *
 	 * Any supplied $args override class property defaults.
@@ -123,6 +130,77 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 		</li>
 		<?php
 	}
+
+	/**
+	 * Gather the parameters passed to client JavaScript via JSON.
+	 *
+	 * @return array The array to be exported to the client as JSON.
+	 */
+	public function json() {
+
+		$array = parent::json();
+
+		// Backwards compatibility
+		$array['panel'] = $array['screen'];
+
+		unset( $array['screen'] );
+
+	}
+
+	/**
+	 * Magic method for handling backwards compatible properties
+	 *
+	 * @param string $get
+	 *
+	 * @return mixed|null
+	 */
+	public function __get( $get ){
+
+		if ( isset( $this->property_map[ $get ] ) ) {
+			$property = $this->property_map[ $get ];
+
+			return $this->{$property};
+		}
+
+		return null;
+
+	}
+
+	/**
+	 * Magic method for handling backwards compatible properties
+	 *
+	 * @param string $set
+	 * @param mixed  $val
+	 */
+	public function __set( $set, $val ) {
+
+		if ( isset( $this->property_map[ $set ] ) ) {
+			$property = $this->property_map[ $set ];
+
+			$this->{$property} = $val;
+		}
+
+	}
+
+	/**
+	 * Magic method for handling backwards compatible properties
+	 *
+	 * @param string $isset
+	 *
+	 * @return bool
+	 */
+	public function __isset( $isset ) {
+
+		if ( isset( $this->property_map[ $isset ] ) ) {
+			$property = $this->property_map[ $isset ];
+
+			return isset( $this->{$property} );
+		}
+
+		return false;
+
+	}
+
 }
 
 /**
