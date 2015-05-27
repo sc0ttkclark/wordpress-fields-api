@@ -62,7 +62,7 @@ function fields_api_example_customizer_register( $wp_fields ) {
 	);
 
 	// 2. Register new settings to the WP database...
-	$wp_fields->add_setting( 'customizer', 'link_textcolor',
+	$wp_fields->add_field( 'customizer', 'link_textcolor',
 		array(
 			// Default setting/value to save
 			'default'    => '#2BA6CB',
@@ -136,7 +136,7 @@ function fields_api_example_user_field_register()  {
 	);
 
 	// 2. Register new settings to the WP database...
-	$wp_fields->add_setting( 'user', 'link_textcolor',
+	$wp_fields->add_field( 'user', 'link_textcolor',
 		array(
 			// Default setting/value to save
 			'default'    => '#2BA6CB',
@@ -204,7 +204,7 @@ function fields_api_example_settings_register( $wp_fields ) {
 	);
 
 	// 2. Register new settings to the WP database...
-	$wp_fields->add_setting( 'settings', 'link_textcolor',
+	$wp_fields->add_field( 'settings', 'link_textcolor',
 		array(
 			// Default setting/value to save
 			'default'    => '#2BA6CB',
@@ -254,87 +254,45 @@ function fields_api_example_post_field_register( $wp_fields ) {
 
 	// This is a *new* API
 
-	// 0. Define a new panel (meta box) for sections / fields to appear in
-	$wp_fields->add_panel( 'post_type', 'my_cpt', 'my_meta_box',
+	// 0. Define a new panel (meta box) for fields to appear in
+	$wp_fields->add_section( 'post_type', 'my_cpt', 'my_meta_box',
 		array(
-			// Visible title of panel (meta box)
-			'title'         => __( 'My Meta Box', 'mytheme' ),
-
-			// Callback to override default handler
-			'callback'      => 'my_meta_box',
-
-			// Callback to override default handler
-			'context'       => 'my_meta_box',
-
-			// Determines what order this appears in
-			'priority'      => 'low',
-
-			// Arguments to pass into your callback function
-			'callback_args' => array(),
-		)
-	);
-
-	// 1. Define a new section (if desired) for the panel (meta box)
-	$wp_fields->add_section( 'post_type', 'my_cpt', 'mytheme_options',
-		array(
-		    // Panel (meta box) to add to
-			'panel'       => 'my_meta_box',
-			
 			// Visible title of section
-			'title'       => __( 'MyTheme Options', 'mytheme' ),
+			'title'       => __( 'My Meta Box', 'mytheme' ),
 
 			// Determines what order this appears in
-			'priority'    => 35,
+			'priority'    => 'high',
+
+			// Determines what order this appears in
+			'context'    => 'side',
 
 			// Capability needed to tweak
-			'capability'  => 'edit_theme_options',
+			'capability'  => 'my_custom_capability',
 
 			// Descriptive tooltip
-			'description' => __( 'Allows you to customize some example settings for MyTheme.', 'mytheme' )
+			'description' => __( 'Allows you to customize some example settings for My CPT.', 'mytheme' )
 		)
 	);
 
-	// 2. Register new settings to the WP database...
-	$wp_fields->add_setting( 'post_type', 'my_cpt', 'link_textcolor',
+	// 1. Register new fields
+	$wp_fields->add_field( 'post_type', 'my_cpt', 'my_custom_field',
 		array(
 			// Default setting/value to save
-			'default'    => '#2BA6CB',
-
-			// Is this an 'option' or a 'theme_mod'?
-			'type'       => 'theme_mod',
+			'default'    => 'All about that field',
 
 			// Optional. Special permissions for accessing this setting.
-			'capability' => 'edit_theme_options',
-
-			// What triggers a refresh of the setting? 'refresh' or 'postMessage' (instant)?
-			'transport'  => 'postMessage'
-		)
-	);
-
-	// 3. Finally, we define the control itself (which links a setting to a section and renders the HTML controls)...
-	$wp_fields->add_control( 'post_type', 'my_cpt',
-		// Instantiate the color control class
-		new WP_Fields_API_Color_Control(
-			// Set a unique ID for the control
-			'mytheme_link_textcolor',
-		
-			array(
+			'capability' => 'my_custom_capability',
+			
+			// Optional. Add an associated control (otherwise it won't show up in the UI)
+			'control' => array(
 				// Admin-visible name of the control
-				'label'    => __( 'Link Color', 'mytheme' ),
+				'label'    => __( 'My Custom Field', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
-				// Either set a panel or a section, both are not needed
-				'section'  => 'mytheme_options',
-
-				// ID of the panel this control should render in (can be one of yours, or a WordPress default section)
-				// Either set a panel or a section, both are not needed
-				'panel'    => 'my_meta_box',
-
-				// Which setting to load and manipulate (serialized is okay)
-				'settings' => 'link_textcolor',
-
-				// Determines the order this control appears in for the specified section
-				'priority' => 10
+				'section'  => 'my_meta_box',
+				
+				// Control type
+				'type'     => 'text'
 			)
 		)
 	);
