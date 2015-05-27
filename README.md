@@ -3,7 +3,7 @@ WordPress Fields API
 
 This is a core proposal for a new wide-reaching API for WordPress core. It is not a guarantee of final functionality, but it's an evolving prototype that can be installed as a plugin for easy testing and usage throughout development.
 
-This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark with oversight by WordPress core lead developer Helen Hou-Sandi.
+This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark with oversight by WordPress core lead developer Helen Hou-Sandí.
 
 Please note: This plugin is not in running condition, it is still in the early stages of development.
 
@@ -17,11 +17,17 @@ Each of the APIs that this aims to unite all have the same essential needs. Base
 
 I am not focusing on any UI aspects at the moment besides implementation of the API underneath getting the field data for UI to use in core itself. It will be easier to tackle the API and the UI separately for both the purpose of development and core inclusion.
 
-## Unknowns
+## Progress so far
+
+* Fields API has been abstracted from the Customizer classes
+* All settings, panels, sections, and controls can now utilize late init. This is huge because it uses less memory on every page load and once this goes into WP core and is utilized by themes, plugins, and core itself -- there is potential for a large amount of things registered through this API, if used to it's full potential.
+
+## Unknowns / To dos
 
 There are still a lot of areas the API is not represented in code or in examples.
 
 * Customizer Manager (need to look at `add_dynamic_settings`, not sure if it needs to be abstracted into `$wp_fields`)
+* Field types need fleshing out, you shouldn't have to init a class, late-init at the very least should be utilized where possible
 * register_meta and how this interacts behind the scenes with it
 * get/add/update/delete for Meta / Settings API interaction has not yet been determined
 * Examples below aren't fleshed out with use cases, only the initial [Customizer Example code](http://codex.wordpress.org/Theme_Customization_API) I pulled from the codex, the example panels / sections / settings / controls need to be fleshed out
