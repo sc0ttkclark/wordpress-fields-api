@@ -38,8 +38,8 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$this->assertEquals( 2, count( $containers ) );
 
-		$this->assertEquals( 'my_test_screen', $containers[0]->id );
-		$this->assertEquals( 'my_test_section', $containers[1]->id );
+		$this->assertEquals( 'my_test_section', $containers[0]->id );
+		$this->assertEquals( 'my_test_screen', $containers[1]->id );
 
 		// Get all containers for all object types
 		$containers = $wp_fields->get_containers();
