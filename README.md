@@ -242,8 +242,11 @@ function fields_api_example_post_field_register( $wp_fields ) {
 	// This is a *new* API
 
 	// 1. Define a new section (meta box) for fields to appear in
-	$wp_fields->add_section( 'post_type', 'my_cpt', 'my_meta_box',
+	$wp_fields->add_section( 'post', 'my_meta_box',
 		array(
+			// The post type name
+			'object_name' => 'my_cpt',
+			
 			// Visible title of section
 			'title'       => __( 'My Meta Box', 'mytheme' ),
 
@@ -259,8 +262,11 @@ function fields_api_example_post_field_register( $wp_fields ) {
 	);
 
 	// 2. Register new fields
-	$wp_fields->add_field( 'post_type', 'my_cpt', 'my_custom_field',
+	$wp_fields->add_field( 'post_type', 'my_custom_field',
 		array(
+			// The post type name
+			'object_name' => 'my_cpt',
+			
 			// Default field/value to save
 			'default'    => 'All about that post',
 
