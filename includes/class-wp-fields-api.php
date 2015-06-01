@@ -122,7 +122,7 @@ final class WP_Fields_API {
 		}
 
 		// Setup containers
-		if ( empty( $containers ) ) {
+		if ( empty( self::$containers ) ) {
 			if ( empty( $object_name ) ) {
 				$this->prepare_controls( $object_type );
 			} else {
