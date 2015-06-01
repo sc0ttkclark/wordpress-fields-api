@@ -134,7 +134,9 @@ class WP_Fields_API_Screen {
 	 */
 	public function __construct() {
 
-		call_user_func_array( array( $this, 'init' ), func_get_args() );
+		$args = func_get_args();
+
+		call_user_func_array( array( $this, 'init' ), $args );
 
 	}
 
