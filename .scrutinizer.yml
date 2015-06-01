@@ -40,3 +40,8 @@ before_commands: {  }
 after_commands: {  }
 artifacts: {  }
 build_failure_conditions: {  }
+filter:
+    excluded_paths:
+        - implementation/*
+        - examples/*
+        - bin/*
