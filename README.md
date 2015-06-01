@@ -262,7 +262,7 @@ function fields_api_example_post_field_register( $wp_fields ) {
 	);
 
 	// 2. Register new fields
-	$wp_fields->add_field( 'post_type', 'my_custom_field',
+	$wp_fields->add_field( 'post', 'my_custom_field',
 		array(
 			// The post type name
 			'object_name' => 'my_cpt',
@@ -276,7 +276,7 @@ function fields_api_example_post_field_register( $wp_fields ) {
 			// Optional. Add an associated control (otherwise it won't show up in the UI)
 			'control' => array(
 				// Don't set 'id' and it will automatically be generated for you as
-				// 'id' => 'fields_post_type_my_cpt_my_custom_field',
+				// 'id' => 'fields_post_my_cpt_my_custom_field',
 				
 				// Admin-visible name of the control
 				'label'   => __( 'My Custom Field', 'mytheme' ),
