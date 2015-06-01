@@ -101,7 +101,7 @@ class WP_Fields_API_Screen {
 	 * Fields API sections for this screen.
 	 *
 	 * @access public
-	 * @var array
+	 * @var array<WP_Fields_API_Section>
 	 */
 	public $sections = array();
 

@@ -68,7 +68,7 @@ class WP_Fields_API_Section {
 	 * Screen in which to show the section, making it a sub-section.
 	 *
 	 * @access public
-	 * @var string
+	 * @var string|WP_Fields_API_Screen
 	 */
 	public $screen = '';
 
@@ -108,7 +108,7 @@ class WP_Fields_API_Section {
 	 * Fields API controls for this section.
 	 *
 	 * @access public
-	 * @var array
+	 * @var array<WP_Fields_API_Controls>
 	 */
 	public $controls = array();
 

@@ -59,7 +59,7 @@ class WP_Fields_API_Control {
 	 * The primary field for the control (if there is one).
 	 *
 	 * @access public
-	 * @var string
+	 * @var string|WP_Fields_API_Field
 	 */
 	public $field = 'default';
 
@@ -180,10 +180,10 @@ class WP_Fields_API_Control {
 
 		if ( is_array( $this->fields ) ) {
 			foreach ( $this->fields as $key => $field ) {
-				$fields[ $key ] = $wp_fields->get_field( $this->object_type, $field );
+				$fields[ $key ] = $wp_fields->get_field( $this->object_type, $field, $this->object_name );
 			}
 		} else {
-			$this->field = $wp_fields->get_field( $this->object_type, $this->fields );
+			$this->field = $wp_fields->get_field( $this->object_type, $this->fields, $this->object_name );
 
 			$fields['default'] = $this->field;
 		}
@@ -310,7 +310,7 @@ class WP_Fields_API_Control {
 			}
 		}
 
-		$section = $wp_fields->get_section( $this->object_type, $this->section );
+		$section = $wp_fields->get_section( $this->object_type, $this->section, $this->object_name );
 
 		if ( isset( $section ) && ! $section->check_capabilities() ) {
 			return false;
