@@ -220,7 +220,7 @@ class WP_Fields_API_Screen {
 	 */
 	public function json() {
 
-		$array = wp_array_slice_assoc( (array) $this, array( 'title', 'description', 'priority', 'type' ) );
+		$array = wp_array_slice_assoc( (array) $this, array( 'id', 'title', 'description', 'priority', 'type' ) );
 
 		$array['content'] = $this->get_content();
 		$array['active'] = $this->active();
