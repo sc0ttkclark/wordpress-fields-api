@@ -42,10 +42,20 @@ class WP_Fields_API_Screen {
 	public $id = '';
 
 	/**
+	 * Object type.
+	 *
 	 * @access public
 	 * @var string
 	 */
-	public $object = '';
+	public $object_type = '';
+
+	/**
+	 * Object name (for post types and taxonomies).
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_name = '';
 
 	/**
 	 * Priority of the screen, defining the display order of screens and sections.
@@ -131,13 +141,13 @@ class WP_Fields_API_Screen {
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
-	 * @param string $object
-	 * @param string $id                    A specific ID of the screen.
-	 * @param array  $args                  Section arguments.
+	 * @param string $object_type   Object type.
+	 * @param string $id            A specific ID of the screen.
+	 * @param array  $args          Screen arguments.
 	 */
-	public function init( $object, $id, $args = array() ) {
+	public function init( $object_type, $id, $args = array() ) {
 
-		$this->object = $object;
+		$this->object_type = $object_type;
 
 		$keys = array_keys( get_object_vars( $this ) );
 
@@ -179,7 +189,7 @@ class WP_Fields_API_Screen {
 		 * @param bool                $active  Whether the Fields API screen is active.
 		 * @param WP_Fields_API_Screen $screen   {@see WP_Fields_API_Screen} instance.
 		 */
-		$active = apply_filters( 'fields_api_screen_active_' . $this->object, $active, $screen );
+		$active = apply_filters( 'fields_api_screen_active_' . $this->object_type, $active, $screen );
 
 		return $active;
 
@@ -272,7 +282,7 @@ class WP_Fields_API_Screen {
 		 *
 		 * @param WP_Fields_API_Screen $this WP_Fields_API_Screen instance.
 		 */
-		do_action( "fields_api_render_screen_{$this->object}", $this );
+		do_action( "fields_api_render_screen_{$this->object_type}", $this );
 
 		/**
 		 * Fires before rendering a specific Fields API screen.
@@ -280,7 +290,7 @@ class WP_Fields_API_Screen {
 		 * The dynamic portion of the hook name, `$this->id`, refers to
 		 * the ID of the specific Fields API screen to be rendered.
 		 */
-		do_action( "fields_api_render_screen_{$this->object}_{$this->id}" );
+		do_action( "fields_api_render_screen_{$this->object_type}_{$this->id}" );
 
 		$this->render();
 
@@ -317,7 +327,7 @@ class WP_Fields_API_Screen {
 			<div class="accordion-section-title" tabindex="0">
 				<span class="preview-notice"><?php
 					/* translators: %s is the site/screen title in the Fields API */
-					echo sprintf( __( 'You are editing %s' ), '<strong class="screen-title">' . esc_html( $this->title ) . '</strong>' );
+					printf( __( 'You are editing %s' ), '<strong class="screen-title">' . esc_html( $this->title ) . '</strong>' );
 				?></span>
 			</div>
 			<?php if ( ! empty( $this->description ) ) : ?>

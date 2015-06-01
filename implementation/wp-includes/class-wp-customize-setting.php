@@ -86,14 +86,14 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 *
 		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
 		 */
-		return apply_filters( "customize_preview_{$this->id}", $this );
+		do_action( "customize_preview_{$this->id}", $this );
 
 	}
 
 	/**
 	 * Handle previewing the setting by typw.
 	 */
-	public function customize_preview_type( $value ) {
+	public function customize_preview_type() {
 
 		/**
 		 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
@@ -105,7 +105,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 *
 		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
 		 */
-		return apply_filters( "customize_preview_{$this->object}", $value, $this );
+		do_action( "customize_preview_{$this->object}", $this );
 
 	}
 
@@ -185,6 +185,8 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	 *
 	 * @since 3.4.0
 	 *
+	 * @param string $default Default value for field
+	 *
 	 * @return mixed The value.
 	 */
 	public function customize_value( $default ) {
@@ -201,8 +203,9 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 * @since 3.4.0
 		 *
 		 * @param mixed $default The setting default value. Default empty.
+		 * @param WP_Customize_Setting $this  {@see WP_Customize_Setting} instance.
 		 */
-		return apply_filters( 'customize_value_' . $this->id_data['base'], $default );
+		return apply_filters( 'customize_value_' . $this->id_data['base'], $default, $this );
 
 	}
 
@@ -210,6 +213,8 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	 * Sanitize the setting's value for use in JavaScript.
 	 *
 	 * @since 3.4.0
+	 *
+	 * @param mixed $value The setting value.
 	 *
 	 * @return mixed The requested escaped value.
 	 */
@@ -278,10 +283,14 @@ class WP_Customize_Filter_Setting extends WP_Customize_Setting {
 	 * Update value
 	 *
 	 * @since 3.4.0
+	 *
+	 * @param mixed $value The value to update.
+	 *
+	 * @return mixed The result of saving the value.
 	 */
 	public function update( $value ) {
 
-		// Nothing to see here
+		return null;
 
 	}
 }
@@ -301,7 +310,9 @@ final class WP_Customize_Header_Image_Setting extends WP_Customize_Setting {
 	/**
 	 * @since 3.4.0
 	 *
-	 * @param $value
+	 * @param mixed $value The value to update.
+	 *
+	 * @return mixed The result of saving the value.
 	 */
 	public function update( $value ) {
 		global $custom_image_header;
@@ -331,7 +342,9 @@ final class WP_Customize_Background_Image_Setting extends WP_Customize_Setting {
 	/**
 	 * @since 3.4.0
 	 *
-	 * @param $value
+	 * @param mixed $value The value to update.
+	 *
+	 * @return mixed The result of saving the value.
 	 */
 	public function update( $value ) {
 		remove_theme_mod( 'background_image_thumb' );

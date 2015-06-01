@@ -25,7 +25,7 @@ module.exports = function( grunt ) {
 				stderr: true
 			},
 			files: ['lib/**/*.php', 'tests/*.php', '*.php']
-		},
+		}
 
 	} );
 	grunt.loadNpmTasks( 'grunt-phpcs' );

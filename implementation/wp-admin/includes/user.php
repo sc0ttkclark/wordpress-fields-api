@@ -387,6 +387,8 @@ function wp_revoke_user($id) {
 add_action('admin_init', 'default_password_nag_handler');
 /**
  * @since 2.8.0
+ *
+ * @param bool $errors Deprecated
  */
 function default_password_nag_handler($errors = false) {
 	global $user_ID;
@@ -405,6 +407,9 @@ add_action('profile_update', 'default_password_nag_edit_user', 10, 2);
 
 /**
  * @since 2.8.0
+ *
+ * @param int     $user_ID  User ID
+ * @param WP_User $old_data Old user data
  */
 function default_password_nag_edit_user($user_ID, $old_data) {
 	// Short-circuit it.

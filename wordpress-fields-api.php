@@ -24,7 +24,7 @@ define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
  */
 function _wp_fields_api_include() {
 
-    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api.php' );
+	require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api.php' );
 
 	// Init Customize class
 	$GLOBALS['wp_fields'] = new WP_Fields_API;

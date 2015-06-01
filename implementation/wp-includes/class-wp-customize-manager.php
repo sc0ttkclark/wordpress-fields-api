@@ -43,6 +43,14 @@ final class WP_Customize_Manager {
 	protected $previewing = false;
 
 	/**
+	 * Controls that may be rendered from JS templates.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected static $registered_control_types = array();
+
+	/**
 	 * Methods and properties deailing with managing widgets in the Customizer.
 	 *
 	 * @var WP_Customize_Widgets
@@ -730,6 +738,8 @@ final class WP_Customize_Manager {
 	 * Removes the signature in case we experience a case where the Customizer was not properly executed.
 	 *
 	 * @since 3.4.0
+	 *
+	 * @param string $return Die handler callback function
 	 */
 	public function remove_preview_signature( $return = null ) {
 		remove_action( 'shutdown', array( $this, 'customize_preview_signature' ), 1000 );
@@ -1223,17 +1233,10 @@ final class WP_Customize_Manager {
 	 *
 	 * @param string $control Name of a custom control which is a subclass of
 	 *                        {@see WP_Customize_Control}.
-	 *
-	 * @uses WP_Fields_API::register_control_type
 	 */
 	public function register_control_type( $control ) {
 
-		/**
-		 * @var WP_Fields_API $wp_fields
-		 */
-		global $wp_fields;
-
-		$wp_fields->register_control_type( 'customizer', $control );
+		self::$registered_control_types[] = $control;
 
 	}
 
@@ -1242,17 +1245,18 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 4.1.0
 	 * @access public
-	 *
-	 * @uses WP_Fields_API::render_control_templates
 	 */
 	public function render_control_templates() {
 
 		/**
-		 * @var WP_Fields_API $wp_fields
+		 * @var $control WP_Customize_Control
 		 */
-		global $wp_fields;
 
-		$wp_fields->render_control_templates();
+		foreach ( self::$registered_control_types as $control_type ) {
+			$control = new $control_type( $this, 'temp', array() );
+
+			$control->print_template();
+		}
 
 	}
 

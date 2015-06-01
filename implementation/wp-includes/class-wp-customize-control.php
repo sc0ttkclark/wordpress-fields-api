@@ -25,7 +25,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 */
 	private $property_map = array(
 		'settings' => 'fields',
-		'setting'  => 'field'
+		'setting'  => 'field',
 	);
 
 	/**
@@ -173,8 +173,9 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 * @return string Data link parameter, if $setting_key is a valid field, empty string otherwise.
 	 */
 	public function get_link( $setting_key = 'default' ) {
-		if ( ! isset( $this->fields[ $setting_key ] ) )
+		if ( ! isset( $this->fields[ $setting_key ] ) ) {
 			return '';
+		}
 
 		return 'data-customize-setting-link="' . esc_attr( $this->fields[ $setting_key ]->id ) . '"';
 	}
@@ -193,7 +194,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 */
 	public function render_content() {
 
-		switch( $this->type ) {
+		switch ( $this->type ) {
 			case 'checkbox':
 				?>
 				<label>
@@ -206,8 +207,9 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 				<?php
 				break;
 			case 'radio':
-				if ( empty( $this->choices ) )
+				if ( empty( $this->choices ) ) {
 					return;
+				}
 
 				$name = '_customize-radio-' . $this->id;
 
@@ -228,8 +230,9 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 				endforeach;
 				break;
 			case 'select':
-				if ( empty( $this->choices ) )
+				if ( empty( $this->choices ) ) {
 					return;
+				}
 
 				?>
 				<label>
@@ -503,6 +506,8 @@ class WP_Customize_Upload_Control extends WP_Customize_Control {
 	 * @since 4.1.0
 	 *
 	 * @param WP_Customize_Manager $manager {@see WP_Customize_Manager} instance.
+	 * @param string $id
+	 * @param array $args
 	 */
 	public function __construct( $manager, $id, $args = array() ) {
 		parent::__construct( $manager, $id, $args );

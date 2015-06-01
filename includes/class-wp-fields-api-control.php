@@ -32,10 +32,20 @@ class WP_Fields_API_Control {
 	public $id = '';
 
 	/**
+	 * Object type.
+	 *
 	 * @access public
 	 * @var string
 	 */
-	public $object = '';
+	public $object_type = '';
+
+	/**
+	 * Object name (for post types and taxonomies).
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_name = '';
 
 	/**
 	 * All fields tied to the control.
@@ -125,18 +135,18 @@ class WP_Fields_API_Control {
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
-	 * @param string $object
-	 * @param string $id                    A specific ID of the control.
-	 * @param array  $args                  Field arguments.
+	 * @param string $object_type   Object type.
+	 * @param string $id            A specific ID of the control.
+	 * @param array  $args          Control arguments.
 	 */
-	public function init( $object, $id, $args = array() ) {
+	public function init( $object_type, $id, $args = array() ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		$this->object = $object;
+		$this->object_type = $object_type;
 
 		$keys = array_keys( get_object_vars( $this ) );
 
@@ -170,10 +180,10 @@ class WP_Fields_API_Control {
 
 		if ( is_array( $this->fields ) ) {
 			foreach ( $this->fields as $key => $field ) {
-				$fields[ $key ] = $wp_fields->get_field( $this->object, $field );
+				$fields[ $key ] = $wp_fields->get_field( $this->object_type, $field );
 			}
 		} else {
-			$this->field = $wp_fields->get_field( $this->object, $this->fields );
+			$this->field = $wp_fields->get_field( $this->object_type, $this->fields );
 
 			$fields['default'] = $this->field;
 		}
@@ -206,7 +216,7 @@ class WP_Fields_API_Control {
 		 * @param bool                  $active  Whether the Field control is active.
 		 * @param WP_Fields_API_Control $control WP_Fields_API_Control instance.
 		 */
-		$active = apply_filters( 'fields_control_active_' . $this->object, $active, $control );
+		$active = apply_filters( 'fields_control_active_' . $this->object_type, $active, $control );
 
 		return $active;
 
@@ -238,7 +248,12 @@ class WP_Fields_API_Control {
 	final public function value( $field_key = 'default' ) {
 
 		if ( isset( $this->fields[ $field_key ] ) ) {
-			return $this->fields[ $field_key ]->value();
+			/**
+			 * @var $field WP_Fields_API_Field
+			 */
+			$field = $this->fields[ $field_key ];
+
+			return $field->value();
 		}
 
 		return null;
@@ -285,13 +300,17 @@ class WP_Fields_API_Control {
 		 */
 		global $wp_fields;
 
+		/**
+		 * @var $field WP_Fields_API_Field
+		 */
+
 		foreach ( $this->fields as $field ) {
 			if ( ! $field->check_capabilities() ) {
 				return false;
 			}
 		}
 
-		$section = $wp_fields->get_section( $this->object, $this->section );
+		$section = $wp_fields->get_section( $this->object_type, $this->section );
 
 		if ( isset( $section ) && ! $section->check_capabilities() ) {
 			return false;
@@ -336,7 +355,7 @@ class WP_Fields_API_Control {
 		 *
 		 * @param WP_Fields_API_Control $this WP_Fields_API_Control instance.
 		 */
-		do_action( 'fields_render_control_' . $this->object, $this );
+		do_action( 'fields_render_control_' . $this->object_type, $this );
 
 		/**
 		 * Fires just before a specific control is rendered.
@@ -346,7 +365,7 @@ class WP_Fields_API_Control {
 		 *
 		 * @param WP_Fields_API_Control $this {@see WP_Fields_API_Control} instance.
 		 */
-		do_action( 'fields_render_control_' . $this->object . '_' . $this->id, $this );
+		do_action( 'fields_render_control_' . $this->object_type . '_' . $this->id, $this );
 
 		$this->render();
 
@@ -404,7 +423,7 @@ class WP_Fields_API_Control {
 	 */
 	public function input_attrs() {
 
-		foreach( $this->input_attrs as $attr => $value ) {
+		foreach ( $this->input_attrs as $attr => $value ) {
 			echo $attr . '="' . esc_attr( $value ) . '" ';
 		}
 
@@ -423,7 +442,7 @@ class WP_Fields_API_Control {
 	 */
 	public function render_content() {
 
-		switch( $this->type ) {
+		switch ( $this->type ) {
 			case 'checkbox':
 				?>
 				<label>
@@ -542,7 +561,7 @@ class WP_Fields_API_Control {
 	public function print_template() {
 
 ?>
-    <script type="text/html" id="tmpl-fields-<?php echo esc_attr( $this->object ); ?>-control-<?php echo esc_attr( $this->type ); ?>-content">
+    <script type="text/html" id="tmpl-fields-<?php echo esc_attr( $this->object_type ); ?>-control-<?php echo esc_attr( $this->type ); ?>-content">
         <?php $this->content_template(); ?>
     </script>
 <?php

@@ -16,10 +16,20 @@ class WP_Fields_API_Field {
 	public $id = '';
 
 	/**
+	 * Object type.
+	 *
 	 * @access public
 	 * @var string
 	 */
-	public $object = '';
+	public $object_type = '';
+
+	/**
+	 * Object name (for post types and taxonomies).
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_name = '';
 
 	/**
 	 * Capability required to edit this field.
@@ -115,16 +125,16 @@ class WP_Fields_API_Field {
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
-	 * @param string $object
-	 * @param string $id                    A specific ID of the field. Can be a
-	 *                                      theme mod or option name.
-	 * @param array  $args                  Field arguments.
+	 * @param string $object_type   Object type.
+	 * @param string $id            A specific ID of the field. Can be a
+	 *                              theme mod or option name.
+	 * @param array  $args          Field arguments.
 	 *
 	 * @return WP_Fields_API_Field $field
 	 */
-	public function init( $object, $id, $args = array() ) {
+	public function init( $object_type, $id, $args = array() ) {
 
-		$this->object = $object;
+		$this->object_type = $object_type;
 
 		$keys = array_keys( get_object_vars( $this ) );
 
@@ -148,11 +158,11 @@ class WP_Fields_API_Field {
 		}
 
 		if ( $this->sanitize_callback ) {
-			add_filter( "fields_sanitize_{$this->object}_{$this->id}", $this->sanitize_callback, 10, 2 );
+			add_filter( "fields_sanitize_{$this->object_type}_{$this->id}", $this->sanitize_callback, 10, 2 );
 		}
 
 		if ( $this->sanitize_js_callback ) {
-			add_filter( "fields_sanitize_js_{$this->object}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
+			add_filter( "fields_sanitize_js_{$this->object_type}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
 		}
 
 	}
@@ -188,7 +198,7 @@ class WP_Fields_API_Field {
 			$this->_previewed_blog_id = get_current_blog_id();
 		}
 
-		switch ( $this->object ) {
+		switch ( $this->object_type ) {
 			case 'customizer' :
 			case 'theme_mod' :
 				add_filter( 'theme_mod_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
@@ -221,21 +231,19 @@ class WP_Fields_API_Field {
 				 *
 				 * The dynamic portion of the hook name, `$this->id`, refers to the field ID.
 				 *
-				 *
 				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 				 */
-				do_action( "fields_preview_{$this->object}_{$this->id}", $this );
+				do_action( "fields_preview_{$this->object_type}_{$this->id}", $this );
 
 				/**
 				 * Fires when the {@see WP_Fields_API_Field::preview()} method is called for fields
 				 * not handled as theme_mods or options.
 				 *
-				 * The dynamic portion of the hook name, `$this->object`, refers to the field type.
-				 *
+				 * The dynamic portion of the hook name, `$this->object_type`, refers to the field type.
 				 *
 				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 				 */
-				do_action( "fields_preview_{$this->object}", $this );
+				do_action( "fields_preview_{$this->object_type}", $this );
 		}
 
 	}
@@ -281,7 +289,7 @@ class WP_Fields_API_Field {
 	 * Check user capabilities and theme supports, and then save
 	 * the value of the field.
 	 *
-	 * @return false|null False if cap check fails or value isn't set.
+	 * @return false|mixed False if cap check fails or value isn't set.
 	 */
 	final public function save() {
 
@@ -300,9 +308,9 @@ class WP_Fields_API_Field {
 		 *
 		 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 		 */
-		do_action( 'fields_save_' . $this->object . '_' . $this->id_data['base'], $this );
+		do_action( 'fields_save_' . $this->object_type . '_' . $this->id_data['base'], $this );
 
-		$this->update( $value );
+		return $this->update( $value );
 
 	}
 
@@ -315,6 +323,9 @@ class WP_Fields_API_Field {
 	 */
 	public function post_value( $default = null ) {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
 		global $wp_fields;
 
 		// Check for a cached value
@@ -350,7 +361,7 @@ class WP_Fields_API_Field {
 		 * @param mixed                $value Value of the field.
 		 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 		 */
-		return apply_filters( "fields_sanitize_{$this->object}_{$this->id}", $value, $this );
+		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->id}", $value, $this );
 
 	}
 
@@ -363,7 +374,7 @@ class WP_Fields_API_Field {
 	 */
 	protected function update( $value ) {
 
-		switch ( $this->object ) {
+		switch ( $this->object_type ) {
 			case 'customizer' :
 			case 'theme_mod' :
 				return $this->_update_theme_mod( $value );
@@ -385,13 +396,13 @@ class WP_Fields_API_Field {
 				 * Fires when the {@see WP_Fields_API_Field::update()} method is called for fields
 				 * not handled as theme_mods or options.
 				 *
-				 * The dynamic portion of the hook name, `$this->object`, refers to the type of field.
+				 * The dynamic portion of the hook name, `$this->object_type`, refers to the type of field.
 				 *
 				 *
 				 * @param mixed                $value Value of the field.
 				 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 				 */
-				return do_action( 'fields_update_' . $this->object, $value, $this );
+				return do_action( 'fields_update_' . $this->object_type, $value, $this );
 		}
 	}
 
@@ -507,7 +518,7 @@ class WP_Fields_API_Field {
 	public function value() {
 
 		// Get the callback that corresponds to the field type.
-		switch ( $this->object ) {
+		switch ( $this->object_type ) {
 			case 'customizer' :
 			case 'theme_mod' :
 				$function = 'get_theme_mod';
@@ -541,7 +552,7 @@ class WP_Fields_API_Field {
 				 *
 				 * @param mixed $default The field default value. Default empty.
 				 */
-				return apply_filters( 'fields_value_' . $this->object . '_' . $this->id_data['base'], $this->default );
+				return apply_filters( 'fields_value_' . $this->object_type . '_' . $this->id_data['base'], $this->default );
 		}
 
 		// Handle non-array value
@@ -573,7 +584,7 @@ class WP_Fields_API_Field {
 		 * @param mixed                $value The field value.
 		 * @param WP_Fields_API_Field $this  {@see WP_Fields_API_Field} instance.
 		 */
-		$value = apply_filters( "fields_sanitize_js_{$this->object}_{$this->id}", $value, $this );
+		$value = apply_filters( "fields_sanitize_js_{$this->object_type}_{$this->id}", $value, $this );
 
 		if ( is_string( $value ) ) {
 			return html_entity_decode( $value, ENT_QUOTES, 'UTF-8' );
@@ -742,11 +753,15 @@ class WP_Fields_API_Field {
 class WP_Fields_API_Filter_Field extends WP_Fields_API_Field {
 
 	/**
-	 * Update value
+	 * Save the value of the field, using the related API.
+	 *
+	 * @param mixed $value The value to update.
+	 *
+	 * @return mixed The result of saving the value.
 	 */
 	public function update( $value ) {
 
-		// Nothing to see here
+		return null;
 
 	}
 }

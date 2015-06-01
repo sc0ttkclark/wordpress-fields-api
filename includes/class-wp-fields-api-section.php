@@ -41,10 +41,20 @@ class WP_Fields_API_Section {
 	public $id = '';
 
 	/**
+	 * Object type.
+	 *
 	 * @access public
 	 * @var string
 	 */
-	public $object = '';
+	public $object_type = '';
+
+	/**
+	 * Object name (for post types and taxonomies).
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_name = '';
 
 	/**
 	 * Priority of the section which informs load order of sections.
@@ -138,13 +148,13 @@ class WP_Fields_API_Section {
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
-	 * @param string $object
-	 * @param string $id                    A specific ID of the section.
-	 * @param array  $args                  Section arguments.
+	 * @param string $object_type   Object type.
+	 * @param string $id            A specific ID of the section.
+	 * @param array  $args          Section arguments.
 	 */
-	public function init( $object, $id, $args = array() ) {
+	public function init( $object_type, $id, $args = array() ) {
 
-		$this->object = $object;
+		$this->object_type = $object_type;
 
 		$keys = array_keys( get_object_vars( $this ) );
 
@@ -186,7 +196,7 @@ class WP_Fields_API_Section {
 		 * @param bool                 $active  Whether the Fields API section is active.
 		 * @param WP_Fields_API_Section $section {@see WP_Fields_API_Section} instance.
 		 */
-		$active = apply_filters( 'fields_api_section_active_' . $this->object, $active, $section );
+		$active = apply_filters( 'fields_api_section_active_' . $this->object_type, $active, $section );
 
 		return $active;
 
@@ -265,24 +275,24 @@ class WP_Fields_API_Section {
 		/**
 		 * Fires before rendering a Fields API section.
 		 *
-		 * The dynamic portion of the hook name, `$this->object`, refers to the object
+		 * The dynamic portion of the hook name, `$this->object_type`, refers to the object
 		 * of the specific Fields API section to be rendered.
 		 *
-		 * @param WP_Fields API_Section $this WP_Fields API_Section instance.
+		 * @param WP_Fields_API_Section $this WP_Fields API_Section instance.
 		 */
-		do_action( "fields_api_render_section_{$this->object}", $this );
+		do_action( "fields_api_render_section_{$this->object_type}", $this );
 
 		/**
 		 * Fires before rendering a specific Fields API section.
 		 *
-		 * The dynamic portion of the hook name, `$this->object`, refers to the ID
+		 * The dynamic portion of the hook name, `$this->object_type`, refers to the ID
 		 * of the specific Fields API section to be rendered.
 		 *
 		 * The dynamic portion of the hook name, `$this->id`, refers to the ID
 		 * of the specific Fields API section to be rendered.
 		 *
 		 */
-		do_action( "fields_api_render_section_{$this->object}_{$this->id}" );
+		do_action( "fields_api_render_section_{$this->object_type}_{$this->id}" );
 
 		$this->render();
 
