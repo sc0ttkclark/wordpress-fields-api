@@ -42,9 +42,9 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 
 		parent::__construct( $this->type, $id, $args );
 
-		add_action( "fields_api_section_active_{$this->object}", array( $this, 'customize_section_active' ), 10, 2 );
-		add_action( "fields_api_render_section_{$this->object}", array( $this, 'customize_render_section' ) );
-		add_action( "fields_api_render_section_{$this->object}_{$this->id}", array( $this, 'customize_render_section_id' ) );
+		add_action( "fields_api_section_active_{$this->object_type}", array( $this, 'customize_section_active' ), 10, 2 );
+		add_action( "fields_api_render_section_{$this->object_type}", array( $this, 'customize_render_section' ) );
+		add_action( "fields_api_render_section_{$this->object_type}_{$this->id}", array( $this, 'customize_render_section_id' ) );
 
 	}
 

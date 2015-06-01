@@ -105,7 +105,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 *
 		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
 		 */
-		do_action( "customize_preview_{$this->object}", $this );
+		do_action( "customize_preview_{$this->object_type}", $this );
 
 	}
 
