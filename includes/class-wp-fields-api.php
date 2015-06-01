@@ -123,7 +123,7 @@ final class WP_Fields_API {
 
 		// Setup containers
 		if ( empty( self::$containers ) ) {
-			if ( empty( $object_name ) ) {
+			if ( null === $object_name || true === $object_name ) {
 				$this->prepare_controls( $object_type );
 			} else {
 				$this->prepare_object_controls( $object_type, $object_name );
@@ -323,6 +323,31 @@ final class WP_Fields_API {
 			}
 
 			$sections = self::$sections;
+
+			// Get only sections for a specific screen
+			if ( null !== $screen ) {
+				$screen_sections = array();
+
+				foreach ( $sections as $object_type => $object_names ) {
+					foreach ( $object_names as $object_name => $object_sections ) {
+						foreach ( $object_sections as $id => $section ) {
+							if ( $screen == $section->screen->id ) {
+								if ( ! isset( $screen_sections[ $object_type ] ) ) {
+									$screen_sections[ $object_type ] = array();
+								}
+
+								if ( ! isset( $screen_sections[ $object_type ][ $object_name ] ) ) {
+									$screen_sections[ $object_type ][ $object_name ] = array();
+								}
+
+								$screen_sections[ $object_type ][ $object_name ][ $id ] = $screen;
+							}
+						}
+					}
+				}
+
+				$sections = $screen_sections;
+			}
 		} elseif ( isset( self::$sections[ $object_type ][ $object_name ] ) ) {
 			// Late init
 			foreach ( self::$sections[ $object_type ][ $object_name ] as $id => $section ) {
@@ -334,7 +359,7 @@ final class WP_Fields_API {
 			$sections = self::$sections[ $object_type ][ $object_name ];
 
 			// Get only sections for a specific screen
-			if ( $screen ) {
+			if ( null !== $screen ) {
 				$screen_sections = array();
 
 				foreach ( $sections as $id => $section ) {
@@ -666,7 +691,7 @@ final class WP_Fields_API {
 			$controls = self::$controls;
 
 			// Get only controls for a specific section
-			if ( $section ) {
+			if ( null !== $section ) {
 				$section_controls = array();
 
 				foreach ( $controls as $object_type => $object_names ) {
@@ -700,7 +725,7 @@ final class WP_Fields_API {
 			$controls = self::$controls[ $object_type ][ $object_name ];
 
 			// Get only controls for a specific section
-			if ( $section ) {
+			if ( null !== $section ) {
 				$section_controls = array();
 
 				foreach ( $controls as $id => $control ) {
