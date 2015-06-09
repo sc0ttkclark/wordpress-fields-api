@@ -28,6 +28,8 @@ I am not focusing on any UI aspects at the moment besides implementation of the 
 
 ## Unknowns / To dos
 
+First Step finish [design document](https://docs.google.com/document/d/17yUTO_vlkC7P4_2c6dIDxa5jQbXvfV9SofC7_GOwFME/edit?usp=sharing) !
+
 There are still a lot of areas the API is not represented in code or in examples.
 
 * Customizer Manager (need to look at `add_dynamic_settings`, not sure if it needs to be abstracted into `$wp_fields`)
