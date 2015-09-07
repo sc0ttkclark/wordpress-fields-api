@@ -271,12 +271,7 @@ class WP_Fields_API_Control {
 
 		$array = array();
 
-		$array['fields'] = array();
-
-		foreach ( $this->fields as $key => $field ) {
-			$array['fields'][ $key ] = $field->id;
-		}
-
+		$array['fields'] = wp_list_pluck( $this->fields, 'id' );
 		$array['type'] = $this->type;
 		$array['priority'] = $this->priority;
 		$array['active'] = $this->active();
@@ -440,7 +435,6 @@ class WP_Fields_API_Control {
 	 * Additional input types such as `email`, `url`, `number`, `hidden` and `date` are supported implicitly.
 	 *
 	 * Control content can alternately be rendered in JS. See {@see WP_Fields_API_Control::print_template()}.
-	 *
 	 */
 	public function render_content() {
 
@@ -558,7 +552,6 @@ class WP_Fields_API_Control {
 	 *
 	 * In the future, this will also print the template for the control's container
 	 * element and be override-able.
-	 *
 	 */
 	public function print_template() {
 
@@ -577,7 +570,6 @@ class WP_Fields_API_Control {
 	 * export custom variables by overriding {@see WP_Fields_API_Control::to_json()}.
 	 *
 	 * @see WP_Fields_API_Control::print_template()
-	 *
 	 */
 	public function content_template() {
 
