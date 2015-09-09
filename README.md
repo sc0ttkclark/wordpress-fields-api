@@ -183,7 +183,7 @@ function fields_api_example_settings_register( $wp_fields ) {
 			'title'      => __( 'Sharing', 'mytheme' ),
 
 			// Alternative page title
-			'page_title' => __( 'MyTheme Sharing.', 'mytheme' )
+			'page_title' => __( 'MyTheme Sharing.', 'mytheme' ),
 
 			// Capability needed to tweak
 			'capability' => 'manage_options',
