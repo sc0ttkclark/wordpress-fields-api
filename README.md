@@ -92,7 +92,7 @@ function fields_api_example_customizer_register( $wp_fields ) {
 				'section'  => 'mytheme_options',
 
 				// Determines the order this control appears in for the specified section
-				'priority' => 10
+				'priority' => 10,
 
 				// Control type
 				'type'     => 'color'
