@@ -79,12 +79,12 @@ function fields_api_example_customizer_register( $wp_fields ) {
 
 			// What triggers a refresh of the field? 'refresh' or 'postMessage' (instant)?
 			'transport'  => 'postMessage',
-			
+
 			// Optional. Add an associated control (otherwise it won't show up in the UI)
 			'control'    => array(
 				// Set a unique ID for the control
 				'id'       => 'mytheme_link_textcolor',
-				
+
 				// Admin-visible name of the control
 				'label'    => __( 'Link Color', 'mytheme' ),
 
@@ -93,7 +93,7 @@ function fields_api_example_customizer_register( $wp_fields ) {
 
 				// Determines the order this control appears in for the specified section
 				'priority' => 10
-				
+
 				// Control type
 				'type'     => 'color'
 			)
@@ -106,7 +106,7 @@ function fields_api_example_customizer_register( $wp_fields ) {
 	$wp_fields->get_field( 'customizer', 'blogdescription' )->transport  = 'postMessage';
 	$wp_fields->get_field( 'customizer', 'header_textcolor' )->transport = 'postMessage';
 	$wp_fields->get_field( 'customizer', 'background_color' )->transport = 'postMessage';
-   
+
 }
 add_action( 'fields_register', 'fields_api_example_customizer_register' );
 ```
@@ -133,32 +133,32 @@ function fields_api_example_user_field_register()  {
 			'control' => array(
 				// Set a unique ID for the control
 				'id'      => 'mytheme_user_twitter',
-				
+
 				// Admin-visible name of the control
 				'label'   => __( 'Twitter Username', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
 				'section' => 'mytheme_user_social_fields',
-				
+
 				// Control type
 				'type'    => 'text'
 			)
 		)
 	);
-	
+
 	$wp_fields->add_field( 'user', 'google_plus',
 		array(
 			// Optional. Add an associated control (otherwise it won't show up in the UI)
 			'control' => array(
 				// Set a unique ID for the control
 				'id'      => 'mytheme_user_google_plus',
-				
+
 				// Admin-visible name of the control
 				'label'   => __( 'Google+ Profile URL', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
 				'section' => 'mytheme_user_social_fields',
-				
+
 				// Control type
 				'type'    => 'text'
 			)
@@ -189,7 +189,7 @@ function fields_api_example_settings_register( $wp_fields ) {
 			'capability' => 'manage_options',
 		)
 	);
-	
+
 	// 2. Define a new section for the Settings
 	$wp_fields->add_section( 'settings', 'mytheme_setting_sharing',
 		array(
@@ -209,27 +209,27 @@ function fields_api_example_settings_register( $wp_fields ) {
 
 			// Optional. Special permissions for accessing this setting.
 			'capability' => 'manage_options',
-			
+
 			// Optional. Add an associated control (otherwise it won't show up in the UI)
 			'control'    => array(
 				// Don't set 'id' and it will automatically be generated for you as
 				// 'id' => 'fields_settings_mytheme_sharing_buttons',
-				
+
 				// Admin-visible name of the control
 				'label'       => __( 'Show Sharing Buttons?', 'mytheme' ),
-				
+
 				// Admin-visible name of the control
 				'description' => __( 'This will show sharing buttons below blog posts on singular templates', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
 				'section'     => 'mytheme_setting_sharing',
-				
+
 				// Control type
 				'type'        => 'checkbox'
 			)
 		)
 	);
-   
+
 }
 add_action( 'fields_register', 'fields_api_example_settings_register' );
 ```
@@ -246,7 +246,7 @@ function fields_api_example_post_field_register( $wp_fields ) {
 		array(
 			// The post type name
 			'object_name' => 'my_cpt',
-			
+
 			// Visible title of section
 			'title'       => __( 'My Meta Box', 'mytheme' ),
 
@@ -266,30 +266,30 @@ function fields_api_example_post_field_register( $wp_fields ) {
 		array(
 			// The post type name
 			'object_name' => 'my_cpt',
-			
+
 			// Default field/value to save
 			'default'    => 'All about that post',
 
 			// Optional. Special permissions for accessing this field.
 			'capability' => 'my_custom_capability',
-			
+
 			// Optional. Add an associated control (otherwise it won't show up in the UI)
 			'control' => array(
 				// Don't set 'id' and it will automatically be generated for you as
 				// 'id' => 'fields_post_my_cpt_my_custom_field',
-				
+
 				// Admin-visible name of the control
 				'label'   => __( 'My Custom Field', 'mytheme' ),
 
 				// ID of the section this control should render in (can be one of yours, or a WordPress default section)
 				'section' => 'my_meta_box',
-				
+
 				// Control type
 				'type'    => 'text'
 			)
 		)
 	);
-   
+
 }
 add_action( 'fields_register', 'fields_api_example_post_field_register' );
 ```
