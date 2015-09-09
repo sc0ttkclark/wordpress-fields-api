@@ -114,7 +114,7 @@ add_action( 'fields_register', 'fields_api_example_customizer_register' );
 ### Register fields to a User profile
 
 ```php
-function fields_api_example_user_field_register()  {
+function fields_api_example_user_field_register( $wp_fields )  {
 
 	// This is a *new* API
 
