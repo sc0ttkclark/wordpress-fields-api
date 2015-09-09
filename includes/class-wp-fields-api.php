@@ -1,6 +1,6 @@
 <?php
 /**
- * Class WP_Fields_API
+ * This is a manager for the Fields API, based on the WP_Customize_Manager.
  *
  * @package WordPress
  * @subpackage Fields_API
@@ -71,8 +71,9 @@ final class WP_Fields_API {
 	private $_post_values;
 
 	/**
-	 * Constructor.
+	 * Include the library and bootstrap.
 	 *
+	 * @constructor
 	 * @access public
 	 */
 	public function __construct() {
@@ -90,19 +91,19 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Allow Fields, Sections, Screens, and Controls to be registered
+	 * Trigger the `fields_register` action hook on `wp_loaded`.
+	 *
+	 * Fields, Sections, Screens, and Controls should be registered on this hook.
 	 *
 	 * @access public
 	 */
 	public function wp_loaded() {
-
 		/**
-		 * Fires once WordPress has loaded, allowing scripts and styles to be initialized.
+		 * Fires when the Fields API is avaiable, and components can be registered.
 		 *
-		 * @param WP_Fields_API $this WP_Fields_API instance.
+		 * @param WP_Fields_API $this The Fields manager object.
 		 */
 		do_action( 'fields_register', $this );
-
 	}
 
 	/**
@@ -110,18 +111,18 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string|null $object_type   Object type, null for all containers for all object types.
-	 * @param string|boolean|null $object_name   Object name (for post types and taxonomies), true for all containers for all object names.
-	 *
+	 * @param string|null         $object_type   Object type. Null for all containers for all object types.
+	 * @param string|boolean|null $object_name   Object name (for post types and taxonomies).
+	 *                                           True for all containers for all object names.
 	 * @return array<WP_Fields_API_Screen|WP_Fields_API_Section>
 	 */
 	public function get_containers( $object_type = null, $object_name = null ) {
-
+		// $object_name defaults to '_{$object_type}' for internal handling.
 		if ( null === $object_name && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			$object_name = '_' . $object_type;
 		}
 
-		// Setup containers
+		// Setup containers.
 		if ( empty( self::$containers ) ) {
 			if ( null === $object_name || true === $object_name ) {
 				$this->prepare_controls( $object_type );
@@ -133,20 +134,19 @@ final class WP_Fields_API {
 		$containers = array();
 
 		if ( null === $object_type ) {
-			// Get all containers
+			// Get all containers.
 			$containers = self::$containers;
 		} elseif ( isset( self::$containers[ $object_type ][ $object_name ] ) ) {
-			// Get all containers by object name
+			// Get all containers by object name.
 			$containers = self::$containers[ $object_type ][ $object_name ];
 		} elseif ( true === $object_name ) {
-			// Get all containers by object type
+			// Get all containers by object type.
 			foreach ( self::$containers[ $object_type ] as $object_name => $object_containers ) {
 				$containers = array_merge( $containers, array_values( $object_containers ) );
 			}
 		}
 
 		return $containers;
-
 	}
 
 	/**
@@ -156,19 +156,18 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type   Object type.
 	 * @param string $object_name   Object name (for post types and taxonomies).
-	 *
 	 * @return array<WP_Fields_API_Screen>
 	 */
 	public function get_screens( $object_type = null, $object_name = null ) {
-
+		// $object_name defaults to '_{$object_type}' for internal handling.
 		if ( null === $object_name && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			$object_name = '_' . $object_type;
 		}
 
 		$screens = array();
 
 		if ( null === $object_type ) {
-			// Late init
+			// Late init.
 			foreach ( self::$screens as $object_type => $object_names ) {
 				foreach ( $object_names as $object_name => $screens ) {
 					$this->get_screens( $object_type, $object_name );
@@ -177,7 +176,7 @@ final class WP_Fields_API {
 
 			$screens = self::$screens;
 		} elseif ( isset( self::$screens[ $object_type ][ $object_name ] ) ) {
-			// Late init
+			// Late init.
 			foreach ( self::$screens[ $object_type ][ $object_name ] as $id => $screen ) {
 				if ( is_array( $screen ) ) {
 					self::$screens[ $object_type ][ $object_name ][ $id ] = new WP_Fields_API_Screen( $object_type, $id, $screen );
@@ -186,16 +185,14 @@ final class WP_Fields_API {
 
 			$screens = self::$screens[ $object_type ][ $object_name ];
 		} elseif ( true === $object_name ) {
-			// Get all screens
-
-			// Late init
+			// Get all screens.
+			// Late init.
 			foreach ( self::$screens[ $object_type ] as $object_name => $object_screens ) {
 				$screens = array_merge( $screens, array_values( $this->get_screens( $object_type, $object_name ) ) );
 			}
 		}
 
 		return $screens;
-
 	}
 
 	/**
@@ -205,10 +202,9 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type              Object type.
 	 * @param WP_Fields_API_Screen|string $id  Field Screen object, or Screen ID.
-	 * @param array $args                     Optional. Screen arguments. Default empty array.
+	 * @param array $args                      Optional. Screen arguments. Default empty array.
 	 */
 	public function add_screen( $object_type, $id, $args = array() ) {
-
 		$object_name = null;
 
 		if ( is_a( $id, 'WP_Fields_API_Screen' ) ) {
@@ -218,7 +214,7 @@ final class WP_Fields_API {
 
 			$object_name = $screen->object_name;
 		} else {
-			// Save for late init
+			// Save for late init.
 			$screen = $args;
 
 			if ( ! empty( $screen['object_name'] ) ) {
@@ -226,8 +222,9 @@ final class WP_Fields_API {
 			}
 		}
 
+		// $object_name defaults to '_{$object_type}' for internal handling.
 		if ( null === $object_name && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			$object_name = '_' . $object_type;
 		}
 
 		if ( ! isset( self::$screens[ $object_type ] ) ) {
@@ -239,7 +236,6 @@ final class WP_Fields_API {
 		}
 
 		self::$screens[ $object_type ][ $object_name ][ $id ] = $screen;
-
 	}
 
 	/**
@@ -254,7 +250,6 @@ final class WP_Fields_API {
 	 * @return WP_Fields_API_Screen Requested screen instance.
 	 */
 	public function get_screen( $object_type, $id, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -271,7 +266,6 @@ final class WP_Fields_API {
 		}
 
 		return $screen;
-
 	}
 
 	/**
@@ -284,7 +278,6 @@ final class WP_Fields_API {
 	 * @param string $object_name   Object name (for post types and taxonomies).
 	 */
 	public function remove_screen( $object_type, $id, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -292,7 +285,6 @@ final class WP_Fields_API {
 		if ( isset( self::$screens[ $object_type ][ $object_name ][ $id ] ) ) {
 			unset( self::$screens[ $object_type ][ $object_name ][ $id ] );
 		}
-
 	}
 
 	/**
@@ -307,7 +299,6 @@ final class WP_Fields_API {
 	 * @return array<WP_Fields_API_Section>
 	 */
 	public function get_sections( $object_type = null, $object_name = null, $screen = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -380,7 +371,6 @@ final class WP_Fields_API {
 		}
 
 		return $sections;
-
 	}
 
 	/**
@@ -388,12 +378,11 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type                Object type.
+	 * @param string $object_type               Object type.
 	 * @param WP_Fields_API_Section|string $id  Field Section object, or Section ID.
 	 * @param array                       $args Section arguments.
 	 */
 	public function add_section( $object_type, $id, $args = array() ) {
-
 		$object_name = null;
 
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
@@ -439,7 +428,6 @@ final class WP_Fields_API {
 	 * @return WP_Fields_API_Section Requested section instance.
 	 */
 	public function get_section( $object_type, $id, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -456,7 +444,6 @@ final class WP_Fields_API {
 		}
 
 		return $section;
-
 	}
 
 	/**
@@ -469,7 +456,6 @@ final class WP_Fields_API {
 	 * @param string $object_name   Object name (for post types and taxonomies).
 	 */
 	public function remove_section( $object_type, $id, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -477,7 +463,6 @@ final class WP_Fields_API {
 		if ( isset( self::$sections[ $object_type ][ $object_name ][ $id ] ) ) {
 			unset( self::$sections[ $object_type ][ $object_name ][ $id ] );
 		}
-
 	}
 
 	/**
@@ -491,7 +476,6 @@ final class WP_Fields_API {
 	 * @return array<WP_Fields_API_Field>
 	 */
 	public function get_fields( $object_type = null, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -526,7 +510,6 @@ final class WP_Fields_API {
 		}
 
 		return $fields;
-
 	}
 
 	/**
@@ -540,7 +523,6 @@ final class WP_Fields_API {
 	 *                                          constructor.
 	 */
 	public function add_field( $object_type, $id, $args = array() ) {
-
 		$object_name = null;
 
 		$control = array();
@@ -605,7 +587,6 @@ final class WP_Fields_API {
 			// Add control for field
 			$this->add_control( $object_type, $control_id, $control );
 		}
-
 	}
 
 	/**
@@ -616,11 +597,9 @@ final class WP_Fields_API {
 	 * @param string $object_type   Object type.
 	 * @param string $id            Field ID.
 	 * @param string $object_name   Object name (for post types and taxonomies).
-	 *
 	 * @return WP_Fields_API_Field|null
 	 */
 	public function get_field( $object_type, $id, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -637,7 +616,6 @@ final class WP_Fields_API {
 		}
 
 		return $field;
-
 	}
 
 	/**
@@ -669,11 +647,9 @@ final class WP_Fields_API {
 	 * @param string $object_type   Object type.
 	 * @param string $object_name   Object name (for post types and taxonomies).
 	 * @param string $section       Section ID.
-	 *
 	 * @return array<WP_Fields_API_Control>
 	 */
 	public function get_controls( $object_type = null, $object_name = null, $section = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -747,7 +723,6 @@ final class WP_Fields_API {
 		}
 
 		return $controls;
-
 	}
 
 	/**
@@ -761,7 +736,6 @@ final class WP_Fields_API {
 	 *                                           constructor.
 	 */
 	public function add_control( $object_type, $id, $args = array() ) {
-
 		$object_name = null;
 
 		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
@@ -792,7 +766,6 @@ final class WP_Fields_API {
 		}
 
 		self::$controls[ $object_type ][ $object_name ][ $id ] = $control;
-
 	}
 
 	/**
@@ -807,7 +780,6 @@ final class WP_Fields_API {
 	 * @return WP_Fields_API_Control $control The control object.
 	 */
 	public function get_control( $object_type, $id, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -824,7 +796,6 @@ final class WP_Fields_API {
 		}
 
 		return $control;
-
 	}
 
 	/**
@@ -837,7 +808,6 @@ final class WP_Fields_API {
 	 * @param string $object_name   Object name (for post types and taxonomies).
 	 */
 	public function remove_control( $object_type, $id, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -845,7 +815,6 @@ final class WP_Fields_API {
 		if ( isset( self::$controls[ $object_type ][ $object_name ][ $id ] ) ) {
 			unset( self::$controls[ $object_type ][ $object_name ][ $id ] );
 		}
-
 	}
 
 	/**
@@ -859,9 +828,7 @@ final class WP_Fields_API {
 	 *                        {@see WP_Fields_API_Control}.
 	 */
 	public function register_control_type( $control ) {
-
 		self::$registered_control_types[] = $control;
-
 	}
 
 	/**
@@ -870,7 +837,6 @@ final class WP_Fields_API {
 	 * @access public
 	 */
 	public function render_control_templates() {
-
 		/**
 		 * @var $control WP_Fields_API_Control
 		 */
@@ -879,7 +845,6 @@ final class WP_Fields_API {
 
 			$control->print_template();
 		}
-
 	}
 
 	/**
@@ -893,7 +858,6 @@ final class WP_Fields_API {
 	 * @return int
 	 */
 	protected final function _cmp_priority( $a, $b ) {
-
 		if ( is_int( $a->priority ) && is_int( $b->priority ) ) {
 			// Priority integers
 			$compare = $a->priority - $b->priority;
@@ -907,7 +871,6 @@ final class WP_Fields_API {
 		}
 
 		return $compare;
-
 	}
 
 	/**
@@ -922,7 +885,6 @@ final class WP_Fields_API {
 	 * @param string $object_type   Object type.
 	 */
 	public function prepare_controls( $object_type = null ) {
-
 		// Prepare controls for all object types
 		foreach ( self::$fields as $object => $object_names ) {
 			if ( null === $object_type || $object === $object_type ) {
@@ -931,7 +893,6 @@ final class WP_Fields_API {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -947,7 +908,6 @@ final class WP_Fields_API {
 	 * @param string $object_name   Object name (for post types and taxonomies).
 	 */
 	public function prepare_object_controls( $object_type, $object_name = null ) {
-
 		if ( null === $object_name && ! empty( $object_type ) ) {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
@@ -1124,7 +1084,6 @@ final class WP_Fields_API {
 		}
 
 		self::$prepared_ids[ $object_type ][ $object_name ] = $prepared_ids;
-
 	}
 
 	/**
@@ -1133,7 +1092,6 @@ final class WP_Fields_API {
 	 * @access public
 	 */
 	public function register_controls() {
-
 		/* Control Types (custom control classes) */
 		//$this->register_control_type( 'WP_Fields_API_Text_Control' );
 		$this->register_control_type( 'WP_Fields_API_Color_Control' );
@@ -1147,7 +1105,6 @@ final class WP_Fields_API {
 		 * @param WP_Fields_API $this WP_Fields_API instance.
 		 */
 		do_action( 'fields_register_controls', $this );
-
 	}
 
 	/**
@@ -1162,7 +1119,6 @@ final class WP_Fields_API {
 	 * @return boolean
 	 */
 	public function is_prepared( $object_type, $type, $id ) {
-
 		$found = false;
 
 		if ( ! empty( self::$prepared_ids[ $object_type ][ $type ] ) && in_array( $id, self::$prepared_ids[ $object_type ][ $type ] ) ) {
@@ -1170,7 +1126,6 @@ final class WP_Fields_API {
 		}
 
 		return $found;
-
 	}
 
 	/**
@@ -1180,7 +1135,6 @@ final class WP_Fields_API {
 	 * @return array
 	 */
 	public function unsanitized_post_values() {
-
 		if ( ! isset( $this->_post_values ) ) {
 			$this->_post_values = false;
 		}
@@ -1190,7 +1144,6 @@ final class WP_Fields_API {
 		}
 
 		return $this->_post_values;
-
 	}
 
 	/**
@@ -1203,7 +1156,6 @@ final class WP_Fields_API {
 	 * @return string|mixed $post_value Sanitized value or the $default provided
 	 */
 	public function post_value( $field, $default = null ) {
-
 		$post_values = $this->unsanitized_post_values();
 
 		if ( array_key_exists( $field->id, $post_values ) ) {
@@ -1211,7 +1163,6 @@ final class WP_Fields_API {
 		}
 
 		return $default;
-
 	}
 
 }
