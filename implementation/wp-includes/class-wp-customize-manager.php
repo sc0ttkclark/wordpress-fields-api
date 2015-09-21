@@ -91,11 +91,11 @@ final class WP_Customize_Manager {
 	 * @since 3.4.0
 	 */
 	public function __construct() {
-		require_once( ABSPATH . WPINC . '/class-wp-customize-setting.php' );
-		require_once( ABSPATH . WPINC . '/class-wp-customize-panel.php' );
-		require_once( ABSPATH . WPINC . '/class-wp-customize-section.php' );
-		require_once( ABSPATH . WPINC . '/class-wp-customize-control.php' );
-		require_once( ABSPATH . WPINC . '/class-wp-customize-widgets.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-setting.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-panel.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-section.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-control.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-widgets.php' );
 
 		$this->widgets = new WP_Customize_Widgets( $this );
 
