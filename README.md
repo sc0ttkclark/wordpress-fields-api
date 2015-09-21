@@ -11,6 +11,13 @@ This was initially a project of the [WordPress core Options/Metadata team](http:
 
 Please note: This plugin is not in running condition, it is still in the early stages of development.
 
+## Requirements
+
+Every Fields API release has to be based off of the latest WordPress stable release. This means that overtime, we can only support the last stable release of WordPress as at the end of each WP release cycle we have to merge all of the Customizer and other implementations we have with the latest changes from core.
+
+* WordPress 4.3.x - No previous or more recent major version can be 100% supported and confirmed as working.
+* Fields API installed as a plugin
+
 ## Why a Fields API?
 
 There are over a hundred (I stopped counting, sue me) plugins in the plugin repository that add meta boxes and fields to post types, settings, users, and even more if you include all of the themes and plugins that hook into the customizer. Many plugins build their own abstraction level for doing this, and custom field plugins are the biggest culprit of not following any standards for which to there is a significant need to unite these APIs to make them more consistent. At the same time, being able to provide a detailed structure for a site will take the capabilities of apps that extend WordPress (or interact with it) to the next level.
