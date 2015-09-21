@@ -7,7 +7,7 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( dirname( __FILE__ ) . '/admin.php' );
+require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Modify before core merge
 
 wp_reset_vars( array( 'action', 'user_id', 'wp_http_referer' ) );
 

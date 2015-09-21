@@ -54,3 +54,18 @@ function _wp_fields_api_customize_include() {
 
 remove_action( 'plugins_loaded', '_wp_customize_include' );
 add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );
+
+/**
+ * Implement Fields API User edit to override WP Core.
+ */
+function _wp_fields_api_user_edit_include() {
+
+	// Load our overrides
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/user.php' );
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/user-edit.php' );
+
+	// Bail on original core file, don't run the rest
+	exit;
+
+}
+add_action( 'load-user-edit.php', '_wp_fields_api_user_edit_include' );
