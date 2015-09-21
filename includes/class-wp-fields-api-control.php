@@ -64,6 +64,14 @@ class WP_Fields_API_Control {
 	public $field = 'default';
 
 	/**
+	 * The primary screen for the control (if there is one).
+	 *
+	 * @access public
+	 * @var string|WP_Fields_API_Screen
+	 */
+	public $screen;
+
+	/**
 	 * @access public
 	 * @var int
 	 */
