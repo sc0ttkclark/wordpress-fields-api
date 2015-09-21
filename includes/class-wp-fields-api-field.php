@@ -201,13 +201,13 @@ class WP_Fields_API_Field {
 		}
 
 		switch ( $this->object_type ) {
-			case 'customizer' :
-			case 'theme_mod' :
+			case 'customizer' : // Primary object type
+			case 'theme_mod' : // Backwards compatible for Customizer
 				add_filter( 'theme_mod_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
 				break;
 
-			case 'option' :
-			case 'settings' :
+			case 'settings' : // Primary object type
+			case 'option' : // Backwards compatible for Customizer
 				if ( empty( $this->id_data['keys'] ) ) {
 					add_filter( 'pre_option_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
 				} else {
@@ -216,8 +216,8 @@ class WP_Fields_API_Field {
 				}
 				break;
 
-			case 'post_type' :
-			case 'post' :
+			case 'post' : // Primary object type
+			case 'post_type' : // Backwards compatible for Customizer
 				add_filter( 'get_post_metadata', array( $this, '_preview_filter' ) );
 				break;
 
@@ -377,16 +377,16 @@ class WP_Fields_API_Field {
 	protected function update( $value ) {
 
 		switch ( $this->object_type ) {
-			case 'customizer' :
-			case 'theme_mod' :
+			case 'customizer' : // Primary object type
+			case 'theme_mod' : // Backwards compatible for Customizer
 				return $this->_update_theme_mod( $value );
 
-			case 'option' :
-			case 'settings' :
+			case 'settings' : // Primary object type
+			case 'option' : // Backwards compatible for Customizer
 				return $this->_update_option( $value );
 
-			case 'post_type' :
-			case 'post' :
+			case 'post' : // Primary object type
+			case 'post_type' : // Backwards compatible for Customizer
 				return $this->_update_post_meta( $value );
 
 			case 'user' :
@@ -521,18 +521,18 @@ class WP_Fields_API_Field {
 
 		// Get the callback that corresponds to the field type.
 		switch ( $this->object_type ) {
-			case 'customizer' :
-			case 'theme_mod' :
+			case 'customizer' : // Primary object type
+			case 'theme_mod' : // Backwards compatible for Customizer
 				$function = 'get_theme_mod';
 				break;
 
-			case 'option' :
-			case 'settings' :
+			case 'settings' : // Primary object type
+			case 'option' : // Backwards compatible for Customizer
 				$function = 'get_option';
 				break;
 
-			case 'post_type' :
-			case 'post' :
+			case 'post' : // Primary object type
+			case 'post_type' : // Backwards compatible for Customizer
 				$function = 'get_post_meta';
 				break;
 
