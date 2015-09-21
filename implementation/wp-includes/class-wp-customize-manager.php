@@ -91,6 +91,7 @@ final class WP_Customize_Manager {
 	 * @since 3.4.0
 	 */
 	public function __construct() {
+		// @todo Modify these paths before core merge
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-setting.php' );
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-panel.php' );
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-section.php' );
