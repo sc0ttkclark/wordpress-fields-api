@@ -17,10 +17,13 @@ Requires WP: 4.1
  * @subpackage Fields_API
  */
 
+/**
+ * The absolute server path to the fields API directory.
+ */
 define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
- * Include class and setup global
+ * On `plugins_loaded`, create an instnace of the Fields API manager class.
  */
 function _wp_fields_api_include() {
 

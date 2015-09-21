@@ -1,8 +1,9 @@
 <?php
+
 /**
- * Class WP_Fields_API
+ * This is a manager for the Fields API, based on the WP_Customize_Manager.
  *
- * @package WordPress
+ * @package    WordPress
  * @subpackage Fields_API
  */
 final class WP_Fields_API {
@@ -64,23 +65,17 @@ final class WP_Fields_API {
 	protected static $prepared_ids = array();
 
 	/**
-	 * Unsanitized values for Fields.
+	 * Include the library and bootstrap.
 	 *
-	 * @var array|false
-	 */
-	private $_post_values;
-
-	/**
-	 * Constructor.
-	 *
+	 * @constructor
 	 * @access public
 	 */
 	public function __construct() {
 
-	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-field.php' );
-	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-control.php' );
-	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-section.php' );
-	    require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-screen.php' );
+		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-field.php' );
+		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-control.php' );
+		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-section.php' );
+		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-screen.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
@@ -90,16 +85,18 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Allow Fields, Sections, Screens, and Controls to be registered
+	 * Trigger the `fields_register` action hook on `wp_loaded`.
+	 *
+	 * Fields, Sections, Screens, and Controls should be registered on this hook.
 	 *
 	 * @access public
 	 */
 	public function wp_loaded() {
 
 		/**
-		 * Fires once WordPress has loaded, allowing scripts and styles to be initialized.
+		 * Fires when the Fields API is avaiable, and components can be registered.
 		 *
-		 * @param WP_Fields_API $this WP_Fields_API instance.
+		 * @param WP_Fields_API $this The Fields manager object.
 		 */
 		do_action( 'fields_register', $this );
 
@@ -110,18 +107,20 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string|null $object_type   Object type, null for all containers for all object types.
-	 * @param string|boolean|null $object_name   Object name (for post types and taxonomies), true for all containers for all object names.
+	 * @param string|null         $object_type   Object type. Null for all containers for all object types.
+	 * @param string|boolean|null $object_name   Object name (for post types and taxonomies).
+	 *                                           True for all containers for all object names.
 	 *
 	 * @return array<WP_Fields_API_Screen|WP_Fields_API_Section>
 	 */
 	public function get_containers( $object_type = null, $object_name = null ) {
 
+		// $object_name defaults to '_{$object_type}' for internal handling.
 		if ( null === $object_name && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			$object_name = '_' . $object_type;
 		}
 
-		// Setup containers
+		// Setup containers.
 		if ( empty( self::$containers ) ) {
 			if ( null === $object_name || true === $object_name ) {
 				$this->prepare_controls( $object_type );
@@ -133,13 +132,13 @@ final class WP_Fields_API {
 		$containers = array();
 
 		if ( null === $object_type ) {
-			// Get all containers
+			// Get all containers.
 			$containers = self::$containers;
 		} elseif ( isset( self::$containers[ $object_type ][ $object_name ] ) ) {
-			// Get all containers by object name
+			// Get all containers by object name.
 			$containers = self::$containers[ $object_type ][ $object_name ];
 		} elseif ( true === $object_name ) {
-			// Get all containers by object type
+			// Get all containers by object type.
 			foreach ( self::$containers[ $object_type ] as $object_name => $object_containers ) {
 				$containers = array_merge( $containers, array_values( $object_containers ) );
 			}
@@ -154,21 +153,22 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
 	 * @return array<WP_Fields_API_Screen>
 	 */
 	public function get_screens( $object_type = null, $object_name = null ) {
 
+		// $object_name defaults to '_{$object_type}' for internal handling.
 		if ( null === $object_name && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			$object_name = '_' . $object_type;
 		}
 
 		$screens = array();
 
 		if ( null === $object_type ) {
-			// Late init
+			// Late init.
 			foreach ( self::$screens as $object_type => $object_names ) {
 				foreach ( $object_names as $object_name => $screens ) {
 					$this->get_screens( $object_type, $object_name );
@@ -177,7 +177,7 @@ final class WP_Fields_API {
 
 			$screens = self::$screens;
 		} elseif ( isset( self::$screens[ $object_type ][ $object_name ] ) ) {
-			// Late init
+			// Late init.
 			foreach ( self::$screens[ $object_type ][ $object_name ] as $id => $screen ) {
 				if ( is_array( $screen ) ) {
 					self::$screens[ $object_type ][ $object_name ][ $id ] = new WP_Fields_API_Screen( $object_type, $id, $screen );
@@ -186,9 +186,8 @@ final class WP_Fields_API {
 
 			$screens = self::$screens[ $object_type ][ $object_name ];
 		} elseif ( true === $object_name ) {
-			// Get all screens
-
-			// Late init
+			// Get all screens.
+			// Late init.
 			foreach ( self::$screens[ $object_type ] as $object_name => $object_screens ) {
 				$screens = array_merge( $screens, array_values( $this->get_screens( $object_type, $object_name ) ) );
 			}
@@ -203,9 +202,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type              Object type.
-	 * @param WP_Fields_API_Screen|string $id  Field Screen object, or Screen ID.
-	 * @param array $args                     Optional. Screen arguments. Default empty array.
+	 * @param string                      $object_type Object type.
+	 * @param WP_Fields_API_Screen|string $id          Field Screen object, or Screen ID.
+	 * @param array                       $args        Optional. Screen arguments. Default empty array.
 	 */
 	public function add_screen( $object_type, $id, $args = array() ) {
 
@@ -218,7 +217,7 @@ final class WP_Fields_API {
 
 			$object_name = $screen->object_name;
 		} else {
-			// Save for late init
+			// Save for late init.
 			$screen = $args;
 
 			if ( ! empty( $screen['object_name'] ) ) {
@@ -226,8 +225,9 @@ final class WP_Fields_API {
 			}
 		}
 
+		// $object_name defaults to '_{$object_type}' for internal handling.
 		if ( null === $object_name && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			$object_name = '_' . $object_type;
 		}
 
 		if ( ! isset( self::$screens[ $object_type ] ) ) {
@@ -247,9 +247,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            Screen ID to get.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          Screen ID to get.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Screen Requested screen instance.
 	 */
@@ -279,9 +279,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            Screen ID to remove.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          Screen ID to remove.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 */
 	public function remove_screen( $object_type, $id, $object_name = null ) {
 
@@ -300,9 +300,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $object_name   Object name (for post types and taxonomies).
-	 * @param string $screen        Screen ID.
+	 * @param string $object_type Object type.
+	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $screen      Screen ID.
 	 *
 	 * @return array<WP_Fields_API_Section>
 	 */
@@ -388,9 +388,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type                Object type.
-	 * @param WP_Fields_API_Section|string $id  Field Section object, or Section ID.
-	 * @param array                       $args Section arguments.
+	 * @param string                       $object_type Object type.
+	 * @param WP_Fields_API_Section|string $id          Field Section object, or Section ID.
+	 * @param array                        $args        Section arguments.
 	 */
 	public function add_section( $object_type, $id, $args = array() ) {
 
@@ -425,6 +425,7 @@ final class WP_Fields_API {
 
 		self::$sections[ $object_type ][ $object_name ][ $id ] = $section;
 
+
 	}
 
 	/**
@@ -432,9 +433,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            Section ID to get.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          Section ID to get.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Section Requested section instance.
 	 */
@@ -464,9 +465,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            Section ID to remove.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          Section ID to remove.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 */
 	public function remove_section( $object_type, $id, $object_name = null ) {
 
@@ -485,8 +486,8 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
 	 * @return array<WP_Fields_API_Field>
 	 */
@@ -534,10 +535,10 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type               Object type.
-	 * @param WP_Fields_API_Field|string $id  Fields API Field object, or ID.
-	 * @param array $args                       Field arguments; passed to WP_Fields_API_Field
-	 *                                          constructor.
+	 * @param string                     $object_type Object type.
+	 * @param WP_Fields_API_Field|string $id          Fields API Field object, or ID.
+	 * @param array                      $args        Field arguments; passed to WP_Fields_API_Field
+	 *                                                constructor.
 	 */
 	public function add_field( $object_type, $id, $args = array() ) {
 
@@ -613,9 +614,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            Field ID.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          Field ID.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Field|null
 	 */
@@ -645,9 +646,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            Field ID.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          Field ID.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 */
 	public function remove_field( $object_type, $id, $object_name = null ) {
 
@@ -666,9 +667,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $object_name   Object name (for post types and taxonomies).
-	 * @param string $section       Section ID.
+	 * @param string $object_type Object type.
+	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $section     Section ID.
 	 *
 	 * @return array<WP_Fields_API_Control>
 	 */
@@ -755,10 +756,10 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type Object type.
-	 * @param WP_Fields_API_Control|string $id   Field Control object, or ID.
-	 * @param array                       $args  Control arguments; passed to WP_Fields_API_Control
-	 *                                           constructor.
+	 * @param string                       $object_type Object type.
+	 * @param WP_Fields_API_Control|string $id          Field Control object, or ID.
+	 * @param array                        $args        Control arguments; passed to WP_Fields_API_Control
+	 *                                                  constructor.
 	 */
 	public function add_control( $object_type, $id, $args = array() ) {
 
@@ -800,9 +801,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            ID of the control.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          ID of the control.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Control $control The control object.
 	 */
@@ -832,9 +833,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            Control ID to remove.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $id          Control ID to remove.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 */
 	public function remove_control( $object_type, $id, $object_name = null ) {
 
@@ -887,8 +888,8 @@ final class WP_Fields_API {
 	 *
 	 * @access protected
 	 *
-	 * @param {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $a Object A.
-	 * @param {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $b Object B.
+	 * @param  {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $a Object A.
+	 * @param  {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $b Object B.
 	 *
 	 * @return int
 	 */
@@ -919,7 +920,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
+	 * @param string $object_type Object type.
 	 */
 	public function prepare_controls( $object_type = null ) {
 
@@ -943,8 +944,8 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $object_name   Object name (for post types and taxonomies).
+	 * @param string $object_type Object type.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 */
 	public function prepare_object_controls( $object_type, $object_name = null ) {
 
@@ -1156,8 +1157,8 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $object_type Object type.
-	 * @param string $type   Type including screen, section, or field.
-	 * @param string $id     Object ID.
+	 * @param string $type        Type including screen, section, or field.
+	 * @param string $id          Object ID.
 	 *
 	 * @return boolean
 	 */
