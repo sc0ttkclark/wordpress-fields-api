@@ -49,6 +49,22 @@ final class WP_Fields_API {
 	protected static $controls = array();
 
 	/**
+	 * Screen types that may be rendered from JS templates.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected static $registered_screen_types = array();
+
+	/**
+	 * Section types that may be rendered from JS templates.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected static $registered_section_types = array();
+
+	/**
 	 * Controls that may be rendered from JS templates.
 	 *
 	 * @access protected
@@ -111,7 +127,7 @@ final class WP_Fields_API {
 	 * @param string|boolean|null $object_name   Object name (for post types and taxonomies).
 	 *                                           True for all containers for all object names.
 	 *
-	 * @return array<WP_Fields_API_Screen|WP_Fields_API_Section>
+	 * @return WP_Fields_API_Screen[]|WP_Fields_API_Section[]
 	 */
 	public function get_containers( $object_type = null, $object_name = null ) {
 
@@ -156,7 +172,7 @@ final class WP_Fields_API {
 	 * @param string $object_type Object type.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
-	 * @return array<WP_Fields_API_Screen>
+	 * @return WP_Fields_API_Screen[]
 	 */
 	public function get_screens( $object_type = null, $object_name = null ) {
 
@@ -251,7 +267,7 @@ final class WP_Fields_API {
 	 * @param string $id          Screen ID to get.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
-	 * @return WP_Fields_API_Screen Requested screen instance.
+	 * @return WP_Fields_API_Screen|null Requested screen instance.
 	 */
 	public function get_screen( $object_type, $id, $object_name = null ) {
 
@@ -296,6 +312,39 @@ final class WP_Fields_API {
 	}
 
 	/**
+	 * Register a customize screen type.
+	 *
+	 * Registered types are eligible to be rendered via JS and created dynamically.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Screen
+	 *
+	 * @param string $panel Name of a custom screen which is a subclass of WP_Fields_API_Screen.
+	 */
+	public function register_screen_type( $screen ) {
+
+		self::$registered_screen_types[] = $screen;
+
+	}
+
+	/**
+	 * Render JS templates for all registered screen types.
+	 *
+	 * @access public
+	 */
+	public function render_screen_templates() {
+
+		foreach ( self::$registered_screen_types as $screen_type ) {
+			// @todo Look into backwards compat for WP_Customize_Manager / WP_Customize_Panel
+			$screen = new $screen_type( 'temp', array() );
+
+			$screen->print_template();
+		}
+
+	}
+
+	/**
 	 * Get the registered sections.
 	 *
 	 * @access public
@@ -304,7 +353,7 @@ final class WP_Fields_API {
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 * @param string $screen      Screen ID.
 	 *
-	 * @return array<WP_Fields_API_Section>
+	 * @return WP_Fields_API_Section[]
 	 */
 	public function get_sections( $object_type = null, $object_name = null, $screen = null ) {
 
@@ -437,7 +486,7 @@ final class WP_Fields_API {
 	 * @param string $id          Section ID to get.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
-	 * @return WP_Fields_API_Section Requested section instance.
+	 * @return WP_Fields_API_Section|null Requested section instance.
 	 */
 	public function get_section( $object_type, $id, $object_name = null ) {
 
@@ -482,6 +531,39 @@ final class WP_Fields_API {
 	}
 
 	/**
+	 * Register a customize section type.
+	 *
+	 * Registered types are eligible to be rendered via JS and created dynamically.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Section
+	 *
+	 * @param string $section Name of a custom section which is a subclass of WP_Fields_API_Section.
+	 */
+	public function register_section_type( $section ) {
+
+		self::$registered_section_types[] = $section;
+
+	}
+
+	/**
+	 * Render JS templates for all registered section types.
+	 *
+	 * @access public
+	 */
+	public function render_section_templates() {
+
+		foreach ( self::$registered_section_types as $section_type ) {
+			// @todo Look into backwards compat for WP_Customize_Manager / WP_Customize_Section
+			$section = new $section_type( 'temp', array() );
+
+			$section->print_template();
+		}
+
+	}
+
+	/**
 	 * Get the registered fields.
 	 *
 	 * @access public
@@ -489,7 +571,7 @@ final class WP_Fields_API {
 	 * @param string $object_type Object type.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
-	 * @return array<WP_Fields_API_Field>
+	 * @return WP_Fields_API_Field[]
 	 */
 	public function get_fields( $object_type = null, $object_name = null ) {
 
@@ -671,7 +753,7 @@ final class WP_Fields_API {
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 * @param string $section     Section ID.
 	 *
-	 * @return array<WP_Fields_API_Control>
+	 * @return WP_Fields_API_Control[]
 	 */
 	public function get_controls( $object_type = null, $object_name = null, $section = null ) {
 
@@ -805,7 +887,7 @@ final class WP_Fields_API {
 	 * @param string $id          ID of the control.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
-	 * @return WP_Fields_API_Control $control The control object.
+	 * @return WP_Fields_API_Control|null $control The control object.
 	 */
 	public function get_control( $object_type, $id, $object_name = null ) {
 
@@ -1016,13 +1098,15 @@ final class WP_Fields_API {
 		 */
 
 		foreach ( $sections as $id => $section ) {
-			// Check if section has controls or can be seen by user
-			if ( ! $section->controls || ! $section->check_capabilities() ) {
+			// Check if section can be seen by user
+			if ( ! $section->check_capabilities() ) {
 				continue;
 			}
 
-			// Sort section controls by priority
-			usort( $section->controls, array( $this, '_cmp_priority' ) );
+			if ( $section->controls ) {
+				// Sort section controls by priority
+				usort( $section->controls, array( $this, '_cmp_priority' ) );
+			}
 
 			if ( ! $section->screen ) {
 				// Top-level section.
@@ -1051,12 +1135,14 @@ final class WP_Fields_API {
 
 		foreach ( $screens as $id => $screen ) {
 			// Check if screen has sections or can be seen by user
-			if ( ! $screen->sections || ! $screen->check_capabilities() ) {
+			if ( ! $screen->check_capabilities() ) {
 				continue;
 			}
 
-			// Sort screen sections by priority
-			uasort( $screen->sections, array( $this, '_cmp_priority' ) );
+			if ( $screen->sections ) {
+				// Sort screen sections by priority
+				uasort( $screen->sections, array( $this, '_cmp_priority' ) );
+			}
 
 			// Add to prepared IDs
 			$prepared_ids['screen'][]    = $id;
