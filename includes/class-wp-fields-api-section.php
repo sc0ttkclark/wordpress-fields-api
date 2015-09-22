@@ -225,10 +225,12 @@ class WP_Fields_API_Section {
 	 * @return array The array to be exported to the client as JSON.
 	 */
 	public function json() {
-		$array = wp_array_slice_assoc( (array) $this, array( 'title', 'description', 'priority', 'screen', 'type' ) );
+		$array = wp_array_slice_assoc( (array) $this, array( 'id', 'description', 'priority', 'screen', 'type' ) );
+		$array['title'] = html_entity_decode( $this->title, ENT_QUOTES, get_bloginfo( 'charset' ) );
 		$array['content'] = $this->get_content();
-		$array['instanceNumber'] = $this->instance_number;
 		$array['active'] = $this->active();
+		$array['instanceNumber'] = $this->instance_number;
+
 		return $array;
 	}
 
@@ -302,6 +304,8 @@ class WP_Fields_API_Section {
 
 	/**
 	 * Render the section, and the controls that have been added to it.
+	 *
+	 * // @todo Merge render_template / print_template() from Customizer
 	 */
 	protected function render() {
 		$classes = 'accordion-section control-section control-section-' . $this->type;
