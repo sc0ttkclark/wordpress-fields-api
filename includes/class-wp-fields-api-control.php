@@ -67,21 +67,23 @@ class WP_Fields_API_Control {
 	 * The primary screen for the control (if there is one).
 	 *
 	 * @access public
+	 * @var string|WP_Fields_API_Section
+	 */
+	public $section = '';
+
+	/**
+	 * The primary screen for the control (if there is one).
+	 *
+	 * @access public
 	 * @var string|WP_Fields_API_Screen
 	 */
-	public $screen;
+	public $screen = '';
 
 	/**
 	 * @access public
 	 * @var int
 	 */
 	public $priority = 10;
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $section = '';
 
 	/**
 	 * @access public
@@ -336,9 +338,7 @@ class WP_Fields_API_Control {
 
 		$this->maybe_render();
 
-		$template = trim( ob_get_contents() );
-
-		ob_end_clean();
+		$template = trim( ob_get_clean() );
 
 		return $template;
 
