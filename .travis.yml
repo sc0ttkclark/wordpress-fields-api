@@ -1,26 +1,43 @@
-# Travis CI Configuration File
-
-# Tell Travis CI we're using PHP
 language: php
 
+sudo: false
+
 php:
-  - 5.2
-  - 5.3
-  - 5.5
+    - 5.3
+    - 5.4
+    - 5.5
+    - 5.6
 
 env:
-  - WP_VERSION=latest WP_MULTISITE=0
+    - WP_VERSION=latest WP_MULTISITE=0
+    - WP_VERSION=latest WP_MULTISITE=1
+    - WP_VERSION=4.3 WP_MULTISITE=0
+    - WP_VERSION=4.3 WP_MULTISITE=1
 
 matrix:
-  include:
-    - php: 5.2
-      env: WP_VERSION=latest WP_MULTISITE=1
+    allow_failures:
+     - php: nightly
+     - php: hhvm
+     - php: 7.0
+
+    include:
+    - php: nightly
+      env: WP_VERSION=latest WP_MULTISITE=0
+    - php: hhvm
+      env: WP_VERSION=latest WP_MULTISITE=0
+
+## Cache composer bits
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
 
 # Clones WordPress and configures our testing environment.
 before_script:
   # Setup Coveralls
   - phpenv local 5.5
-  - composer install --dev --no-interaction
+  - travis_retry composer self-update
+  - travis_retry composer install --dev --no-interaction --prefer-source
   - phpenv local --unset
 
   - npm install
