@@ -62,8 +62,11 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 		}
 
 		add_action( 'fields_render_control_' . $this->object_type, array( $this, 'customize_render_control' ) );
-		add_action( 'fields_render_control_' . $this->object_type . '_' . $this->id, array( $this, 'customize_render_control_id' ) );
-		add_filter( 'fields_control_active_' . $this->object_type . '_' . $this->id, array( $this, 'customize_control_active' ), 10, 2 );
+
+		if ( '' !== $this->id ) {
+			add_action( 'fields_render_control_' . $this->object_type . '_' . $this->id, array( $this, 'customize_render_control_id' ) );
+			add_filter( 'fields_control_active_' . $this->object_type . '_' . $this->id, array( $this, 'customize_control_active' ), 10, 2 );
+		}
 	}
 
 	/**

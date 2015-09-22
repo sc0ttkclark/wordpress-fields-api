@@ -160,6 +160,14 @@ class WP_Fields_API_Control {
 
 		$this->object_type = $object_type;
 
+		if ( is_array( $id ) ) {
+			$args = $id;
+
+			$id = '';
+		} else {
+			$this->id = $id;
+		}
+
 		$keys = array_keys( get_object_vars( $this ) );
 
 		// Backwards compatibility for setting arg
@@ -177,8 +185,6 @@ class WP_Fields_API_Control {
 				$this->$key = $args[ $key ];
 			}
 		}
-
-		$this->id = $id;
 
 		self::$instance_count += 1;
 		$this->instance_number = self::$instance_count;

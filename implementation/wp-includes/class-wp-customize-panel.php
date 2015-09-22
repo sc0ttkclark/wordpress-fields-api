@@ -45,7 +45,10 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 		add_action( "fields_api_screen_active_{$this->object_type}", array( $this, 'customize_panel_active' ), 10, 2 );
 		add_action( "fields_api_render_screen_{$this->object_type}", array( $this, 'customize_render_panel' ) );
-		add_action( "fields_api_render_screen_{$this->object_type}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
+
+		if ( '' !== $this->id ) {
+			add_action( "fields_api_render_screen_{$this->object_type}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
+		}
 
 	}
 

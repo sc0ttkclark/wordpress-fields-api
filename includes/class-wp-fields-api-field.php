@@ -138,6 +138,14 @@ class WP_Fields_API_Field {
 
 		$this->object_type = $object_type;
 
+		if ( is_array( $id ) ) {
+			$args = $id;
+
+			$id = '';
+		} else {
+			$this->id = $id;
+		}
+
 		$keys = array_keys( get_object_vars( $this ) );
 
 		foreach ( $keys as $key ) {
@@ -145,8 +153,6 @@ class WP_Fields_API_Field {
 				$this->$key = $args[ $key ];
 			}
 		}
-
-		$this->id = $id;
 
 		// Parse the ID for array keys.
 		$this->id_data['keys'] = preg_split( '/\[/', str_replace( ']', '', $this->id ) );
