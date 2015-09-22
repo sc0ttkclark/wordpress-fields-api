@@ -224,6 +224,10 @@ final class WP_Fields_API {
 	 */
 	public function add_screen( $object_type, $id, $args = array() ) {
 
+		if ( empty( $id ) && empty( $args ) ) {
+			return;
+		}
+
 		$object_name = null;
 
 		if ( is_a( $id, 'WP_Fields_API_Screen' ) ) {
@@ -443,6 +447,10 @@ final class WP_Fields_API {
 	 */
 	public function add_section( $object_type, $id, $args = array() ) {
 
+		if ( empty( $id ) && empty( $args ) ) {
+			return;
+		}
+
 		$object_name = null;
 
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
@@ -622,6 +630,10 @@ final class WP_Fields_API {
 	 *                                                constructor.
 	 */
 	public function add_field( $object_type, $id, $args = array() ) {
+
+		if ( empty( $id ) && empty( $args ) ) {
+			return;
+		}
 
 		$object_name = null;
 
@@ -843,6 +855,10 @@ final class WP_Fields_API {
 	 *                                                  constructor.
 	 */
 	public function add_control( $object_type, $id, $args = array() ) {
+
+		if ( empty( $id ) && empty( $args ) ) {
+			return;
+		}
 
 		$object_name = null;
 
