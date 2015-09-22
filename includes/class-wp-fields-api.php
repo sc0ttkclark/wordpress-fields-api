@@ -318,7 +318,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @see WP_Fields_API_Screen
+	 * @see    WP_Fields_API_Screen
 	 *
 	 * @param string $panel Name of a custom screen which is a subclass of WP_Fields_API_Screen.
 	 */
@@ -474,7 +474,6 @@ final class WP_Fields_API {
 
 		self::$sections[ $object_type ][ $object_name ][ $id ] = $section;
 
-
 	}
 
 	/**
@@ -537,7 +536,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @see WP_Fields_API_Section
+	 * @see    WP_Fields_API_Section
 	 *
 	 * @param string $section Name of a custom section which is a subclass of WP_Fields_API_Section.
 	 */
@@ -1257,6 +1256,47 @@ final class WP_Fields_API {
 		}
 
 		return $found;
+
+	}
+
+	/**
+	 * Parse the incoming $_POST['customized'] JSON data and store the unsanitized
+	 * fields for subsequent post_value() lookups.
+	 *
+	 * @return array
+	 */
+	public function unsanitized_post_values() {
+
+		if ( ! isset( $this->_post_values ) ) {
+			$this->_post_values = false;
+		}
+
+		if ( empty( $this->_post_values ) ) {
+			return array();
+		}
+
+		return $this->_post_values;
+
+	}
+
+	/**
+	 * Return the sanitized value for a given field from the request's POST data.
+	 * Introduced 'default' parameter.
+	 *
+	 * @param WP_Fields_API_Field $field   A WP_Fields_API_Field derived object
+	 * @param mixed               $default value returned $field has no post value (added in 4.2.0).
+	 *
+	 * @return string|mixed $post_value Sanitized value or the $default provided
+	 */
+	public function post_value( $field, $default = null ) {
+
+		$post_values = $this->unsanitized_post_values();
+
+		if ( array_key_exists( $field->id, $post_values ) ) {
+			return $field->sanitize( $post_values[ $field->id ] );
+		}
+
+		return $default;
 
 	}
 
