@@ -5,6 +5,7 @@
  * @package WordPress
  * @subpackage Fields API
 */
+define( 'WP_TESTS_FORCE_KNOWN_BUGS', true );
 
 // Support for:
 // 1. `WP_DEVELOP_DIR` environment variable
