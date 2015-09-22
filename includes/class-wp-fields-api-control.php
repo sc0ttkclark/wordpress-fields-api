@@ -310,9 +310,8 @@ class WP_Fields_API_Control {
 		/**
 		 * @var $field WP_Fields_API_Field
 		 */
-
 		foreach ( $this->fields as $field ) {
-			if ( ! $field->check_capabilities() ) {
+			if ( !$field || ! $field->check_capabilities() ) {
 				return false;
 			}
 		}

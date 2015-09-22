@@ -1221,11 +1221,11 @@ final class WP_Fields_API {
 	public function register_controls() {
 
 		/* Control Types (custom control classes) */
-		//$this->register_control_type( 'WP_Fields_API_Text_Control' );
+		/*$this->register_control_type( 'WP_Fields_API_Text_Control' );
 		$this->register_control_type( 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'WP_Fields_API_Upload_Control' );
 		$this->register_control_type( 'WP_Fields_API_Image_Control' );
-		$this->register_control_type( 'WP_Fields_API_Background_Image_Control' );
+		$this->register_control_type( 'WP_Fields_API_Background_Image_Control' );*/
 
 		/**
 		 * Fires once WordPress has loaded, allowing control types to be registered.
