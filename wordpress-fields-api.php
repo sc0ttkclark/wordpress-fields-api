@@ -34,7 +34,7 @@ function _wp_fields_api_include() {
 
 }
 
-add_action( 'plugins_loaded', '_wp_fields_api_include', 9 );
+add_action( 'plugins_loaded', '_wp_fields_api_include', 8 );
 
 /**
  * Implement Fields API Customizer instead of WP Core Customizer.
