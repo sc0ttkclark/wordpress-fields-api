@@ -181,12 +181,12 @@ class WP_Fields_API_Field {
 	 * @since 4.2.0
 	 * @access public
 	 *
-	 * @return bool|null Returns null if preview() has not been called yet.
+	 * @return bool If preview() has been called.
 	 */
 	public function is_current_blog_previewed() {
 
 		if ( ! isset( $this->_previewed_blog_id ) ) {
-			return null;
+			return false;
 		}
 
 		return ( get_current_blog_id() === $this->_previewed_blog_id );
