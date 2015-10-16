@@ -61,9 +61,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_screen( 'post', 'my_test_screen', array(
-			'object_name' => 'my_custom_post_type',
-		) );
+		$wp_fields->add_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
 
 	}
 
@@ -185,8 +183,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		// Add a screen
 		$this->test_add_screen();
 
-		$wp_fields->add_section( 'post', 'my_test_section', array(
-			'object_name' => 'my_custom_post_type',
+		$wp_fields->add_section( 'post', 'my_test_section', 'my_custom_post_type', array(
 			'screen' => 'my_test_screen',
 		) );
 
@@ -313,8 +310,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_field( 'post', 'my_test_field', array(
-			'object_name' => 'my_custom_post_type',
+		$wp_fields->add_field( 'post', 'my_test_field', 'my_custom_post_type', array(
 			'control' => array(
 				'id' => 'my_test_field_control',
 				'label' => 'My Test Field',
@@ -437,8 +433,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		// Add a field for the control
 		$this->test_add_field();
 
-		$wp_fields->add_control( 'post', 'my_test_control', array(
-			'object_name' => 'my_custom_post_type',
+		$wp_fields->add_control( 'post', 'my_test_control', 'my_custom_post_type', array(
 			'section' => 'my_test_section',
 			'fields' => 'my_test_field',
 			'label' => 'My Test Control Field',
@@ -457,10 +452,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a section for the control
-		$this->test_add_section();
-
-		// Add a control
+		// Add a control / field / section
 		$this->test_add_control();
 
 		// Get controls for object type / name
@@ -501,10 +493,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a section for the control
-		$this->test_add_section();
-
-		// Add a control
+		// Add a control / field / section
 		$this->test_add_control();
 
 		// Control exists for this object type / name
@@ -513,6 +502,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertNotEmpty( $control );
 
 		$this->assertEquals( 'my_test_field_control', $control->id );
+		var_dump( $control->field );
 		$this->assertEquals( 'my_test_field', $control->field->id );
 		$this->assertEquals( 'my_test_section', $control->section );
 
@@ -547,10 +537,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a section for the control
-		$this->test_add_section();
-
-		// Add a control
+		// Add a control / field / section
 		$this->test_add_control();
 
 		// Control exists for this object type / name
