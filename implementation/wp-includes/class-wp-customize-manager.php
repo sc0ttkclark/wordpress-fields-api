@@ -112,6 +112,14 @@ final class WP_Customize_Manager {
 	 */
 	private $_post_values;
 
+
+	/**
+	 * Track Customizer Manager instances as separate object names
+	 *
+	 * @var int
+	 */
+	private $instance_number = 0;
+
 	/**
 	 * Constructor.
 	 *
@@ -125,6 +133,9 @@ final class WP_Customize_Manager {
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-control.php' );
 		require_once( ABSPATH . WPINC . '/class-wp-customize-widgets.php' );
 		require_once( ABSPATH . WPINC . '/class-wp-customize-nav-menus.php' );
+
+		// Increment instance number
+		$this->instance_number++;
 
 		$this->widgets = new WP_Customize_Widgets( $this );
 		$this->nav_menus = new WP_Customize_Nav_Menus( $this );
@@ -376,7 +387,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @return array
+	 * @return WP_Fields_API_Field[]
 	 *
 	 * @uses WP_Fields_API::get_settings
 	 */
@@ -387,7 +398,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_fields( 'customizer' );
+		return $wp_fields->get_fields( 'customizer', $this->get_customizer_object_name() );
 
 	}
 
@@ -396,7 +407,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @return array
+	 * @return WP_Fields_API_Control[]
 	 *
 	 * @uses WP_Fields_API::get_controls
 	 */
@@ -407,7 +418,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_controls( 'customizer' );
+		return $wp_fields->get_controls( 'customizer', $this->get_customizer_object_name() );
 
 	}
 
@@ -416,7 +427,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return array
+	 * @return WP_Fields_API_Screen[]|WP_Fields_API_Section[]
 	 *
 	 * @uses WP_Fields_API::get_containers
 	 */
@@ -427,7 +438,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_containers( 'customizer' );
+		return $wp_fields->get_containers( 'customizer', $this->get_customizer_object_name() );
 
 	}
 
@@ -436,7 +447,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @return array
+	 * @return WP_Fields_API_Section[]
 	 *
 	 * @uses WP_Fields_API::get_sections
 	 */
@@ -447,7 +458,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_sections( 'customizer' );
+		return $wp_fields->get_sections( 'customizer', $this->get_customizer_object_name() );
 
 	}
 
@@ -457,7 +468,7 @@ final class WP_Customize_Manager {
 	 * @since 4.0.0
 	 * @access public
 	 *
-	 * @return array Panels.
+	 * @return WP_Fields_API_Screen[] Panels.
 	 *
 	 * @uses WP_Fields_API::get_panels
 	 */
@@ -468,7 +479,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_screens( 'customizer' );
+		return $wp_fields->get_screens( 'customizer', $this->get_customizer_object_name() );
 
 	}
 
@@ -707,7 +718,7 @@ final class WP_Customize_Manager {
 		$settings = $this->settings();
 
 		foreach ( $settings as $id => $setting ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'field', $id ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'field', $id, $this->get_customizer_object_name() ) ) {
 				continue;
 			}
 
@@ -719,7 +730,7 @@ final class WP_Customize_Manager {
 		$panels = $this->panels();
 
 		foreach ( $panels as $panel_id => $panel ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'screen', $id ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'screen', $id, $this->get_customizer_object_name() ) ) {
 				continue;
 			}
 
@@ -727,7 +738,7 @@ final class WP_Customize_Manager {
 				$settings['activePanels'][ $panel_id ] = $panel->active();
 
 				foreach ( $panel->sections as $section_id => $section ) {
-					if ( ! $wp_fields->is_prepared( 'customizer', 'section', $section_id ) ) {
+					if ( ! $wp_fields->is_prepared( 'customizer', 'section', $section_id, $this->get_customizer_object_name() ) ) {
 						continue;
 					}
 
@@ -741,7 +752,7 @@ final class WP_Customize_Manager {
 		$sections = $this->sections();
 
 		foreach ( $sections as $id => $section ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'section', $id ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'section', $id, $this->get_customizer_object_name() ) ) {
 				continue;
 			}
 
@@ -753,7 +764,7 @@ final class WP_Customize_Manager {
 		$controls = $this->controls();
 
 		foreach ( $controls as $id => $control ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $id ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $id, $this->get_customizer_object_name() ) ) {
 				continue;
 			}
 
@@ -969,7 +980,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_field( 'customizer', $id, $args );
+		$wp_fields->add_field( 'customizer', $id, $this->get_customizer_object_name(), $args );
 
 	}
 
@@ -1053,7 +1064,9 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$field = $wp_fields->get_field( 'customizer', $id );
+		$field = $wp_fields->get_field( 'customizer', $id, $this->get_customizer_object_name() );
+
+		var_dump( $field );
 
 		if ( $field ) {
 			return $field;
@@ -1077,7 +1090,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_field( 'customizer', $id );
+		$wp_fields->remove_field( 'customizer', $id, $this->get_customizer_object_name() );
 
 	}
 
@@ -1099,7 +1112,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_screen( 'customizer', $id, $args );
+		$wp_fields->add_screen( 'customizer', $id, $this->get_customizer_object_name(), $args );
 
 	}
 
@@ -1121,7 +1134,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$panel = $wp_fields->get_screen( 'customizer', $id );
+		$panel = $wp_fields->get_screen( 'customizer', $id, $this->get_customizer_object_name() );
 
 		if ( $panel ) {
 			return $panel;
@@ -1146,7 +1159,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_screen( 'customizer', $id );
+		$wp_fields->remove_screen( 'customizer', $id, $this->get_customizer_object_name() );
 
 	}
 
@@ -1211,7 +1224,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_section( 'customizer', $id, $args );
+		$wp_fields->add_section( 'customizer', $id, $this->get_customizer_object_name(), $args );
 
 	}
 
@@ -1232,7 +1245,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$section = $wp_fields->get_section( 'customizer', $id );
+		$section = $wp_fields->get_section( 'customizer', $id, $this->get_customizer_object_name() );
 
 		if ( $section ) {
 			return $section;
@@ -1256,7 +1269,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_section( 'customizer', $id );
+		$wp_fields->remove_section( 'customizer', $id, $this->get_customizer_object_name() );
 
 	}
 
@@ -1322,7 +1335,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_control( 'customizer', $id, $args );
+		$wp_fields->add_control( 'customizer', $id, $this->get_customizer_object_name(), $args );
 
 	}
 
@@ -1343,7 +1356,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$control = $wp_fields->get_control( 'customizer', $id );
+		$control = $wp_fields->get_control( 'customizer', $id, $this->get_customizer_object_name() );
 
 		if ( $control ) {
 			return $control;
@@ -1367,7 +1380,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_control( 'customizer', $id );
+		$wp_fields->remove_control( 'customizer', $id, $this->get_customizer_object_name() );
 
 	}
 
@@ -1449,7 +1462,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->prepare_controls( 'customizer' );
+		$wp_fields->prepare_controls( 'customizer', $this->get_customizer_object_name() );
 
 	}
 
@@ -1468,7 +1481,7 @@ final class WP_Customize_Manager {
 		$controls = $this->controls();
 
 		foreach ( $controls as $control ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $control->id ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $control->id, $this->get_customizer_object_name() ) ) {
 				continue;
 			}
 
@@ -1815,6 +1828,23 @@ final class WP_Customize_Manager {
 			$color = get_theme_support( 'custom-header', 'default-text-color' );
 
 		return $color;
+	}
+
+	/**
+	 * Get Customizer object name for Fields API usage
+	 *
+	 * @return null|string
+	 */
+	private function get_customizer_object_name() {
+
+		$object_name = null;
+
+		if ( 1 < $this->instance_number ) {
+			$object_name = 'customizer_' . $this->instance_number;
+		}
+
+		return $object_name;
+
 	}
 }
 
