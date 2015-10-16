@@ -658,10 +658,10 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 								<# } #>
 								<p class="attachment-meta attachment-meta-title">&#8220;{{ data.attachment.title }}&#8221;</p>
 								<# if ( data.attachment.album || data.attachment.meta.album ) { #>
-								<p class="attachment-meta"><em>{{ data.attachment.album || data.attachment.meta.album }}</em></p>
+									<p class="attachment-meta"><em>{{ data.attachment.album || data.attachment.meta.album }}</em></p>
 								<# } #>
 								<# if ( data.attachment.artist || data.attachment.meta.artist ) { #>
-								<p class="attachment-meta">{{ data.attachment.artist || data.attachment.meta.artist }}</p>
+									<p class="attachment-meta">{{ data.attachment.artist || data.attachment.meta.artist }}</p>
 								<# } #>
 								<audio style="visibility: hidden" controls class="wp-audio-shortcode" width="100%" preload="none">
 									<source type="{{ data.attachment.mime }}" src="{{ data.attachment.url }}"/>
@@ -683,9 +683,9 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 			</div>
 			<div class="actions">
 				<# if ( data.canUpload ) { #>
-				<button type="button" class="button remove-button"><?php echo $this->button_labels['remove']; ?></button>
-				<button type="button" class="button upload-button" id="{{ data.settings['default'] }}-button"><?php echo $this->button_labels['change']; ?></button>
-				<div style="clear:both"></div>
+					<button type="button" class="button remove-button"><?php echo $this->button_labels['remove']; ?></button>
+					<button type="button" class="button upload-button" id="{{ data.settings['default'] }}-button"><?php echo $this->button_labels['change']; ?></button>
+					<div style="clear:both"></div>
 				<# } #>
 			</div>
 		<# } else { #>
@@ -705,7 +705,7 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 					<button type="button" class="button default-button"><?php echo $this->button_labels['default']; ?></button>
 				<# } #>
 				<# if ( data.canUpload ) { #>
-				<button type="button" class="button upload-button" id="{{ data.settings['default'] }}-button"><?php echo $this->button_labels['select']; ?></button>
+					<button type="button" class="button upload-button" id="{{ data.settings['default'] }}-button"><?php echo $this->button_labels['select']; ?></button>
 				<# } #>
 				<div style="clear:both"></div>
 			</div>
