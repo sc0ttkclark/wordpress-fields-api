@@ -220,29 +220,22 @@ final class WP_Fields_API {
 	 *
 	 * @param string                      $object_type Object type.
 	 * @param WP_Fields_API_Screen|string $id          Field Screen object, or Screen ID.
+	 * @param string                      $object_name Object name (for post types and taxonomies).
 	 * @param array                       $args        Optional. Screen arguments. Default empty array.
 	 */
-	public function add_screen( $object_type, $id, $args = array() ) {
+	public function add_screen( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return;
 		}
 
-		$object_name = null;
-
 		if ( is_a( $id, 'WP_Fields_API_Screen' ) ) {
 			$screen = $id;
 
 			$id = $screen->id;
-
-			$object_name = $screen->object_name;
 		} else {
 			// Save for late init.
 			$screen = $args;
-
-			if ( ! empty( $screen['object_name'] ) ) {
-				$object_name = $screen['object_name'];
-			}
 		}
 
 		// $object_name defaults to '_{$object_type}' for internal handling.
@@ -309,7 +302,13 @@ final class WP_Fields_API {
 			$object_name = '_' . $object_type; // Default to _object_type for internal handling
 		}
 
-		if ( isset( self::$screens[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( null === $object_name ) {
+			foreach ( self::$screens[ $object_type ] as $object_name => $screens ) {
+				if ( isset( self::$screens[ $object_type ][ $object_name ][ $id ] ) ) {
+					unset( self::$screens[ $object_type ][ $object_name ][ $id ] );
+				}
+			}
+		} elseif ( isset( self::$screens[ $object_type ][ $object_name ][ $id ] ) ) {
 			unset( self::$screens[ $object_type ][ $object_name ][ $id ] );
 		}
 
@@ -339,8 +338,10 @@ final class WP_Fields_API {
 	 */
 	public function render_screen_templates() {
 
+		/**
+		 * @var WP_Fields_API_Screen $screen
+		 */
 		foreach ( self::$registered_screen_types as $screen_type ) {
-			// @todo Look into backwards compat for WP_Customize_Manager / WP_Customize_Panel
 			$screen = new $screen_type( 'temp', array() );
 
 			$screen->print_template();
@@ -443,29 +444,22 @@ final class WP_Fields_API {
 	 *
 	 * @param string                       $object_type Object type.
 	 * @param WP_Fields_API_Section|string $id          Field Section object, or Section ID.
+	 * @param string                       $object_name Object name (for post types and taxonomies).
 	 * @param array                        $args        Section arguments.
 	 */
-	public function add_section( $object_type, $id, $args = array() ) {
+	public function add_section( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return;
 		}
 
-		$object_name = null;
-
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
 			$section = $id;
 
 			$id = $section->id;
-
-			$object_name = $section->object_name;
 		} else {
 			// Save for late init
 			$section = $args;
-
-			if ( ! empty( $section['object_name'] ) ) {
-				$object_name = $section['object_name'];
-			}
 		}
 
 		if ( null === $object_name && ! empty( $object_type ) ) {
@@ -561,8 +555,10 @@ final class WP_Fields_API {
 	 */
 	public function render_section_templates() {
 
+		/**
+		 * @var $section WP_Fields_API_Section
+		 */
 		foreach ( self::$registered_section_types as $section_type ) {
-			// @todo Look into backwards compat for WP_Customize_Manager / WP_Customize_Section
 			$section = new $section_type( 'temp', array() );
 
 			$section->print_template();
@@ -626,16 +622,15 @@ final class WP_Fields_API {
 	 *
 	 * @param string                     $object_type Object type.
 	 * @param WP_Fields_API_Field|string $id          Fields API Field object, or ID.
+	 * @param string                     $object_name Object name (for post types and taxonomies).
 	 * @param array                      $args        Field arguments; passed to WP_Fields_API_Field
 	 *                                                constructor.
 	 */
-	public function add_field( $object_type, $id, $args = array() ) {
+	public function add_field( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return;
 		}
-
-		$object_name = null;
 
 		$control = array();
 
@@ -643,8 +638,6 @@ final class WP_Fields_API {
 			$field = $id;
 
 			$id = $field->id;
-
-			$object_name = $field->object_name;
 		} else {
 			// Save for late init
 			$field = $args;
@@ -654,10 +647,6 @@ final class WP_Fields_API {
 
 				// Remove from field args
 				unset( $field['control'] );
-			}
-
-			if ( ! empty( $field['object_name'] ) ) {
-				$object_name = $field['object_name'];
 			}
 		}
 
@@ -688,16 +677,11 @@ final class WP_Fields_API {
 			// Remove ID from control args
 			unset( $control['id'] );
 
-			// Auto-set object name
-			if ( empty( $control['object_name'] ) ) {
-				$control['object_name'] = $object_name;
-			}
-
 			// Add field
 			$control['fields'] = $id;
 
 			// Add control for field
-			$this->add_control( $object_type, $control_id, $control );
+			$this->add_control( $object_type, $control_id, $object_name, $control );
 		}
 
 	}
@@ -720,6 +704,8 @@ final class WP_Fields_API {
 		}
 
 		$field = null;
+
+		var_dump( self::$fields[ $object_type ] );
 
 		if ( isset( self::$fields[ $object_type ][ $object_name ][ $id ] ) ) {
 			// Late init
@@ -851,30 +837,23 @@ final class WP_Fields_API {
 	 *
 	 * @param string                       $object_type Object type.
 	 * @param WP_Fields_API_Control|string $id          Field Control object, or ID.
+	 * @param string                       $object_name Object name (for post types and taxonomies).
 	 * @param array                        $args        Control arguments; passed to WP_Fields_API_Control
 	 *                                                  constructor.
 	 */
-	public function add_control( $object_type, $id, $args = array() ) {
+	public function add_control( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return;
 		}
 
-		$object_name = null;
-
 		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
 			$control = $id;
 
 			$id = $control->id;
-
-			$object_name = $control->object_name;
 		} else {
 			// Save for late init
 			$control = $args;
-
-			if ( ! empty( $control['object_name'] ) ) {
-				$object_name = $control['object_name'];
-			}
 		}
 
 		if ( null === $object_name && ! empty( $object_type ) ) {
@@ -1055,7 +1034,7 @@ final class WP_Fields_API {
 			'control'   => array(),
 			'section'   => array(),
 			'screen'    => array(),
-			'container' => array()
+			'container' => array(),
 		);
 
 		// Setup
@@ -1073,10 +1052,6 @@ final class WP_Fields_API {
 
 		// Sort controls by priority
 		uasort( $controls, array( $this, '_cmp_priority' ) );
-
-		/**
-		 * @var $control WP_Fields_API_Control
-		 */
 
 		foreach ( $controls as $id => $control ) {
 			// Check if section or screen exists
@@ -1108,10 +1083,6 @@ final class WP_Fields_API {
 		// Sort sections by priority
 		uasort( $sections, array( $this, '_cmp_priority' ) );
 
-		/**
-		 * @var $section WP_Fields_API_Section
-		 */
-
 		foreach ( $sections as $id => $section ) {
 			// Check if section can be seen by user
 			if ( ! $section->check_capabilities() ) {
@@ -1140,10 +1111,6 @@ final class WP_Fields_API {
 		}
 
 		// Screens
-
-		/**
-		 * @var $screens WP_Fields_API_Screen
-		 */
 
 		// Sort screens by priority
 		uasort( $screens, array( $this, '_cmp_priority' ) );
@@ -1260,14 +1227,19 @@ final class WP_Fields_API {
 	 * @param string $object_type Object type.
 	 * @param string $type        Type including screen, section, or field.
 	 * @param string $id          Object ID.
+	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
 	 * @return boolean
 	 */
-	public function is_prepared( $object_type, $type, $id ) {
+	public function is_prepared( $object_type, $type, $id, $object_name = null ) {
+
+		if ( null === $object_name && ! empty( $object_type ) ) {
+			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+		}
 
 		$found = false;
 
-		if ( ! empty( self::$prepared_ids[ $object_type ][ $type ] ) && in_array( $id, self::$prepared_ids[ $object_type ][ $type ] ) ) {
+		if ( ! empty( self::$prepared_ids[ $object_type ][ $object_name ][ $type ] ) && in_array( $id, self::$prepared_ids[ $object_type ][ $object_name ][ $type ] ) ) {
 			$found = true;
 		}
 
