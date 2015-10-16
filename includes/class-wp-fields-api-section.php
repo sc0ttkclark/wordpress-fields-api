@@ -331,4 +331,39 @@ class WP_Fields_API_Section {
 		</li>
 		<?php
 	}
+
+	/**
+	 * Render the section's JS template.
+	 *
+	 * This function is only run for section types that have been registered with
+	 * WP_Fields_API::register_section_type().
+	 *
+	 * @since 4.3.0
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Section::render_template()
+	 */
+	public function print_template() {
+
+		// Nothing by default
+
+	}
+
+	/**
+	 * An Underscore (JS) template for rendering this section.
+	 *
+	 * Class variables for this section class are available in the `data` JS object;
+	 * export custom variables by overriding WP_Fields_API_Section::json().
+	 *
+	 * @since 4.3.0
+	 * @access protected
+	 *
+	 * @see WP_Fields_API_Section::print_template()
+	 */
+	protected function render_template() {
+
+		// Nothing by default
+
+	}
+
 }

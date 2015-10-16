@@ -325,6 +325,53 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
+	 * Render the screen's JS templates.
+	 *
+	 * This function is only run for screen types that have been registered with
+	 * WP_Fields_API::register_panel_type().
+	 *
+	 * @see WP_Fields_API::register_panel_type()
+	 */
+	public function print_template() {
+
+		// Nothing by default
+
+	}
+
+	/**
+	 * An Underscore (JS) template for rendering this screen's container.
+	 *
+	 * Class variables for this screen class are available in the `data` JS object;
+	 * export custom variables by overriding WP_Fields_API_Screen::json().
+	 *
+	 * @see WP_Fields_API_Screen::print_template()
+	 *
+	 * @since 4.3.0
+	 * @access protected
+	 */
+	protected function render_template() {
+
+		// Nothing by default
+
+	}
+
+	/**
+	 * An Underscore (JS) template for this screen's content
+	 *
+	 * Class variables for this control class are available in the `data` JS object;
+	 * export custom variables by overriding {@see WP_Fields_API_Screen::to_json()}.
+	 *
+	 * @see WP_Fields_API_Screen::print_template()
+	 *
+	 * @access protected
+	 */
+	protected function content_template() {
+
+		// Nothing by default
+
+	}
+
+	/**
 	 * Render the sections that have been added to the screen.
 	 *
 	 * @access protected
