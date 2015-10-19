@@ -41,6 +41,8 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 		$this->manager = $manager;
 
+		$this->object_name = $this->manager->get_customizer_object_name();
+
 		parent::__construct( $this->type, $id, $args );
 
 		add_action( "fields_api_screen_active_{$this->object_type}", array( $this, 'customize_panel_active' ), 10, 2 );

@@ -120,6 +120,14 @@ final class WP_Customize_Manager {
 	 */
 	private $instance_number = 0;
 
+
+	/**
+	 * Track Customizer Manager instances as separate object names
+	 *
+	 * @var int
+	 */
+	private static $instances = 0;
+
 	/**
 	 * Constructor.
 	 *
@@ -135,7 +143,9 @@ final class WP_Customize_Manager {
 		require_once( ABSPATH . WPINC . '/class-wp-customize-nav-menus.php' );
 
 		// Increment instance number
-		$this->instance_number++;
+		self::$instances++;
+
+		$this->instance_number = self::$instances;
 
 		$this->widgets = new WP_Customize_Widgets( $this );
 		$this->nav_menus = new WP_Customize_Nav_Menus( $this );
@@ -1066,8 +1076,6 @@ final class WP_Customize_Manager {
 
 		$field = $wp_fields->get_field( 'customizer', $id, $this->get_customizer_object_name() );
 
-		var_dump( $field );
-
 		if ( $field ) {
 			return $field;
 		}
@@ -1835,7 +1843,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @return null|string
 	 */
-	private function get_customizer_object_name() {
+	public function get_customizer_object_name() {
 
 		$object_name = null;
 

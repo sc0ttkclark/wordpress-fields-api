@@ -39,6 +39,13 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	private $_post_value;
 
 	/**
+	 * Capability required to edit this field.
+	 *
+	 * @var string
+	 */
+	public $capability = 'edit_theme_options';
+
+	/**
 	 * Constructor.
 	 *
 	 * Any supplied $args override class property defaults.
@@ -58,7 +65,38 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 
 		$this->manager = $manager;
 
+		$this->object_name = $this->manager->get_customizer_object_name();
+
+		// Backwards compatibility for callbacks on old filters,
+		// Remove from args so they don't get handled by WP Fields API
+		$sanitize_callback = null;
+		$sanitize_js_callback = null;
+
+		if ( ! empty( $args['sanitize_callback'] ) ) {
+			$sanitize_callback = $args['sanitize_callback'];
+
+			unset( $args['sanitize_callback'] );
+		}
+
+		if ( ! empty( $args['sanitize_js_callback'] ) ) {
+			$sanitize_js_callback = $args['sanitize_js_callback'];
+
+			unset( $args['sanitize_js_callback'] );
+		}
+
 		parent::__construct( $this->type, $id, $args );
+
+		if ( $sanitize_callback ) {
+			add_filter( "customize_sanitize_{$this->id}", $sanitize_callback );
+
+			$this->sanitize_callback = $sanitize_callback;
+		}
+
+		if ( $sanitize_js_callback ) {
+			add_filter( "customize_sanitize_js_{$this->id}", $sanitize_js_callback );
+
+			$this->sanitize_js_callback = $sanitize_js_callback;
+		}
 
 		// Add compatibility hooks
 		add_action( "fields_preview_{$this->id}",                                 array( $this, 'customize_preview_id' ) );

@@ -19,6 +19,12 @@
 class WP_Customize_Section extends WP_Fields_API_Section {
 
 	/**
+	 * @access public
+	 * @var WP_Customize_Manager
+	 */
+	public $manager;
+
+	/**
 	 * @var array Internal mapping of backwards compatible properties
 	 */
 	private $property_map = array(
@@ -39,6 +45,17 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 	public function __construct( $manager, $id, $args = array() ) {
 
 		$this->manager = $manager;
+
+		$this->object_name = $manager->get_customizer_object_name();
+
+		// Backwards compatibility for old property names
+		foreach ( $this->property_map as $backcompat_arg => $actual_arg ) {
+			if ( isset( $args[ $backcompat_arg ] ) ) {
+				$args[ $actual_arg ] = $args[ $backcompat_arg ];
+
+				unset( $args[ $backcompat_arg ] );
+			}
+		}
 
 		parent::__construct( $this->type, $id, $args );
 
@@ -197,8 +214,14 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 			$array['customizeAction'] = __( 'Customizing' );
 		}
 
-		// Backwards compatibility
-		$array['panel'] = $array['screen'];
+		// Backwards compatibility for old property names
+		foreach ( $this->property_map as $backcompat_arg => $actual_arg ) {
+			if ( isset( $array[ $actual_arg ] ) ) {
+				$array[ $backcompat_arg ] = $array[ $actual_arg ];
+			}
+		}
+
+		return $array;
 
 	}
 

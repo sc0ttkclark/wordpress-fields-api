@@ -55,6 +55,17 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 
 		$this->manager = $manager;
 
+		$this->object_name = $this->manager->get_customizer_object_name();
+
+		// Backwards compatibility for old property names
+		foreach ( $this->property_map as $backcompat_arg => $actual_arg ) {
+			if ( isset( $args[ $backcompat_arg ] ) ) {
+				$args[ $actual_arg ] = $args[ $backcompat_arg ];
+
+				unset( $args[ $backcompat_arg ] );
+			}
+		}
+
 		parent::__construct( $this->type, $id, $args );
 
 		if ( empty( $this->active_callback ) ) {
@@ -128,6 +139,8 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 		// Backwards compatibility
 		$array['panel'] = $array['screen'];
 		$array['settings'] = $array['fields'];
+
+		return $array;
 
 	}
 
