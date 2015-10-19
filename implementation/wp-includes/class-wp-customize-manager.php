@@ -112,21 +112,23 @@ final class WP_Customize_Manager {
 	 */
 	private $_post_values;
 
-
 	/**
-	 * Track Customizer Manager instances as separate object names
+	 * Incremented with each new class instantiation, then stored in $instance_number.
 	 *
+	 * Used when sorting two instances whose priorities are equal.
+	 *
+	 * @access protected
 	 * @var int
 	 */
-	private $instance_number = 0;
-
+	protected static $instance_count = 0;
 
 	/**
-	 * Track Customizer Manager instances as separate object names
+	 * Order in which this instance was created in relation to other instances.
 	 *
+	 * @access public
 	 * @var int
 	 */
-	private static $instances = 0;
+	public $instance_number = 0;
 
 	/**
 	 * Constructor.
@@ -143,9 +145,9 @@ final class WP_Customize_Manager {
 		require_once( ABSPATH . WPINC . '/class-wp-customize-nav-menus.php' );
 
 		// Increment instance number
-		self::$instances++;
+		self::$instance_count++;
 
-		$this->instance_number = self::$instances;
+		$this->instance_number = self::$instance_count;
 
 		$this->widgets = new WP_Customize_Widgets( $this );
 		$this->nav_menus = new WP_Customize_Nav_Menus( $this );
