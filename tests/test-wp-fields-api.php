@@ -6,6 +6,24 @@
  */
 class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
+	public function tearDown() {
+
+		// Do main teardown
+		parent::tearDown();
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Reset WP Fields instance for testing purposes
+		$wp_fields->remove_screen( true, true );
+		$wp_fields->remove_section( true, true );
+		$wp_fields->remove_field( true, true );
+		$wp_fields->remove_control( true, true );
+
+	}
+
 	/**
 	 * Test WP_Fields_API::get_containers()
 	 */
@@ -17,7 +35,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a section / screen
-		$this->test_add_section();
+		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Get containers for object type / name
 		$containers = $wp_fields->get_containers( 'post', 'my_custom_post_type' );
@@ -53,15 +71,18 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 	/**
 	 * Test WP_Fields_API::add_screen()
+	 *
+	 * @param string $object_type
+	 * @param string $object_name
 	 */
-	public function test_add_screen() {
+	public function test_add_screen( $object_type = 'post', $object_name = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+		$wp_fields->add_screen( $object_type, 'my_test_screen', $object_name );
 
 	}
 
@@ -76,7 +97,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a screen
-		$this->test_add_screen();
+		$this->test_add_screen( 'post', 'my_custom_post_type' );
 
 		// Get screens for object type / name
 		$screens = $wp_fields->get_screens( 'post', 'my_custom_post_type' );
@@ -86,7 +107,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'my_test_screen', $screens );
 
 		// Get a screen that doesn't exist
-		$screens = $wp_fields->get_screens( 'post' );
+		$screens = $wp_fields->get_screens( 'post', 'some_other_post_type' );
 
 		$this->assertEquals( 0, count( $screens ) );
 
@@ -119,7 +140,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a screen
-		$this->test_add_screen();
+		$this->test_add_screen( 'post', 'my_custom_post_type' );
 
 		// Screen exists for this object type / name
 		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
@@ -129,7 +150,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_screen', $screen->id );
 
 		// Screen doesn't exist for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen' );
+		$screen = $wp_fields->get_screen( 'post', 'my_test_screen1' );
 
 		$this->assertEmpty( $screen );
 
@@ -151,7 +172,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a screen
-		$this->test_add_screen();
+		$this->test_add_screen( 'post', 'my_custom_post_type' );
 
 		// Screen exists for this object type / name
 		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
@@ -172,8 +193,11 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 	/**
 	 * Test WP_Fields_API::add_section()
+	 *
+	 * @param string $object_type
+	 * @param string $object_name
 	 */
-	public function test_add_section() {
+	public function test_add_section( $object_type = 'post', $object_name = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -181,9 +205,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a screen
-		$this->test_add_screen();
+		$this->test_add_screen( $object_type, $object_name );
 
-		$wp_fields->add_section( 'post', 'my_test_section', 'my_custom_post_type', array(
+		$wp_fields->add_section( $object_type, 'my_test_section', $object_name, array(
 			'screen' => 'my_test_screen',
 		) );
 
@@ -200,7 +224,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a screen
-		$this->test_add_section();
+		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Get sections for object type / name
 		$sections = $wp_fields->get_sections( 'post', 'my_custom_post_type' );
@@ -210,7 +234,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'my_test_section', $sections );
 
 		// Get a section that doesn't exist
-		$sections = $wp_fields->get_sections( 'post' );
+		$sections = $wp_fields->get_sections( 'post', 'some_other_post_type' );
 
 		$this->assertEquals( 0, count( $sections ) );
 
@@ -249,7 +273,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a screen
-		$this->test_add_section();
+		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Section exists for this object type / name
 		$section = $wp_fields->get_section( 'post', 'my_test_section', 'my_custom_post_type' );
@@ -259,7 +283,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_section', $section->id );
 
 		// Section doesn't exist for this object type / name
-		$section = $wp_fields->get_section( 'post', 'my_test_section' );
+		$section = $wp_fields->get_section( 'post', 'my_test_section', 'some_other_post_type' );
 
 		$this->assertEmpty( $section );
 
@@ -281,7 +305,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a screen
-		$this->test_add_section();
+		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Section exists for this object type / name
 		$section = $wp_fields->get_section( 'post', 'my_test_section', 'my_custom_post_type' );
@@ -302,15 +326,21 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 	/**
 	 * Test WP_Fields_API::add_field()
+	 *
+	 * @param string $object_type
+	 * @param string $object_name
 	 */
-	public function test_add_field() {
+	public function test_add_field( $object_type = 'post', $object_name = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_field( 'post', 'my_test_field', 'my_custom_post_type', array(
+		// Add a section for the control
+		$this->test_add_section( $object_type, $object_name );
+
+		$wp_fields->add_field( $object_type, 'my_test_field', $object_name, array(
 			'control' => array(
 				'id' => 'my_test_field_control',
 				'label' => 'My Test Field',
@@ -332,7 +362,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a field
-		$this->test_add_field();
+		$this->test_add_field( 'post', 'my_custom_post_type' );
 
 		// Get fields for object type / name
 		$fields = $wp_fields->get_fields( 'post', 'my_custom_post_type' );
@@ -342,7 +372,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'my_test_field', $fields );
 
 		// Get a field that doesn't exist
-		$fields = $wp_fields->get_fields( 'post' );
+		$fields = $wp_fields->get_fields( 'post', 'some_other_post_type' );
 
 		$this->assertEquals( 0, count( $fields ) );
 
@@ -366,7 +396,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a field
-		$this->test_add_field();
+		$this->test_add_field( 'post', 'my_custom_post_type' );
 
 		// Field exists for this object type / name
 		$field = $wp_fields->get_field( 'post', 'my_test_field', 'my_custom_post_type' );
@@ -376,7 +406,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_field', $field->id );
 
 		// Field doesn't exist for this object type / name
-		$field = $wp_fields->get_field( 'post', 'my_test_field' );
+		$field = $wp_fields->get_field( 'post', 'my_test_field', 'some_other_post_type' );
 
 		$this->assertEmpty( $field );
 
@@ -398,7 +428,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a field
-		$this->test_add_field();
+		$this->test_add_field( 'post', 'my_custom_post_type' );
 
 		// Field exists for this object type / name
 		$field = $wp_fields->get_field( 'post', 'my_test_field', 'my_custom_post_type' );
@@ -419,21 +449,21 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 	/**
 	 * Test WP_Fields_API::add_control()
+	 *
+	 * @param string $object_type
+	 * @param string $object_name
 	 */
-	public function test_add_control() {
+	public function test_add_control( $object_type = 'post', $object_name = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a section for the control
-		$this->test_add_section();
-
 		// Add a field for the control
-		$this->test_add_field();
+		$this->test_add_field( $object_type, $object_name );
 
-		$wp_fields->add_control( 'post', 'my_test_control', 'my_custom_post_type', array(
+		$wp_fields->add_control( $object_type, 'my_test_control', $object_name, array(
 			'section' => 'my_test_section',
 			'fields' => 'my_test_field',
 			'label' => 'My Test Control Field',
@@ -453,7 +483,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a control / field / section
-		$this->test_add_control();
+		$this->test_add_control( 'post', 'my_custom_post_type' );
 
 		// Get controls for object type / name
 		$controls = $wp_fields->get_controls( 'post', 'my_custom_post_type' );
@@ -467,7 +497,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_section', $controls['my_test_control']->section );
 
 		// Get a control that doesn't exist
-		$controls = $wp_fields->get_controls( 'post' );
+		$controls = $wp_fields->get_controls( 'post', 'some_other_post_type' );
 
 		$this->assertEquals( 0, count( $controls ) );
 
@@ -494,7 +524,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a control / field / section
-		$this->test_add_control();
+		$this->test_add_control( 'post', 'my_custom_post_type' );
 
 		// Control exists for this object type / name
 		$control = $wp_fields->get_control( 'post', 'my_test_field_control', 'my_custom_post_type' );
@@ -502,7 +532,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertNotEmpty( $control );
 
 		$this->assertEquals( 'my_test_field_control', $control->id );
-		var_dump( $control->field );
+		$this->assertNotEmpty( $control->field );
 		$this->assertEquals( 'my_test_field', $control->field->id );
 		$this->assertEquals( 'my_test_section', $control->section );
 
@@ -512,11 +542,12 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertNotEmpty( $control );
 
 		$this->assertEquals( 'my_test_control', $control->id );
+		$this->assertNotEmpty( $control->field );
 		$this->assertEquals( 'my_test_field', $control->field->id );
 		$this->assertEquals( 'my_test_section', $control->section );
 
 		// Control doesn't exist for this object type / name
-		$control = $wp_fields->get_control( 'post', 'my_test_control' );
+		$control = $wp_fields->get_control( 'post', 'my_test_control', 'some_other_post_type' );
 
 		$this->assertEmpty( $control );
 
@@ -538,7 +569,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a control / field / section
-		$this->test_add_control();
+		$this->test_add_control( 'post', 'my_custom_post_type' );
 
 		// Control exists for this object type / name
 		$control = $wp_fields->get_control( 'post', 'my_test_control', 'my_custom_post_type' );
