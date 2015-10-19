@@ -26,6 +26,8 @@ class WP_Fields_API_Control {
 	public $instance_number = 0;
 
 	/**
+	 * Unique identifier.
+	 *
 	 * @access public
 	 * @var string
 	 */
@@ -170,16 +172,6 @@ class WP_Fields_API_Control {
 
 		$keys = array_keys( get_object_vars( $this ) );
 
-		// Backwards compatibility for setting arg
-		if ( isset( $args['settings'] ) ) {
-			$args['fields'] = $args['settings'];
-		}
-
-		// Backwards compatibility for setting arg
-		if ( isset( $args['setting'] ) ) {
-			$args['field'] = $args['setting'];
-		}
-
 		foreach ( $keys as $key ) {
 			if ( isset( $args[ $key ] ) ) {
 				$this->$key = $args[ $key ];
@@ -198,12 +190,19 @@ class WP_Fields_API_Control {
 
 		if ( is_array( $this->fields ) ) {
 			foreach ( $this->fields as $key => $field ) {
-				$fields[ $key ] = $wp_fields->get_field( $this->object_type, $field, $this->object_name );
+				$field_obj = $wp_fields->get_field( $this->object_type, $field, $this->object_name );
+
+				if ( $field_obj ) {
+					$fields[ $key ] = $field_obj;
+				}
 			}
 		} else {
-			$this->field = $wp_fields->get_field( $this->object_type, $this->fields, $this->object_name );
+			$field_obj = $wp_fields->get_field( $this->object_type, $this->fields, $this->object_name );
 
-			$fields['default'] = $this->field;
+			if ( $field_obj ) {
+				$this->field       = $field_obj;
+				$fields['default'] = $field_obj;
+			}
 		}
 
 		$this->fields = $fields;

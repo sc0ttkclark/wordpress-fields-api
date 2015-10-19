@@ -156,6 +156,11 @@ class WP_Fields_API_Section {
 	 */
 	public function init( $object_type, $id, $args = array() ) {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
 		$this->object_type = $object_type;
 
 		if ( is_array( $id ) ) {
@@ -180,6 +185,14 @@ class WP_Fields_API_Section {
 		if ( empty( $this->active_callback ) ) {
 			$this->active_callback = array( $this, 'active_callback' );
 		}
+
+		/*if ( $this->screen ) {
+			$screen_obj = $wp_fields->get_screen( $this->object_type, $this->screen, $this->object_name );
+
+			if ( $screen_obj ) {
+				$this->screen = $screen_obj;
+			}
+		}*/
 
 		$this->controls = array(); // Users cannot customize the $controls array.
 
@@ -222,7 +235,9 @@ class WP_Fields_API_Section {
 	 * @return bool Always true.
 	 */
 	public function active_callback() {
+
 		return true;
+
 	}
 
 	/**
@@ -231,6 +246,7 @@ class WP_Fields_API_Section {
 	 * @return array The array to be exported to the client as JSON.
 	 */
 	public function json() {
+
 		$array = wp_array_slice_assoc( (array) $this, array( 'id', 'description', 'priority', 'screen', 'type' ) );
 		$array['title'] = html_entity_decode( $this->title, ENT_QUOTES, get_bloginfo( 'charset' ) );
 		$array['content'] = $this->get_content();
@@ -238,6 +254,7 @@ class WP_Fields_API_Section {
 		$array['instanceNumber'] = $this->instance_number;
 
 		return $array;
+
 	}
 
 	/**
@@ -266,11 +283,17 @@ class WP_Fields_API_Section {
 	 * @return string Contents of the section.
 	 */
 	final public function get_content() {
+
 		ob_start();
+
 		$this->maybe_render();
+
 		$template = trim( ob_get_contents() );
+
 		ob_end_clean();
+
 		return $template;
+
 	}
 
 	/**
