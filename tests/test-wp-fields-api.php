@@ -25,6 +25,22 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test Fields API is setup
+	 *
+	 * @covers WP_Fields_API::__construct
+	 */
+	public function test_api() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$this->assertTrue( is_a( $wp_fields, 'WP_Fields_API' ) );
+
+	}
+
+	/**
 	 * Test WP_Fields_API::get_containers()
 	 */
 	public function test_get_containers() {
@@ -51,16 +67,6 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$this->assertEquals( 0, count( $containers ) );
 
-		// Get all containers for object type
-		$containers = $wp_fields->get_containers( 'post', true );
-
-		$this->assertEquals( 2, count( $containers ) );
-
-		$container_ids = wp_list_pluck( $containers, 'id' );
-
-		$this->assertContains( 'my_test_screen', $container_ids );
-		$this->assertContains( 'my_test_section', $container_ids );
-
 		// Get all containers for all object types
 		$containers = $wp_fields->get_containers();
 
@@ -68,6 +74,32 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 1, count( $containers ) );
 
 		$this->assertArrayHasKey( 'post', $containers );
+
+	}
+
+	/**
+	 * Test WP_Fields_API::get_containers()
+	 */
+	public function test_get_containers_all() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Add a section / screen
+		$this->test_add_section( 'post', 'my_custom_post_type' );
+
+		// Get containers for object type / name
+		$containers = $wp_fields->get_containers( 'post', true );
+
+		// There are two containers, the screen and the section
+		$this->assertEquals( 2, count( $containers ) );
+
+		$container_ids = wp_list_pluck( $containers, 'id' );
+
+		$this->assertContains( 'my_test_screen', $container_ids );
+		$this->assertContains( 'my_test_section', $container_ids );
 
 	}
 
@@ -85,6 +117,23 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		$wp_fields->add_screen( $object_type, 'my_test_screen', $object_name );
+
+	}
+
+	/**
+	 * Test WP_Fields_API::add_screen()
+	 *
+	 * @param string $object_type
+	 * @param string $object_name
+	 */
+	public function test_add_screen_invalid( $object_type = 'post' ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$wp_fields->add_screen( $object_type, null, null, array() );
 
 	}
 
@@ -130,6 +179,28 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		// Array keys are object types
 		$this->assertArrayHasKey( 'post', $screens );
+
+	}
+
+	/**
+	 * Test WP_Fields_API::get_screens()
+	 */
+	public function test_get_screens_no_object_name() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Add a screen
+		$this->test_add_screen( 'post' );
+
+		// Get screens for object type / name
+		$screens = $wp_fields->get_screens( 'post' );
+
+		$this->assertEquals( 1, count( $screens ) );
+
+		$this->assertArrayHasKey( 'my_test_screen', $screens );
 
 	}
 
@@ -187,6 +258,75 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		// Remove screen
 		$wp_fields->remove_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+
+		// Screen no longer exists for this object type / name
+		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+
+		$this->assertEmpty( $screen );
+
+	}
+
+	/**
+	 * Test WP_Fields_API::remove_screen()
+	 */
+	public function test_remove_screen_by_object_type() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Add a screen
+		$this->test_add_screen( 'post', 'my_custom_post_type' );
+
+		// Remove screen
+		$wp_fields->remove_screen( 'post', null, true );
+
+		// Screen no longer exists for this object type / name
+		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+
+		$this->assertEmpty( $screen );
+
+	}
+
+	/**
+	 * Test WP_Fields_API::remove_screen()
+	 */
+	public function test_remove_screen_by_object_type_default_object() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Add a screen
+		$this->test_add_screen( 'post' );
+
+		// Remove screen
+		$wp_fields->remove_screen( 'post', null );
+
+		// Screen no longer exists for this object type / name
+		$screen = $wp_fields->get_screen( 'post', 'my_test_screen' );
+
+		$this->assertEmpty( $screen );
+
+	}
+
+	/**
+	 * Test WP_Fields_API::remove_screen()
+	 */
+	public function test_remove_screen_by_object_name() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Add a screen
+		$this->test_add_screen( 'post', 'my_custom_post_type' );
+
+		// Remove screen
+		$wp_fields->remove_screen( 'post', true, 'my_custom_post_type' );
 
 		// Screen no longer exists for this object type / name
 		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
