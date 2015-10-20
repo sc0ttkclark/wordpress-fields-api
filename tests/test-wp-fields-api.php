@@ -118,7 +118,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$this->assertEquals( 1, count( $screens ) );
 
-		$this->assertEquals( 'my_test_screen', $screens[0]->id );
+		$screen_ids = wp_list_pluck( $screens, 'id' );
+
+		$this->assertContains( 'my_test_screen', $screen_ids );
 
 		// Get all screens for all object types
 		$screens = $wp_fields->get_screens();
@@ -252,7 +254,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$this->assertEquals( 1, count( $sections ) );
 
-		$this->assertEquals( 'my_test_section', $sections[0]->id );
+		$section_ids = wp_list_pluck( $sections, 'id' );
+
+		$this->assertContains( 'my_test_section', $section_ids );
 
 		// Get all sections for all object types
 		$sections = $wp_fields->get_sections();
