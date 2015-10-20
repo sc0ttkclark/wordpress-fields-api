@@ -337,22 +337,7 @@ class WP_Fields_API_Section {
 	 * // @todo Merge render_template / print_template() from Customizer
 	 */
 	protected function render() {
-		$classes = 'accordion-section control-section control-section-' . $this->type;
-		?>
-		<li id="accordion-section-<?php echo esc_attr( $this->id ); ?>" class="<?php echo esc_attr( $classes ); ?>">
-			<h3 class="accordion-section-title" tabindex="0">
-				<?php echo esc_html( $this->title ); ?>
-				<span class="screen-reader-text"><?php _e( 'Press return or enter to expand' ); ?></span>
-			</h3>
-			<ul class="accordion-section-content">
-				<?php if ( ! empty( $this->description ) ) : ?>
-					<li class="fields-section-description-container">
-						<p class="description fields-section-description"><?php echo $this->description; ?></p>
-					</li>
-				<?php endif; ?>
-			</ul>
-		</li>
-		<?php
+		echo esc_html( $this->title );
 	}
 
 	/**
