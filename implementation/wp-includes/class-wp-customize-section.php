@@ -67,11 +67,16 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 
 		parent::__construct( $this->object_type, $id, $args );
 
-		add_action( "fields_api_section_active_{$this->object_type}", array( $this, 'customize_section_active' ), 10, 2 );
-		add_action( "fields_api_render_section_{$this->object_type}", array( $this, 'customize_render_section' ) );
+		if ( ! has_action( "fields_api_section_active_{$this->object_type}", array( 'WP_Customize_Section', 'customize_section_active' ) ) ) {
+			add_action( "fields_api_section_active_{$this->object_type}", array( 'WP_Customize_Section', 'customize_section_active' ), 10, 2 );
+		}
+
+		if ( ! has_action( "fields_api_render_section_{$this->object_type}", array( 'WP_Customize_Section', 'customize_render_section' ) ) ) {
+			add_action( "fields_api_render_section_{$this->object_type}", array( 'WP_Customize_Section', 'customize_render_section' ) );
+		}
 
 		if ( '' !== $this->id ) {
-			add_action( "fields_api_render_section_{$this->object_type}_{$this->id}", array( $this, 'customize_render_section_id' ) );
+			add_action( "fields_api_render_section_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_render_section_id' ) );
 		}
 
 	}
@@ -87,7 +92,7 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 	 *
 	 * @return bool Whether the section is active to the current preview.
 	 */
-	final public function customize_section_active( $active, $section ) {
+	public static function customize_section_active( $active, $section ) {
 
 		/**
 		 * Filter response of {@see WP_Customize_Section::active()}.
@@ -105,17 +110,19 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 
 	/**
 	 * Backwards compatibility for fields_api_render_section
+	 *
+	 * @param WP_Fields_API_Section $section {@see WP_Fields_API_Section} instance.
 	 */
-	public function customize_render_section() {
+	public static function customize_render_section( $section ) {
 
 		/**
 		 * Fires before rendering a Customizer section.
 		 *
 		 * @since 3.4.0
 		 *
-		 * @param WP_Customize_Section $this WP_Customize_Section instance.
+		 * @param WP_Customize_Section $section WP_Customize_Section instance.
 		 */
-		do_action( 'customize_render_section', $this );
+		do_action( 'customize_render_section', $section );
 
 	}
 

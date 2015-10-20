@@ -76,11 +76,16 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 			$this->active_callback = array( $this, 'active_callback' );
 		}
 
-		add_action( 'fields_render_control_' . $this->object_type, array( $this, 'customize_render_control' ) );
+		if ( ! has_action( 'fields_render_control_' . $this->object_type, array( 'WP_Customize_Control', 'customize_render_control' ) ) ) {
+			add_action( 'fields_render_control_' . $this->object_type, array( 'WP_Customize_Control', 'customize_render_control' ) );
+		}
+
+		if ( ! has_filter( 'fields_control_active_' . $this->object_type, array( 'WP_Customize_Control', 'customize_control_active' ) ) ) {
+			add_filter( 'fields_control_active_' . $this->object_type, array( 'WP_Customize_Control', 'customize_control_active' ), 10, 2 );
+		}
 
 		if ( '' !== $this->id ) {
-			add_action( 'fields_render_control_' . $this->object_type . '_' . $this->id, array( $this, 'customize_render_control_id' ) );
-			add_filter( 'fields_control_active_' . $this->object_type . '_' . $this->id, array( $this, 'customize_control_active' ), 10, 2 );
+			add_action( 'fields_render_control_' . $this->object_type . '_' . $this->object_name . '_' . $this->id, array( 'WP_Customize_Control', 'customize_render_control_id' ) );
 		}
 	}
 
@@ -101,7 +106,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 *
 	 * @return bool Whether the control is active to the current preview.
 	 */
-	public function customize_control_active( $active, $control ) {
+	public static function customize_control_active( $active, $control ) {
 
 		/**
 		 * Filter response of WP_Customize_Control::active().
@@ -150,22 +155,26 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 
 	/**
 	 * Hook into render of the control.
+	 *
+	 * @param WP_Customize_Control $control
 	 */
-	public function customize_render_control() {
+	public static function customize_render_control( $control ) {
 		/**
 		 * Fires just before the current Customizer control is rendered.
 		 *
 		 * @since 3.4.0
 		 *
-		 * @param WP_Customize_Control $this WP_Customize_Control instance.
+		 * @param WP_Customize_Control $control WP_Customize_Control instance.
 		 */
-		do_action( 'customize_render_control', $this );
+		do_action( 'customize_render_control', $control );
 	}
 
 	/**
 	 * Hook into render of the control.
+	 *
+	 * @param WP_Customize_Control $control
 	 */
-	public function customize_render_control_id() {
+	public function customize_render_control_id( $control ) {
 		/**
 		 * Fires just before a specific Customizer control is rendered.
 		 *
@@ -174,9 +183,9 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 		 *
 		 * @since 3.4.0
 		 *
-		 * @param WP_Customize_Control $this {@see WP_Customize_Control} instance.
+		 * @param WP_Customize_Control $control {@see WP_Customize_Control} instance.
 		 */
-		do_action( 'customize_render_control_' . $this->id, $this );
+		do_action( 'customize_render_control_' . $control->id, $control );
 	}
 
 	/**

@@ -53,16 +53,16 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 		parent::__construct( $this->object_type, $id, $args );
 
-		if ( ! has_filter( "fields_api_screen_active_{$this->object_type}", array( $this, 'customize_panel_active' ) ) ) {
-			add_filter( "fields_api_screen_active_{$this->object_type}", array( $this, 'customize_panel_active' ), 10, 2 );
+		if ( ! has_filter( "fields_api_screen_active_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_panel_active' ) ) ) {
+			add_filter( "fields_api_screen_active_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_panel_active' ), 10, 2 );
 		}
 
-		if ( ! has_action( "fields_api_render_screen_{$this->object_type}", array( $this, 'customize_render_panel' ) ) ) {
-			add_action( "fields_api_render_screen_{$this->object_type}", array( $this, 'customize_render_panel' ) );
+		if ( ! has_action( "fields_api_render_screen_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_render_panel' ) ) ) {
+			add_action( "fields_api_render_screen_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_render_panel' ) );
 		}
 
 		if ( '' !== $this->id ) {
-			add_action( "fields_api_render_screen_{$this->object_type}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
+			add_action( "fields_api_render_screen_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
 		}
 
 	}
@@ -77,7 +77,7 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 	 *
 	 * @return bool Whether the panel is active to the current preview.
 	 */
-	final public function customize_panel_active( $active, $screen ) {
+	public static function customize_panel_active( $active, $screen ) {
 
 		/**
 		 * Filter response of {@see WP_Customize_Panel::active()}.
@@ -95,17 +95,19 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 	/**
 	 * Backwards compatibility for fields_api_render_panel
+	 *
+	 * @param WP_Customize_Panel $screen {@see WP_Fields_API_Screen} instance.
 	 */
-	public function customize_render_panel() {
+	public static function customize_render_panel( $screen ) {
 
 		/**
 		 * Fires before rendering a Customizer panel.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @param WP_Customize_Panel $this WP_Customize_Panel instance.
+		 * @param WP_Customize_Panel $screen WP_Customize_Panel instance.
 		 */
-		do_action( 'customize_render_panel', $this );
+		do_action( 'customize_render_panel', $screen );
 
 	}
 

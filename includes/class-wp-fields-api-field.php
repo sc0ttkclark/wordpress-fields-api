@@ -165,12 +165,18 @@ class WP_Fields_API_Field {
 			$this->id .= '[' . implode( '][', $this->id_data['keys'] ) . ']';
 		}
 
+		$type = $this->object_type;
+
+		if ( ! empty( $this->type ) ) {
+			$type = $this->type;
+		}
+
 		if ( $this->sanitize_callback ) {
-			add_filter( "fields_sanitize_{$this->object_type}_{$this->id}", $this->sanitize_callback, 10, 2 );
+			add_filter( "fields_sanitize_{$type}_{$this->object_name}_{$this->id}", $this->sanitize_callback, 10, 2 );
 		}
 
 		if ( $this->sanitize_js_callback ) {
-			add_filter( "fields_sanitize_js_{$this->object_type}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
+			add_filter( "fields_sanitize_js_{$type}_{$this->object_name}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
 		}
 
 	}
@@ -209,7 +215,7 @@ class WP_Fields_API_Field {
 		$type = $this->object_type;
 
 		// Backwards compatibility
-		if ( isset( $this->type ) ) {
+		if ( ! empty( $this->type ) ) {
 			$type = $this->type;
 		}
 
@@ -316,7 +322,7 @@ class WP_Fields_API_Field {
 		$type = $this->object_type;
 
 		// Backwards compatibility
-		if ( isset( $this->type ) ) {
+		if ( ! empty( $this->type ) ) {
 			$type = $this->type;
 		}
 
@@ -379,7 +385,7 @@ class WP_Fields_API_Field {
 		$type = $this->object_type;
 
 		// Backwards compatibility
-		if ( isset( $this->type ) ) {
+		if ( ! empty( $this->type ) ) {
 			$type = $this->type;
 		}
 
@@ -405,7 +411,7 @@ class WP_Fields_API_Field {
 		$type = $this->object_type;
 
 		// Backwards compatibility
-		if ( isset( $this->type ) ) {
+		if ( ! empty( $this->type ) ) {
 			$type = $this->type;
 		}
 
@@ -555,7 +561,7 @@ class WP_Fields_API_Field {
 		$type = $this->object_type;
 
 		// Backwards compatibility
-		if ( isset( $this->type ) ) {
+		if ( ! empty( $this->type ) ) {
 			$type = $this->type;
 		}
 
@@ -618,7 +624,7 @@ class WP_Fields_API_Field {
 		$type = $this->object_type;
 
 		// Backwards compatibility
-		if ( isset( $this->type ) ) {
+		if ( ! empty( $this->type ) ) {
 			$type = $this->type;
 		}
 

@@ -374,7 +374,7 @@ class WP_Fields_API_Control {
 		 *
 		 * @param WP_Fields_API_Control $this {@see WP_Fields_API_Control} instance.
 		 */
-		do_action( 'fields_render_control_' . $this->object_type . '_' . $this->id, $this );
+		do_action( 'fields_render_control_' . $this->object_type . '_' . $this->object_name . '_' . $this->id, $this );
 
 		$this->render();
 

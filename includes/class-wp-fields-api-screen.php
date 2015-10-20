@@ -298,7 +298,7 @@ class WP_Fields_API_Screen {
 		 * The dynamic portion of the hook name, `$this->id`, refers to
 		 * the ID of the specific Fields API screen to be rendered.
 		 */
-		do_action( "fields_api_render_screen_{$this->object_type}_{$this->id}" );
+		do_action( "fields_api_render_screen_{$this->object_type}_{$this->object_name}_{$this->id}" );
 
 		$this->render();
 

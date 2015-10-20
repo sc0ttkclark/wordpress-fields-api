@@ -325,7 +325,7 @@ class WP_Fields_API_Section {
 		 * of the specific Fields API section to be rendered.
 		 *
 		 */
-		do_action( "fields_api_render_section_{$this->object_type}_{$this->id}" );
+		do_action( "fields_api_render_section_{$this->object_type}_{$this->object_name}_{$this->id}" );
 
 		$this->render();
 
