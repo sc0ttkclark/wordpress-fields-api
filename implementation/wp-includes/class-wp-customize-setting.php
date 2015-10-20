@@ -103,20 +103,30 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		}
 
 		// Add compatibility hooks
-		add_action( "fields_preview_{$this->object_type}_{$this->id}",            array( $this, 'customize_preview_id' ) );
-		add_action( "fields_preview_{$this->object_type}",                        array( $this, 'customize_preview_type' ) );
-		add_action( 'fields_save_' . $this->type . '_' . $this->id_data['base'],  array( $this, 'customize_save' ) );
-		add_filter( "fields_sanitize_{$this->type}_{$this->id}",                  array( $this, 'customize_sanitize' ) );
-		add_filter( "fields_sanitize_js_{$this->type}_{$this->id}",               array( $this, 'customize_sanitize_js_value' ) );
-		add_action( "fields_update_{$this->type}",                                array( $this, 'customize_update' ) );
-		add_action( 'fields_value_' . $this->type . '_' . $this->id_data['base'], array( $this, 'customize_value' ) );
+		add_action( "fields_preview_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_preview_id' ) );
+
+		if ( ! has_action( "fields_preview_{$this->type}", array( 'WP_Customize_Setting', 'customize_preview_type' ) ) ) {
+			add_action( "fields_preview_{$this->type}", array( 'WP_Customize_Setting', 'customize_preview_type' ) );
+		}
+
+		add_action( 'fields_save_' . $this->type . '_' . $this->object_name . '_' . $this->id_data['base'], array( $this, 'customize_save' ) );
+		add_filter( "fields_sanitize_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize' ) );
+		add_filter( "fields_sanitize_js_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize_js_value' ) );
+
+		if ( ! has_filter( "fields_update_{$this->type}", array( 'WP_Customize_Setting', 'customize_update' ) ) ) {
+			add_filter( "fields_update_{$this->type}", array( 'WP_Customize_Setting', 'customize_update' ), 10, 2 );
+		}
+
+		add_action( 'fields_value_' . $this->type . '_' . $this->object_name . '_' . $this->id_data['base'], array( $this, 'customize_value' ) );
 
 	}
 
 	/**
 	 * Handle previewing the setting by ID.
+	 *
+	 * @param WP_Customize_Setting $setting
 	 */
-	public function customize_preview_id() {
+	public static function customize_preview_id( $setting ) {
 
 		/**
 		 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
@@ -128,14 +138,16 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 *
 		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
 		 */
-		do_action( "customize_preview_{$this->id}", $this );
+		do_action( "customize_preview_{$setting->id}", $setting );
 
 	}
 
 	/**
-	 * Handle previewing the setting by typw.
+	 * Handle previewing the setting by type.
+	 *
+	 * @param WP_Customize_Setting $setting
 	 */
-	public function customize_preview_type() {
+	public static function customize_preview_type( $setting ) {
 
 		/**
 		 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
@@ -147,7 +159,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 *
 		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
 		 */
-		do_action( "customize_preview_{$this->type}", $this );
+		do_action( "customize_preview_{$setting->type}", $setting );
 
 	}
 
@@ -203,22 +215,26 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	 * @since 3.4.0
 	 *
 	 * @param mixed $value The value to update.
+	 * @param WP_Customize_Setting $setting
+	 *
 	 * @return mixed The result of saving the value.
 	 */
-	protected function customize_update( $value ) {
+	public static function customize_update( $value, $setting ) {
 
 		/**
 		 * Fires when the {@see WP_Customize_Setting::update()} method is called for settings
 		 * not handled as theme_mods or options.
 		 *
-		 * The dynamic portion of the hook name, `$this->type`, refers to the type of setting.
+		 * The dynamic portion of the hook name, `$setting->type`, refers to the type of setting.
 		 *
 		 * @since 3.4.0
 		 *
 		 * @param mixed                $value Value of the setting.
-		 * @param WP_Customize_Setting $this  WP_Customize_Setting instance.
+		 * @param WP_Customize_Setting $setting  WP_Customize_Setting instance.
 		 */
-		do_action( 'customize_update_' . $this->type, $value, $this );
+		do_action( 'customize_update_' . $setting->type, $value, $setting );
+
+		return true;
 
 	}
 
@@ -305,6 +321,38 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		}
 
 		return $value;
+
+	}
+
+	/**
+	 * Callback function to filter the theme mods and options.
+	 *
+	 * If switch_to_blog() was called after the preview() method, and the current
+	 * blog is now not the same blog, then this method does a no-op and returns
+	 * the original value.
+	 *
+	 * @uses  WP_Fields_API_Field::multidimensional_replace()
+	 *
+	 * @param mixed $original Old value.
+	 *
+	 * @return mixed New or old value.
+	 */
+	public function _preview_filter( $original ) {
+
+		if ( ! $this->is_current_blog_previewed() ) {
+			return $original;
+		}
+
+		$undefined  = new stdClass(); // symbol hack
+		$post_value = $this->manager->post_value( $this, $undefined );
+
+		if ( $undefined === $post_value ) {
+			$value = $this->_original_value;
+		} else {
+			$value = $post_value;
+		}
+
+		return $this->multidimensional_replace( $original, $this->id_data['keys'], $value );
 
 	}
 
