@@ -206,7 +206,14 @@ class WP_Fields_API_Field {
 			$this->_previewed_blog_id = get_current_blog_id();
 		}
 
-		switch ( $this->object_type ) {
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( isset( $this->type ) ) {
+			$type = $this->type;
+		}
+
+		switch ( $type ) {
 			case 'customizer' : // Primary object type
 			case 'theme_mod' : // Backwards compatible for Customizer
 				add_filter( 'theme_mod_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
@@ -223,7 +230,6 @@ class WP_Fields_API_Field {
 				break;
 
 			case 'post' : // Primary object type
-			case 'post_type' : // Backwards compatible for Customizer
 				add_filter( 'get_post_metadata', array( $this, '_preview_filter' ) );
 				break;
 
@@ -382,7 +388,14 @@ class WP_Fields_API_Field {
 	 */
 	protected function update( $value ) {
 
-		switch ( $this->object_type ) {
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( isset( $this->type ) ) {
+			$type = $this->type;
+		}
+
+		switch ( $type ) {
 			case 'customizer' : // Primary object type
 			case 'theme_mod' : // Backwards compatible for Customizer
 				return $this->_update_theme_mod( $value );
@@ -525,8 +538,14 @@ class WP_Fields_API_Field {
 	 */
 	public function value() {
 
-		// Get the callback that corresponds to the field type.
-		switch ( $this->object_type ) {
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( isset( $this->type ) ) {
+			$type = $this->type;
+		}
+
+		switch ( $type ) {
 			case 'customizer' : // Primary object type
 			case 'theme_mod' : // Backwards compatible for Customizer
 				$function = 'get_theme_mod';
@@ -538,7 +557,6 @@ class WP_Fields_API_Field {
 				break;
 
 			case 'post' : // Primary object type
-			case 'post_type' : // Backwards compatible for Customizer
 				$function = 'get_post_meta';
 				break;
 
