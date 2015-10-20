@@ -292,7 +292,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	/**
 	 * Test WP_Fields_API::remove_screen()
 	 */
-	public function test_remove_screen_by_object_type_default_object() {
+	public function test_remove_screen_default_object() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -303,7 +303,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->test_add_screen( 'post' );
 
 		// Remove screen
-		$wp_fields->remove_screen( 'post', null );
+		$wp_fields->remove_screen( 'post', 'my_test_screen' );
 
 		// Screen no longer exists for this object type / name
 		$screen = $wp_fields->get_screen( 'post', 'my_test_screen' );
