@@ -15,6 +15,8 @@ Requires WP: 4.1
 /**
  * @package    WordPress
  * @subpackage Fields_API
+ *
+ * @codeCoverageIgnore
  */
 
 /**
