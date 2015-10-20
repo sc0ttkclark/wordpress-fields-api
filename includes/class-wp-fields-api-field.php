@@ -247,17 +247,17 @@ class WP_Fields_API_Field {
 				 *
 				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 				 */
-				do_action( "fields_preview_{$this->object_type}_{$this->id}", $this );
+				do_action( "fields_preview_{$type}_{$this->object_name}_{$this->id}", $this );
 
 				/**
 				 * Fires when the {@see WP_Fields_API_Field::preview()} method is called for fields
 				 * not handled as theme_mods or options.
 				 *
-				 * The dynamic portion of the hook name, `$this->object_type`, refers to the field type.
+				 * The dynamic portion of the hook name, `$this->type`, refers to the field type.
 				 *
 				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 				 */
-				do_action( "fields_preview_{$this->object_type}", $this );
+				do_action( "fields_preview_{$type}", $this );
 		}
 
 	}
@@ -313,6 +313,13 @@ class WP_Fields_API_Field {
 			return false;
 		}
 
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( isset( $this->type ) ) {
+			$type = $this->type;
+		}
+
 		/**
 		 * Fires when the WP_Fields_API_Field::save() method is called.
 		 *
@@ -322,7 +329,7 @@ class WP_Fields_API_Field {
 		 *
 		 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 		 */
-		do_action( 'fields_save_' . $this->object_type . '_' . $this->id_data['base'], $this );
+		do_action( 'fields_save_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this );
 
 		return $this->update( $value );
 
@@ -369,13 +376,20 @@ class WP_Fields_API_Field {
 
 		$value = wp_unslash( $value );
 
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( isset( $this->type ) ) {
+			$type = $this->type;
+		}
+
 		/**
 		 * Filter a Customize field value in un-slashed form.
 		 *
 		 * @param mixed                $value Value of the field.
 		 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 		 */
-		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->id}", $value, $this );
+		return apply_filters( "fields_sanitize_{$type}_{$this->object_name}_{$this->id}", $value, $this );
 
 	}
 
@@ -423,7 +437,7 @@ class WP_Fields_API_Field {
 				 * @param mixed                $value Value of the field.
 				 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 				 */
-				return do_action( 'fields_update_' . $this->object_type, $value, $this );
+				return apply_filters( "fields_update_{$type}", $value, $this );
 		}
 	}
 
@@ -578,7 +592,7 @@ class WP_Fields_API_Field {
 				 *
 				 * @param mixed $default The field default value. Default empty.
 				 */
-				return apply_filters( 'fields_value_' . $this->object_type . '_' . $this->id_data['base'], $this->default );
+				return apply_filters( 'fields_value_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default );
 		}
 
 		// Handle non-array value
@@ -601,6 +615,13 @@ class WP_Fields_API_Field {
 
 		$value = $this->value();
 
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( isset( $this->type ) ) {
+			$type = $this->type;
+		}
+
 		/**
 		 * Filter a Customize field value for use in JavaScript.
 		 *
@@ -610,7 +631,7 @@ class WP_Fields_API_Field {
 		 * @param mixed                $value The field value.
 		 * @param WP_Fields_API_Field $this  {@see WP_Fields_API_Field} instance.
 		 */
-		$value = apply_filters( "fields_sanitize_js_{$this->object_type}_{$this->id}", $value, $this );
+		$value = apply_filters( "fields_sanitize_js_{$type}_{$this->object_name}_{$this->id}", $value, $this );
 
 		if ( is_string( $value ) ) {
 			return html_entity_decode( $value, ENT_QUOTES, 'UTF-8' );
