@@ -43,15 +43,25 @@ function wp_fields_api_user_profile_fields( $user ) {
 
 				<table class="form-table">
 					<?php foreach ( $controls as $control ) { ?>
+						<?php
+							$label = $control->label;
+							$description = $control->description;
+
+							// Avoid outputting them in render_content()
+							$control->label = '';
+							$control->description = '';
+						?>
 						<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap">
 							<th>
-								<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php esc_html( $control->label ); ?></label>
+								<?php if ( $label ) { ?>
+									<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php esc_html( $label ); ?></label>
+								<?php } ?>
 							</th>
 							<td>
 								<?php $control->render_content(); ?>
 
-								<?php if ( $control->description ) { ?>
-									<p class="description"><?php echo $control->description; ?></p>
+								<?php if ( $description ) { ?>
+									<p class="description"><?php echo $description; ?></p>
 								<?php } ?>
 							</td>
 						</tr>
