@@ -15,6 +15,14 @@
 class WP_Customize_Control extends WP_Fields_API_Control {
 
 	/**
+	 * Object type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_type = 'customizer';
+
+	/**
 	 * @access public
 	 * @var WP_Customize_Manager
 	 */
@@ -49,10 +57,6 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 * @param array $args
 	 */
 	public function __construct( $manager, $id, $args = array() ) {
-		if ( isset( $args['type'] ) ) {
-			$this->type = $args['type'];
-		}
-
 		$this->manager = $manager;
 
 		$this->object_name = $this->manager->get_customizer_object_name();
@@ -66,7 +70,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 			}
 		}
 
-		parent::__construct( $this->type, $id, $args );
+		parent::__construct( $this->object_type, $id, $args );
 
 		if ( empty( $this->active_callback ) ) {
 			$this->active_callback = array( $this, 'active_callback' );

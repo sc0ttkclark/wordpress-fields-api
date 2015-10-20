@@ -19,6 +19,14 @@
 class WP_Customize_Section extends WP_Fields_API_Section {
 
 	/**
+	 * Object type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_type = 'customizer';
+
+	/**
 	 * @access public
 	 * @var WP_Customize_Manager
 	 */
@@ -57,7 +65,7 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 			}
 		}
 
-		parent::__construct( $this->type, $id, $args );
+		parent::__construct( $this->object_type, $id, $args );
 
 		add_action( "fields_api_section_active_{$this->object_type}", array( $this, 'customize_section_active' ), 10, 2 );
 		add_action( "fields_api_render_section_{$this->object_type}", array( $this, 'customize_render_section' ) );

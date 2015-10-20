@@ -19,6 +19,14 @@
 class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 	/**
+	 * Object type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_type = 'customizer';
+
+	/**
 	 * WP_Customize_Manager instance.
 	 *
 	 * @access public
@@ -43,10 +51,15 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 		$this->object_name = $this->manager->get_customizer_object_name();
 
-		parent::__construct( $this->type, $id, $args );
+		parent::__construct( $this->object_type, $id, $args );
 
-		add_action( "fields_api_screen_active_{$this->object_type}", array( $this, 'customize_panel_active' ), 10, 2 );
-		add_action( "fields_api_render_screen_{$this->object_type}", array( $this, 'customize_render_panel' ) );
+		if ( ! has_filter( "fields_api_screen_active_{$this->object_type}", array( $this, 'customize_panel_active' ) ) ) {
+			add_filter( "fields_api_screen_active_{$this->object_type}", array( $this, 'customize_panel_active' ), 10, 2 );
+		}
+
+		if ( ! has_action( "fields_api_render_screen_{$this->object_type}", array( $this, 'customize_render_panel' ) ) ) {
+			add_action( "fields_api_render_screen_{$this->object_type}", array( $this, 'customize_render_panel' ) );
+		}
 
 		if ( '' !== $this->id ) {
 			add_action( "fields_api_render_screen_{$this->object_type}_{$this->id}", array( $this, 'customize_render_panel_id' ) );

@@ -25,10 +25,25 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	public $manager;
 
 	/**
+	 * Object type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $object_type = 'customizer';
+
+	/**
 	 * @access public
 	 * @var string
 	 */
 	public $type = 'theme_mod';
+
+	/**
+	 * Capability required to edit this field.
+	 *
+	 * @var string
+	 */
+	public $capability = 'edit_theme_options';
 
 	/**
 	 * Cached and sanitized $_POST value for the setting.
@@ -37,13 +52,6 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	 * @var mixed
 	 */
 	private $_post_value;
-
-	/**
-	 * Capability required to edit this field.
-	 *
-	 * @var string
-	 */
-	public $capability = 'edit_theme_options';
 
 	/**
 	 * Constructor.
@@ -58,10 +66,6 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	 * @param array                $args    Setting arguments.
 	 */
 	public function __construct( $manager, $id, $args = array() ) {
-
-		if ( isset( $args['type'] ) ) {
-			$this->type = $args['type'];
-		}
 
 		$this->manager = $manager;
 
@@ -84,7 +88,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 			unset( $args['sanitize_js_callback'] );
 		}
 
-		parent::__construct( $this->type, $id, $args );
+		parent::__construct( $this->object_type, $id, $args );
 
 		if ( $sanitize_callback ) {
 			add_filter( "customize_sanitize_{$this->id}", $sanitize_callback );
@@ -99,8 +103,8 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		}
 
 		// Add compatibility hooks
-		add_action( "fields_preview_{$this->id}",                                 array( $this, 'customize_preview_id' ) );
-		add_action( "fields_preview_{$this->type}",                               array( $this, 'customize_preview_type' ) );
+		add_action( "fields_preview_{$this->object_type}_{$this->id}",            array( $this, 'customize_preview_id' ) );
+		add_action( "fields_preview_{$this->object_type}",                        array( $this, 'customize_preview_type' ) );
 		add_action( 'fields_save_' . $this->type . '_' . $this->id_data['base'],  array( $this, 'customize_save' ) );
 		add_filter( "fields_sanitize_{$this->type}_{$this->id}",                  array( $this, 'customize_sanitize' ) );
 		add_filter( "fields_sanitize_js_{$this->type}_{$this->id}",               array( $this, 'customize_sanitize_js_value' ) );
@@ -143,7 +147,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 *
 		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
 		 */
-		do_action( "customize_preview_{$this->object_type}", $this );
+		do_action( "customize_preview_{$this->type}", $this );
 
 	}
 
@@ -295,9 +299,9 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		$value = $default;
 
 		if ( isset( $result ) ) {
-			$this->_post_value = $value = $result;
+			$value = $result;
 
-			return $value;
+			$this->_post_value = $value;
 		}
 
 		return $value;
