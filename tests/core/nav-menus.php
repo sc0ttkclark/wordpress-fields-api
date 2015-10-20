@@ -427,10 +427,10 @@ class Test_WP_Customize_Nav_Menus extends WP_UnitTestCase {
 		$menus = new WP_Customize_Nav_Menus( $this->wp_customize );
 
 		$expected = array(
-			array( 'title' => 'Posts', 'type' => 'post_type', 'object' => 'post' ),
-			array( 'title' => 'Pages', 'type' => 'post_type', 'object' => 'page' ),
-			array( 'title' => 'Categories', 'type' => 'taxonomy', 'object' => 'category' ),
-			array( 'title' => 'Tags', 'type' => 'taxonomy', 'object' => 'post_tag' ),
+			array( 'title' => 'Post', 'type' => 'post_type', 'object' => 'post' ),
+			array( 'title' => 'Page', 'type' => 'post_type', 'object' => 'page' ),
+			array( 'title' => 'Category', 'type' => 'taxonomy', 'object' => 'category' ),
+			array( 'title' => 'Tag', 'type' => 'taxonomy', 'object' => 'post_tag' ),
 		);
 
 		if ( current_theme_supports( 'post-formats' ) ) {
@@ -508,7 +508,7 @@ class Test_WP_Customize_Nav_Menus extends WP_UnitTestCase {
 		if ( $taxonomies ) {
 			foreach ( $taxonomies as $tax ) {
 				$this->assertContains( 'available-menu-items-taxonomy-' . esc_attr( $tax->name ), $template );
-				$this->assertRegExp( '#<h4 class="accordion-section-title".*>\s*' . esc_html( $tax->labels->name ) . '#', $template );
+				$this->assertRegExp( '#<h4 class="accordion-section-title".*>\s*' . esc_html( $tax->labels->singular_name ) . '#', $template );
 				$this->assertContains( 'data-type="taxonomy"', $template );
 				$this->assertContains( 'data-object="' . esc_attr( $tax->name ) . '"', $template );
 			}
