@@ -1366,6 +1366,10 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
+		if ( empty( $args['type'] ) ) {
+			$args['type'] = 'customize-control';
+		}
+
 		$wp_fields->add_control( 'customizer', $id, $this->get_customizer_object_name(), $args );
 
 	}
