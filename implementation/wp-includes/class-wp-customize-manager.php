@@ -1195,7 +1195,17 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->register_screen_type( $panel );
+		$type = $panel;
+		$type = str_replace( array( 'WP_Customize_', '_Panel' ), '', $type );
+
+		if ( ! empty( $type ) ) {
+			$type = sanitize_title( $type );
+			$type = 'customize-' . $type;
+		} else {
+			$type = 'panel';
+		}
+
+		$wp_fields->register_screen_type( $type, $panel );
 
 	}
 
@@ -1305,7 +1315,17 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->register_section_type( $section );
+		$type = $section;
+		$type = str_replace( array( 'WP_Customize_', '_Section' ), '', $type );
+
+		if ( ! empty( $type ) ) {
+			$type = sanitize_title( $type );
+			$type = 'customize-' . $type;
+		} else {
+			$type = 'section';
+		}
+
+		$wp_fields->register_section_type( $type, $section );
 
 	}
 
@@ -1415,7 +1435,17 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->register_control_type( $control );
+		$type = $control;
+		$type = str_replace( array( 'WP_Customize_', '_Control' ), '', $type );
+
+		if ( ! empty( $type ) ) {
+			$type = sanitize_title( $type );
+			$type = 'customize-' . $type;
+		} else {
+			$type = 'control';
+		}
+
+		$wp_fields->register_control_type( $type, $control );
 
 	}
 
@@ -1514,6 +1544,7 @@ final class WP_Customize_Manager {
 		$this->register_section_type( 'WP_Customize_Section' );
 		$this->register_section_type( 'WP_Customize_Sidebar_Section' );
 
+		$this->register_control_type( 'WP_Customize_Control' );
 		$this->register_control_type( 'WP_Customize_Color_Control' );
 		$this->register_control_type( 'WP_Customize_Media_Control' );
 		$this->register_control_type( 'WP_Customize_Upload_Control' );
