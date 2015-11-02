@@ -1438,7 +1438,7 @@ final class WP_Fields_API {
 	public function register_controls() {
 
 		/* Control Types */
-		$this->register_control_type( 'text', 'WP_Fields_API_Text_Control' );
+		$this->register_control_type( 'text', 'WP_Fields_API_Control' );
 		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );
 		$this->register_control_type( 'multi-checkbox', 'WP_Fields_API_Multi_Checkbox_Control' );
 		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
