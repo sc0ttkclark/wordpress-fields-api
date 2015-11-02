@@ -309,9 +309,11 @@ class WP_Fields_API_Field {
 	 * Check user capabilities and theme supports, and then save
 	 * the value of the field.
 	 *
+	 * @param int $item_id Item ID to save data too
+	 *
 	 * @return false|mixed False if cap check fails or value isn't set.
 	 */
-	final public function save() {
+	final public function save( $item_id = 0 ) {
 
 		$value = $this->post_value();
 
@@ -333,11 +335,12 @@ class WP_Fields_API_Field {
 		 * the base slug of the field name.
 		 *
 		 *
-		 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
+		 * @param WP_Fields_API_Field $this    {@see WP_Fields_API_Field} instance.
+		 * @param int                 $item_id .
 		 */
-		do_action( 'fields_save_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this );
+		do_action( 'fields_save_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this, $item_id );
 
-		return $this->update( $value );
+		return $this->update( $value, $item_id );
 
 	}
 
@@ -403,10 +406,13 @@ class WP_Fields_API_Field {
 	 * Save the value of the field, using the related API.
 	 *
 	 * @param mixed $value The value to update.
+	 * @param int $item_id Item ID.
 	 *
 	 * @return mixed The result of saving the value.
 	 */
 	protected function update( $value ) {
+
+		$item_id = func_get_arg( 1 );
 
 		$type = $this->object_type;
 
@@ -426,10 +432,10 @@ class WP_Fields_API_Field {
 
 			case 'post' : // Primary object type
 			case 'post_type' : // Backwards compatible for Customizer
-				return $this->_update_post_meta( $value );
+				return $this->_update_post_meta( $value, $item_id );
 
 			case 'user' :
-				return $this->_update_user_meta( $value );
+				return $this->_update_user_meta( $value, $item_id );
 
 			default :
 
@@ -440,10 +446,11 @@ class WP_Fields_API_Field {
 				 * The dynamic portion of the hook name, `$this->object_type`, refers to the type of field.
 				 *
 				 *
-				 * @param mixed                $value Value of the field.
-				 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
+				 * @param mixed               $value   Value of the field.
+				 * @param int                 $item_id Item ID.
+				 * @param WP_Fields_API_Field $this    WP_Fields_API_Field instance.
 				 */
-				return apply_filters( "fields_update_{$type}", $value, $this );
+				return apply_filters( "fields_update_{$type}", $value, $item_id, $this );
 		}
 	}
 
@@ -502,15 +509,16 @@ class WP_Fields_API_Field {
 	/**
 	 * Update the option from the value of the field.
 	 *
-	 * @param mixed $value The value to update.
+	 * @param mixed $value   The value to update.
+	 * @param int   $item_id Item ID.
 	 *
 	 * @return bool|null The result of saving the value.
 	 */
-	protected function _update_post_meta( $value ) {
+	protected function _update_post_meta( $value, $item_id = 0 ) {
 
 		// Handle non-array option.
 		if ( empty( $this->id_data['keys'] ) ) {
-			return update_post_meta( 0, $this->id_data['base'], $value );
+			return update_post_meta( $item_id, $this->id_data['base'], $value );
 		}
 
 		// Handle array-based keys.
@@ -518,7 +526,7 @@ class WP_Fields_API_Field {
 		$keys = $this->multidimensional_replace( $keys, $this->id_data['keys'], $value );
 
 		if ( isset( $keys ) ) {
-			return update_post_meta( 0, $this->id_data['base'], $keys );
+			return update_post_meta( $item_id, $this->id_data['base'], $keys );
 		}
 
 		return null;
@@ -528,15 +536,16 @@ class WP_Fields_API_Field {
 	/**
 	 * Update the option from the value of the field.
 	 *
-	 * @param mixed $value The value to update.
+	 * @param mixed $value   The value to update.
+	 * @param int   $item_id Item ID.
 	 *
 	 * @return bool|null The result of saving the value.
 	 */
-	protected function _update_user_meta( $value ) {
+	protected function _update_user_meta( $value, $item_id = 0 ) {
 
 		// Handle non-array option.
 		if ( empty( $this->id_data['keys'] ) ) {
-			return update_user_meta( 0, $this->id_data['base'], $value );
+			return update_user_meta( $item_id, $this->id_data['base'], $value );
 		}
 
 		// Handle array-based options.
@@ -544,7 +553,7 @@ class WP_Fields_API_Field {
 		$keys = $this->multidimensional_replace( $keys, $this->id_data['keys'], $value );
 
 		if ( isset( $keys ) ) {
-			return update_user_meta( 0, $this->id_data['base'], $keys );
+			return update_user_meta( $item_id, $this->id_data['base'], $keys );
 		}
 
 		return null;

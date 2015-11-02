@@ -114,7 +114,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		add_filter( "fields_sanitize_js_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize_js_value' ) );
 
 		if ( ! has_filter( "fields_update_{$this->type}", array( 'WP_Customize_Setting', 'customize_update' ) ) ) {
-			add_filter( "fields_update_{$this->type}", array( 'WP_Customize_Setting', 'customize_update' ), 10, 2 );
+			add_filter( "fields_update_{$this->type}", array( 'WP_Customize_Setting', 'customize_update' ), 10, 3 );
 		}
 
 		add_action( 'fields_value_' . $this->type . '_' . $this->object_name . '_' . $this->id_data['base'], array( $this, 'customize_value' ) );
@@ -215,11 +215,12 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	 * @since 3.4.0
 	 *
 	 * @param mixed $value The value to update.
+	 * @param int $item_id The item ID.
 	 * @param WP_Customize_Setting $setting
 	 *
 	 * @return mixed The result of saving the value.
 	 */
-	public static function customize_update( $value, $setting ) {
+	public static function customize_update( $value, $item_id, $setting ) {
 
 		/**
 		 * Fires when the {@see WP_Customize_Setting::update()} method is called for settings
