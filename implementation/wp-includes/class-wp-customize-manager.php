@@ -993,8 +993,11 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		if ( empty( $args['type'] ) ) {
-			$args['type'] = 'customize-setting';
+		// Handle backwards compatibility to handle 'type'
+		if ( ! is_object( $id ) ) {
+			$id = new WP_Customize_Setting( $this, $id, $args );
+
+			$args = array();
 		}
 
 		$wp_fields->add_field( 'customizer', $id, $this->get_customizer_object_name(), $args );
@@ -1127,8 +1130,11 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		if ( empty( $args['type'] ) ) {
-			$args['type'] = 'customize-panel';
+		// Handle backwards compatibility to handle 'type'
+		if ( ! is_object( $id ) ) {
+			$id = new WP_Customize_Panel( $this, $id, $args );
+
+			$args = array();
 		}
 
 		$wp_fields->add_screen( 'customizer', $id, $this->get_customizer_object_name(), $args );
@@ -1253,8 +1259,11 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		if ( empty( $args['type'] ) ) {
-			$args['type'] = 'customize-section';
+		// Handle backwards compatibility to handle 'type'
+		if ( ! is_object( $id ) ) {
+			$id = new WP_Customize_Section( $this, $id, $args );
+
+			$args = array();
 		}
 
 		$wp_fields->add_section( 'customizer', $id, $this->get_customizer_object_name(), $args );
@@ -1378,8 +1387,11 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		if ( empty( $args['type'] ) ) {
-			$args['type'] = 'customize-control';
+		// Handle backwards compatibility to handle 'type'
+		if ( ! is_object( $id ) ) {
+			$id = new WP_Customize_Control( $this, $id, $args );
+
+			$args = array();
 		}
 
 		$wp_fields->add_control( 'customizer', $id, $this->get_customizer_object_name(), $args );
