@@ -1332,6 +1332,8 @@ final class WP_Fields_API {
 	 */
 	public function unsanitized_post_values() {
 
+		// @todo _post_values per object type / object name maybe
+
 		if ( ! isset( $this->_post_values ) ) {
 			$this->_post_values = false;
 		}
