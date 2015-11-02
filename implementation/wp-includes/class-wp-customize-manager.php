@@ -1083,7 +1083,7 @@ final class WP_Customize_Manager {
 
 		$field = $wp_fields->get_field( 'customizer', $id, $this->get_customizer_object_name() );
 
-		if ( $field ) {
+		if ( $field && is_a( $field, 'WP_Customize_Setting' ) ) {
 			return $field;
 		}
 
@@ -1155,7 +1155,7 @@ final class WP_Customize_Manager {
 
 		$panel = $wp_fields->get_screen( 'customizer', $id, $this->get_customizer_object_name() );
 
-		if ( $panel ) {
+		if ( $panel && is_a( $panel, 'WP_Customize_Panel' ) ) {
 			return $panel;
 		}
 
@@ -1280,7 +1280,7 @@ final class WP_Customize_Manager {
 
 		$section = $wp_fields->get_section( 'customizer', $id, $this->get_customizer_object_name() );
 
-		if ( $section ) {
+		if ( $section && is_a( $section, 'WP_Customize_Section' ) ) {
 			return $section;
 		}
 
@@ -1405,7 +1405,7 @@ final class WP_Customize_Manager {
 
 		$control = $wp_fields->get_control( 'customizer', $id, $this->get_customizer_object_name() );
 
-		if ( $control ) {
+		if ( $control && is_a( $control, 'WP_Customize_Control' ) ) {
 			return $control;
 		}
 
