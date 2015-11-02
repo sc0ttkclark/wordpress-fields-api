@@ -46,12 +46,50 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	public $capability = 'edit_theme_options';
 
 	/**
+	 * Transport used for field
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $transport = 'refresh';
+
+	/**
+	 * Whether or not the field is initially dirty when created.
+	 *
+	 * This is used to ensure that a field will be sent from the screen to the
+	 * preview when loading the Fields API. Normally a field only is synced to
+	 * the preview if it has been changed. This allows the field to be sent
+	 * from the start.
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public $dirty = false;
+
+	/**
 	 * Cached and sanitized $_POST value for the setting.
 	 *
 	 * @access private
 	 * @var mixed
 	 */
 	private $_post_value;
+
+	/**
+	 * Value used for preview
+	 *
+	 * @access protected
+	 * @var mixed
+	 */
+	protected $_original_value;
+
+	/**
+	 * The ID for the current blog when the preview() method was called.
+	 *
+	 * @since 4.2.0
+	 * @access protected
+	 * @var int
+	 */
+	protected $_previewed_blog_id;
 
 	/**
 	 * Constructor.
@@ -103,13 +141,6 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		}
 
 		// Add compatibility hooks
-		add_action( "fields_preview_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_preview_id' ) );
-
-		if ( ! has_action( "fields_preview_{$this->type}", array( 'WP_Customize_Setting', 'customize_preview_type' ) ) ) {
-			add_action( "fields_preview_{$this->type}", array( 'WP_Customize_Setting', 'customize_preview_type' ) );
-		}
-
-		add_action( 'fields_save_' . $this->type . '_' . $this->object_name . '_' . $this->id_data['base'], array( $this, 'customize_save' ) );
 		add_filter( "fields_sanitize_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize' ) );
 		add_filter( "fields_sanitize_js_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize_js_value' ) );
 
@@ -118,72 +149,6 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		}
 
 		add_action( 'fields_value_' . $this->type . '_' . $this->object_name . '_' . $this->id_data['base'], array( $this, 'customize_value' ) );
-
-	}
-
-	/**
-	 * Handle previewing the setting by ID.
-	 *
-	 * @param WP_Customize_Setting $setting
-	 */
-	public static function customize_preview_id( $setting ) {
-
-		/**
-		 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
-		 * not handled as theme_mods or options.
-		 *
-		 * The dynamic portion of the hook name, `$this->id`, refers to the setting ID.
-		 *
-		 * @since 3.4.0
-		 *
-		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
-		 */
-		do_action( "customize_preview_{$setting->id}", $setting );
-
-	}
-
-	/**
-	 * Handle previewing the setting by type.
-	 *
-	 * @param WP_Customize_Setting $setting
-	 */
-	public static function customize_preview_type( $setting ) {
-
-		/**
-		 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
-		 * not handled as theme_mods or options.
-		 *
-		 * The dynamic portion of the hook name, `$this->type`, refers to the setting type.
-		 *
-		 * @since 4.1.0
-		 *
-		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
-		 */
-		do_action( "customize_preview_{$setting->type}", $setting );
-
-	}
-
-	/**
-	 * Check user capabilities and theme supports, and then save
-	 * the value of the setting.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @return false|null False if cap check fails or value isn't set.
-	 */
-	final public function customize_save() {
-
-		/**
-		 * Fires when the WP_Customize_Setting::save() method is called.
-		 *
-		 * The dynamic portion of the hook name, `$this->id_data['base']` refers to
-		 * the base slug of the setting name.
-		 *
-		 * @since 3.4.0
-		 *
-		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
-		 */
-		do_action( 'customize_save_' . $this->id_data['base'], $this );
 
 	}
 
@@ -296,6 +261,163 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	}
 
 	/**
+	 * Return true if the current blog is not the same as the previewed blog.
+	 *
+	 * @since 4.2.0
+	 * @access public
+	 *
+	 * @return bool If preview() has been called.
+	 */
+	public function is_current_blog_previewed() {
+
+		if ( ! isset( $this->_previewed_blog_id ) ) {
+			return false;
+		}
+
+		return ( get_current_blog_id() === $this->_previewed_blog_id );
+
+	}
+
+	/**
+	 * Handle previewing the field.
+	 */
+	public function preview() {
+
+		if ( ! isset( $this->_original_value ) ) {
+			$this->_original_value = $this->value();
+		}
+
+		if ( ! isset( $this->_previewed_blog_id ) ) {
+			$this->_previewed_blog_id = get_current_blog_id();
+		}
+
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( ! empty( $this->type ) ) {
+			$type = $this->type;
+		}
+
+		switch( $type ) {
+			case 'theme_mod' :
+				add_filter( 'theme_mod_' . $this->id_data[ 'base' ], array( $this, '_preview_filter' ) );
+				break;
+			case 'option' :
+				if ( empty( $this->id_data[ 'keys' ] ) )
+					add_filter( 'pre_option_' . $this->id_data[ 'base' ], array( $this, '_preview_filter' ) );
+				else {
+					add_filter( 'option_' . $this->id_data[ 'base' ], array( $this, '_preview_filter' ) );
+					add_filter( 'default_option_' . $this->id_data[ 'base' ], array( $this, '_preview_filter' ) );
+				}
+				break;
+			default :
+
+				/**
+				 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
+				 * not handled as theme_mods or options.
+				 *
+				 * The dynamic portion of the hook name, `$this->id`, refers to the setting ID.
+				 *
+				 * @since 3.4.0
+				 *
+				 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+				 */
+				do_action( "customize_preview_{$this->id}", $this );
+
+				/**
+				 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
+				 * not handled as theme_mods or options.
+				 *
+				 * The dynamic portion of the hook name, `$type`, refers to the setting type.
+				 *
+				 * @since 4.1.0
+				 *
+				 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+				 */
+				do_action( "customize_preview_{$type}", $this );
+		}
+
+	}
+
+	/**
+	 * Callback function to filter the theme mods and options.
+	 *
+	 * If switch_to_blog() was called after the preview() method, and the current
+	 * blog is now not the same blog, then this method does a no-op and returns
+	 * the original value.
+	 *
+	 * @uses  WP_Fields_API_Field::multidimensional_replace()
+	 *
+	 * @param mixed $original Old value.
+	 *
+	 * @return mixed New or old value.
+	 */
+	public function _preview_filter( $original ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		if ( ! $this->is_current_blog_previewed() ) {
+			return $original;
+		}
+
+		$undefined  = new stdClass(); // symbol hack
+		$post_value = $this->manager->post_value( $this, $undefined );
+
+		if ( $undefined === $post_value ) {
+			$value = $this->_original_value;
+		} else {
+			$value = $post_value;
+		}
+
+		return $this->multidimensional_replace( $original, $this->id_data['keys'], $value );
+
+	}
+
+	/**
+	 * Check user capabilities and theme supports, and then save
+	 * the value of the field.
+	 *
+	 * @param mixed $value   The value to save.
+	 * @param int   $item_id The Item ID.
+	 *
+	 * @return false|mixed False if cap check fails or value isn't set.
+	 */
+	final public function save() {
+
+		$value = $this->post_value();
+
+		if ( ! $this->check_capabilities() || ! isset( $value ) ) {
+			return false;
+		}
+
+		$type = $this->object_type;
+
+		// Backwards compatibility
+		if ( ! empty( $this->type ) ) {
+			$type = $this->type;
+		}
+
+		/**
+		 * Fires when the WP_Fields_API_Field::save() method is called.
+		 *
+		 * The dynamic portion of the hook name, `$this->id_data['base']` refers to
+		 * the base slug of the field name.
+		 *
+		 *
+		 * @param WP_Fields_API_Field $this    {@see WP_Fields_API_Field} instance.
+		 * @param mixed               $value   The value to save.
+		 * @param int                 $item_id The Item ID.
+		 */
+		do_action( 'fields_save_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this, $value );
+
+		return $this->update( $value, $item_id );
+
+	}
+
+	/**
 	 * Fetch and sanitize the $_POST value for the setting.
 	 *
 	 * @since 3.4.0
@@ -322,38 +444,6 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		}
 
 		return $value;
-
-	}
-
-	/**
-	 * Callback function to filter the theme mods and options.
-	 *
-	 * If switch_to_blog() was called after the preview() method, and the current
-	 * blog is now not the same blog, then this method does a no-op and returns
-	 * the original value.
-	 *
-	 * @uses  WP_Fields_API_Field::multidimensional_replace()
-	 *
-	 * @param mixed $original Old value.
-	 *
-	 * @return mixed New or old value.
-	 */
-	public function _preview_filter( $original ) {
-
-		if ( ! $this->is_current_blog_previewed() ) {
-			return $original;
-		}
-
-		$undefined  = new stdClass(); // symbol hack
-		$post_value = $this->manager->post_value( $this, $undefined );
-
-		if ( $undefined === $post_value ) {
-			$value = $this->_original_value;
-		} else {
-			$value = $post_value;
-		}
-
-		return $this->multidimensional_replace( $original, $this->id_data['keys'], $value );
 
 	}
 

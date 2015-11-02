@@ -54,27 +54,6 @@ class WP_Fields_API_Field {
 	public $default = '';
 
 	/**
-	 * Transport used for field
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $transport = 'refresh';
-
-	/**
-	 * Whether or not the field is initially dirty when created.
-	 *
-	 * This is used to ensure that a field will be sent from the screen to the
-	 * preview when loading the Fields API. Normally a field only is synced to
-	 * the preview if it has been changed. This allows the field to be sent
-	 * from the start.
-	 *
-	 * @access public
-	 * @var bool
-	 */
-	public $dirty = false;
-
-	/**
 	 * Server-side sanitization callback for the field's value.
 	 *
 	 * @var callback
@@ -83,31 +62,6 @@ class WP_Fields_API_Field {
 	public $sanitize_js_callback = '';
 
 	protected $id_data = array();
-
-	/**
-	 * Cached and sanitized $_POST value for the field.
-	 *
-	 * @access private
-	 * @var mixed
-	 */
-	private $_post_value;
-
-	/**
-	 * Value used for preview
-	 *
-	 * @access protected
-	 * @var mixed
-	 */
-	protected $_original_value;
-
-	/**
-	 * The ID for the current blog when the preview() method was called.
-	 *
-	 * @since 4.2.0
-	 * @access protected
-	 * @var int
-	 */
-	protected $_previewed_blog_id;
 
 	/**
 	 * Constructor.
@@ -182,150 +136,21 @@ class WP_Fields_API_Field {
 	}
 
 	/**
-	 * Return true if the current blog is not the same as the previewed blog.
-	 *
-	 * @since 4.2.0
-	 * @access public
-	 *
-	 * @return bool If preview() has been called.
-	 */
-	public function is_current_blog_previewed() {
-
-		if ( ! isset( $this->_previewed_blog_id ) ) {
-			return false;
-		}
-
-		return ( get_current_blog_id() === $this->_previewed_blog_id );
-
-	}
-
-	/**
-	 * Handle previewing the field.
-	 */
-	public function preview() {
-
-		if ( ! isset( $this->_original_value ) ) {
-			$this->_original_value = $this->value();
-		}
-
-		if ( ! isset( $this->_previewed_blog_id ) ) {
-			$this->_previewed_blog_id = get_current_blog_id();
-		}
-
-		$type = $this->object_type;
-
-		// Backwards compatibility
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
-		}
-
-		switch ( $type ) {
-			case 'customizer' : // Primary object type
-			case 'theme_mod' : // Backwards compatible for Customizer
-				add_filter( 'theme_mod_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
-				break;
-
-			case 'settings' : // Primary object type
-			case 'option' : // Backwards compatible for Customizer
-				if ( empty( $this->id_data['keys'] ) ) {
-					add_filter( 'pre_option_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
-				} else {
-					add_filter( 'option_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
-					add_filter( 'default_option_' . $this->id_data['base'], array( $this, '_preview_filter' ) );
-				}
-				break;
-
-			case 'post' : // Primary object type
-				add_filter( 'get_post_metadata', array( $this, '_preview_filter' ) );
-				break;
-
-			case 'user' :
-				add_filter( 'get_user_metadata', array( $this, '_preview_filter' ) );
-				break;
-
-			default :
-
-				/**
-				 * Fires when the {@see WP_Fields_API_Field::preview()} method is called for fields
-				 * not handled as theme_mods or options.
-				 *
-				 * The dynamic portion of the hook name, `$this->id`, refers to the field ID.
-				 *
-				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
-				 */
-				do_action( "fields_preview_{$type}_{$this->object_name}_{$this->id}", $this );
-
-				/**
-				 * Fires when the {@see WP_Fields_API_Field::preview()} method is called for fields
-				 * not handled as theme_mods or options.
-				 *
-				 * The dynamic portion of the hook name, `$this->type`, refers to the field type.
-				 *
-				 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
-				 */
-				do_action( "fields_preview_{$type}", $this );
-		}
-
-	}
-
-	/**
-	 * Callback function to filter the theme mods and options.
-	 *
-	 * If switch_to_blog() was called after the preview() method, and the current
-	 * blog is now not the same blog, then this method does a no-op and returns
-	 * the original value.
-	 *
-	 * @uses  WP_Fields_API_Field::multidimensional_replace()
-	 *
-	 * @param mixed $original Old value.
-	 *
-	 * @return mixed New or old value.
-	 */
-	public function _preview_filter( $original ) {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		if ( ! $this->is_current_blog_previewed() ) {
-			return $original;
-		}
-
-		$undefined  = new stdClass(); // symbol hack
-		$post_value = $wp_fields->post_value( $this, $undefined );
-
-		if ( $undefined === $post_value ) {
-			$value = $this->_original_value;
-		} else {
-			$value = $post_value;
-		}
-
-		return $this->multidimensional_replace( $original, $this->id_data['keys'], $value );
-
-	}
-
-	/**
 	 * Check user capabilities and theme supports, and then save
 	 * the value of the field.
 	 *
-	 * @param int $item_id Item ID to save data too
+	 * @param mixed $value   The value to save.
+	 * @param int   $item_id The Item ID.
 	 *
 	 * @return false|mixed False if cap check fails or value isn't set.
 	 */
-	final public function save( $item_id = 0 ) {
+	final public function save() {
 
-		$value = $this->post_value();
+		$value   = func_get_arg(0);
+		$item_id = func_get_arg(1);
 
-		if ( ! $this->check_capabilities() || ! isset( $value ) ) {
+		if ( ! $this->check_capabilities() || false === $value ) {
 			return false;
-		}
-
-		$type = $this->object_type;
-
-		// Backwards compatibility
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
 		}
 
 		/**
@@ -334,43 +159,13 @@ class WP_Fields_API_Field {
 		 * The dynamic portion of the hook name, `$this->id_data['base']` refers to
 		 * the base slug of the field name.
 		 *
+		 * @since 3.4.0
 		 *
-		 * @param WP_Fields_API_Field $this    {@see WP_Fields_API_Field} instance.
-		 * @param int                 $item_id .
+		 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 		 */
-		do_action( 'fields_save_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this, $item_id );
+		do_action( 'field_save_' . $this->id_data[ 'base' ], $this, $value, $item_id );
 
 		return $this->update( $value, $item_id );
-
-	}
-
-	/**
-	 * Fetch and sanitize the $_POST value for the field.
-	 *
-	 * @param mixed $default A default value which is used as a fallback. Default is null.
-	 *
-	 * @return mixed The default value on failure, otherwise the sanitized value.
-	 */
-	public function post_value( $default = null ) {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		// Check for a cached value
-		if ( isset( $this->_post_value ) ) {
-			return $this->_post_value;
-		}
-
-		// Call the manager for the post value
-		$result = $wp_fields->post_value( $this );
-
-		if ( isset( $result ) ) {
-			return $this->_post_value = $result;
-		}
-
-		return $default;
 
 	}
 
@@ -412,7 +207,7 @@ class WP_Fields_API_Field {
 	 */
 	protected function update( $value ) {
 
-		$item_id = func_get_arg( 1 );
+		$item_id = func_get_arg(1);
 
 		$type = $this->object_type;
 
@@ -463,6 +258,10 @@ class WP_Fields_API_Field {
 	 */
 	protected function _update_theme_mod( $value ) {
 
+		if ( is_null( $value ) ) {
+			remove_theme_mod( $this->id_data['base'] );
+		}
+
 		// Handle non-array theme mod.
 		if ( empty( $this->id_data['keys'] ) ) {
 			set_theme_mod( $this->id_data['base'], $value );
@@ -488,6 +287,10 @@ class WP_Fields_API_Field {
 	 * @return bool|null The result of saving the value.
 	 */
 	protected function _update_option( $value ) {
+
+		if ( is_null( $value ) ) {
+			delete_option( $this->id_data['base'] );
+		}
 
 		// Handle non-array option.
 		if ( empty( $this->id_data['keys'] ) ) {
@@ -516,6 +319,10 @@ class WP_Fields_API_Field {
 	 */
 	protected function _update_post_meta( $value, $item_id = 0 ) {
 
+		if ( is_null( $value ) ) {
+			delete_post_meta( $item_id, $this->id_data['base'] );
+		}
+
 		// Handle non-array option.
 		if ( empty( $this->id_data['keys'] ) ) {
 			return update_post_meta( $item_id, $this->id_data['base'], $value );
@@ -542,6 +349,10 @@ class WP_Fields_API_Field {
 	 * @return bool|null The result of saving the value.
 	 */
 	protected function _update_user_meta( $value, $item_id = 0 ) {
+
+		if ( is_null( $value ) ) {
+			delete_user_meta( $item_id, $this->id_data['base'] );
+		}
 
 		// Handle non-array option.
 		if ( empty( $this->id_data['keys'] ) ) {
