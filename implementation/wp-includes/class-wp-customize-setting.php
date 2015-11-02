@@ -46,6 +46,14 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	public $capability = 'edit_theme_options';
 
 	/**
+	 * Default setting value.
+	 *
+	 * @since 4.3.0
+	 * @access public
+	 */
+	public $default = '';
+
+	/**
 	 * Transport used for field
 	 *
 	 * @access public
@@ -387,7 +395,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 			 * @param mixed $default The setting default value. Default empty.
 			 * @param WP_Customize_Setting $this  {@see WP_Customize_Setting} instance.
 			 */
-			return apply_filters( 'customize_value_' . $this->id_data['base'], $default, $this );
+			return apply_filters( 'customize_value_' . $this->id_data['base'], $this->default, $this );
 		}
 
 		// Handle non-array value
