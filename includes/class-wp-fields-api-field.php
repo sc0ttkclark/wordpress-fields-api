@@ -119,18 +119,12 @@ class WP_Fields_API_Field {
 			$this->id .= '[' . implode( '][', $this->id_data['keys'] ) . ']';
 		}
 
-		$type = $this->object_type;
-
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
-		}
-
 		if ( $this->sanitize_callback ) {
-			add_filter( "fields_sanitize_{$type}_{$this->object_name}_{$this->id}", $this->sanitize_callback, 10, 2 );
+			add_filter( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", $this->sanitize_callback, 10, 2 );
 		}
 
 		if ( $this->sanitize_js_callback ) {
-			add_filter( "fields_sanitize_js_{$type}_{$this->object_name}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
+			add_filter( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
 		}
 
 	}
@@ -144,7 +138,7 @@ class WP_Fields_API_Field {
 	 *
 	 * @return false|mixed False if cap check fails or value isn't set.
 	 */
-	final public function save() {
+	public function save() {
 
 		$value   = func_get_arg(0);
 		$item_id = func_get_arg(1);
@@ -163,7 +157,7 @@ class WP_Fields_API_Field {
 		 *
 		 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
 		 */
-		do_action( 'field_save_' . $this->id_data[ 'base' ], $this, $value, $item_id );
+		do_action( 'field_save_' . $this->object_type . ' _' . $this->id_data[ 'base' ], $this, $value, $item_id );
 
 		return $this->update( $value, $item_id );
 
@@ -180,20 +174,13 @@ class WP_Fields_API_Field {
 
 		$value = wp_unslash( $value );
 
-		$type = $this->object_type;
-
-		// Backwards compatibility
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
-		}
-
 		/**
 		 * Filter a Customize field value in un-slashed form.
 		 *
 		 * @param mixed                $value Value of the field.
 		 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 		 */
-		return apply_filters( "fields_sanitize_{$type}_{$this->object_name}_{$this->id}", $value, $this );
+		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", $value, $this );
 
 	}
 
@@ -209,24 +196,14 @@ class WP_Fields_API_Field {
 
 		$item_id = func_get_arg(1);
 
-		$type = $this->object_type;
-
-		// Backwards compatibility
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
-		}
-
-		switch ( $type ) {
-			case 'customizer' : // Primary object type
-			case 'theme_mod' : // Backwards compatible for Customizer
+		switch ( $this->object_type ) {
+			case 'customizer' :
 				return $this->_update_theme_mod( $value );
 
-			case 'settings' : // Primary object type
-			case 'option' : // Backwards compatible for Customizer
+			case 'settings' :
 				return $this->_update_option( $value );
 
-			case 'post' : // Primary object type
-			case 'post_type' : // Backwards compatible for Customizer
+			case 'post' :
 				return $this->_update_post_meta( $value, $item_id );
 
 			case 'user' :
@@ -240,13 +217,15 @@ class WP_Fields_API_Field {
 				 *
 				 * The dynamic portion of the hook name, `$this->object_type`, refers to the type of field.
 				 *
-				 *
 				 * @param mixed               $value   Value of the field.
 				 * @param int                 $item_id Item ID.
 				 * @param WP_Fields_API_Field $this    WP_Fields_API_Field instance.
 				 */
-				return apply_filters( "fields_update_{$type}", $value, $item_id, $this );
+				do_action( "fields_update_{$this->object_type}", $value, $item_id, $this );
 		}
+
+		return null;
+
 	}
 
 	/**
@@ -378,25 +357,16 @@ class WP_Fields_API_Field {
 	 */
 	public function value() {
 
-		$type = $this->object_type;
-
-		// Backwards compatibility
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
-		}
-
-		switch ( $type ) {
-			case 'customizer' : // Primary object type
-			case 'theme_mod' : // Backwards compatible for Customizer
+		switch ( $this->object_type ) {
+			case 'customizer' :
 				$function = 'get_theme_mod';
 				break;
 
-			case 'settings' : // Primary object type
-			case 'option' : // Backwards compatible for Customizer
+			case 'settings' :
 				$function = 'get_option';
 				break;
 
-			case 'post' : // Primary object type
+			case 'post' :
 				$function = 'get_post_meta';
 				break;
 
@@ -418,7 +388,7 @@ class WP_Fields_API_Field {
 				 *
 				 * @param mixed $default The field default value. Default empty.
 				 */
-				return apply_filters( 'fields_value_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default );
+				return apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default );
 		}
 
 		// Handle non-array value
@@ -430,6 +400,7 @@ class WP_Fields_API_Field {
 		$values = $function( $this->id_data['base'] );
 
 		return $this->multidimensional_get( $values, $this->id_data['keys'], $this->default );
+
 	}
 
 	/**
@@ -441,23 +412,15 @@ class WP_Fields_API_Field {
 
 		$value = $this->value();
 
-		$type = $this->object_type;
-
-		// Backwards compatibility
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
-		}
-
 		/**
 		 * Filter a Customize field value for use in JavaScript.
 		 *
 		 * The dynamic portion of the hook name, `$this->id`, refers to the field ID.
 		 *
-		 *
 		 * @param mixed                $value The field value.
 		 * @param WP_Fields_API_Field $this  {@see WP_Fields_API_Field} instance.
 		 */
-		$value = apply_filters( "fields_sanitize_js_{$type}_{$this->object_name}_{$this->id}", $value, $this );
+		$value = apply_filters( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", $value, $this );
 
 		if ( is_string( $value ) ) {
 			return html_entity_decode( $value, ENT_QUOTES, 'UTF-8' );

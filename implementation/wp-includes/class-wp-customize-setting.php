@@ -140,15 +140,12 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 			$this->sanitize_js_callback = $sanitize_js_callback;
 		}
 
+		// @todo Figure out proper backwards compat for $this->type vs $this->object_type in hooks
+		// @todo Add methods that hook into $this->object_type hooks instead, and run $this->type logic for backwards compat
+
 		// Add compatibility hooks
-		add_filter( "fields_sanitize_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize' ) );
-		add_filter( "fields_sanitize_js_{$this->type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize_js_value' ) );
-
-		if ( ! has_filter( "fields_update_{$this->type}", array( 'WP_Customize_Setting', 'customize_update' ) ) ) {
-			add_filter( "fields_update_{$this->type}", array( 'WP_Customize_Setting', 'customize_update' ), 10, 3 );
-		}
-
-		add_action( 'fields_value_' . $this->type . '_' . $this->object_name . '_' . $this->id_data['base'], array( $this, 'customize_value' ) );
+		add_filter( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize' ) );
+		add_filter( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize_js_value' ) );
 
 	}
 
@@ -171,65 +168,6 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		 * @param WP_Customize_Setting $this  WP_Customize_Setting instance.
 		 */
 		return apply_filters( "customize_sanitize_{$this->id}", $value, $this );
-
-	}
-
-	/**
-	 * Save the value of the setting, using the related API.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @param mixed $value The value to update.
-	 * @param int $item_id The item ID.
-	 * @param WP_Customize_Setting $setting
-	 *
-	 * @return mixed The result of saving the value.
-	 */
-	public static function customize_update( $value, $item_id, $setting ) {
-
-		/**
-		 * Fires when the {@see WP_Customize_Setting::update()} method is called for settings
-		 * not handled as theme_mods or options.
-		 *
-		 * The dynamic portion of the hook name, `$setting->type`, refers to the type of setting.
-		 *
-		 * @since 3.4.0
-		 *
-		 * @param mixed                $value Value of the setting.
-		 * @param WP_Customize_Setting $setting  WP_Customize_Setting instance.
-		 */
-		do_action( 'customize_update_' . $setting->type, $value, $setting );
-
-		return true;
-
-	}
-
-	/**
-	 * Fetch the value of the setting.
-	 *
-	 * @since 3.4.0
-	 *
-	 * @param string $default Default value for field
-	 *
-	 * @return mixed The value.
-	 */
-	public function customize_value( $default ) {
-
-		/**
-		 * Filter a Customize setting value not handled as a theme_mod or option.
-		 *
-		 * The dynamic portion of the hook name, `$this->id_date['base']`, refers to
-		 * the base slug of the setting name.
-		 *
-		 * For settings handled as theme_mods or options, see those corresponding
-		 * functions for available hooks.
-		 *
-		 * @since 3.4.0
-		 *
-		 * @param mixed $default The setting default value. Default empty.
-		 * @param WP_Customize_Setting $this  {@see WP_Customize_Setting} instance.
-		 */
-		return apply_filters( 'customize_value_' . $this->id_data['base'], $default, $this );
 
 	}
 
@@ -377,6 +315,94 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 	}
 
 	/**
+	 * Save the value of the field, using the related API.
+	 *
+	 * @param mixed $value The value to update.
+	 * @param int $item_id Item ID.
+	 *
+	 * @return mixed The result of saving the value.
+	 */
+	protected function update( $value ) {
+
+		// Handle backwards compatible updates
+
+		switch ( $this->type ) {
+			case 'theme_mod' :
+				return $this->_update_theme_mod( $value );
+
+			case 'option' :
+				return $this->_update_option( $value );
+
+			default :
+
+				/**
+				 * Fires when the {@see WP_Customize_Setting::update()} method is called for settings
+				 * not handled as theme_mods or options.
+				 *
+				 * The dynamic portion of the hook name, `$setting->type`, refers to the type of setting.
+				 *
+				 * @since 3.4.0
+				 *
+				 * @param mixed                $value Value of the setting.
+				 * @param WP_Customize_Setting $this  WP_Customize_Setting instance.
+				 */
+				do_action( 'customize_update_' . $this->type, $value, $this );
+		}
+
+		return null;
+
+	}
+
+	/**
+	 * Fetch the value of the field.
+	 *
+	 * @return mixed The value.
+	 */
+	public function value() {
+
+		// Handle backwards compatible value
+
+		switch ( $this->type ) {
+			case 'theme_mod' :
+				$function = 'get_theme_mod';
+				break;
+
+			case 'option' :
+				$function = 'get_option';
+				break;
+
+			default :
+
+			/**
+			 * Filter a Customize setting value not handled as a theme_mod or option.
+			 *
+			 * The dynamic portion of the hook name, `$this->id_date['base']`, refers to
+			 * the base slug of the setting name.
+			 *
+			 * For settings handled as theme_mods or options, see those corresponding
+			 * functions for available hooks.
+			 *
+			 * @since 3.4.0
+			 *
+			 * @param mixed $default The setting default value. Default empty.
+			 * @param WP_Customize_Setting $this  {@see WP_Customize_Setting} instance.
+			 */
+			return apply_filters( 'customize_value_' . $this->id_data['base'], $default, $this );
+		}
+
+		// Handle non-array value
+		if ( empty( $this->id_data['keys'] ) ) {
+			return $function( $this->id_data['base'], $this->default );
+		}
+
+		// Handle array-based value
+		$values = $function( $this->id_data['base'] );
+
+		return $this->multidimensional_get( $values, $this->id_data['keys'], $this->default );
+
+	}
+
+	/**
 	 * Check user capabilities and theme supports, and then save
 	 * the value of the field.
 	 *
@@ -393,27 +419,19 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 			return false;
 		}
 
-		$type = $this->object_type;
-
-		// Backwards compatibility
-		if ( ! empty( $this->type ) ) {
-			$type = $this->type;
-		}
-
 		/**
-		 * Fires when the WP_Fields_API_Field::save() method is called.
+		 * Fires when the WP_Customize_Setting::save() method is called.
 		 *
 		 * The dynamic portion of the hook name, `$this->id_data['base']` refers to
-		 * the base slug of the field name.
+		 * the base slug of the setting name.
 		 *
+		 * @since 3.4.0
 		 *
-		 * @param WP_Fields_API_Field $this    {@see WP_Fields_API_Field} instance.
-		 * @param mixed               $value   The value to save.
-		 * @param int                 $item_id The Item ID.
+		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
 		 */
-		do_action( 'fields_save_' . $type . '_' . $this->object_name . '_' . $this->id_data['base'], $this, $value );
+		do_action( 'customize_save_' . $this->id_data[ 'base' ], $this );
 
-		return $this->update( $value, $item_id );
+		return $this->update( $value );
 
 	}
 
