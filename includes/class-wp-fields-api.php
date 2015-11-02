@@ -851,12 +851,8 @@ final class WP_Fields_API {
 			if ( ! empty( $args['type'] ) ) {
 				if ( ! empty( self::$registered_field_types[ $args['type'] ] ) ) {
 					$field_class = self::$registered_field_types[ $args['type'] ];
-
-					unset( $args['type'] );
 				} elseif ( in_array( $args['type'], self::$registered_field_types ) ) {
 					$field_class = $args['type'];
-
-					unset( $args['type'] );
 				}
 			}
 
