@@ -1438,16 +1438,16 @@ final class WP_Fields_API {
 	public function register_controls() {
 
 		/* Control Types */
-		$this->register_control_type( 'WP_Fields_API_Text_Control' );
-		$this->register_control_type( 'WP_Fields_API_Checkbox_Control' );
-		$this->register_control_type( 'WP_Fields_API_Multi_Checkbox_Control' );
-		$this->register_control_type( 'WP_Fields_API_Radio_Control' );
-		$this->register_control_type( 'WP_Fields_API_Select_Control' );
-		$this->register_control_type( 'WP_Fields_API_Dropdown_Pages_Control' );
-		$this->register_control_type( 'WP_Fields_API_Color_Control' );
-		$this->register_control_type( 'WP_Fields_API_Media_Control' );
-		$this->register_control_type( 'WP_Fields_API_Upload_Control' );
-		$this->register_control_type( 'WP_Fields_API_Image_Control' );
+		$this->register_control_type( 'text', 'WP_Fields_API_Text_Control' );
+		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );
+		$this->register_control_type( 'multi-checkbox', 'WP_Fields_API_Multi_Checkbox_Control' );
+		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
+		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
+		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
+		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
+		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
+		$this->register_control_type( 'upload', 'WP_Fields_API_Upload_Control' );
+		$this->register_control_type( 'image', 'WP_Fields_API_Image_Control' );
 
 		/**
 		 * Fires once WordPress has loaded, allowing control types to be registered.
