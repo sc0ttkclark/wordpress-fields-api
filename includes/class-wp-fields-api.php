@@ -1275,7 +1275,7 @@ final class WP_Fields_API {
 	 */
 	public function register_controls() {
 
-		/* Control Types (custom control classes) */
+		/* Control Types */
 		$this->register_control_type( 'WP_Fields_API_Text_Control' );
 		$this->register_control_type( 'WP_Fields_API_Checkbox_Control' );
 		$this->register_control_type( 'WP_Fields_API_Multi_Checkbox_Control' );
