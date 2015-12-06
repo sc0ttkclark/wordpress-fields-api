@@ -19,7 +19,7 @@ Please note: This plugin is still in the early stages of development and should 
 * WordPress 4.3.x - No previous or more recent major version can be 100% supported and confirmed as working.
 * Fields API installed as a plugin
 
-Every Fields API release has to be based off of the latest WordPress stable release. This means that overtime, we can only support the last stable release of WordPress.
+Every Fields API release has to be based off of the latest WordPress stable release. This means that over time, we can only support the last stable release of WordPress.
 
 At the end of each WP release cycle we have to merge all of the Customizer and other implementations we have with the latest changes from core.
 
@@ -41,7 +41,7 @@ There are still a lot of areas the API is not represented in code or in examples
 
 * Control types need fleshing out
 * Implementations are [in development amongst a few contributors](https://github.com/sc0ttkclark/wordpress-fields-api/labels/implementation)
-* We need [use-cases and examples](https://github.com/sc0ttkclark/wordpress-fields-api/issues/22), to be fleshed out in `/examples/{implementation}/{example}.md` inside this repo 
+* We need [use-cases and examples](https://github.com/sc0ttkclark/wordpress-fields-api/issues/22), to be fleshed out in `/examples/{implementation}/{example}.md` inside this repo
 * [Core Proposal for Merge into WP 4.5](https://github.com/sc0ttkclark/wordpress-fields-api/issues/35) needs to be written up
 
 ## Contributing
