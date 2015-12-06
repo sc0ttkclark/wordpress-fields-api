@@ -513,11 +513,11 @@ class WP_Fields_API_Control {
 	}
 
 	/**
-	 * Handle backwards compatible properties that match method
+	 * Magic method for handling backwards compatible properties / methods
 	 *
 	 * @param string $name Parameter name
 	 *
-	 * @return mixed
+	 * @return mixed|null
 	 */
 	public function &__get( $name ) {
 

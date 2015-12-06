@@ -371,19 +371,19 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	public function content_template() {}
 
 	/**
-	 * Magic method for handling backwards compatible properties
+	 * Magic method for handling backwards compatible properties / methods
 	 *
-	 * @param string $get
+	 * @param string $name Parameter name
 	 *
 	 * @return mixed|null
 	 */
-	public function __get( $get ){
+	public function &__get( $name ) {
 
-		if ( isset( $this->property_map[ $get ] ) ) {
-			$property = $this->property_map[ $get ];
+		if ( isset( $this->property_map[ $name ] ) ) {
+			$property = $this->property_map[ $name ];
 
 			return $this->{$property};
-		} elseif ( 'json' == $get ) {
+		} elseif ( 'json' == $name ) {
 			return $this->json();
 		}
 
