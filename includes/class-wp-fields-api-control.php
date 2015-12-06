@@ -4,6 +4,8 @@
  *
  * @package WordPress
  * @subpackage Fields_API
+ *
+ * @property array $choices Key/Values used by Multiple choice control types
  */
 class WP_Fields_API_Control {
 
@@ -98,12 +100,6 @@ class WP_Fields_API_Control {
 	 * @var string
 	 */
 	public $description = '';
-
-	/**
-	 * @access public
-	 * @var array
-	 */
-	public $choices = array();
 
 	/**
 	 * @access public
@@ -208,8 +204,29 @@ class WP_Fields_API_Control {
 	}
 
 	/**
+	 * Setup the choices values and set the choices property to allow dynamic building
+	 */
+	public function setup_choices() {
+
+		if ( ! isset( $this->choices ) ) {
+			$choices = $this->choices();
+
+			$this->choices = $choices;
+		}
+
+	}
+
+	/**
+	 * Get the choices values from the choices property and allow dynamic building
+	 */
+	public function choices() {
+
+		return array();
+
+	}
+
+	/**
 	 * Enqueue control related scripts/styles.
-	 *
 	 */
 	public function enqueue() {}
 
@@ -314,7 +331,7 @@ class WP_Fields_API_Control {
 		 * @var $field WP_Fields_API_Field
 		 */
 		foreach ( $this->fields as $field ) {
-			if ( !$field || ! $field->check_capabilities() ) {
+			if ( ! $field || ! $field->check_capabilities() ) {
 				return false;
 			}
 		}
@@ -492,6 +509,26 @@ class WP_Fields_API_Control {
 	public function content_template() {
 
 		// Nothing by default
+
+	}
+
+	/**
+	 * Handle backwards compatible properties that match method
+	 *
+	 * @param string $name Parameter name
+	 *
+	 * @return mixed
+	 */
+	public function &__get( $name ) {
+
+		// Map $this->choices to $this->choices() for dynamic choice handling
+		if ( 'choices' == $name ) {
+			$this->setup_choices();
+
+			return $this->choices;
+		}
+
+		return null;
 
 	}
 
