@@ -175,8 +175,10 @@ class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control 
 
 	/**
 	 * Setup page choices for use by control
+	 *
+	 * @return array
 	 */
-	public function setup_page_choices() {
+	public function choices() {
 
 		$choices = array(
 			'0' => __( '&mdash; Select &mdash;' ),
@@ -186,7 +188,7 @@ class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control 
 
 		$choices = $this->get_page_choices_recurse( $choices, $pages );
 
-		$this->choices = $choices;
+		return $choices;
 
 	}
 
@@ -230,19 +232,6 @@ class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control 
 		}
 
 		return $choices;
-
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-		// Setup choices
-		$this->setup_page_choices();
-
-		// Output select
-		parent::render_content();
 
 	}
 
