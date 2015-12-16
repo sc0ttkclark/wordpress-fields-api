@@ -194,6 +194,8 @@ class WP_Fields_API_Field {
 	 */
 	protected function update( $value ) {
 
+		// @todo Support post / term / user / comment object field updates
+
 		$item_id = func_get_arg(1);
 
 		switch ( $this->object_type ) {
@@ -204,10 +206,10 @@ class WP_Fields_API_Field {
 				return $this->_update_option( $value );
 
 			case 'post' :
-				return $this->_update_post_meta( $value, $item_id );
-
+			case 'term' :
 			case 'user' :
-				return $this->_update_user_meta( $value, $item_id );
+			case 'comment' :
+				return $this->_update_meta( $this->object_type, $value, $item_id );
 
 			default :
 
@@ -289,61 +291,31 @@ class WP_Fields_API_Field {
 	}
 
 	/**
-	 * Update the option from the value of the field.
+	 * Update the meta from the value of the field.
 	 *
-	 * @param mixed $value   The value to update.
-	 * @param int   $item_id Item ID.
+	 * @param string $meta_type The meta type.
+	 * @param mixed  $value     The value to update.
+	 * @param int    $item_id   Item ID.
 	 *
 	 * @return bool|null The result of saving the value.
 	 */
-	protected function _update_post_meta( $value, $item_id = 0 ) {
+	protected function _update_meta( $meta_type, $value, $item_id = 0 ) {
 
 		if ( is_null( $value ) ) {
-			delete_post_meta( $item_id, $this->id_data['base'] );
+			delete_metadata( $meta_type, $item_id, $this->id_data['base'] );
 		}
 
 		// Handle non-array option.
 		if ( empty( $this->id_data['keys'] ) ) {
-			return update_post_meta( $item_id, $this->id_data['base'], $value );
+			return update_metadata( $meta_type, $item_id, $this->id_data['base'], $value );
 		}
 
 		// Handle array-based keys.
-		$keys = get_post_meta( 0, $this->id_data['base'] );
+		$keys = get_metadata( $meta_type, 0, $this->id_data['base'] );
 		$keys = $this->multidimensional_replace( $keys, $this->id_data['keys'], $value );
 
 		if ( isset( $keys ) ) {
-			return update_post_meta( $item_id, $this->id_data['base'], $keys );
-		}
-
-		return null;
-
-	}
-
-	/**
-	 * Update the option from the value of the field.
-	 *
-	 * @param mixed $value   The value to update.
-	 * @param int   $item_id Item ID.
-	 *
-	 * @return bool|null The result of saving the value.
-	 */
-	protected function _update_user_meta( $value, $item_id = 0 ) {
-
-		if ( is_null( $value ) ) {
-			delete_user_meta( $item_id, $this->id_data['base'] );
-		}
-
-		// Handle non-array option.
-		if ( empty( $this->id_data['keys'] ) ) {
-			return update_user_meta( $item_id, $this->id_data['base'], $value );
-		}
-
-		// Handle array-based options.
-		$keys = get_user_meta( 0, $this->id_data['base'] );
-		$keys = $this->multidimensional_replace( $keys, $this->id_data['keys'], $value );
-
-		if ( isset( $keys ) ) {
-			return update_user_meta( $item_id, $this->id_data['base'], $keys );
+			return update_metadata( $meta_type, $item_id, $this->id_data['base'], $keys );
 		}
 
 		return null;
@@ -353,9 +325,103 @@ class WP_Fields_API_Field {
 	/**
 	 * Fetch the value of the field.
 	 *
+	 * @param int $item_id (optional) The Item ID.
+	 *
 	 * @return mixed The value.
 	 */
 	public function value() {
+
+		$item_id = func_get_arg(0);
+
+		switch ( $this->object_type ) {
+			case 'post' :
+			case 'term' :
+			case 'user' :
+			case 'comment' :
+				$value = $this->get_object_value( $item_id );
+				$value = $this->multidimensional_get( $value, $this->id_data['keys'], $this->default );
+				break;
+
+			case 'customizer' :
+			case 'settings' :
+				$value = $this->get_option_value();
+				$value = $this->multidimensional_get( $value, $this->id_data['keys'], $this->default );
+				break;
+
+			default :
+				/**
+				 * Filter a field value for a custom object type.
+				 *
+				 * The dynamic portion of the hook name, `$this->id_date['base']`, refers to
+				 * the base slug of the field name.
+				 *
+				 * For fields handled as theme_mods, options, or object fields, see those corresponding
+				 * functions for available hooks.
+				 *
+				 * @param mixed $default The field default value. Default empty.
+				 * @param int   $item_id (optional) The Item ID.
+				 */
+				$value = apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default, $item_id );
+				break;
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Get value from meta / object
+	 *
+	 * @param int $item_id
+	 *
+	 * @return mixed|null
+	 */
+	public function get_object_value( $item_id ) {
+
+		$value = null;
+		$object = null;
+
+		$field_key = $this->id_data['base'];
+
+		switch ( $this->object_type ) {
+			case 'post' :
+				$object = get_post( $item_id );
+				break;
+
+			case 'term' :
+				$object = get_term( $item_id );
+				break;
+
+			case 'user' :
+				$object = get_userdata( $item_id );
+				break;
+
+			case 'comment' :
+				$object = get_comment( $item_id );
+				break;
+		}
+
+		if ( $object && ! is_wp_error( $object ) && isset( $object->{$field_key} ) ) {
+			// Get value from object
+			$value = $object->{$field_key};
+		} else {
+			// Get value from meta
+			$value = get_metadata( $this->object_type, $item_id, $field_key );
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Get value from option / theme_mod
+	 *
+	 * @return mixed|void
+	 */
+	public function get_option_value() {
+
+		$function = '';
+		$value = null;
 
 		switch ( $this->object_type ) {
 			case 'customizer' :
@@ -365,41 +431,19 @@ class WP_Fields_API_Field {
 			case 'settings' :
 				$function = 'get_option';
 				break;
-
-			case 'post' :
-				$function = 'get_post_meta';
-				break;
-
-			case 'user' :
-				$function = 'get_user_meta';
-				break;
-
-			default :
-
-				/**
-				 * Filter a Customize field value not handled as a theme_mod or option.
-				 *
-				 * The dynamic portion of the hook name, `$this->id_date['base']`, refers to
-				 * the base slug of the field name.
-				 *
-				 * For fields handled as theme_mods or options, see those corresponding
-				 * functions for available hooks.
-				 *
-				 *
-				 * @param mixed $default The field default value. Default empty.
-				 */
-				return apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default );
 		}
 
-		// Handle non-array value
-		if ( empty( $this->id_data['keys'] ) ) {
-			return $function( $this->id_data['base'], $this->default );
+		if ( is_callable( $function ) ) {
+			// Handle non-array value
+			if ( empty( $this->id_data['keys'] ) ) {
+				return $function( $this->id_data['base'], $this->default );
+			}
+
+			// Handle array-based value
+			$value = $function( $this->id_data['base'] );
 		}
 
-		// Handle array-based value
-		$values = $function( $this->id_data['base'] );
-
-		return $this->multidimensional_get( $values, $this->id_data['keys'], $this->default );
+		return $value;
 
 	}
 
