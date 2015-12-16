@@ -222,7 +222,11 @@ class WP_Fields_API_Section {
 	final public function active() {
 
 		$section = $this;
-		$active = call_user_func( $this->active_callback, $this );
+		$active = true;
+
+		if ( is_callable( $this->active_callback ) ) {
+			$active = call_user_func( $this->active_callback, $this );
+		}
 
 		/**
 		 * Filter response of {@see WP_Fields_API_Section::active()}.

@@ -193,6 +193,10 @@ class WP_Fields_API_Control {
 			}
 		}
 
+		if ( empty( $this->active_callback ) ) {
+			$this->active_callback = array( $this, 'active_callback' );
+		}
+
 		self::$instance_count += 1;
 		$this->instance_number = self::$instance_count;
 
@@ -261,7 +265,11 @@ class WP_Fields_API_Control {
 	final public function active() {
 
 		$control = $this;
-		$active = call_user_func( $this->active_callback, $this );
+		$active = true;
+
+		if ( is_callable( $this->active_callback ) ) {
+			$active = call_user_func( $this->active_callback, $this );
+		}
 
 		/**
 		 * Filter response of WP_Fields_API_Control::active().
