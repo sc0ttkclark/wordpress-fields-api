@@ -27,8 +27,6 @@ class WP_Fields_API_User_Profile {
 	 */
 	public function output_fields( $user ) {
 
-		// @todo Handle pulling field values based on $user->ID
-
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
