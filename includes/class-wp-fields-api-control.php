@@ -136,6 +136,19 @@ class WP_Fields_API_Control {
 	public $active_callback = '';
 
 	/**
+	 * Capabilities Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Control::check_capabilities()
+	 *
+	 * @var callable Callback is called with one argument, the instance of
+	 *               WP_Fields_API_Control, and returns bool to indicate whether
+	 *               the control has capabilities to be used.
+	 */
+	public $capabilities_callback = '';
+
+	/**
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
@@ -346,11 +359,17 @@ class WP_Fields_API_Control {
 
 		$section = $wp_fields->get_section( $this->object_type, $this->section, $this->object_name );
 
-		if ( isset( $section ) && ! $section->check_capabilities() ) {
+		if ( $section && ! $section->check_capabilities() ) {
 			return false;
 		}
 
-		return true;
+		$access = true;
+
+		if ( is_callable( $this->capabilities_callback ) ) {
+			$access = call_user_func( $this->capabilities_callback, $this );
+		}
+
+		return $access;
 
 	}
 
