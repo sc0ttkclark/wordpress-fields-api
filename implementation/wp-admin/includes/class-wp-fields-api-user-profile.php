@@ -60,8 +60,8 @@ class WP_Fields_API_User_Profile {
 							<table class="form-table">
 								<?php foreach ( $controls as $control ) { ?>
 									<?php
-									// Set value
-									$control->field->value = '';
+									// Pass $user->ID to Control for use with getting value()
+									$control->item_id = $user->ID;
 
 									$label       = $control->label;
 									$description = $control->description;

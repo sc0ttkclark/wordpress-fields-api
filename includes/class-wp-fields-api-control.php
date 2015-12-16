@@ -52,6 +52,14 @@ class WP_Fields_API_Control {
 	public $object_name = '';
 
 	/**
+	 * Item ID of current item passed to WP_Fields_API_Field for value()
+	 *
+	 * @access public
+	 * @var int|string
+	 */
+	public $item_id;
+
+	/**
 	 * All fields tied to the control.
 	 *
 	 * @access public
@@ -285,7 +293,7 @@ class WP_Fields_API_Control {
 			 */
 			$field = $this->fields[ $field_key ];
 
-			return $field->value();
+			return $field->value( $this->item_id );
 		}
 
 		return null;
@@ -473,7 +481,7 @@ class WP_Fields_API_Control {
 			if ( ! empty( $this->description ) ) : ?>
 				<span class="description fields-control-description"><?php echo $this->description; ?></span>
 			<?php endif; ?>
-			<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
+			<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value( $this->item_id ) ); ?>" <?php $this->link(); ?> />
 		</label>
 		<?php
 
