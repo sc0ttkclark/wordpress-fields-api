@@ -143,6 +143,9 @@ class WP_Fields_API_User_Profile {
 	 */
 	public function register_controls() {
 
+		// @todo Setup $profileuser correctly
+		$profileuser = new stdClass;
+
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
@@ -171,10 +174,6 @@ class WP_Fields_API_User_Profile {
 			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
 		) );
 
-		// @todo Controls hidden if subscriber is editing their profile logic
-		/*$user_can_edit = current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' );
-		$is_subscriber_editing_profile = ! ( IS_PROFILE_PAGE && ! $user_can_edit );*/
-
 		$field_args = array(
 			// Add a control to the field at the same time
 			'control' => array(
@@ -182,14 +181,12 @@ class WP_Fields_API_User_Profile {
 				'section'     => 'personal-options',
 				'label'       => __( 'Visual Editor' ),
 				'description' => __( 'Disable the visual editor when writing' ),
-				// @todo Permissions: Hide if $is_subscriber_editing_profile
+			    // @todo Value of checkbox: 'false'
+			    'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
 			),
 		);
 
 		$wp_fields->add_field( 'user', 'rich_editing', 'edit-profile', $field_args );
-
-		// @todo Control hidden if no admin css colors AND color scheme picker set
-		// $has_color_scheme_control = ( count($_wp_admin_css_colors) > 1 && has_action('admin_color_scheme_picker') )
 
 		$field_args = array(
 			// Add a control to the field at the same time
@@ -198,7 +195,7 @@ class WP_Fields_API_User_Profile {
 				'section'     => 'personal-options',
 				'label'       => __( 'Admin Color Scheme' ),
 				'description' => __( 'Disable the visual editor when writing' ),
-				// @todo Permissions: Show only if $has_color_scheme_control
+			    'capabilities_callback' => array( $this, 'capability_has_color_scheme_control' ),
 			),
 		);
 
@@ -211,7 +208,7 @@ class WP_Fields_API_User_Profile {
 				'section'     => 'personal-options',
 				'label'       => __( 'Keyboard Shortcuts' ),
 				'description' => __( 'Enable keyboard shortcuts for comment moderation.' ) . ' ' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">More information</a>' ),
-				// @todo Permissions: Hide if $is_subscriber_editing_profile
+			    'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
 			),
 		);
 
@@ -252,16 +249,13 @@ class WP_Fields_API_User_Profile {
 
 		$wp_fields->add_field( 'user', 'user_login', 'edit-profile', $field_args );
 
-		// @todo Roles
-		$can_change_roles = ( ! IS_PROFILE_PAGE && ! is_network_admin() );
-
 		$field_args = array(
 			// Add a control to the field at the same time
 			'control' => array(
 				'type'    => 'user-role',
 				'section' => 'name',
 				'label'   => __( 'Role' ),
-				// @todo Permissions: Show only if $can_change_roles
+			    'capabilities_callback' => array( $this, 'capability_show_roles' ),
 			),
 		);
 
@@ -275,8 +269,8 @@ class WP_Fields_API_User_Profile {
 				'label'       => __( 'Super Admin' ),
 				'description' => __( 'Grant this user super admin privileges for the Network.' ),
 				// @todo Needs it's own saving callback
-				// @todo Needs value from is_super_admin()
-				// @todo Permissions: Show only if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_can( 'manage_network_options' ) && ! isset( $super_admins ) )
+			    // @todo Current selection value: is_super_admin()
+			    'capabilities_callback' => array( $this, 'capability_can_grant_super_admin' ),
 			),
 		);
 
@@ -322,7 +316,7 @@ class WP_Fields_API_User_Profile {
 				'type'    => 'user-display-name',
 				'section' => 'name',
 				'label'   => __( 'Display name publicly as' ),
-				// @todo Needs it's own saving callback
+				// @todo Needs it's own saving and/or validation callback
 			),
 		);
 
@@ -343,7 +337,7 @@ class WP_Fields_API_User_Profile {
 				'section'     => 'contact-info',
 				'label'       => __( 'E-mail' ),
 				'description' => __( '(required)' ),
-				// @todo Needs it's own saving callback
+				// @todo Needs it's own saving and/or validation callback
 			),
 		);
 
@@ -359,9 +353,6 @@ class WP_Fields_API_User_Profile {
 		);
 
 		$wp_fields->add_field( 'user', 'user_url', 'edit-profile', $field_args );
-
-		// @todo Setup $profileuser correctly
-		$profileuser = new stdClass;
 
 		$contact_methods = wp_get_user_contact_methods( $profileuser );
 
@@ -420,12 +411,9 @@ class WP_Fields_API_User_Profile {
 		// Core: Account Management //
 		//////////////////////////////
 
-		/** This filter is documented in wp-admin/user-new.php */
-		$show_password_fields = apply_filters( 'show_password_fields', true, $profileuser );
-
 		$wp_fields->add_section( 'user', 'account-management', 'edit-profile', array(
 			'title' => __( 'Account Management' ),
-			// @todo Permissions: Show only if $show_password_fields
+		    'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
 
 		$field_args = array(
@@ -449,9 +437,10 @@ class WP_Fields_API_User_Profile {
 		);
 
 		// If password fields not shown, show Sessions under About
-		if ( ! $show_password_fields ) {
+		// @todo Change which section this control is in if password fields not shown
+		/*if ( ! $show_password_fields ) {
 			$field_args['control']['section'] = 'about';
-		}
+		}*/
 
 		$wp_fields->add_field( 'user', 'sessions', 'edit-profile', $field_args );
 
@@ -482,24 +471,9 @@ class WP_Fields_API_User_Profile {
 		// Core: Additional Capabilities //
 		///////////////////////////////////
 
-		/**
-		 * Filter whether to display additional capabilities for the user.
-		 *
-		 * The 'Additional Capabilities' section will only be enabled if
-		 * the number of the user's capabilities exceeds their number of
-		 * of roles.
-		 *
-		 * @since 2.8.0
-		 *
-		 * @param bool    $enable      Whether to display the capabilities. Default true.
-		 * @param WP_User $profileuser The current WP_User object.
-		 */
-		$show_capabilities = ( count( $profileuser->roles ) < count( $profileuser->caps )
-			&& apply_filters( 'additional_capabilities_display', true, $profileuser ) );
-
 		$wp_fields->add_section( 'user', 'additional-capabilities', 'edit-profile', array(
 			'title' => __( 'Additional Capabilities' ),
-			// @todo Permissions: Show only if $show_capabilities
+		    'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );
 
 		$field_args = array(
@@ -551,6 +525,160 @@ class WP_Fields_API_User_Profile {
 
 			$wp_fields->add_field( 'user', $id, 'edit-profile', $field_args );
 		}
+
+	}
+
+	/**
+	 * Controls hidden if subscriber is editing their profile logic
+	 *
+	 * @param WP_Fields_API_Control $control
+	 *
+	 * @return bool
+	 */
+	public function capability_is_subscriber_editing_profile( $control ) {
+
+		$has_access = true;
+
+		if ( is_admin() ) {
+			$is_user_an_editor = ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' );
+
+			if ( $is_user_an_editor && defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
+				$has_access = false;
+			}
+		}
+
+		return $has_access;
+
+	}
+
+	/**
+	 * Control hidden if no admin css colors AND color scheme picker set.
+	 *
+	 * @param WP_Fields_API_Control $control
+	 *
+	 * @return bool
+	 */
+	public function capability_has_color_scheme_control( $control ) {
+
+		/**
+		 * @var $_wp_admin_css_colors object[]
+		 */
+		global $_wp_admin_css_colors;
+
+		$has_access = false;
+
+		if ( 1 < count( $_wp_admin_css_colors ) && has_action( 'admin_color_scheme_picker' ) ) {
+			$has_access = true;
+		}
+
+		return $has_access;
+
+	}
+
+	/**
+	 * Control only visible if editing another user outside of the network admin.
+	 *
+	 * @param WP_Fields_API_Control $control
+	 *
+	 * @return bool
+	 */
+	public function capability_show_roles( $control ) {
+
+		$has_access = false;
+
+		if ( ! IS_PROFILE_PAGE && ! is_network_admin() ) {
+			$has_access = true;
+		}
+
+		return $has_access;
+
+	}
+
+	/**
+	 * Control only visible if in network admin and can manage network options, as long as super_admins is not being overridden.
+	 *
+	 * @param WP_Fields_API_Control $control
+	 *
+	 * @return bool
+	 */
+	public function capability_can_grant_super_admin( $control ) {
+
+		/**
+		 * @var $super_admins string[]
+		 */
+		global $super_admins;
+
+		$has_access = false;
+
+		if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_can( 'manage_network_options' ) && ! isset( $super_admins ) ) {
+			$has_access = true;
+		}
+
+		return $has_access;
+
+	}
+
+	/**
+	 * Control only visible if password fields are shown.
+	 *
+	 * @param WP_Fields_API_Control $control
+	 *
+	 * @return bool
+	 */
+	public function capability_show_password_fields( $control ) {
+
+		// @todo Setup $profileuser correctly
+		$profileuser = new stdClass;
+
+		/** This filter is documented in wp-admin/user-new.php */
+		$show_password_fields = apply_filters( 'show_password_fields', true, $profileuser );
+
+		$has_access = false;
+
+		if ( $show_password_fields ) {
+			$has_access = true;
+		}
+
+		return $has_access;
+
+	}
+
+	/**
+	 * Control only visible if additional capabilities can be shown and total number of capabilities are greater than total number of roles.
+	 *
+	 * @param WP_Fields_API_Control $control
+	 *
+	 * @return bool
+	 */
+	public function capability_show_capabilities( $control ) {
+
+		// @todo Setup $profileuser correctly
+		$profileuser = new stdClass;
+
+		$total_roles = count( $profileuser->roles );
+		$total_caps = count( $profileuser->caps );
+
+		/**
+		 * Filter whether to display additional capabilities for the user.
+		 *
+		 * The 'Additional Capabilities' section will only be enabled if
+		 * the number of the user's capabilities exceeds their number of
+		 * of roles.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @param bool    $enable      Whether to display the capabilities. Default true.
+		 * @param WP_User $profileuser The current WP_User object.
+		 */
+		$display_capabilities = apply_filters( 'additional_capabilities_display', true, $profileuser );
+
+		$has_access = false;
+
+		if ( $total_roles < $total_caps && $display_capabilities ) {
+			$has_access = true;
+		}
+
+		return $has_access;
 
 	}
 
@@ -660,7 +788,7 @@ class WP_Fields_API_User_Super_Admin_Control extends WP_Fields_API_Checkbox_Cont
 	 */
 	public function render_content() {
 
-		// @todo Setup $profileuser
+		// @todo Setup $profileuser correctly
 		$profileuser = new stdClass;
 
 		if ( $profileuser->user_email == get_site_option( 'admin_email' ) && is_super_admin( $profileuser->ID ) ) {
