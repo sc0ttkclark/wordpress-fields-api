@@ -54,8 +54,8 @@ function _wp_fields_api_customize_include() {
 
 }
 
-remove_action( 'plugins_loaded', '_wp_customize_include' );
-add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );
+/*remove_action( 'plugins_loaded', '_wp_customize_include' );
+add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
 
 /**
  * Implement Fields API User edit to override WP Core.
