@@ -172,7 +172,7 @@ class WP_Fields_API_User_Profile {
 		) );
 
 		$field_args = array(
-			'pre_update_value_callback' => array( $this, 'pre_update_value_rich_editing' ),
+			'sanitize_callback' => array( $this, 'sanitize_rich_editing' ),
 			'control'                   => array(
 				'type'                  => 'checkbox',
 				'section'               => 'personal-options',
@@ -198,7 +198,7 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->add_field( 'user', 'admin_color', 'edit-profile', $field_args );
 
 		$field_args = array(
-			'pre_update_value_callback' => array( $this, 'pre_update_value_comment_shortcuts' ),
+			'sanitize_callback' => array( $this, 'sanitize_comment_shortcuts' ),
 			'control'                   => array(
 				'type'                  => 'checkbox',
 				'section'               => 'personal-options',
@@ -212,7 +212,7 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->add_field( 'user', 'comment_shortcuts', 'edit-profile', $field_args );
 
 		$field_args = array(
-			'pre_update_value_callback' => array( $this, 'pre_update_value_admin_bar_front' ),
+			'sanitize_callback' => array( $this, 'sanitize_admin_bar_front' ),
 			'control'                   => array(
 				'type'           => 'checkbox',
 				'section'        => 'personal-options',
@@ -696,7 +696,7 @@ class WP_Fields_API_User_Profile {
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
 	 */
-	public function pre_update_value_rich_editing( $value, $item_id, $field ) {
+	public function sanitize_rich_editing( $value, $item_id, $field ) {
 
 		if ( ! empty( $value ) && 'false' == $value ) {
 			$value = 'false';
@@ -715,7 +715,7 @@ class WP_Fields_API_User_Profile {
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
 	 */
-	public function pre_update_value_admin_bar_front( $value, $item_id, $field ) {
+	public function sanitize_admin_bar_front( $value, $item_id, $field ) {
 
 		if ( ! empty( $value ) && 'true' == $value ) {
 			$value = 'true';
@@ -734,7 +734,7 @@ class WP_Fields_API_User_Profile {
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
 	 */
-	public function pre_update_value_comment_shortcuts( $value, $item_id, $field ) {
+	public function sanitize_comment_shortcuts( $value, $item_id, $field ) {
 
 		if ( ! empty( $value ) && 'true' == $value ) {
 			$value = 'true';

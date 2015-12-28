@@ -89,18 +89,6 @@ class WP_Fields_API_Field {
 	public $value_callback = '';
 
 	/**
-	 * Pre-Update Value Callback.
-	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Field::save()
-	 *
-	 * @var callable Callback is called with three arguments, the value being saved, the item ID, and the instance of
-	 *               WP_Fields_API_Field. It returns a string of the value to save.
-	 */
-	public $pre_update_value_callback = '';
-
-	/**
 	 * Update Value Callback.
 	 *
 	 * @access public
@@ -196,9 +184,7 @@ class WP_Fields_API_Field {
 			return false;
 		}
 
-		if ( is_callable( $this->pre_update_value_callback ) ) {
-			$value = call_user_func( $this->pre_update_value_callback, $value, $item_id, $this );
-		}
+		$value = $this->sanitize( $value );
 
 		/**
 		 * Fires when the WP_Fields_API_Field::save() method is called.
@@ -232,7 +218,7 @@ class WP_Fields_API_Field {
 		/**
 		 * Filter a Customize field value in un-slashed form.
 		 *
-		 * @param mixed                $value Value of the field.
+		 * @param mixed               $value Value of the field.
 		 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 		 */
 		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", $value, $this );
