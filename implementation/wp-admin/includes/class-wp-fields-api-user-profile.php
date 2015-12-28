@@ -143,9 +143,6 @@ class WP_Fields_API_User_Profile {
 	 */
 	public function register_controls() {
 
-		// @todo Setup $profileuser correctly
-		$profileuser = new stdClass;
-
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
@@ -175,52 +172,53 @@ class WP_Fields_API_User_Profile {
 		) );
 
 		$field_args = array(
-			// Add a control to the field at the same time
-			'control' => array(
-				'type'        => 'checkbox',
-				'section'     => 'personal-options',
-				'label'       => __( 'Visual Editor' ),
-				'description' => __( 'Disable the visual editor when writing' ),
-			    // @todo Value of checkbox: 'false'
-			    'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
+			'pre_update_value_callback' => array( $this, 'pre_update_value_rich_editing' ),
+			'control'                   => array(
+				'type'                  => 'checkbox',
+				'section'               => 'personal-options',
+				'label'                 => __( 'Visual Editor' ),
+				'description'           => __( 'Disable the visual editor when writing' ),
+				'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
+				'checkbox_value'        => 'false',
 			),
 		);
 
 		$wp_fields->add_field( 'user', 'rich_editing', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
-				'type'        => 'user-color-scheme',
-				'section'     => 'personal-options',
-				'label'       => __( 'Admin Color Scheme' ),
-				'description' => __( 'Disable the visual editor when writing' ),
-			    'capabilities_callback' => array( $this, 'capability_has_color_scheme_control' ),
+				'type'                  => 'user-color-scheme',
+				'section'               => 'personal-options',
+				'label'                 => __( 'Admin Color Scheme' ),
+				'description'           => __( 'Disable the visual editor when writing' ),
+				'capabilities_callback' => array( $this, 'capability_has_color_scheme_control' ),
 			),
 		);
 
 		$wp_fields->add_field( 'user', 'admin_color', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
-			'control' => array(
-				'type'        => 'checkbox',
-				'section'     => 'personal-options',
-				'label'       => __( 'Keyboard Shortcuts' ),
-				'description' => __( 'Enable keyboard shortcuts for comment moderation.' ) . ' ' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">More information</a>' ),
-			    'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
+			'pre_update_value_callback' => array( $this, 'pre_update_value_comment_shortcuts' ),
+			'control'                   => array(
+				'type'                  => 'checkbox',
+				'section'               => 'personal-options',
+				'label'                 => __( 'Keyboard Shortcuts' ),
+				'description'           => __( 'Enable keyboard shortcuts for comment moderation.' ) . ' ' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">More information</a>' ),
+				'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
+				'checkbox_value'        => 'true',
 			),
 		);
 
 		$wp_fields->add_field( 'user', 'comment_shortcuts', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
-			'control' => array(
-				'type'        => 'checkbox',
-				'section'     => 'personal-options',
-				'label'       => __( 'Toolbar' ),
-				'description' => __( 'Show Toolbar when viewing site' ),
+			'pre_update_value_callback' => array( $this, 'pre_update_value_admin_bar_front' ),
+			'control'                   => array(
+				'type'           => 'checkbox',
+				'section'        => 'personal-options',
+				'label'          => __( 'Toolbar' ),
+				'description'    => __( 'Show Toolbar when viewing site' ),
+				'checkbox_value' => 'true',
 			),
 		);
 
@@ -235,7 +233,7 @@ class WP_Fields_API_User_Profile {
 		) );
 
 		$field_args = array(
-			// Add a control to the field at the same time
+			// @todo Needs validation callback
 			'control' => array(
 				'type'        => 'text',
 				'section'     => 'name',
@@ -250,34 +248,31 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->add_field( 'user', 'user_login', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
-				'type'    => 'user-role',
-				'section' => 'name',
-				'label'   => __( 'Role' ),
-			    'capabilities_callback' => array( $this, 'capability_show_roles' ),
+				'type'                  => 'user-role',
+				'section'               => 'name',
+				'label'                 => __( 'Role' ),
+				'capabilities_callback' => array( $this, 'capability_show_roles' ),
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'user_login', 'edit-profile', $field_args );
+		$wp_fields->add_field( 'user', 'role', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
-			'control' => array(
-				'type'        => 'user-super-admin',
-				'section'     => 'name',
-				'label'       => __( 'Super Admin' ),
-				'description' => __( 'Grant this user super admin privileges for the Network.' ),
-				// @todo Needs it's own saving callback
-			    // @todo Current selection value: is_super_admin()
-			    'capabilities_callback' => array( $this, 'capability_can_grant_super_admin' ),
+			'value_callback'        => array( $this, 'value_is_super_admin' ),
+			'update_value_callback' => array( $this, 'update_value_is_super_admin' ),
+			'control'               => array(
+				'type'                  => 'user-super-admin',
+				'section'               => 'name',
+				'label'                 => __( 'Super Admin' ),
+				'description'           => __( 'Grant this user super admin privileges for the Network.' ),
+				'capabilities_callback' => array( $this, 'capability_can_grant_super_admin' ),
 			),
 		);
 
 		$wp_fields->add_field( 'user', 'super_admin', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
 				'type'    => 'text',
 				'section' => 'name',
@@ -288,7 +283,6 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->add_field( 'user', 'first_name', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
 				'type'    => 'text',
 				'section' => 'name',
@@ -299,7 +293,6 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->add_field( 'user', 'last_name', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
 				'type'        => 'text',
 				'section'     => 'name',
@@ -311,12 +304,10 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->add_field( 'user', 'user_nickname', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
 				'type'    => 'user-display-name',
 				'section' => 'name',
 				'label'   => __( 'Display name publicly as' ),
-				// @todo Needs it's own saving and/or validation callback
 			),
 		);
 
@@ -331,20 +322,18 @@ class WP_Fields_API_User_Profile {
 		) );
 
 		$field_args = array(
-			// Add a control to the field at the same time
+			// @todo Needs validation callback
 			'control' => array(
 				'type'        => 'user-email',
 				'section'     => 'contact-info',
 				'label'       => __( 'E-mail' ),
 				'description' => __( '(required)' ),
-				// @todo Needs it's own saving and/or validation callback
 			),
 		);
 
 		$wp_fields->add_field( 'user', 'user_email', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
 				'type'    => 'text',
 				'section' => 'contact-info',
@@ -354,7 +343,7 @@ class WP_Fields_API_User_Profile {
 
 		$wp_fields->add_field( 'user', 'user_url', 'edit-profile', $field_args );
 
-		$contact_methods = wp_get_user_contact_methods( $profileuser );
+		$contact_methods = wp_get_user_contact_methods();
 
 		foreach ( $contact_methods as $method => $label ) {
 			/**
@@ -370,7 +359,6 @@ class WP_Fields_API_User_Profile {
 			$label = apply_filters( "user_{$method}_label", $label );
 
 			$field_args = array(
-				// Add a control to the field at the same time
 				'control' => array(
 					'type'    => 'text',
 					'section' => 'contact-info',
@@ -396,7 +384,6 @@ class WP_Fields_API_User_Profile {
 		) );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
 				'type'        => 'text',
 				'section'     => 'about',
@@ -412,27 +399,25 @@ class WP_Fields_API_User_Profile {
 		//////////////////////////////
 
 		$wp_fields->add_section( 'user', 'account-management', 'edit-profile', array(
-			'title' => __( 'Account Management' ),
-		    'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
+			'title'                 => __( 'Account Management' ),
+			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
-				'type'        => 'user-password',
-				'section'     => 'account-management',
-				'label'       => __( 'Password' ),
+				'type'    => 'user-password',
+				'section' => 'account-management',
+				'label'   => __( 'Password' ),
 			),
 		);
 
 		$wp_fields->add_field( 'user', 'user_pass', 'edit-profile', $field_args );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
-				'type'        => 'user-sessions',
-				'section'     => 'account-management',
-				'label'       => __( 'Sessions' ),
+				'type'    => 'user-sessions',
+				'section' => 'account-management',
+				'label'   => __( 'Sessions' ),
 			),
 		);
 
@@ -446,25 +431,25 @@ class WP_Fields_API_User_Profile {
 
 		// @todo Figure out how best to run actions after section
 		//if ( IS_PROFILE_PAGE ) {
-			/**
-			 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing screen.
-			 *
-			 * The action only fires if the current user is editing their own profile.
-			 *
-			 * @since 2.0.0
-			 *
-			 * @param WP_User $profileuser The current WP_User object.
-			 */
-			//do_action( 'show_user_profile', $profileuser );
+		/**
+		 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing screen.
+		 *
+		 * The action only fires if the current user is editing their own profile.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param WP_User $profileuser The current WP_User object.
+		 */
+		//do_action( 'show_user_profile', $profileuser );
 		//} else {
-			/**
-			 * Fires after the 'About the User' settings table on the 'Edit User' screen.
-			 *
-			 * @since 2.0.0
-			 *
-			 * @param WP_User $profileuser The current WP_User object.
-			 */
-			//do_action( 'edit_user_profile', $profileuser );
+		/**
+		 * Fires after the 'About the User' settings table on the 'Edit User' screen.
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param WP_User $profileuser The current WP_User object.
+		 */
+		//do_action( 'edit_user_profile', $profileuser );
 		//}
 
 		///////////////////////////////////
@@ -472,16 +457,15 @@ class WP_Fields_API_User_Profile {
 		///////////////////////////////////
 
 		$wp_fields->add_section( 'user', 'additional-capabilities', 'edit-profile', array(
-			'title' => __( 'Additional Capabilities' ),
-		    'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
+			'title'                 => __( 'Additional Capabilities' ),
+			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );
 
 		$field_args = array(
-			// Add a control to the field at the same time
 			'control' => array(
-				'type'        => 'user-capabilities',
-				'section'     => 'additional-capabilities',
-				'label'       => __( 'Capabilities' ),
+				'type'    => 'user-capabilities',
+				'section' => 'additional-capabilities',
+				'label'   => __( 'Capabilities' ),
 			),
 		);
 
@@ -603,6 +587,9 @@ class WP_Fields_API_User_Profile {
 	 */
 	public function capability_can_grant_super_admin( $control ) {
 
+		// @todo Setup $profileuser correctly
+		$profileuser = new stdClass;
+
 		/**
 		 * @var $super_admins string[]
 		 */
@@ -610,7 +597,7 @@ class WP_Fields_API_User_Profile {
 
 		$has_access = false;
 
-		if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_can( 'manage_network_options' ) && ! isset( $super_admins ) ) {
+		if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_can( 'manage_network_options' ) && ! isset( $super_admins ) && $profileuser->user_email != get_site_option( 'admin_email' ) ) {
 			$has_access = true;
 		}
 
@@ -679,6 +666,104 @@ class WP_Fields_API_User_Profile {
 		}
 
 		return $has_access;
+
+	}
+
+	/**
+	 * Override the value of the field for whether a user is a super admin or not
+	 *
+	 * @param int                 $item_id
+	 * @param WP_Fields_API_Field $field
+	 *
+	 * @return mixed
+	 */
+	public function value_is_super_admin( $item_id, $field ) {
+
+		$value = 0;
+
+		if ( is_multisite() && is_super_admin() ) {
+			$value = 1;
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Override the value of the field being updated
+	 *
+	 * @param mixed               $value
+	 * @param int                 $item_id
+	 * @param WP_Fields_API_Field $field
+	 */
+	public function pre_update_value_rich_editing( $value, $item_id, $field ) {
+
+		if ( ! empty( $value ) && 'false' == $value ) {
+			$value = 'false';
+		} else {
+			$value = 'true';
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Override the value of the field being updated
+	 *
+	 * @param mixed               $value
+	 * @param int                 $item_id
+	 * @param WP_Fields_API_Field $field
+	 */
+	public function pre_update_value_admin_bar_front( $value, $item_id, $field ) {
+
+		if ( ! empty( $value ) && 'true' == $value ) {
+			$value = 'true';
+		} else {
+			$value = 'false';
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Override the value of the field being updated
+	 *
+	 * @param mixed               $value
+	 * @param int                 $item_id
+	 * @param WP_Fields_API_Field $field
+	 */
+	public function pre_update_value_comment_shortcuts( $value, $item_id, $field ) {
+
+		if ( ! empty( $value ) && 'true' == $value ) {
+			$value = 'true';
+		} else {
+			$value = '';
+		}
+
+		return $value;
+
+	}
+
+	/**
+	 * Override the value update of the field for whether a user is to be a super admin or not
+	 *
+	 * @param mixed               $value
+	 * @param int                 $item_id
+	 * @param WP_Fields_API_Field $field
+	 */
+	public function update_value_is_super_admin( $value, $item_id, $field ) {
+
+		$is_super_admin = is_super_admin( $item_id );
+
+		if ( ! empty( $value ) && ! $is_super_admin ) {
+			// Make super admin if not already a super admin
+			grant_super_admin( $item_id );
+		} elseif ( $is_super_admin ) {
+			// Revoke super admin if currently a super admin
+			revoke_super_admin( $item_id );
+		}
 
 	}
 
@@ -965,6 +1050,9 @@ class WP_Fields_API_User_Sessions_Control extends WP_Fields_API_Control {
 		// @todo Setup $profileuser correctly
 		$profileuser = new stdClass;
 
+		/**
+		 * @var WP_User_Meta_Session_Tokens $sessions
+		 */
 		$sessions = WP_Session_Tokens::get_instance( $profileuser->ID );
 ?>
 	<?php if ( IS_PROFILE_PAGE && count( $sessions->get_all() ) === 1 ) : ?>
