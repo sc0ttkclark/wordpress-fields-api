@@ -77,6 +77,42 @@ class WP_Fields_API_Field {
 	public $capabilities_callback = '';
 
 	/**
+	 * Value Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Field::value()
+	 *
+	 * @var callable Callback is called with two arguments, the item ID and the instance of
+	 *               WP_Fields_API_Field. It returns a string for the value to use.
+	 */
+	public $value_callback = '';
+
+	/**
+	 * Pre-Update Value Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Field::save()
+	 *
+	 * @var callable Callback is called with three arguments, the value being saved, the item ID, and the instance of
+	 *               WP_Fields_API_Field. It returns a string of the value to save.
+	 */
+	public $pre_update_value_callback = '';
+
+	/**
+	 * Update Value Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Field::update()
+	 *
+	 * @var callable Callback is called with three arguments, the value being saved, the item ID, and the instance of
+	 *               WP_Fields_API_Field.
+	 */
+	public $update_value_callback = '';
+
+	/**
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
@@ -160,17 +196,23 @@ class WP_Fields_API_Field {
 			return false;
 		}
 
+		if ( is_callable( $this->pre_update_value_callback ) ) {
+			$value = call_user_func( $this->pre_update_value_callback, $value, $item_id, $this );
+		}
+
 		/**
 		 * Fires when the WP_Fields_API_Field::save() method is called.
 		 *
 		 * The dynamic portion of the hook name, `$this->id_data['base']` refers to
 		 * the base slug of the field name.
 		 *
-		 * @since 3.4.0
-		 *
+		 * @param mixed $value The value being saved.
+		 * @param int $item_id The item ID.
 		 * @param WP_Fields_API_Field $this {@see WP_Fields_API_Field} instance.
+		 *
+		 * @return string The value to save
 		 */
-		do_action( 'field_save_' . $this->object_type . ' _' . $this->id_data[ 'base' ], $this, $value, $item_id );
+		$value = apply_filters( 'field_save_' . $this->object_type . '_' . $this->id_data[ 'base' ], $value, $item_id, $this );
 
 		return $this->update( $value, $item_id );
 
@@ -212,6 +254,9 @@ class WP_Fields_API_Field {
 		$item_id = func_get_arg(1);
 
 		switch ( $this->object_type ) {
+			case is_callable( $this->update_value_callback ) :
+				return call_user_func( $this->update_value_callback, $value, $item_id, $this );
+
 			case 'customizer' :
 				return $this->_update_theme_mod( $value );
 
@@ -347,6 +392,11 @@ class WP_Fields_API_Field {
 		$item_id = func_get_arg(0);
 
 		switch ( $this->object_type ) {
+			case is_callable( $this->value_callback ) :
+				$value = call_user_func( $this->value_callback, $item_id, $this );
+				$value = $this->multidimensional_get( $value, $this->id_data['keys'], $this->default );
+
+				break;
 			case 'post' :
 			case 'term' :
 			case 'user' :
@@ -420,6 +470,10 @@ class WP_Fields_API_Field {
 		} else {
 			// Get value from meta
 			$value = get_metadata( $this->object_type, $item_id, $field_key );
+
+			if ( array() === $value ) {
+				$value = $this->default;
+			}
 		}
 
 		return $value;
