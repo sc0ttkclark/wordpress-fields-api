@@ -53,7 +53,7 @@ class WP_Fields_API_User_Profile {
 								wp_nonce_field( 'wp_fields_api_user_profile', 'wp_fields_api_fields_save' );
 							}
 							?>
-							<h3><?php echo $section->get_content(); ?></h3>
+							<h3><?php echo $content; ?></h3>
 
 							<table class="form-table">
 								<?php foreach ( $controls as $control ) { ?>
