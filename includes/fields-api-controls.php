@@ -589,14 +589,16 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 }
 
 /**
- * Customize Upload Control Class.
+ * Media File Control Class.
  *
+ * This control stores the media file's URL in the corresponding setting, whereas the base media control saves the attachment id.
+ * 
  * @since 3.4.0
  *
  * @see WP_Fields_API_Media_Control
  */
-class WP_Fields_API_Upload_Control extends WP_Fields_API_Media_Control {
-	public $type          = 'upload';
+class WP_Fields_API_Media_File_Control extends WP_Fields_API_Media_Control {
+	public $type          = 'media_file';
 	public $mime_type     = '';
 	public $button_labels = array();
 
