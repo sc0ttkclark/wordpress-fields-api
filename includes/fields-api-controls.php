@@ -599,9 +599,6 @@ class WP_Fields_API_Upload_Control extends WP_Fields_API_Media_Control {
 	public $type          = 'upload';
 	public $mime_type     = '';
 	public $button_labels = array();
-	public $removed = ''; // unused
-	public $context; // unused
-	public $extensions = array(); // unused
 
 	/**
 	 * Refresh the parameters passed to the JavaScript via JSON.
