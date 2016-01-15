@@ -589,19 +589,18 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 }
 
 /**
- * Customize Upload Control Class.
+ * Media File Control Class.
  *
+ * This control stores the media file's URL in the corresponding setting, whereas the base media control saves the attachment id.
+ * 
  * @since 3.4.0
  *
  * @see WP_Fields_API_Media_Control
  */
-class WP_Fields_API_Upload_Control extends WP_Fields_API_Media_Control {
-	public $type          = 'upload';
+class WP_Fields_API_Media_File_Control extends WP_Fields_API_Media_Control {
+	public $type          = 'media_file';
 	public $mime_type     = '';
 	public $button_labels = array();
-	public $removed = ''; // unused
-	public $context; // unused
-	public $extensions = array(); // unused
 
 	/**
 	 * Refresh the parameters passed to the JavaScript via JSON.
@@ -622,73 +621,4 @@ class WP_Fields_API_Upload_Control extends WP_Fields_API_Media_Control {
 			}
 		}
 	}
-}
-
-/**
- * Customize Image Control class.
- *
- * @since 3.4.0
- *
- * @see WP_Fields_API_Upload_Control
- */
-class WP_Fields_API_Image_Control extends WP_Fields_API_Upload_Control {
-	public $type = 'image';
-	public $mime_type = 'image';
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 3.4.0
-	 * @uses WP_Fields_API_Upload_Control::__construct()
-	 *
-	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
-	 * @param string               $id      Control ID.
-	 * @param array                $args    Optional. Arguments to override class property defaults.
-	 */
-	public function __construct( $manager, $id, $args = array() ) {
-		parent::__construct( $manager, $id, $args );
-
-		$this->button_labels = array(
-			'select'       => __( 'Select Image' ),
-			'change'       => __( 'Change Image' ),
-			'remove'       => __( 'Remove' ),
-			'default'      => __( 'Default' ),
-			'placeholder'  => __( 'No image selected' ),
-			'frame_title'  => __( 'Select Image' ),
-			'frame_button' => __( 'Choose Image' ),
-		);
-	}
-
-	/**
-	 * @since 3.4.2
-	 * @deprecated 4.1.0
-	 */
-	public function prepare_control() {}
-
-	/**
-	 * @since 3.4.0
-	 * @deprecated 4.1.0
-	 *
-	 * @param string $id
-	 * @param string $label
-	 * @param mixed $callback
-	 */
-	public function add_tab( $id, $label, $callback ) {}
-
-	/**
-	 * @since 3.4.0
-	 * @deprecated 4.1.0
-	 *
-	 * @param string $id
-	 */
-	public function remove_tab( $id ) {}
-
-	/**
-	 * @since 3.4.0
-	 * @deprecated 4.1.0
-	 *
-	 * @param string $url
-	 * @param string $thumbnail_url
-	 */
-	public function print_tab_image( $url, $thumbnail_url = null ) {}
 }
