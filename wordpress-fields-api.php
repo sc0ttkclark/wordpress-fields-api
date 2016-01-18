@@ -62,10 +62,6 @@ add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
  */
 function _wp_fields_api_user_edit_include() {
 
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/user-edit.php' );
-
-	return;
-
 	// Load our overrides
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/user.php' );
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/user-edit.php' );
