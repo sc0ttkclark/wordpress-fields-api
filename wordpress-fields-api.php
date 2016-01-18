@@ -29,10 +29,10 @@ define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
  */
 function _wp_fields_api_include() {
 
-	require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api.php' );
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
-	// Init Customize class
-	$GLOBALS['wp_fields'] = new WP_Fields_API;
+	// Init Fields API class
+	$GLOBALS['wp_fields'] = WP_Fields_API::get_instance();
 
 }
 
@@ -62,7 +62,7 @@ add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
  */
 function _wp_fields_api_user_edit_include() {
 
-	require_once( WP_FIELDS_API_DIR . 'implementation/user-profile.php' );
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/user-edit.php' );
 
 	return;
 

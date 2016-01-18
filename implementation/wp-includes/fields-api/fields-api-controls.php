@@ -1,33 +1,5 @@
 <?php
 /**
- * Fields API Text Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_Text_Control extends WP_Fields_API_Control {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-		?>
-		<label>
-			<?php if ( ! empty( $this->label ) ) : ?>
-				<span class="fields-control-title"><?php echo esc_html( $this->label ); ?></span>
-			<?php endif;
-			if ( ! empty( $this->description ) ) : ?>
-				<span class="description fields-control-description"><?php echo $this->description; ?></span>
-			<?php endif; ?>
-			<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
-		</label>
-		<?php
-
-	}
-
-}
-
-/**
  * Fields API Checkbox Control class.
  *
  * @see WP_Fields_API_Control

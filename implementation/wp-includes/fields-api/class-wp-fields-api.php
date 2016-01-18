@@ -9,6 +9,11 @@
 final class WP_Fields_API {
 
 	/**
+	 * @var WP_Fields_API
+	 */
+	private static $instance;
+
+	/**
 	 * Registered Containers
 	 *
 	 * @access protected
@@ -94,17 +99,32 @@ final class WP_Fields_API {
 	 * @constructor
 	 * @access public
 	 */
-	public function __construct() {
+	private function __construct() {
 
-		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-field.php' );
-		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-control.php' );
-		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-section.php' );
-		require_once( WP_FIELDS_API_DIR . 'includes/class-wp-fields-api-screen.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-field.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-control.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-section.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-screen.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
 
 		add_action( 'fields_register', array( $this, 'register_controls' ) );
+
+	}
+
+	/**
+	 * Setup instance for singleton
+	 *
+	 * @return WP_Fields_API
+	 */
+	public static function get_instance() {
+
+		if ( empty( self::$instance ) ) {
+			self::$instance = new self;
+		}
+
+		return self::$instance;
 
 	}
 
