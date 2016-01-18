@@ -235,382 +235,78 @@ if ( ! IS_PROFILE_PAGE ) {
  * WP Fields API implementation >>>
  * Original Lines 233-573
  */
-?>
+$profile_user = get_userdata( $user_id );
 
-<?php
+/**
+ * @var $wp_fields WP_Fields_API
+ */
+global $wp_fields;
+
+$screen = $wp_fields->get_screen( 'user', 'edit-profile' );
+
+$nonced = false;
+
+if ( $screen ) {
+	$sections = $wp_fields->get_sections( 'user', null, $screen->id );
+
+	if ( ! empty( $sections ) ) {
+		foreach ( $sections as $section ) {
+			$controls = $wp_fields->get_controls( 'user', null, $section->id );
+
+			if ( $controls ) {
+				$content = $section->get_content();
+
+				if ( $content ) {
+					if ( ! $nonced ) {
+						$nonced = true;
+
+						wp_nonce_field( 'wp_fields_api_user_profile', 'wp_fields_api_fields_save' );
+					}
+					?>
+					<h3><?php echo $content; ?></h3>
+
+					<table class="form-table">
+						<?php foreach ( $controls as $control ) { ?>
+							<?php
+							// Pass $user->ID to Control for use with getting value()
+							$control->item_id = $user->ID;
+
+							$label       = $control->label;
+							$description = $control->description;
+
+							// Avoid outputting them in render_content()
+							$control->label       = '';
+							$control->description = '';
+
+							// Setup field name
+							$control->input_attrs['name'] = 'field_' . $control->id;
+							?>
+							<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap">
+								<th>
+									<?php if ( $label ) { ?>
+										<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php esc_html( $label ); ?></label>
+									<?php } ?>
+								</th>
+								<td>
+									<?php $control->render_content(); ?>
+
+									<?php if ( $description ) { ?>
+										<p class="description"><?php echo $description; ?></p>
+									<?php } ?>
+								</td>
+							</tr>
+						<?php } ?>
+					</table>
+					<?php
+				}
+			}
+		}
+	}
+}
 /**
  * <<< WP Fields API implementation
  */
 ?>
-
-<h3><?php _e('Personal Options'); ?></h3>
-
-<table class="form-table">
-<?php if ( ! ( IS_PROFILE_PAGE && ! $user_can_edit ) ) : ?>
-	<tr class="user-rich-editing-wrap">
-		<th scope="row"><?php _e( 'Visual Editor' ); ?></th>
-		<td><label for="rich_editing"><input name="rich_editing" type="checkbox" id="rich_editing" value="false" <?php if ( ! empty( $profileuser->rich_editing ) ) checked( 'false', $profileuser->rich_editing ); ?> /> <?php _e( 'Disable the visual editor when writing' ); ?></label></td>
-	</tr>
-<?php endif; ?>
-<?php if ( count($_wp_admin_css_colors) > 1 && has_action('admin_color_scheme_picker') ) : ?>
-<tr class="user-admin-color-wrap">
-<th scope="row"><?php _e('Admin Color Scheme')?></th>
-<td><?php
-	/**
-	 * Fires in the 'Admin Color Scheme' section of the user editing screen.
-	 *
-	 * The section is only enabled if a callback is hooked to the action,
-	 * and if there is more than one defined color scheme for the admin.
-	 *
-	 * @since 3.0.0
-	 * @since 3.8.1 Added `$user_id` parameter.
-	 *
-	 * @param int $user_id The user ID.
-	 */
-	do_action( 'admin_color_scheme_picker', $user_id );
-?></td>
-</tr>
-<?php
-endif; // $_wp_admin_css_colors
-if ( !( IS_PROFILE_PAGE && !$user_can_edit ) ) : ?>
-<tr class="user-comment-shortcuts-wrap">
-<th scope="row"><?php _e( 'Keyboard Shortcuts' ); ?></th>
-<td><label for="comment_shortcuts"><input type="checkbox" name="comment_shortcuts" id="comment_shortcuts" value="true" <?php if ( ! empty( $profileuser->comment_shortcuts ) ) checked( 'true', $profileuser->comment_shortcuts ); ?> /> <?php _e('Enable keyboard shortcuts for comment moderation.'); ?></label> <?php _e('<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">More information</a>'); ?></td>
-</tr>
-<?php endif; ?>
-<tr class="show-admin-bar user-admin-bar-front-wrap">
-<th scope="row"><?php _e( 'Toolbar' ); ?></th>
-<td><fieldset><legend class="screen-reader-text"><span><?php _e('Toolbar') ?></span></legend>
-<label for="admin_bar_front">
-<input name="admin_bar_front" type="checkbox" id="admin_bar_front" value="1"<?php checked( _get_admin_bar_pref( 'front', $profileuser->ID ) ); ?> />
-<?php _e( 'Show Toolbar when viewing site' ); ?></label><br />
-</fieldset>
-</td>
-</tr>
-<?php
-/**
- * Fires at the end of the 'Personal Options' settings table on the user editing screen.
- *
- * @since 2.7.0
- *
- * @param WP_User $profileuser The current WP_User object.
- */
-do_action( 'personal_options', $profileuser );
-?>
-
-</table>
-<?php
-	if ( IS_PROFILE_PAGE ) {
-		/**
-		 * Fires after the 'Personal Options' settings table on the 'Your Profile' editing screen.
-		 *
-		 * The action only fires if the current user is editing their own profile.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param WP_User $profileuser The current WP_User object.
-		 */
-		do_action( 'profile_personal_options', $profileuser );
-	}
-?>
-
-<h3><?php _e('Name') ?></h3>
-
-<table class="form-table">
-	<tr class="user-user-login-wrap">
-		<th><label for="user_login"><?php _e('Username'); ?></label></th>
-		<td><input type="text" name="user_login" id="user_login" value="<?php echo esc_attr($profileuser->user_login); ?>" disabled="disabled" class="regular-text" /> <span class="description"><?php _e('Usernames cannot be changed.'); ?></span></td>
-	</tr>
-
-<?php if ( !IS_PROFILE_PAGE && !is_network_admin() ) : ?>
-<tr class="user-role-wrap"><th><label for="role"><?php _e('Role') ?></label></th>
-<td><select name="role" id="role">
-<?php
-// Compare user role against currently editable roles
-$user_roles = array_intersect( array_values( $profileuser->roles ), array_keys( get_editable_roles() ) );
-$user_role  = reset( $user_roles );
-
-// print the full list of roles with the primary one selected.
-wp_dropdown_roles($user_role);
-
-// print the 'no role' option. Make it selected if the user has no role yet.
-if ( $user_role )
-	echo '<option value="">' . __('&mdash; No role for this site &mdash;') . '</option>';
-else
-	echo '<option value="" selected="selected">' . __('&mdash; No role for this site &mdash;') . '</option>';
-?>
-</select></td></tr>
-<?php endif; //!IS_PROFILE_PAGE
-
-if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_can( 'manage_network_options' ) && !isset($super_admins) ) { ?>
-<tr class="user-super-admin-wrap"><th><?php _e('Super Admin'); ?></th>
-<td>
-<?php if ( $profileuser->user_email != get_site_option( 'admin_email' ) || ! is_super_admin( $profileuser->ID ) ) : ?>
-<p><label><input type="checkbox" id="super_admin" name="super_admin"<?php checked( is_super_admin( $profileuser->ID ) ); ?> /> <?php _e( 'Grant this user super admin privileges for the Network.' ); ?></label></p>
-<?php else : ?>
-<p><?php _e( 'Super admin privileges cannot be removed because this user has the network admin email.' ); ?></p>
-<?php endif; ?>
-</td></tr>
-<?php } ?>
-
-<tr class="user-first-name-wrap">
-	<th><label for="first_name"><?php _e('First Name') ?></label></th>
-	<td><input type="text" name="first_name" id="first_name" value="<?php echo esc_attr($profileuser->first_name) ?>" class="regular-text" /></td>
-</tr>
-
-<tr class="user-last-name-wrap">
-	<th><label for="last_name"><?php _e('Last Name') ?></label></th>
-	<td><input type="text" name="last_name" id="last_name" value="<?php echo esc_attr($profileuser->last_name) ?>" class="regular-text" /></td>
-</tr>
-
-<tr class="user-nickname-wrap">
-	<th><label for="nickname"><?php _e('Nickname'); ?> <span class="description"><?php _e('(required)'); ?></span></label></th>
-	<td><input type="text" name="nickname" id="nickname" value="<?php echo esc_attr($profileuser->nickname) ?>" class="regular-text" /></td>
-</tr>
-
-<tr class="user-display-name-wrap">
-	<th><label for="display_name"><?php _e('Display name publicly as') ?></label></th>
-	<td>
-		<select name="display_name" id="display_name">
-		<?php
-			$public_display = array();
-			$public_display['display_nickname']  = $profileuser->nickname;
-			$public_display['display_username']  = $profileuser->user_login;
-
-			if ( !empty($profileuser->first_name) )
-				$public_display['display_firstname'] = $profileuser->first_name;
-
-			if ( !empty($profileuser->last_name) )
-				$public_display['display_lastname'] = $profileuser->last_name;
-
-			if ( !empty($profileuser->first_name) && !empty($profileuser->last_name) ) {
-				$public_display['display_firstlast'] = $profileuser->first_name . ' ' . $profileuser->last_name;
-				$public_display['display_lastfirst'] = $profileuser->last_name . ' ' . $profileuser->first_name;
-			}
-
-			if ( !in_array( $profileuser->display_name, $public_display ) ) // Only add this if it isn't duplicated elsewhere
-				$public_display = array( 'display_displayname' => $profileuser->display_name ) + $public_display;
-
-			$public_display = array_map( 'trim', $public_display );
-			$public_display = array_unique( $public_display );
-
-			foreach ( $public_display as $id => $item ) {
-		?>
-			<option <?php selected( $profileuser->display_name, $item ); ?>><?php echo $item; ?></option>
-		<?php
-			}
-		?>
-		</select>
-	</td>
-</tr>
-</table>
-
-<h3><?php _e('Contact Info') ?></h3>
-
-<table class="form-table">
-<tr class="user-email-wrap">
-	<th><label for="email"><?php _e('E-mail'); ?> <span class="description"><?php _e('(required)'); ?></span></label></th>
-	<td><input type="email" name="email" id="email" value="<?php echo esc_attr( $profileuser->user_email ) ?>" class="regular-text ltr" />
-	<?php
-	$new_email = get_option( $current_user->ID . '_new_email' );
-	if ( $new_email && $new_email['newemail'] != $current_user->user_email && $profileuser->ID == $current_user->ID ) : ?>
-	<div class="updated inline">
-	<p><?php
-		printf(
-			__( 'There is a pending change of your e-mail to %1$s. <a href="%2$s">Cancel</a>' ),
-			'<code>' . $new_email['newemail'] . '</code>',
-			esc_url( self_admin_url( 'profile.php?dismiss=' . $current_user->ID . '_new_email' ) )
-	); ?></p>
-	</div>
-	<?php endif; ?>
-	</td>
-</tr>
-
-<tr class="user-url-wrap">
-	<th><label for="url"><?php _e('Website') ?></label></th>
-	<td><input type="url" name="url" id="url" value="<?php echo esc_attr( $profileuser->user_url ) ?>" class="regular-text code" /></td>
-</tr>
-
-<?php
-	foreach ( wp_get_user_contact_methods( $profileuser ) as $name => $desc ) {
-?>
-<tr class="user-<?php echo $name; ?>-wrap">
-	<th><label for="<?php echo $name; ?>">
-		<?php
-		/**
-		 * Filter a user contactmethod label.
-		 *
-		 * The dynamic portion of the filter hook, `$name`, refers to
-		 * each of the keys in the contactmethods array.
-		 *
-		 * @since 2.9.0
-		 *
-		 * @param string $desc The translatable label for the contactmethod.
-		 */
-		echo apply_filters( "user_{$name}_label", $desc );
-		?>
-	</label></th>
-	<td><input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo esc_attr($profileuser->$name) ?>" class="regular-text" /></td>
-</tr>
-<?php
-	}
-?>
-</table>
-
-<h3><?php IS_PROFILE_PAGE ? _e('About Yourself') : _e('About the user'); ?></h3>
-
-<table class="form-table">
-<tr class="user-description-wrap">
-	<th><label for="description"><?php _e('Biographical Info'); ?></label></th>
-	<td><textarea name="description" id="description" rows="5" cols="30"><?php echo $profileuser->description; // textarea_escaped ?></textarea>
-	<p class="description"><?php _e('Share a little biographical information to fill out your profile. This may be shown publicly.'); ?></p></td>
-</tr>
-
-<?php
-/** This filter is documented in wp-admin/user-new.php */
-$show_password_fields = apply_filters( 'show_password_fields', true, $profileuser );
-if ( $show_password_fields ) :
-?>
-</table>
-
-<h3><?php _e('Account Management'); ?></h3>
-<table class="form-table">
-<tr id="password" class="user-pass1-wrap">
-	<th><label for="pass1"><?php _e( 'New Password' ); ?></label></th>
-	<td>
-		<input class="hidden" value=" " /><!-- #24364 workaround -->
-		<button type="button" class="button button-secondary wp-generate-pw hide-if-no-js"><?php _e( 'Generate Password' ); ?></button>
-		<div class="wp-pwd hide-if-js">
-			<span class="password-input-wrapper">
-				<input type="password" name="pass1" id="pass1" class="regular-text" value="" autocomplete="off" data-pw="<?php echo esc_attr( wp_generate_password( 24 ) ); ?>" aria-describedby="pass-strength-result" />
-			</span>
-			<button type="button" class="button button-secondary wp-hide-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Hide password' ); ?>">
-				<span class="dashicons dashicons-hidden"></span>
-				<span class="text"><?php _e( 'Hide' ); ?></span>
-			</button>
-			<button type="button" class="button button-secondary wp-cancel-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Cancel password change' ); ?>">
-				<span class="text"><?php _e( 'Cancel' ); ?></span>
-			</button>
-			<div style="display:none" id="pass-strength-result" aria-live="polite"></div>
-		</div>
-	</td>
-</tr>
-<tr class="user-pass2-wrap hide-if-js">
-	<th scope="row"><label for="pass2"><?php _e( 'Repeat New Password' ); ?></label></th>
-	<td>
-	<input name="pass2" type="password" id="pass2" class="regular-text" value="" autocomplete="off" />
-	<p class="description"><?php _e( 'Type your new password again.' ); ?></p>
-	</td>
-</tr>
-<tr class="pw-weak">
-	<th><?php _e( 'Confirm Password' ); ?></th>
-	<td>
-		<label>
-			<input type="checkbox" name="pw_weak" class="pw-checkbox" />
-			<?php _e( 'Confirm use of weak password' ); ?>
-		</label>
-	</td>
-</tr>
-<?php endif; ?>
-
-<?php
-if ( IS_PROFILE_PAGE && count( $sessions->get_all() ) === 1 ) : ?>
-	<tr class="user-sessions-wrap hide-if-no-js">
-		<th><?php _e( 'Sessions' ); ?></th>
-		<td aria-live="assertive">
-			<div class="destroy-sessions"><button type="button" disabled class="button button-secondary"><?php _e( 'Log Out Everywhere Else' ); ?></button></div>
-			<p class="description">
-				<?php _e( 'You are only logged in at this location.' ); ?>
-			</p>
-		</td>
-	</tr>
-<?php elseif ( IS_PROFILE_PAGE && count( $sessions->get_all() ) > 1 ) : ?>
-	<tr class="user-sessions-wrap hide-if-no-js">
-		<th><?php _e( 'Sessions' ); ?></th>
-		<td aria-live="assertive">
-			<div class="destroy-sessions"><button type="button" class="button button-secondary" id="destroy-sessions"><?php _e( 'Log Out Everywhere Else' ); ?></button></div>
-			<p class="description">
-				<?php _e( 'Did you lose your phone or leave your account logged in at a public computer? You can log out everywhere else, and stay logged in here.' ); ?>
-			</p>
-		</td>
-	</tr>
-<?php elseif ( ! IS_PROFILE_PAGE && $sessions->get_all() ) : ?>
-	<tr class="user-sessions-wrap hide-if-no-js">
-		<th><?php _e( 'Sessions' ); ?></th>
-		<td>
-			<p><button type="button" class="button button-secondary" id="destroy-sessions"><?php _e( 'Log Out Everywhere' ); ?></button></p>
-			<p class="description">
-				<?php
-				/* translators: 1: User's display name. */
-				printf( __( 'Log %s out of all locations.' ), $profileuser->display_name );
-				?>
-			</p>
-		</td>
-	</tr>
-<?php endif; ?>
-
-</table>
-
-<?php
-	if ( IS_PROFILE_PAGE ) {
-		/**
-		 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing screen.
-		 *
-		 * The action only fires if the current user is editing their own profile.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param WP_User $profileuser The current WP_User object.
-		 */
-		do_action( 'show_user_profile', $profileuser );
-	} else {
-		/**
-		 * Fires after the 'About the User' settings table on the 'Edit User' screen.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param WP_User $profileuser The current WP_User object.
-		 */
-		do_action( 'edit_user_profile', $profileuser );
-	}
-?>
-
-<?php
-/**
- * Filter whether to display additional capabilities for the user.
- *
- * The 'Additional Capabilities' section will only be enabled if
- * the number of the user's capabilities exceeds their number of
- * of roles.
- *
- * @since 2.8.0
- *
- * @param bool    $enable      Whether to display the capabilities. Default true.
- * @param WP_User $profileuser The current WP_User object.
- */
-if ( count( $profileuser->caps ) > count( $profileuser->roles )
-	&& apply_filters( 'additional_capabilities_display', true, $profileuser )
-) : ?>
-<h3><?php _e( 'Additional Capabilities' ); ?></h3>
-<table class="form-table">
-<tr class="user-capabilities-wrap">
-	<th scope="row"><?php _e( 'Capabilities' ); ?></th>
-	<td>
-<?php
-	$output = '';
-	foreach ( $profileuser->caps as $cap => $value ) {
-		if ( ! $wp_roles->is_role( $cap ) ) {
-			if ( '' != $output )
-				$output .= ', ';
-			$output .= $value ? $cap : sprintf( __( 'Denied: %s' ), $cap );
-		}
-	}
-	echo $output;
-?>
-	</td>
-</tr>
-</table>
-<?php endif; ?>
 
 <input type="hidden" name="action" value="update" />
 <input type="hidden" name="user_id" id="user_id" value="<?php echo esc_attr($user_id); ?>" />
