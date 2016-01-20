@@ -7,7 +7,8 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( dirname( __FILE__ ) . '/admin.php' );
+require_once( ABSPATH . '/wp-admin/admin.php' ); // WP Fields API modification
+global $taxnow, $taxonomy; // Fields API
 
 if ( ! $taxnow )
 	wp_die( __( 'Invalid taxonomy' ) );
@@ -461,6 +462,17 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								<input type="hidden" name="taxonomy" value="<?php echo esc_attr($taxonomy); ?>" />
 								<input type="hidden" name="post_type" value="<?php echo esc_attr($post_type); ?>" />
 								<?php wp_nonce_field('add-tag', '_wpnonce_add-tag'); ?>
+
+								<?php
+								// Fields API integration
+								global $wp_fields;
+
+								$screen = $wp_fields->get_screen( 'term', 'edit-tags' );
+								$nonced = false;
+
+								echo '<pre>';print_r( $screen );exit;
+								?>
+
 
 								<div class="form-field form-required term-name-wrap">
 									<label for="tag-name"><?php _ex( 'Name', 'term name' ); ?></label>
