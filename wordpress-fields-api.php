@@ -91,3 +91,22 @@ function _wp_fields_api_user_edit_implementation() {
 
 }
 add_action( 'fields_register', '_wp_fields_api_user_edit_implementation' );
+
+
+/**
+ * Implement Fields API Term edit to override WP Core.
+ */
+function _wp_fields_api_term_edit_include() {
+	static $overridden;
+
+	if ( empty( $overridden ) ) {
+		$overridden = true;
+
+		// Load our overrides
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tags.php' );
+
+		// Bail on original core file, don't run the rest
+		exit;
+	}
+}
+add_action( 'load-edit-tags.php', '_wp_fields_api_term_edit_include' );
