@@ -298,7 +298,7 @@ class WP_Fields_API_User_Profile {
 
 		$about_title = __( 'About the user' );
 
-		if ( IS_PROFILE_PAGE ) {
+		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
 			$about_title = __( 'About Yourself' );
 		}
 
@@ -353,7 +353,7 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->add_field( 'user', 'sessions', 'edit-profile', $field_args );
 
 		// @todo Figure out how best to run actions after section
-		//if ( IS_PROFILE_PAGE ) {
+		//if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
 		/**
 		 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing screen.
 		 *
@@ -493,7 +493,7 @@ class WP_Fields_API_User_Profile {
 
 		$has_access = false;
 
-		if ( ! IS_PROFILE_PAGE && ! is_network_admin() ) {
+		if ( ( defined( 'IS_PROFILE_PAGE' ) && ! IS_PROFILE_PAGE ) && ! is_network_admin() ) {
 			$has_access = true;
 		}
 
@@ -520,7 +520,7 @@ class WP_Fields_API_User_Profile {
 
 		$has_access = false;
 
-		if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_can( 'manage_network_options' ) && ! isset( $super_admins ) && $profileuser->user_email != get_site_option( 'admin_email' ) ) {
+		if ( is_multisite() && is_network_admin() && ( defined( 'IS_PROFILE_PAGE' ) && ! IS_PROFILE_PAGE ) && current_user_can( 'manage_network_options' ) && ! isset( $super_admins ) && $profileuser->user_email != get_site_option( 'admin_email' ) ) {
 			$has_access = true;
 		}
 
@@ -978,21 +978,21 @@ class WP_Fields_API_User_Sessions_Control extends WP_Fields_API_Control {
 		 */
 		$sessions = WP_Session_Tokens::get_instance( $profileuser->ID );
 ?>
-	<?php if ( IS_PROFILE_PAGE && count( $sessions->get_all() ) === 1 ) : ?>
+	<?php if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE && count( $sessions->get_all() ) === 1 ) : ?>
 		<div aria-live="assertive">
 			<div class="destroy-sessions"><button type="button" disabled class="button button-secondary"><?php _e( 'Log Out Everywhere Else' ); ?></button></div>
 			<p class="description">
 				<?php _e( 'You are only logged in at this location.' ); ?>
 			</p>
 		</div>
-	<?php elseif ( IS_PROFILE_PAGE && count( $sessions->get_all() ) > 1 ) : ?>
+	<?php elseif ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE && count( $sessions->get_all() ) > 1 ) : ?>
 		<div aria-live="assertive">
 			<div class="destroy-sessions"><button type="button" class="button button-secondary" id="destroy-sessions"><?php _e( 'Log Out Everywhere Else' ); ?></button></div>
 			<p class="description">
 				<?php _e( 'Did you lose your phone or leave your account logged in at a public computer? You can log out everywhere else, and stay logged in here.' ); ?>
 			</p>
 		</div>
-	<?php elseif ( ! IS_PROFILE_PAGE && $sessions->get_all() ) : ?>
+	<?php elseif ( defined( 'IS_PROFILE_PAGE' ) && ! IS_PROFILE_PAGE && $sessions->get_all() ) : ?>
 		<p><button type="button" class="button button-secondary" id="destroy-sessions"><?php _e( 'Log Out Everywhere' ); ?></button></p>
 		<p class="description">
 			<?php
