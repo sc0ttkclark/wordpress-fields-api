@@ -7,7 +7,8 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Modify before core merge
+require_once( ABSPATH . '/wp-admin/admin.php' ); // WP Fields API modification
+global $user_id, $action, $wp_http_referer; // WP Fields API modification
 
 wp_reset_vars( array( 'action', 'user_id', 'wp_http_referer' ) );
 
@@ -66,6 +67,7 @@ $user_can_edit = current_user_can( 'edit_posts' ) || current_user_can( 'edit_pag
  *
  * @param object $user User data object
  */
+if ( ! function_exists( 'use_ssl_preference' ) ) { // WP Fields API modification
 function use_ssl_preference($user) {
 ?>
 	<tr class="user-use-ssl-wrap">
@@ -74,6 +76,7 @@ function use_ssl_preference($user) {
 	</tr>
 <?php
 }
+} // WP Fields API modification
 
 /**
  * Filter whether to allow administrators on Multisite to edit every user.
@@ -247,7 +250,9 @@ $screen = $wp_fields->get_screen( 'user', 'edit-profile' );
 $nonced = false;
 
 if ( $screen ) {
-	$sections = $wp_fields->get_sections( 'user', null, $screen->id );
+	$sections = $wp_fields->get_sections( 'user', $screen->id );
+
+	var_dump( $sections, $screen->sections, $screen->id );
 
 	if ( ! empty( $sections ) ) {
 		foreach ( $sections as $section ) {
@@ -265,7 +270,7 @@ if ( $screen ) {
 					?>
 					<h3><?php echo $content; ?></h3>
 
-					<table class="form-table">
+					<table class="form-table fields-api-section">
 						<?php foreach ( $controls as $control ) { ?>
 							<?php
 							// Pass $user->ID to Control for use with getting value()
@@ -281,7 +286,7 @@ if ( $screen ) {
 							// Setup field name
 							$control->input_attrs['name'] = 'field_' . $control->id;
 							?>
-							<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap">
+							<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
 								<th>
 									<?php if ( $label ) { ?>
 										<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php esc_html( $label ); ?></label>

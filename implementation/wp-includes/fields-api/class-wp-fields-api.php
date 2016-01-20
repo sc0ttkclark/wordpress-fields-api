@@ -105,6 +105,7 @@ final class WP_Fields_API {
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-control.php' );
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-section.php' );
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-screen.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/fields-api-controls.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
@@ -593,7 +594,7 @@ final class WP_Fields_API {
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 * @param array  $args        Section arguments.
 	 *
-	 * @return WP_Fields_API_Screen|null $section The section object.
+	 * @return WP_Fields_API_Section|null $section The section object.
 	 */
 	public function setup_section( $object_type, $id, $object_name = null, $args = null ) {
 
@@ -855,7 +856,7 @@ final class WP_Fields_API {
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 * @param array  $args        Field arguments.
 	 *
-	 * @return WP_Fields_API_Screen|null $field The field object.
+	 * @return WP_Fields_API_Field|null $field The field object.
 	 */
 	public function setup_field( $object_type, $id, $object_name = null, $args = null ) {
 

@@ -13,86 +13,9 @@ class WP_Fields_API_User_Profile {
 
 	public function __construct() {
 
-		add_action( 'show_user_profile', array( $this, 'output_fields' ) );
-		add_action( 'edit_user_profile', array( $this, 'output_fields' ) );
+		$this->register_controls();
 
 		add_action( 'profile_update', array( $this, 'save_fields' ), 10, 2 );
-
-	}
-
-	/**
-	 * Display fields in User Profile
-	 *
-	 * @param WP_User $user
-	 */
-	public function output_fields( $user ) {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		$screen = $wp_fields->get_screen( 'user', 'edit-profile' );
-
-		$nonced = false;
-
-		if ( $screen ) {
-			$sections = $wp_fields->get_sections( 'user', null, $screen->id );
-
-			if ( ! empty( $sections ) ) {
-				foreach ( $sections as $section ) {
-					$controls = $wp_fields->get_controls( 'user', null, $section->id );
-
-					if ( $controls ) {
-						$content = $section->get_content();
-
-						if ( $content ) {
-							if ( ! $nonced ) {
-								$nonced = true;
-
-								wp_nonce_field( 'wp_fields_api_user_profile', 'wp_fields_api_fields_save' );
-							}
-							?>
-							<h3><?php echo $content; ?></h3>
-
-							<table class="form-table">
-								<?php foreach ( $controls as $control ) { ?>
-									<?php
-									// Pass $user->ID to Control for use with getting value()
-									$control->item_id = $user->ID;
-
-									$label       = $control->label;
-									$description = $control->description;
-
-									// Avoid outputting them in render_content()
-									$control->label       = '';
-									$control->description = '';
-
-									// Setup field name
-									$control->input_attrs['name'] = 'field_' . $control->id;
-									?>
-									<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap">
-										<th>
-											<?php if ( $label ) { ?>
-												<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php esc_html( $label ); ?></label>
-											<?php } ?>
-										</th>
-										<td>
-											<?php $control->render_content(); ?>
-
-											<?php if ( $description ) { ?>
-												<p class="description"><?php echo $description; ?></p>
-											<?php } ?>
-										</td>
-									</tr>
-								<?php } ?>
-							</table>
-							<?php
-						}
-					}
-				}
-			}
-		}
 
 	}
 

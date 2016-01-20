@@ -62,12 +62,32 @@ add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
  */
 function _wp_fields_api_user_edit_include() {
 
-	// Load our overrides
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/user.php' );
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/user-edit.php' );
+	static $overridden;
 
-	// Bail on original core file, don't run the rest
-	exit;
+	if ( empty( $overridden ) ) {
+		$overridden = true;
+
+		// Load our overrides
+		//require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/user.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/user-edit.php' );
+
+		// Bail on original core file, don't run the rest
+		exit;
+	}
 
 }
 add_action( 'load-user-edit.php', '_wp_fields_api_user_edit_include' );
+add_action( 'load-profile.php', '_wp_fields_api_user_edit_include' );
+
+/**
+ * Include User Edit Implementation
+ */
+function _wp_fields_api_user_edit_implementation() {
+
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-user-profile.php' );
+
+	// Run user profile implementation
+	new WP_Fields_API_User_Profile();
+
+}
+add_action( 'fields_register', '_wp_fields_api_user_edit_implementation' );
