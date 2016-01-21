@@ -576,17 +576,22 @@ class WP_Fields_API_User_Profile {
 	}
 
 	/**
-	 * Control only visible if additional capabilities can be shown and total number of capabilities are greater than total number of roles.
+	 * Section only visible if additional capabilities can be shown and total number of capabilities are greater than total number of roles.
 	 *
-	 * @param WP_Fields_API_Control $control
+	 * @param WP_Fields_API_Section $section
 	 *
 	 * @return bool
 	 */
-	public function capability_show_capabilities( $control ) {
+	public function capability_show_capabilities( $section ) {
 
-		// @todo This isn't available yet, what should be done?
-		return true;
-		$profileuser = get_userdata( $control->item_id );
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$screen_obj = $wp_fields->get_screen( $section->object_type, $section->screen, $section->object_name );
+
+		$profileuser = get_userdata( $screen_obj->item_id );
 
 		$total_roles = count( $profileuser->roles );
 		$total_caps = count( $profileuser->caps );
