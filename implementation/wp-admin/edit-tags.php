@@ -473,7 +473,7 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 */
 								global $wp_fields;
 
-								$screen = $wp_fields->get_screen( 'term', 'edit-tags', $taxonomy );
+								$screen = $wp_fields->get_screen( 'term', 'edit-tags', null );//$taxonomy );
 
 								$nonced = false;
 
