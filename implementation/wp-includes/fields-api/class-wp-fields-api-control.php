@@ -187,6 +187,9 @@ class WP_Fields_API_Control {
 
 		$keys = array_keys( get_object_vars( $this ) );
 
+		// Magic property, allowing for override
+		$keys[] = 'choices';
+
 		foreach ( $keys as $key ) {
 			if ( isset( $args[ $key ] ) ) {
 				$this->$key = $args[ $key ];
@@ -238,15 +241,6 @@ class WP_Fields_API_Control {
 
 			$this->choices = $choices;
 		}
-
-	}
-
-	/**
-	 * Get the choices values from the choices property and allow dynamic building
-	 */
-	public function choices() {
-
-		return array();
 
 	}
 
@@ -564,6 +558,26 @@ class WP_Fields_API_Control {
 		}
 
 		return null;
+
+	}
+
+	/**
+	 * Magic method for handling backwards compatible properties / methods
+	 *
+	 * @param string $name Parameter name
+	 *
+	 * @return mixed|null
+	 */
+	public function __isset( $name ) {
+
+		// Map $this->choices to $this->choices() for dynamic choice handling
+		if ( 'choices' == $name ) {
+			$this->setup_choices();
+
+			return isset( $this->choices );
+		}
+
+		return false;
 
 	}
 

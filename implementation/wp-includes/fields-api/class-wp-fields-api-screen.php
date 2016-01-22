@@ -141,6 +141,14 @@ class WP_Fields_API_Screen {
 	public $capabilities_callback = '';
 
 	/**
+	 * Item ID of current item
+	 *
+	 * @access public
+	 * @var int|string
+	 */
+	public $item_id;
+
+	/**
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)

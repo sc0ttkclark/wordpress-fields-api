@@ -250,11 +250,12 @@ $screen = $wp_fields->get_screen( 'user', 'edit-profile' );
 $nonced = false;
 
 if ( $screen ) {
-	$sections = $wp_fields->get_sections( 'user', $screen->id );
-
-	var_dump( $sections, $screen->sections, $screen->id );
+	$sections = $wp_fields->get_sections( 'user', null, $screen->id );
 
 	if ( ! empty( $sections ) ) {
+		// Pass $profileuser->ID to Screen
+		$screen->item_id = $profileuser->ID;
+
 		foreach ( $sections as $section ) {
 			$controls = $wp_fields->get_controls( 'user', null, $section->id );
 
@@ -262,6 +263,9 @@ if ( $screen ) {
 				$content = $section->get_content();
 
 				if ( $content ) {
+					// Pass $profileuser->ID to Section
+					$section->item_id = $profileuser->ID;
+
 					if ( ! $nonced ) {
 						$nonced = true;
 
@@ -273,8 +277,8 @@ if ( $screen ) {
 					<table class="form-table fields-api-section">
 						<?php foreach ( $controls as $control ) { ?>
 							<?php
-							// Pass $user->ID to Control for use with getting value()
-							$control->item_id = $user->ID;
+							// Pass $profileuser->ID to Control
+							$control->item_id = $profileuser->ID;
 
 							$label       = $control->label;
 							$description = $control->description;
@@ -289,7 +293,7 @@ if ( $screen ) {
 							<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
 								<th>
 									<?php if ( $label ) { ?>
-										<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php esc_html( $label ); ?></label>
+										<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php echo esc_html( $label ); ?></label>
 									<?php } ?>
 								</th>
 								<td>
