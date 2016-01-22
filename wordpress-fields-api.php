@@ -110,3 +110,16 @@ function _wp_fields_api_term_edit_include() {
 	}
 }
 add_action( 'load-edit-tags.php', '_wp_fields_api_term_edit_include' );
+
+/**
+ * Include Term Edit Implementation
+ */
+function _wp_fields_api_term_edit_implementation() {
+
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-edit-tags.php' );
+
+	// Run user profile implementation
+	new WP_Fields_API_Edit_Tags();
+
+}
+add_action( 'fields_register', '_wp_fields_api_term_edit_implementation' );
