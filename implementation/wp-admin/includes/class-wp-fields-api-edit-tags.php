@@ -70,21 +70,6 @@ class WP_Fields_API_Edit_Tags {
 
         $field_args = array(
             'control'               => array(
-                'type'                  => 'dropdown-terms',
-                'section'               => 'term-main',
-                'label'                 => __( 'Description' ),
-                'description'           => __( 'The description is not prominent by default; however, some themes may show it.' ),
-                'input_attrs' => array(
-                    'rows' => '5',
-                    'cols' => '40',
-                ),
-            ),
-        );
-
-        $wp_fields->add_field( 'term', 'parent', null, $field_args );
-
-        $field_args = array(
-            'control'               => array(
                 'type'                  => 'textarea',
                 'section'               => 'term-main',
                 'label'                 => __( 'Description' ),

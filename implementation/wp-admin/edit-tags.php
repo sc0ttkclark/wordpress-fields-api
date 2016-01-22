@@ -159,7 +159,7 @@ switch ( $wp_list_table->current_action() ) {
 		if ( ! $tag )
 			wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
-		include( ABSPATH . 'wp-admin/edit-tag-form.php' );
+		include( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tag-form.php' );
 		include( ABSPATH . 'wp-admin/admin-footer.php' );
 
 		exit;
@@ -461,6 +461,7 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								<input type="hidden" name="screen" value="<?php echo esc_attr($current_screen->id); ?>" />
 								<input type="hidden" name="taxonomy" value="<?php echo esc_attr($taxonomy); ?>" />
 								<input type="hidden" name="post_type" value="<?php echo esc_attr($post_type); ?>" />
+								<input type="hidden" name="wp_http_referer" value="<?php echo esc_url( wp_get_referer() ) ?>" >
 								<?php wp_nonce_field('add-tag', '_wpnonce_add-tag'); ?>
 
 								<?php
@@ -534,7 +535,7 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 																	<?php $control->render_content(); ?>
 
 																	<?php if ( $description ) { ?>
-																		<p class="description"><?php echo $description; ?></p>
+																		<p class="description"><?php echo esc_html( $description ); ?></p>
 																	<?php } ?>
 																</td>
 															</tr>
