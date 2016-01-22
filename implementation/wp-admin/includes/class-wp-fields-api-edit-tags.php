@@ -98,6 +98,63 @@ class WP_Fields_API_Edit_Tags {
 
         $wp_fields->add_field( 'term', 'description', null, $field_args );
 
+		//////////////
+		// Examples //
+		//////////////
+
+		// Section
+		$wp_fields->add_section( 'term', 'example-my-fields', null, array(
+			'title' => __( 'Fields API Example - My Fields' ),
+		    'screen' => 'edit-tags',
+		) );
+
+		// Add example for each control type
+		$control_types = array(
+			'text',
+			'checkbox',
+			'multi-checkbox',
+			'radio',
+			'select',
+			'dropdown-pages',
+			'color',
+			'media',
+			'upload',
+			'image',
+		);
+
+		$option_types = array(
+			'multi-checkbox',
+			'radio',
+			'select',
+		);
+
+		foreach ( $control_types as $control_type ) {
+			$id    = 'example_my_' . $control_type . '_field';
+			$label = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
+
+			$field_args = array(
+				// Add a control to the field at the same time
+				'control' => array(
+					'type'    => $control_type,
+					'section' => 'example-my-fields',
+					'label'   => $label,
+				),
+			);
+
+			if ( in_array( $control_type, $option_types ) ) {
+				$field_args['control']['choices'] = array(
+					''         => 'N/A',
+					'option-1' => 'Option 1',
+					'option-2' => 'Option 2',
+					'option-3' => 'Option 3',
+					'option-4' => 'Option 4',
+					'option-5' => 'Option 5',
+				);
+			}
+
+			$wp_fields->add_field( 'term', $id, null, $field_args );
+		}
+
     }
 
 }
