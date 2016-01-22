@@ -94,9 +94,9 @@ add_action( 'fields_register', '_wp_fields_api_user_edit_implementation' );
 
 
 /**
- * Implement Fields API Term edit to override WP Core.
+ * Implement Fields API Term add to override WP Core.
  */
-function _wp_fields_api_term_edit_include() {
+function _wp_fields_api_term_add_include() {
 	static $overridden;
 
 	if ( empty( $overridden ) ) {
@@ -109,7 +109,7 @@ function _wp_fields_api_term_edit_include() {
 		exit;
 	}
 }
-add_action( 'load-edit-tags.php', '_wp_fields_api_term_edit_include' );
+add_action( 'load-edit-tags.php', '_wp_fields_api_term_add_include' );
 
 /**
  * Include Term Edit Implementation
