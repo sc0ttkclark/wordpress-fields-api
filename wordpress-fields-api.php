@@ -84,10 +84,10 @@ add_action( 'load-profile.php', '_wp_fields_api_user_edit_include' );
  */
 function _wp_fields_api_user_edit_implementation() {
 
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-user-profile.php' );
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/implementations/class-wp-fields-api-user-profile.php' );
 
 	// Run user profile implementation
-	new WP_Fields_API_User_Profile();
+	WP_Fields_API_User_Profile::get_instance();
 
 }
 add_action( 'fields_register', '_wp_fields_api_user_edit_implementation' );

@@ -9,13 +9,26 @@
 /**
  * Class WP_Fields_API_User_Profile
  */
-class WP_Fields_API_User_Profile {
+class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 
-	public function __construct() {
+	/**
+	 * {@inheritdoc}
+	 */
+	public $implementation_name = 'user-edit-profile';
 
-		$this->register_controls();
+	/**
+	 * {@inheritdoc}
+	 */
+	public $object_type = 'user';
 
-		add_action( 'profile_update', array( $this, 'save_fields' ), 10, 2 );
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function __construct() {
+
+		parent::__construct();
+
+		add_action( 'profile_update', array( $this, 'profile_update' ), 10, 2 );
 
 	}
 
@@ -25,46 +38,17 @@ class WP_Fields_API_User_Profile {
 	 * @param int   $user_id
 	 * @param array $old_user_data
 	 */
-	public function save_fields( $user_id, $old_user_data ) {
+	public function profile_update( $user_id, $old_user_data ) {
 
-		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], 'wp_fields_api_user_profile' ) ) {
-			/**
-			 * @var $wp_fields WP_Fields_API
-			 */
-			global $wp_fields;
-
-			$controls = $wp_fields->get_controls( 'user' );
-
-			foreach ( $controls as $control ) {
-				if ( empty( $control->field ) ) {
-					continue;
-				}
-
-				$field = $control->field;
-
-				// Get value from $_POST
-				$value = null;
-
-				if ( ! empty( $_POST[ 'field_' . $control->id ] ) ) {
-					$value = $_POST[ 'field_' . $control->id ];
-				}
-
-				// Sanitize
-				$value = $field->sanitize( $value );
-
-				// Save value
-				$field->save( $value, $user_id );
-			}
-		}
+		// Save fields based on current screen and item ID
+		$this->save_fields( $this->implementation_name, $user_id );
 
 	}
 
 	/**
-	 * Register controls for User Profiles
-	 *
-	 * @todo Move out of wp-admin implementation
+	 * {@inheritdoc}
 	 */
-	public function register_controls() {
+	public function register() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -82,15 +66,15 @@ class WP_Fields_API_User_Profile {
 		$wp_fields->register_control_type( 'user-capabilities', 'WP_Fields_API_User_Capabilities_Control' );
 
 		// Add Edit Profile screen
-		$wp_fields->add_screen( 'user', 'edit-profile' );
+		$wp_fields->add_screen( $this->object_type, $this->implementation_name );
 
 		////////////////////////////
 		// Core: Personal Options //
 		////////////////////////////
 
-		$wp_fields->add_section( 'user', 'personal-options', null, array(
+		$wp_fields->add_section( $this->object_type, 'personal-options', null, array(
 			'title' => __( 'Personal Options' ),
-		    'screen' => 'edit-profile',
+		    'screen' => $this->implementation_name,
 			// @todo Needs action compatibility for personal_options( $profileuser )
 			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
 		) );
@@ -107,7 +91,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'rich_editing', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'rich_editing', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -119,7 +103,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'admin_color', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'admin_color', null, $field_args );
 
 		$field_args = array(
 			'sanitize_callback' => array( $this, 'sanitize_comment_shortcuts' ),
@@ -133,7 +117,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'comment_shortcuts', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'comment_shortcuts', null, $field_args );
 
 		$field_args = array(
 			'sanitize_callback' => array( $this, 'sanitize_admin_bar_front' ),
@@ -146,15 +130,15 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'admin_bar_front', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'admin_bar_front', null, $field_args );
 
 		////////////////
 		// Core: Name //
 		////////////////
 
-		$wp_fields->add_section( 'user', 'name', null, array(
+		$wp_fields->add_section( $this->object_type, 'name', null, array(
 			'title' => __( 'Name' ),
-		    'screen' => 'edit-profile',
+		    'screen' => $this->implementation_name,
 		) );
 
 		$field_args = array(
@@ -170,7 +154,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'user_login', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'user_login', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -181,7 +165,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'role', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'role', null, $field_args );
 
 		$field_args = array(
 			'value_callback'        => array( $this, 'value_is_super_admin' ),
@@ -195,7 +179,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'super_admin', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'super_admin', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -205,7 +189,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'first_name', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'first_name', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -215,7 +199,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'last_name', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'last_name', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -226,7 +210,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'user_nickname', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'user_nickname', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -236,15 +220,15 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'display_name', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'display_name', null, $field_args );
 
 		////////////////////////
 		// Core: Contact Info //
 		////////////////////////
 
-		$wp_fields->add_section( 'user', 'contact-info', null, array(
+		$wp_fields->add_section( $this->object_type, 'contact-info', null, array(
 			'title' => __( 'Contact Info' ),
-		    'screen' => 'edit-profile',
+		    'screen' => $this->implementation_name,
 		) );
 
 		$field_args = array(
@@ -257,7 +241,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'user_email', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'user_email', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -267,7 +251,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'user_url', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'user_url', null, $field_args );
 
 		$contact_methods = wp_get_user_contact_methods();
 
@@ -292,7 +276,7 @@ class WP_Fields_API_User_Profile {
 				),
 			);
 
-			$wp_fields->add_field( 'user', $method, null, $field_args );
+			$wp_fields->add_field( $this->object_type, $method, null, $field_args );
 		}
 
 		/////////////////
@@ -305,9 +289,9 @@ class WP_Fields_API_User_Profile {
 			$about_title = __( 'About Yourself' );
 		}
 
-		$wp_fields->add_section( 'user', 'about', null, array(
+		$wp_fields->add_section( $this->object_type, 'about', null, array(
 			'title' => $about_title,
-		    'screen' => 'edit-profile',
+		    'screen' => $this->implementation_name,
 		) );
 
 		$field_args = array(
@@ -319,15 +303,15 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'description', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'description', null, $field_args );
 
 		//////////////////////////////
 		// Core: Account Management //
 		//////////////////////////////
 
-		$wp_fields->add_section( 'user', 'account-management', null, array(
+		$wp_fields->add_section( $this->object_type, 'account-management', null, array(
 			'title'                 => __( 'Account Management' ),
-		    'screen' => 'edit-profile',
+		    'screen' => $this->implementation_name,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
 
@@ -339,7 +323,7 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'user_pass', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'user_pass', null, $field_args );
 
 		$field_args = array(
 			'control' => array(
@@ -355,7 +339,7 @@ class WP_Fields_API_User_Profile {
 			$field_args['control']['section'] = 'about';
 		}*/
 
-		$wp_fields->add_field( 'user', 'sessions', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'sessions', null, $field_args );
 
 		// @todo Figure out how best to run actions after section
 		//if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
@@ -384,9 +368,9 @@ class WP_Fields_API_User_Profile {
 		// Core: Additional Capabilities //
 		///////////////////////////////////
 
-		$wp_fields->add_section( 'user', 'additional-capabilities', null, array(
+		$wp_fields->add_section( $this->object_type, 'additional-capabilities', null, array(
 			'title'                 => __( 'Additional Capabilities' ),
-		    'screen' => 'edit-profile',
+		    'screen' => $this->implementation_name,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );
 
@@ -398,16 +382,16 @@ class WP_Fields_API_User_Profile {
 			),
 		);
 
-		$wp_fields->add_field( 'user', 'capabilities', null, $field_args );
+		$wp_fields->add_field( $this->object_type, 'capabilities', null, $field_args );
 
 		//////////////
 		// Examples //
 		//////////////
 
 		// Section
-		$wp_fields->add_section( 'user', 'example-my-fields', null, array(
+		$wp_fields->add_section( $this->object_type, 'example-my-fields', null, array(
 			'title' => __( 'Fields API Example - My Fields' ),
-		    'screen' => 'edit-profile',
+		    'screen' => $this->implementation_name,
 		) );
 
 		// Add example for each control type
@@ -454,7 +438,7 @@ class WP_Fields_API_User_Profile {
 				);
 			}
 
-			$wp_fields->add_field( 'user', $id, null, $field_args );
+			$wp_fields->add_field( $this->object_type, $id, null, $field_args );
 		}
 
 	}

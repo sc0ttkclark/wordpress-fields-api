@@ -105,6 +105,7 @@ final class WP_Fields_API {
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-control.php' );
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-section.php' );
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-screen.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-implementation.php' );
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/fields-api-controls.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
