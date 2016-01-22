@@ -250,14 +250,14 @@ $screen = $wp_fields->get_screen( 'user', 'edit-profile' );
 $nonced = false;
 
 if ( $screen ) {
-	$sections = $wp_fields->get_sections( 'user', null, $screen->id );
+	$sections = $wp_fields->get_sections( $screen->object_type, $screen->object_name, $screen->id );
 
 	if ( ! empty( $sections ) ) {
 		// Pass $profileuser->ID to Screen
 		$screen->item_id = $profileuser->ID;
 
 		foreach ( $sections as $section ) {
-			$controls = $wp_fields->get_controls( 'user', null, $section->id );
+			$controls = $wp_fields->get_controls( $section->object_type, $section->object_name, $section->id );
 
 			if ( $controls ) {
 				$content = $section->get_content();
