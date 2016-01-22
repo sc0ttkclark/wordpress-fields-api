@@ -125,5 +125,6 @@ function _wp_fields_api_term_edit_implementation() {
 		new WP_Fields_API_Edit_Tags();
 	}
 
+	exit;
 }
 add_action( 'fields_register', '_wp_fields_api_term_edit_implementation' );

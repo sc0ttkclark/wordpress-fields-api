@@ -34,7 +34,6 @@ class WP_Fields_API_Edit_Tags {
 
 		// Add Edit Tags screen
 		$wp_fields->add_screen( 'term', 'edit-tags' );
-
 		////////////////
 		// Core: Term //
 		////////////////
@@ -57,16 +56,6 @@ class WP_Fields_API_Edit_Tags {
 
 		$wp_fields->add_field( 'term', 'name', null, $field_args );
 
-		$field_args = array(
-			'control' => array(
-				'type'                  => 'text',
-				'section'               => 'term-main',
-				'label'                 => __( 'Slug' ),
-				'description'           => __( 'The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.' ),
-			),
-		);
-
-		$wp_fields->add_field( 'term', 'slug', null, $field_args );
 
 		$field_args = array(
 			'control'               => array(
