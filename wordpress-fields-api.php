@@ -116,10 +116,15 @@ add_action( 'load-edit-tags.php', '_wp_fields_api_term_add_include' );
  */
 function _wp_fields_api_term_edit_implementation() {
 
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-edit-tags.php' );
+	if( ! isset( $_GET['action' ] ) || 'edit' !== $_GET['action'] ) {
+		// Run user profile implementation
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-add-tags.php' );
+		new WP_Fields_API_Add_Tags();
+	} else {
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-edit-tags.php' );
+		new WP_Fields_API_Edit_Tags();
+	}
 
-	// Run user profile implementation
-	new WP_Fields_API_Edit_Tags();
-
+	exit;
 }
 add_action( 'fields_register', '_wp_fields_api_term_edit_implementation' );

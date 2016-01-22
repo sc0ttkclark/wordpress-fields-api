@@ -160,6 +160,7 @@ switch ( $wp_list_table->current_action() ) {
 			wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
 		include( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tag-form.php' );
+		echo 'dsfgsdfgd';
 		include( ABSPATH . 'wp-admin/admin-footer.php' );
 
 		exit;
