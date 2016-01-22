@@ -30,17 +30,19 @@ class WP_Fields_API_Edit_Tags {
         global $wp_fields;
 
         // Register control types
-        #$wp_fields->register_control_type( 'user-color-scheme', 'WP_Fields_API_Color_Scheme_Control' );
+        //$wp_fields->register_control_type( 'user-color-scheme', 'WP_Fields_API_Color_Scheme_Control' );
 
-        // Add Edit Profile screen
+        // Add Edit Tags screen
         $wp_fields->add_screen( 'term', 'edit-tags' );
 
         ////////////////
-        // Core: Name //
+        // Core: Term //
         ////////////////
 
-        $wp_fields->add_section( 'term', 'term-options', 'edit-tags', array(
-            'title' => __( 'Name' ),
+        $wp_fields->add_section( 'term', 'term-main', null, array(
+            'title' => __( 'Term' ),
+            'screen' => 'edit-tags',
+            'display_title' => false,
         ) );
 
         $field_args = array(
@@ -53,7 +55,7 @@ class WP_Fields_API_Edit_Tags {
             ),
         );
 
-        $wp_fields->add_field( 'term', 'tag-name', 'edit-tags', $field_args );
+        $wp_fields->add_field( 'term', 'name', null, $field_args );
 
         $field_args = array(
             'control' => array(
@@ -64,7 +66,22 @@ class WP_Fields_API_Edit_Tags {
             ),
         );
 
-        $wp_fields->add_field( 'term', 'tag-slug', 'edit-tags', $field_args );
+        $wp_fields->add_field( 'term', 'slug', null, $field_args );
+
+        $field_args = array(
+            'control'               => array(
+                'type'                  => 'dropdown-terms',
+                'section'               => 'term-options',
+                'label'                 => __( 'Description' ),
+                'description'           => __( 'The description is not prominent by default; however, some themes may show it.' ),
+                'input_attrs' => array(
+                    'rows' => '5',
+                    'cols' => '40',
+                ),
+            ),
+        );
+
+        $wp_fields->add_field( 'term', 'parent', null, $field_args );
 
         $field_args = array(
             'control'               => array(
@@ -79,7 +96,7 @@ class WP_Fields_API_Edit_Tags {
             ),
         );
 
-        $wp_fields->add_field( 'term', 'tag-description', 'edit-tags', $field_args );
+        $wp_fields->add_field( 'term', 'description', null, $field_args );
 
     }
 
