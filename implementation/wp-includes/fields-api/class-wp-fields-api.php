@@ -1465,6 +1465,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
 		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
 		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
+		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
 		$this->register_control_type( 'upload', 'WP_Fields_API_Upload_Control' );
