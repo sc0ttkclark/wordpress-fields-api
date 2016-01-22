@@ -49,7 +49,7 @@ class WP_Fields_API_Edit_Tags {
             // @todo Needs validation callback
             'control' => array(
                 'type'        => 'text',
-                'section'     => 'term-options',
+                'section'     => 'term-main',
                 'label'       => __( 'Name' ),
                 'description' => __( 'The name is how it appears on your site.' ),
             ),
@@ -60,7 +60,7 @@ class WP_Fields_API_Edit_Tags {
         $field_args = array(
             'control' => array(
                 'type'                  => 'text',
-                'section'               => 'term-options',
+                'section'               => 'term-main',
                 'label'                 => __( 'Slug' ),
                 'description'           => __( 'The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.' ),
             ),
@@ -71,7 +71,7 @@ class WP_Fields_API_Edit_Tags {
         $field_args = array(
             'control'               => array(
                 'type'                  => 'dropdown-terms',
-                'section'               => 'term-options',
+                'section'               => 'term-main',
                 'label'                 => __( 'Description' ),
                 'description'           => __( 'The description is not prominent by default; however, some themes may show it.' ),
                 'input_attrs' => array(
@@ -86,7 +86,7 @@ class WP_Fields_API_Edit_Tags {
         $field_args = array(
             'control'               => array(
                 'type'                  => 'textarea',
-                'section'               => 'term-options',
+                'section'               => 'term-main',
                 'label'                 => __( 'Description' ),
                 'description'           => __( 'The description is not prominent by default; however, some themes may show it.' ),
                 'input_attrs' => array(
