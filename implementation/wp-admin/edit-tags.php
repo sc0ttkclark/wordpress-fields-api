@@ -491,68 +491,6 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 */
 								?>
 
-								<div class="form-field form-required term-name-wrap">
-									<label for="tag-name"><?php _ex( 'Name', 'term name' ); ?></label>
-									<input name="tag-name" id="tag-name" type="text" value="" size="40" aria-required="true" />
-									<p><?php _e('The name is how it appears on your site.'); ?></p>
-								</div>
-								<?php if ( ! global_terms_enabled() ) : ?>
-									<div class="form-field term-slug-wrap">
-										<label for="tag-slug"><?php _e( 'Slug' ); ?></label>
-										<input name="slug" id="tag-slug" type="text" value="" size="40" />
-										<p><?php _e('The &#8220;slug&#8221; is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.'); ?></p>
-									</div>
-								<?php endif; // global_terms_enabled() ?>
-								<?php if ( is_taxonomy_hierarchical($taxonomy) ) : ?>
-									<div class="form-field term-parent-wrap">
-										<label for="parent"><?php _ex( 'Parent', 'term parent' ); ?></label>
-										<?php
-										$dropdown_args = array(
-												'hide_empty'       => 0,
-												'hide_if_empty'    => false,
-												'taxonomy'         => $taxonomy,
-												'name'             => 'parent',
-												'orderby'          => 'name',
-												'hierarchical'     => true,
-												'show_option_none' => __( 'None' ),
-										);
-
-										/**
-										 * Filter the taxonomy parent drop-down on the Edit Term page.
-										 *
-										 * @since 3.7.0
-										 * @since 4.2.0 Added `$context` parameter.
-										 *
-										 * @param array  $dropdown_args {
-										 *     An array of taxonomy parent drop-down arguments.
-										 *
-										 *     @type int|bool $hide_empty       Whether to hide terms not attached to any posts. Default 0|false.
-										 *     @type bool     $hide_if_empty    Whether to hide the drop-down if no terms exist. Default false.
-										 *     @type string   $taxonomy         The taxonomy slug.
-										 *     @type string   $name             Value of the name attribute to use for the drop-down select element.
-										 *                                      Default 'parent'.
-										 *     @type string   $orderby          The field to order by. Default 'name'.
-										 *     @type bool     $hierarchical     Whether the taxonomy is hierarchical. Default true.
-										 *     @type string   $show_option_none Label to display if there are no terms. Default 'None'.
-										 * }
-										 * @param string $taxonomy The taxonomy slug.
-										 * @param string $context  Filter context. Accepts 'new' or 'edit'.
-										 */
-										$dropdown_args = apply_filters( 'taxonomy_parent_dropdown_args', $dropdown_args, $taxonomy, 'new' );
-
-										wp_dropdown_categories( $dropdown_args );
-										?>
-										<?php if ( 'category' == $taxonomy ) : // @todo: Generic text for hierarchical taxonomies ?>
-											<p><?php _e('Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.'); ?></p>
-										<?php endif; ?>
-									</div>
-								<?php endif; // is_taxonomy_hierarchical() ?>
-								<div class="form-field term-description-wrap">
-									<label for="tag-description"><?php _e( 'Description' ); ?></label>
-									<textarea name="description" id="tag-description" rows="5" cols="40"></textarea>
-									<p><?php _e('The description is not prominent by default; however, some themes may show it.'); ?></p>
-								</div>
-
 								<?php
 								if ( ! is_taxonomy_hierarchical( $taxonomy ) ) {
 									/**
