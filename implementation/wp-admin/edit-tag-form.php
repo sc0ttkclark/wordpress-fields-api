@@ -104,6 +104,27 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			<input type="hidden" name="tag_ID" value="<?php echo esc_attr($tag->term_id) ?>" />
 			<input type="hidden" name="taxonomy" value="<?php echo esc_attr($taxonomy) ?>" />
 			<?php wp_original_referer_field(true, 'previous'); wp_nonce_field('update-tag_' . $tag_ID); ?>
+
+
+			<?php
+			/**
+			 * WP Fields API implementation >>>
+			 */
+
+			/**
+			 * @var $wp_fields WP_Fields_API
+			 */
+			global $wp_fields;
+
+			$screen = $wp_fields->get_screen( 'term', 'term-edit', $taxonomy );
+
+			$screen->maybe_render();
+
+			/**
+			 * <<< WP Fields API implementation
+			 */
+			?>
+
 			<table class="form-table">
 				<tr class="form-field form-required term-name-wrap">
 					<th scope="row"><label for="name"><?php _ex( 'Name', 'term name' ); ?></label></th>

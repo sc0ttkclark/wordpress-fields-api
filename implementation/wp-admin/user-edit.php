@@ -240,9 +240,14 @@ if ( ! IS_PROFILE_PAGE ) {
  */
 $profile_user = get_userdata( $user_id );
 
-$user_profile = WP_Fields_API_User_Profile::get_instance();
+/**
+ * @var $wp_fields WP_Fields_API
+ */
+global $wp_fields;
 
-$user_profile->render_screen( $user_profile->implementation_name, $user_id );
+$screen = $wp_fields->get_screen( 'user', 'user-edit' );
+
+$screen->maybe_render( $user_id );
 /**
  * <<< WP Fields API implementation
  */

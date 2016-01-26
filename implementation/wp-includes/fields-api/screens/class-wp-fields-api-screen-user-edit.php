@@ -1,62 +1,35 @@
 <?php
 /**
- * This is an implementation for Fields API for the User Profile screen in the WordPress Dashboard
+ * This is an implementation for Fields API for the User Edit Profile screen in the WordPress Dashboard
  *
  * @package    WordPress
  * @subpackage Fields_API
  */
 
 /**
- * Class WP_Fields_API_User_Profile
+ * Class WP_Fields_API_Screen_User_Edit
  */
-class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
+class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public $implementation_name = 'user-edit-profile';
+	public function register_control_types( $wp_fields ) {
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public $object_type = 'user';
+		$control_type_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/control-types/user/';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function __construct() {
-
-		parent::__construct();
-
-		add_action( 'profile_update', array( $this, 'profile_update' ), 10, 2 );
-
-	}
-
-	/**
-	 * Handle saving of user profile fields
-	 *
-	 * @param int   $user_id
-	 * @param array $old_user_data
-	 */
-	public function profile_update( $user_id, $old_user_data ) {
-
-		// Save fields based on current screen and item ID
-		$this->save_fields( $this->implementation_name, $user_id );
-
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function register() {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
+		// Include control types
+		require_once $control_type_dir . 'class-wp-fields-api-user-color-scheme-control.php';
+		require_once $control_type_dir . 'class-wp-fields-api-user-role-control.php';
+		require_once $control_type_dir . 'class-wp-fields-api-user-super-admin-control.php';
+		require_once $control_type_dir . 'class-wp-fields-api-user-display-name-control.php';
+		require_once $control_type_dir . 'class-wp-fields-api-user-email-control.php';
+		require_once $control_type_dir . 'class-wp-fields-api-user-password-control.php';
+		require_once $control_type_dir . 'class-wp-fields-api-user-sessions-control.php';
+		require_once $control_type_dir . 'class-wp-fields-api-user-capabilities-control.php';
 
 		// Register control types
-		$wp_fields->register_control_type( 'user-color-scheme', 'WP_Fields_API_Color_Scheme_Control' );
+		$wp_fields->register_control_type( 'user-color-scheme', 'WP_Fields_API_User_Color_Scheme_Control' );
 		$wp_fields->register_control_type( 'user-role', 'WP_Fields_API_User_Role_Control' );
 		$wp_fields->register_control_type( 'user-super-admin', 'WP_Fields_API_User_Super_Admin_Control' );
 		$wp_fields->register_control_type( 'user-display-name', 'WP_Fields_API_User_Display_Name_Control' );
@@ -65,8 +38,14 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 		$wp_fields->register_control_type( 'user-sessions', 'WP_Fields_API_User_Sessions_Control' );
 		$wp_fields->register_control_type( 'user-capabilities', 'WP_Fields_API_User_Capabilities_Control' );
 
-		// Add Edit Profile screen
-		$wp_fields->add_screen( $this->object_type, $this->implementation_name );
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function register_fields( $wp_fields ) {
+
+		$this->register_control_types( $wp_fields );
 
 		////////////////////////////
 		// Core: Personal Options //
@@ -74,7 +53,7 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 
 		$wp_fields->add_section( $this->object_type, 'personal-options', null, array(
 			'title' => __( 'Personal Options' ),
-		    'screen' => $this->implementation_name,
+		    'screen' => $this->id,
 			// @todo Needs action compatibility for personal_options( $profileuser )
 			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
 		) );
@@ -138,7 +117,7 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 
 		$wp_fields->add_section( $this->object_type, 'name', null, array(
 			'title' => __( 'Name' ),
-		    'screen' => $this->implementation_name,
+		    'screen' => $this->id,
 		) );
 
 		$field_args = array(
@@ -228,7 +207,7 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 
 		$wp_fields->add_section( $this->object_type, 'contact-info', null, array(
 			'title' => __( 'Contact Info' ),
-		    'screen' => $this->implementation_name,
+		    'screen' => $this->id,
 		) );
 
 		$field_args = array(
@@ -291,7 +270,7 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 
 		$wp_fields->add_section( $this->object_type, 'about', null, array(
 			'title' => $about_title,
-		    'screen' => $this->implementation_name,
+		    'screen' => $this->id,
 		) );
 
 		$field_args = array(
@@ -311,7 +290,7 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 
 		$wp_fields->add_section( $this->object_type, 'account-management', null, array(
 			'title'                 => __( 'Account Management' ),
-		    'screen' => $this->implementation_name,
+		    'screen' => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
 
@@ -370,7 +349,7 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 
 		$wp_fields->add_section( $this->object_type, 'additional-capabilities', null, array(
 			'title'                 => __( 'Additional Capabilities' ),
-		    'screen' => $this->implementation_name,
+		    'screen' => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );
 
@@ -383,63 +362,6 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 		);
 
 		$wp_fields->add_field( $this->object_type, 'capabilities', null, $field_args );
-
-		//////////////
-		// Examples //
-		//////////////
-
-		// Section
-		$wp_fields->add_section( $this->object_type, 'example-my-fields', null, array(
-			'title' => __( 'Fields API Example - My Fields' ),
-		    'screen' => $this->implementation_name,
-		) );
-
-		// Add example for each control type
-		$control_types = array(
-			'text',
-			'checkbox',
-			'multi-checkbox',
-			'radio',
-			'select',
-			'dropdown-pages',
-			'color',
-			'media',
-			'upload',
-			'image',
-		);
-
-		$option_types = array(
-			'multi-checkbox',
-			'radio',
-			'select',
-		);
-
-		foreach ( $control_types as $control_type ) {
-			$id    = 'example_my_' . $control_type . '_field';
-			$label = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
-
-			$field_args = array(
-				// Add a control to the field at the same time
-				'control' => array(
-					'type'    => $control_type,
-					'section' => 'example-my-fields',
-					'label'   => $label,
-				),
-			);
-
-			if ( in_array( $control_type, $option_types ) ) {
-				$field_args['control']['choices'] = array(
-					''         => 'N/A',
-					'option-1' => 'Option 1',
-					'option-2' => 'Option 2',
-					'option-3' => 'Option 3',
-					'option-4' => 'Option 4',
-					'option-5' => 'Option 5',
-				);
-			}
-
-			$wp_fields->add_field( $this->object_type, $id, null, $field_args );
-		}
 
 	}
 
@@ -699,354 +621,6 @@ class WP_Fields_API_User_Profile extends WP_Fields_API_Implementation {
 			// Revoke super admin if currently a super admin
 			revoke_super_admin( $item_id );
 		}
-
-	}
-
-}
-
-/**
- * Fields API Color Scheme Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_Color_Scheme_Control extends WP_Fields_API_Radio_Control {
-
-	/**
-	 * Setup color scheme choices for use by control
-	 */
-	public function choices() {
-
-		/**
-		 * @var $_wp_admin_css_colors object[]
-		 */
-		global $_wp_admin_css_colors;
-
-		$choices = array();
-
-		ksort( $_wp_admin_css_colors );
-
-		if ( isset( $_wp_admin_css_colors['fresh'] ) ) {
-			// Set Default ('fresh') and Light should go first.
-			$_wp_admin_css_colors = array_filter( array_merge( array(
-				'fresh' => '',
-				'light' => ''
-			), $_wp_admin_css_colors ) );
-		}
-
-		foreach ( $_wp_admin_css_colors as $color => $color_info ) {
-			$choices[ $color ] = $color_info->name;
-		}
-
-		return $choices;
-
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-		$user_id = $this->item_id;
-
-		/**
-		 * Fires in the 'Admin Color Scheme' section of the user editing screen.
-		 *
-		 * The section is only enabled if a callback is hooked to the action,
-		 * and if there is more than one defined color scheme for the admin.
-		 *
-		 * @since 3.0.0
-		 * @since 3.8.1 Added `$user_id` parameter.
-		 *
-		 * @param int $user_id The user ID.
-		 */
-		do_action( 'admin_color_scheme_picker', $user_id );
-
-	}
-
-}
-
-/**
- * Fields API User Role Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_User_Role_Control extends WP_Fields_API_Select_Control {
-
-	/**
-	 * Setup color scheme choices for use by control
-	 */
-	public function choices() {
-
-		$choices = array(
-			'' => __( '&mdash; No role for this site &mdash;' ),
-		);
-
-		$editable_roles = array_reverse( get_editable_roles() );
-
-		foreach ( $editable_roles as $role => $details ) {
-			$name = translate_user_role( $details['name'] );
-
-			$choices[ $role ] = $name;
-		}
-
-		return $choices;
-
-	}
-
-}
-
-/**
- * Fields API User Super Admin Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_User_Super_Admin_Control extends WP_Fields_API_Checkbox_Control {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-		$profileuser = get_userdata( $this->item_id );
-
-		if ( $profileuser->user_email == get_site_option( 'admin_email' ) && is_super_admin( $profileuser->ID ) ) {
-			echo '<p>' . __( 'Super admin privileges cannot be removed because this user has the network admin email.' ) . '</p>';
-		} else {
-			parent::render_content();
-		}
-
-	}
-
-}
-
-/**
- * Fields API User Display Name Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_User_Display_Name_Control extends WP_Fields_API_Select_Control {
-
-	/**
-	 * Setup color scheme choices for use by control
-	 */
-	public function choices() {
-
-		$profileuser = get_userdata( $this->item_id );
-
-		$choices = array();
-
-		$choices['display_nickname'] = $profileuser->nickname;
-		$choices['display_username'] = $profileuser->user_login;
-
-		if ( ! empty( $profileuser->first_name ) ) {
-			$choices['display_firstname'] = $profileuser->first_name;
-		}
-
-		if ( ! empty( $profileuser->last_name ) ) {
-			$choices['display_lastname'] = $profileuser->last_name;
-		}
-
-		if ( ! empty( $profileuser->first_name ) && ! empty( $profileuser->last_name ) ) {
-			$choices['display_firstlast'] = $profileuser->first_name . ' ' . $profileuser->last_name;
-			$choices['display_lastfirst'] = $profileuser->last_name . ' ' . $profileuser->first_name;
-		}
-
-		// Only add this if it isn't duplicated elsewhere
-		if ( ! in_array( $profileuser->display_name, $choices ) ) {
-			$first_option = array(
-				'display_displayname' => $profileuser->display_name,
-			);
-
-			$choices = array_merge( $first_option, $choices );
-		}
-
-		$choices = array_map( 'trim', $choices );
-		$choices = array_filter( $choices );
-		$choices = array_unique( $choices );
-
-		return $choices;
-
-	}
-
-}
-
-/**
- * Fields API User Email Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_User_Email_Control extends WP_Fields_API_Control {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-		$current_user = get_userdata( get_current_user_id() );
-
-		$profileuser = get_userdata( $this->item_id );
-
-		parent::render_content();
-
-		$new_email = get_option( $current_user->ID . '_new_email' );
-
-		if ( $new_email && $new_email['newemail'] != $current_user->user_email && $profileuser->ID == $current_user->ID ) {
-			echo '<div class="updated inline"><p>';
-
-			printf( __( 'There is a pending change of your e-mail to %1$s. <a href="%2$s">Cancel</a>' ), '<code>' . $new_email['newemail'] . '</code>', esc_url( self_admin_url( 'profile.php?dismiss=' . $current_user->ID . '_new_email' ) ) );
-
-			echo '</p></div>';
-		}
-
-	}
-
-}
-
-/**
- * Fields API User Password Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_User_Password_Control extends WP_Fields_API_Control {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-?>
-	<table class="form-table">
-		<tr id="password" class="user-pass1-wrap">
-			<th><label for="pass1"><?php _e( 'New Password' ); ?></label></th>
-			<td>
-				<input class="hidden" value=" " /><!-- #24364 workaround -->
-				<button type="button" class="button button-secondary wp-generate-pw hide-if-no-js"><?php _e( 'Generate Password' ); ?></button>
-				<div class="wp-pwd hide-if-js">
-					<span class="password-input-wrapper">
-						<input type="password" name="pass1" id="pass1" class="regular-text" value="" autocomplete="off" data-pw="<?php echo esc_attr( wp_generate_password( 24 ) ); ?>" aria-describedby="pass-strength-result" />
-					</span>
-					<button type="button" class="button button-secondary wp-hide-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Hide password' ); ?>">
-						<span class="dashicons dashicons-hidden"></span>
-						<span class="text"><?php _e( 'Hide' ); ?></span>
-					</button>
-					<button type="button" class="button button-secondary wp-cancel-pw hide-if-no-js" data-toggle="0" aria-label="<?php esc_attr_e( 'Cancel password change' ); ?>">
-						<span class="text"><?php _e( 'Cancel' ); ?></span>
-					</button>
-					<div style="display:none" id="pass-strength-result" aria-live="polite"></div>
-				</div>
-			</td>
-		</tr>
-		<tr class="user-pass2-wrap hide-if-js">
-			<th scope="row"><label for="pass2"><?php _e( 'Repeat New Password' ); ?></label></th>
-			<td>
-			<input name="pass2" type="password" id="pass2" class="regular-text" value="" autocomplete="off" />
-			<p class="description"><?php _e( 'Type your new password again.' ); ?></p>
-			</td>
-		</tr>
-		<tr class="pw-weak">
-			<th><?php _e( 'Confirm Password' ); ?></th>
-			<td>
-				<label>
-					<input type="checkbox" name="pw_weak" class="pw-checkbox" />
-					<?php _e( 'Confirm use of weak password' ); ?>
-				</label>
-			</td>
-		</tr>
-	</table>
-
-	<script type="text/javascript">
-		if (window.location.hash == '#password') {
-			document.getElementById('pass1').focus();
-		}
-	</script>
-<?php
-
-	}
-
-}
-
-/**
- * Fields API User Sessions Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_User_Sessions_Control extends WP_Fields_API_Control {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-		$profileuser = get_userdata( $this->item_id );
-
-		/**
-		 * @var WP_User_Meta_Session_Tokens $sessions
-		 */
-		$sessions = WP_Session_Tokens::get_instance( $profileuser->ID );
-?>
-	<?php if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE && count( $sessions->get_all() ) === 1 ) : ?>
-		<div aria-live="assertive">
-			<div class="destroy-sessions"><button type="button" disabled class="button button-secondary"><?php _e( 'Log Out Everywhere Else' ); ?></button></div>
-			<p class="description">
-				<?php _e( 'You are only logged in at this location.' ); ?>
-			</p>
-		</div>
-	<?php elseif ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE && count( $sessions->get_all() ) > 1 ) : ?>
-		<div aria-live="assertive">
-			<div class="destroy-sessions"><button type="button" class="button button-secondary" id="destroy-sessions"><?php _e( 'Log Out Everywhere Else' ); ?></button></div>
-			<p class="description">
-				<?php _e( 'Did you lose your phone or leave your account logged in at a public computer? You can log out everywhere else, and stay logged in here.' ); ?>
-			</p>
-		</div>
-	<?php elseif ( defined( 'IS_PROFILE_PAGE' ) && ! IS_PROFILE_PAGE && $sessions->get_all() ) : ?>
-		<p><button type="button" class="button button-secondary" id="destroy-sessions"><?php _e( 'Log Out Everywhere' ); ?></button></p>
-		<p class="description">
-			<?php
-			/* translators: 1: User's display name. */
-			printf( __( 'Log %s out of all locations.' ), $profileuser->display_name );
-			?>
-		</p>
-	<?php endif; ?>
-<?php
-
-	}
-
-}
-
-/**
- * Fields API User Capabilities Control class.
- *
- * @see WP_Fields_API_Control
- */
-class WP_Fields_API_User_Capabilities_Control extends WP_Fields_API_Control {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_content() {
-
-		/**
-		 * @var $wp_roles WP_Roles
-		 */
-		global $wp_roles;
-
-		$profileuser = get_userdata( $this->item_id );
-
-		$output = array();
-
-		foreach ( $profileuser->caps as $cap => $value ) {
-			if ( ! $wp_roles->is_role( $cap ) ) {
-				if ( ! $value ) {
-					$cap = sprintf( __( 'Denied: %s' ), $cap );
-				}
-
-				$output[] = $cap;
-			}
-		}
-
-		$output = implode( ', ', $output );
-
-		echo $output;
 
 	}
 

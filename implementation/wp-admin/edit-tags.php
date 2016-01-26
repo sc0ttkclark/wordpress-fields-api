@@ -8,7 +8,7 @@
 
 /** WordPress Administration Bootstrap */
 require_once( ABSPATH . '/wp-admin/admin.php' ); // WP Fields API modification
-global $taxnow, $taxonomy; // Fields API
+global $taxnow, $taxonomy; // WP Fields API modification
 
 if ( ! $taxnow )
 	wp_die( __( 'Invalid taxonomy' ) );
@@ -159,7 +159,10 @@ switch ( $wp_list_table->current_action() ) {
 		if ( ! $tag )
 			wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
+
+		// WP Fields API modification
 		include( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tag-form.php' );
+
 		echo 'dsfgsdfgd';
 		include( ABSPATH . 'wp-admin/admin-footer.php' );
 
@@ -475,84 +478,14 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 */
 								global $wp_fields;
 
-								$screen = $wp_fields->get_screen( 'term', 'edit-tags', $taxonomy );
+								$screen = $wp_fields->get_screen( 'term', 'term-add', $taxonomy );
 
-								$nonced = false;
+								$screen->maybe_render();
 
-								if ( $screen ) {
-									$sections = $wp_fields->get_sections( $screen->object_type, $screen->object_name, $screen->id );
-
-									if ( ! empty( $sections ) ) {
-										// Pass $tag_ID to Screen
-										if ( isset( $tag_ID ) ) {
-											$screen->item_id = $tag_ID;
-										}
-
-										foreach ( $sections as $section ) {
-											$controls = $wp_fields->get_controls( $section->object_type, $section->object_name, $section->id );
-
-											if ( $controls ) {
-												$content = $section->get_content();
-
-												if ( $content ) {
-													// Pass $tag_ID to Section
-													if ( isset( $tag_ID ) ) {
-														$section->item_id = $tag_ID;
-													}
-
-													if ( ! $nonced ) {
-														$nonced = true;
-
-														wp_nonce_field( 'wp_fields_api_edit_tags', 'wp_fields_api_fields_save' );
-													}
-													?>
-													<h3><?php echo $content; ?></h3>
-
-													<table class="form-table fields-api-section">
-														<?php foreach ( $controls as $control ) { ?>
-															<?php
-															// Pass $tag_ID to Control
-															if ( isset( $tag_ID ) ) {
-																$control->item_id = $tag_ID;
-															}
-
-															$label       = $control->label;
-															$description = $control->description;
-
-															// Avoid outputting them in render_content()
-															$control->label       = '';
-															$control->description = '';
-
-															// Setup field name
-															$control->input_attrs['name'] = 'field_' . $control->id;
-															?>
-															<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
-																<th>
-																	<?php if ( $label ) { ?>
-																		<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php echo esc_html( $label ); ?></label>
-																	<?php } ?>
-																</th>
-																<td>
-																	<?php $control->render_content(); ?>
-
-																	<?php if ( $description ) { ?>
-																		<p class="description"><?php echo esc_html( $description ); ?></p>
-																	<?php } ?>
-																</td>
-															</tr>
-														<?php } ?>
-													</table>
-													<?php
-												}
-											}
-										}
-									}
-								}
 								/**
 								 * <<< WP Fields API implementation
 								 */
 								?>
-
 
 								<div class="form-field form-required term-name-wrap">
 									<label for="tag-name"><?php _ex( 'Name', 'term name' ); ?></label>

@@ -58,6 +58,28 @@ function _wp_fields_api_customize_include() {
 add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
 
 /**
+ * Include Implementations
+ */
+function _wp_fields_api_implementations() {
+
+	$implementation_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/screens/';
+
+	// User
+	require_once( $implementation_dir . 'class-wp-fields-api-screen-user-edit.php' );
+
+	WP_Fields_API_Screen_User_Edit::register( 'user', 'user-edit' );
+
+	// Term
+	require_once( $implementation_dir . 'class-wp-fields-api-screen-term.php' );
+	require_once( $implementation_dir . 'class-wp-fields-api-screen-term-add.php' );
+
+	WP_Fields_API_Screen_Term_Add::register( 'term', 'term-add' );
+	WP_Fields_API_Screen_Term::register( 'term', 'term-edit' );
+
+}
+add_action( 'fields_register', '_wp_fields_api_implementations' );
+
+/**
  * Implement Fields API User edit to override WP Core.
  */
 function _wp_fields_api_user_edit_include() {
@@ -79,24 +101,12 @@ function _wp_fields_api_user_edit_include() {
 add_action( 'load-user-edit.php', '_wp_fields_api_user_edit_include' );
 add_action( 'load-profile.php', '_wp_fields_api_user_edit_include' );
 
-/**
- * Include User Edit Implementation
- */
-function _wp_fields_api_user_edit_implementation() {
-
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/implementations/class-wp-fields-api-user-profile.php' );
-
-	// Run user profile implementation
-	WP_Fields_API_User_Profile::get_instance();
-
-}
-add_action( 'fields_register', '_wp_fields_api_user_edit_implementation' );
-
 
 /**
- * Implement Fields API Term add to override WP Core.
+ * Implement Fields API Term to override WP Core.
  */
-function _wp_fields_api_term_add_include() {
+function _wp_fields_api_term_include() {
+
 	static $overridden;
 
 	if ( empty( $overridden ) ) {
@@ -108,23 +118,6 @@ function _wp_fields_api_term_add_include() {
 		// Bail on original core file, don't run the rest
 		exit;
 	}
+
 }
-add_action( 'load-edit-tags.php', '_wp_fields_api_term_add_include' );
-
-/**
- * Include Term Edit Implementation
- */
-function _wp_fields_api_term_edit_implementation() {
-
-	if( ! isset( $_GET['action' ] ) || 'edit' !== $_GET['action'] ) {
-		// Run user profile implementation
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-add-tags.php' );
-		new WP_Fields_API_Add_Tags();
-	} else {
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-edit-tags.php' );
-		new WP_Fields_API_Edit_Tags();
-	}
-
-	exit;
-}
-add_action( 'fields_register', '_wp_fields_api_term_edit_implementation' );
+add_action( 'load-edit-tags.php', '_wp_fields_api_term_include' );
