@@ -21,7 +21,6 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 	/**
 	 * Constructor.
 	 *
-	 * @since 3.4.0
 	 * @uses WP_Fields_API_Control::__construct()
 	 *
 	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
@@ -40,8 +39,6 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 
 	/**
 	 * Enqueue scripts/styles for the color picker.
-	 *
-	 * @since 3.4.0
 	 */
 	public function enqueue() {
 		wp_enqueue_script( 'wp-color-picker' );
@@ -69,7 +66,21 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 	 */
 	public function render_content() {
 
-		// @todo Figure out what to do for render_content vs content_template for purposes of Customizer vs other Fields implementations
+		$this->input_attrs['class'] = 'color-picker-hex';
+		$this->input_attrs['placeholder'] = __( 'Hex Value' );
+		$this->input_attrs['data-default-color'] = $this->value( $this->item_id );
+
+		?>
+		<label>
+			<?php if ( ! empty( $this->label ) ) : ?>
+				<span class="fields-control-title"><?php echo esc_html( $this->label ); ?></span>
+			<?php endif;
+			if ( ! empty( $this->description ) ) : ?>
+				<span class="description fields-control-description"><?php echo $this->description; ?></span>
+			<?php endif; ?>
+			<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value( $this->item_id ) ); ?>" <?php $this->link(); ?> />
+		</label>
+		<?php
 
 	}
 
@@ -91,12 +102,12 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 		} #>
 		<label>
 			<# if ( data.label ) { #>
-				<span class="customize-control-title">{{{ data.label }}}</span>
+				<span class="fields-control-title">{{{ data.label }}}</span>
 			<# } #>
 			<# if ( data.description ) { #>
-				<span class="description customize-control-description">{{{ data.description }}}</span>
+				<span class="description fields-control-description">{{{ data.description }}}</span>
 			<# } #>
-			<div class="customize-control-content">
+			<div class="fields-control-content">
 				<input class="color-picker-hex" type="text" maxlength="7" placeholder="<?php esc_attr_e( 'Hex Value' ); ?>" {{ defaultValue }} />
 			</div>
 		</label>
