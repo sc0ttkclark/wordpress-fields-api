@@ -163,7 +163,6 @@ switch ( $wp_list_table->current_action() ) {
 		// WP Fields API modification
 		include( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tag-form.php' );
 
-		echo 'dsfgsdfgd';
 		include( ABSPATH . 'wp-admin/admin-footer.php' );
 
 		exit;
@@ -478,8 +477,13 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 */
 								global $wp_fields;
 
-								$screen = $wp_fields->get_screen( 'term', 'term-add', $taxonomy );
+								// Get screen
+								$screen = $wp_fields->get_screen( 'term', 'term-add' );
 
+								// Set taxonomy object name
+								$screen->object_name = $taxonomy;
+
+								// Render screen controls
 								$screen->maybe_render();
 
 								/**

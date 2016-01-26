@@ -52,15 +52,15 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		////////////////////////////
 
 		$wp_fields->add_section( $this->object_type, 'personal-options', null, array(
-			'title' => __( 'Personal Options' ),
-		    'screen' => $this->id,
+			'title'  => __( 'Personal Options' ),
+			'screen' => $this->id,
 			// @todo Needs action compatibility for personal_options( $profileuser )
 			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
 		) );
 
 		$field_args = array(
 			'sanitize_callback' => array( $this, 'sanitize_rich_editing' ),
-			'control'                   => array(
+			'control'           => array(
 				'type'                  => 'checkbox',
 				'section'               => 'personal-options',
 				'label'                 => __( 'Visual Editor' ),
@@ -86,7 +86,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'sanitize_callback' => array( $this, 'sanitize_comment_shortcuts' ),
-			'control'                   => array(
+			'control'           => array(
 				'type'                  => 'checkbox',
 				'section'               => 'personal-options',
 				'label'                 => __( 'Keyboard Shortcuts' ),
@@ -100,7 +100,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'sanitize_callback' => array( $this, 'sanitize_admin_bar_front' ),
-			'control'                   => array(
+			'control'           => array(
 				'type'           => 'checkbox',
 				'section'        => 'personal-options',
 				'label'          => __( 'Toolbar' ),
@@ -116,8 +116,8 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		////////////////
 
 		$wp_fields->add_section( $this->object_type, 'name', null, array(
-			'title' => __( 'Name' ),
-		    'screen' => $this->id,
+			'title'  => __( 'Name' ),
+			'screen' => $this->id,
 		) );
 
 		$field_args = array(
@@ -206,8 +206,8 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		////////////////////////
 
 		$wp_fields->add_section( $this->object_type, 'contact-info', null, array(
-			'title' => __( 'Contact Info' ),
-		    'screen' => $this->id,
+			'title'  => __( 'Contact Info' ),
+			'screen' => $this->id,
 		) );
 
 		$field_args = array(
@@ -269,8 +269,8 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		}
 
 		$wp_fields->add_section( $this->object_type, 'about', null, array(
-			'title' => $about_title,
-		    'screen' => $this->id,
+			'title'  => $about_title,
+			'screen' => $this->id,
 		) );
 
 		$field_args = array(
@@ -290,7 +290,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, 'account-management', null, array(
 			'title'                 => __( 'Account Management' ),
-		    'screen' => $this->id,
+			'screen'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
 
@@ -349,7 +349,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, 'additional-capabilities', null, array(
 			'title'                 => __( 'Additional Capabilities' ),
-		    'screen' => $this->id,
+			'screen'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );
 
@@ -362,6 +362,9 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		);
 
 		$wp_fields->add_field( $this->object_type, 'capabilities', null, $field_args );
+
+		// Add example fields
+		parent::register_fields( $wp_fields );
 
 	}
 
@@ -432,7 +435,8 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Control only visible if in network admin and can manage network options, as long as super_admins is not being overridden.
+	 * Control only visible if in network admin and can manage network options, as long as super_admins is not being
+	 * overridden.
 	 *
 	 * @param WP_Fields_API_Control $control
 	 *
@@ -482,7 +486,8 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Section only visible if additional capabilities can be shown and total number of capabilities are greater than total number of roles.
+	 * Section only visible if additional capabilities can be shown and total number of capabilities are greater than
+	 * total number of roles.
 	 *
 	 * @param WP_Fields_API_Section $section
 	 *
@@ -500,7 +505,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		$profileuser = get_userdata( $screen_obj->item_id );
 
 		$total_roles = count( $profileuser->roles );
-		$total_caps = count( $profileuser->caps );
+		$total_caps  = count( $profileuser->caps );
 
 		/**
 		 * Filter whether to display additional capabilities for the user.

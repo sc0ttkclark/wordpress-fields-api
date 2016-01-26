@@ -401,11 +401,14 @@ class WP_Fields_API_Screen {
 	 * @param string      $screen_id
 	 * @param null|string $object_name
 	 * @param array       $args
+	 *
+	 * @return WP_Fields_API_Screen
 	 */
 	public static function register( $object_type = null, $screen_id = null, $object_name = null, $args = array() ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
+		 * @var $screen    WP_Fields_API_Screen
 		 */
 		global $wp_fields;
 
@@ -414,17 +417,21 @@ class WP_Fields_API_Screen {
 			$args['object_name'] = $object_name;
 		}
 
+		$class_name = get_called_class();
+
 		// Setup screen
-		$screen = new self( $object_type, $screen_id, $args );
+		$screen = new $class_name( $object_type, $screen_id, $args );
 
 		// Add screen to Fields API
 		$wp_fields->add_screen( $screen->object_type, $screen, $screen->object_name );
 
-		// Register control types fields for this screen
-		if ( method_exists( $screen, 'register_fields' ) ) {
-			$screen->register_control_types( $wp_fields );
-			$screen->register_fields( $wp_fields );
-		}
+		// Register control types for this screen
+		$screen->register_control_types( $wp_fields );
+
+		// Register fields for this screen
+		$screen->register_fields( $wp_fields );
+
+		return $screen;
 
 	}
 
@@ -475,7 +482,7 @@ class WP_Fields_API_Screen {
 		//////////////
 
 		// Section
-		$wp_fields->add_section( $this->object_type, 'example-my-fields', $this->object_name, array(
+		$wp_fields->add_section( $this->object_type, $this->id . '-example-my-fields', $this->object_name, array(
 			'title' => __( 'Fields API Example - My Fields' ),
 		    'screen' => $this->id,
 		) );
@@ -488,6 +495,7 @@ class WP_Fields_API_Screen {
 			'radio',
 			'select',
 			'dropdown-pages',
+			'dropdown-terms',
 			'color',
 			'media',
 			'upload',
@@ -508,7 +516,8 @@ class WP_Fields_API_Screen {
 				// Add a control to the field at the same time
 				'control' => array(
 					'type'    => $control_type,
-					'section' => 'example-my-fields',
+					'id'      => $this->id . '-' . $id,
+					'section' => $this->id . '-example-my-fields',
 					'label'   => $label,
 				),
 			);

@@ -116,8 +116,13 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			 */
 			global $wp_fields;
 
-			$screen = $wp_fields->get_screen( 'term', 'term-edit', $taxonomy );
+			// Get screen
+			$screen = $wp_fields->get_screen( 'term', 'term-edit' );
 
+			// Set taxonomy object name
+			$screen->object_name = $taxonomy;
+
+			// Render screen controls
 			$screen->maybe_render();
 
 			/**
