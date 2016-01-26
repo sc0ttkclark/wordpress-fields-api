@@ -101,12 +101,26 @@ final class WP_Fields_API {
 	 */
 	private function __construct() {
 
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-field.php' );
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-control.php' );
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-section.php' );
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-screen.php' );
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api-implementation.php' );
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/fields-api-controls.php' );
+		$fields_api_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/';
+
+		// Include API classes
+		require_once( $fields_api_dir . 'class-wp-fields-api-field.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-control.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-section.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-screen.php' );
+
+		// Include control types
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-textarea-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-multi-checkbox-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-select-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-pages-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-terms-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-color-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-upload-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-image-control.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
