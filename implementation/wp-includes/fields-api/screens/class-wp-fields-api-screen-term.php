@@ -16,6 +16,12 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 	 */
 	public function register_fields( $wp_fields ) {
 
+		// @todo Saving: Figure out compatibility with wp_insert_term / wp_update_term usage in edit-tags.php
+		// @todo Saving: Hook into create_term on save, check $object_name
+		// @todo Saving: Hook into edit_term on save, check $object_name
+
+		// @todo General: Controls need to output name="...."
+
 		////////////////
 		// Core: Term //
 		////////////////
@@ -31,6 +37,7 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 			// @todo Needs 'form-required' class added to control wrapper somehow
 			'control' => array(
 				'type'        => 'text',
+				// @todo Control name should be tag-name
 				'id'          => $this->id . '-name',
 				'section'     => $this->id . '-main',
 				'label'       => __( 'Name' ),

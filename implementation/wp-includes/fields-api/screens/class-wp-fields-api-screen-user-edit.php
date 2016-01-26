@@ -45,6 +45,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 	 */
 	public function register_fields( $wp_fields ) {
 
+		// @todo Saving: Figure out compatibility with edit_user usage in user-edit.php
+		// @todo Saving: Hook into personal_options_update on save
+		// @todo Saving: Hook into edit_user_profile_update on save
+
 		$this->register_control_types( $wp_fields );
 
 		////////////////////////////
