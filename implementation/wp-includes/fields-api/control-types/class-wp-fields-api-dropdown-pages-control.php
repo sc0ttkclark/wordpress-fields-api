@@ -7,17 +7,35 @@
 class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control {
 
 	/**
+	 * @var array Arguments to send to get_pages
+	 */
+	public $get_args = array();
+
+	/**
+	 * @var string Placeholder text for choices
+	 */
+	public $placeholder_text = '';
+
+	/**
 	 * Setup page choices for use by control
 	 *
 	 * @return array
 	 */
 	public function choices() {
 
+		$placeholder_text = $this->placeholder_text;
+
+		if ( '' === $placeholder_text ) {
+			$placeholder_text = __( '&mdash; Select &mdash;' );
+		}
+
 		$choices = array(
-			'0' => __( '&mdash; Select &mdash;' ),
+			'0' => $placeholder_text,
 		);
 
-		$pages = get_pages();
+		$args = $this->get_args;
+
+		$pages = get_pages( $args );
 
 		$choices = $this->get_page_choices_recurse( $choices, $pages );
 

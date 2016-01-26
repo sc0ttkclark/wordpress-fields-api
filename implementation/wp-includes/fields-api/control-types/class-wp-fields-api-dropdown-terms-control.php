@@ -12,21 +12,57 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $taxonomy;
 
 	/**
+	 * @var array Arguments to send to get_terms
+	 */
+	public $get_args = array();
+
+	/**
+	 * @var bool Whether to exclude current item ID from list
+	 */
+	public $exclude_current_item_id = false;
+
+	/**
+	 * @var bool Whether to exclude current item ID and decendents from list
+	 */
+	public $exclude_tree_current_item_id = false;
+
+	/**
+	 * @var string Placeholder text for choices
+	 */
+	public $placeholder_text = '';
+
+	/**
 	 * Setup term choices for use by control
 	 *
 	 * @return array
 	 */
 	public function choices() {
 
+		$placeholder_text = $this->placeholder_text;
+
+		if ( '' === $placeholder_text ) {
+			$placeholder_text = __( '&mdash; Select &mdash;' );
+		}
+
 		$choices = array(
-			'0' => __( '&mdash; Select &mdash;' ),
+			'0' => $placeholder_text,
 		);
 
 		if ( empty( $this->taxonomy ) ) {
 			return $choices;
 		}
 
-		$terms = get_terms( $this->taxonomy );
+		$args = $this->get_args;
+
+		if ( ! isset( $args['exclude'] ) && $this->exclude_current_item_id && 0 < $this->item_id ) {
+			$args['exclude'] = $this->item_id;
+		}
+
+		if ( ! isset( $args['exclude_tree'] ) && $this->exclude_tree_current_item_id && 0 < $this->item_id ) {
+			$args['exclude_tree'] = $this->item_id;
+		}
+
+		$terms = get_terms( $this->taxonomy, $args );
 
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			$choices = $this->get_term_choices_recurse( $choices, $terms );
