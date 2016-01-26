@@ -1,23 +1,16 @@
 <?php
 /**
- * Customize Upload Control Class.
- *
- * @since 3.4.0
+ * Fields API Media File Control Class.
  *
  * @see WP_Fields_API_Media_Control
  */
-class WP_Fields_API_Upload_Control extends WP_Fields_API_Media_Control {
-	public $type          = 'upload';
+class WP_Fields_API_Media_File_Control extends WP_Fields_API_Media_Control {
+	public $type          = 'media_file';
 	public $mime_type     = '';
 	public $button_labels = array();
-	public $removed = ''; // unused
-	public $context; // unused
-	public $extensions = array(); // unused
 
 	/**
 	 * Refresh the parameters passed to the JavaScript via JSON.
-	 *
-	 * @since 3.4.0
 	 *
 	 * @uses WP_Fields_API_Media_Control::to_json()
 	 */

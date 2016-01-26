@@ -498,8 +498,7 @@ class WP_Fields_API_Screen {
 			'dropdown-terms',
 			'color',
 			'media',
-			'upload',
-			'image',
+			'media_file',
 		);
 
 		$option_types = array(
