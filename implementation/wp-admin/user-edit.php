@@ -245,73 +245,9 @@ $profile_user = get_userdata( $user_id );
  */
 global $wp_fields;
 
-$screen = $wp_fields->get_screen( 'user', 'edit-profile' );
+$screen = $wp_fields->get_screen( 'user', 'user-edit' );
 
-$nonced = false;
-
-if ( $screen ) {
-	$sections = $wp_fields->get_sections( 'user', null, $screen->id );
-
-	if ( ! empty( $sections ) ) {
-		// Pass $profileuser->ID to Screen
-		$screen->item_id = $profileuser->ID;
-
-		foreach ( $sections as $section ) {
-			$controls = $wp_fields->get_controls( 'user', null, $section->id );
-
-			if ( $controls ) {
-				$content = $section->get_content();
-
-				if ( $content ) {
-					// Pass $profileuser->ID to Section
-					$section->item_id = $profileuser->ID;
-
-					if ( ! $nonced ) {
-						$nonced = true;
-
-						wp_nonce_field( 'wp_fields_api_user_profile', 'wp_fields_api_fields_save' );
-					}
-					?>
-					<h3><?php echo $content; ?></h3>
-
-					<table class="form-table fields-api-section">
-						<?php foreach ( $controls as $control ) { ?>
-							<?php
-							// Pass $profileuser->ID to Control
-							$control->item_id = $profileuser->ID;
-
-							$label       = $control->label;
-							$description = $control->description;
-
-							// Avoid outputting them in render_content()
-							$control->label       = '';
-							$control->description = '';
-
-							// Setup field name
-							$control->input_attrs['name'] = 'field_' . $control->id;
-							?>
-							<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
-								<th>
-									<?php if ( $label ) { ?>
-										<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php echo esc_html( $label ); ?></label>
-									<?php } ?>
-								</th>
-								<td>
-									<?php $control->render_content(); ?>
-
-									<?php if ( $description ) { ?>
-										<p class="description"><?php echo $description; ?></p>
-									<?php } ?>
-								</td>
-							</tr>
-						<?php } ?>
-					</table>
-					<?php
-				}
-			}
-		}
-	}
-}
+$screen->maybe_render( $user_id );
 /**
  * <<< WP Fields API implementation
  */

@@ -170,14 +170,18 @@ class WP_Fields_API_Screen {
 	 */
 	public function init( $object_type, $id, $args = array() ) {
 
-		$this->object_type = $object_type;
+		if ( ! empty( $object_type ) ) {
+			$this->object_type = $object_type;
+		}
 
-		if ( is_array( $id ) ) {
-			$args = $id;
+		if ( ! empty( $id ) ) {
+			if ( is_array( $id ) ) {
+				$args = $id;
 
-			$id = '';
-		} else {
-			$this->id = $id;
+				$id = '';
+			} else {
+				$this->id = $id;
+			}
 		}
 
 		$keys = array_keys( get_object_vars( $this ) );
@@ -309,8 +313,16 @@ class WP_Fields_API_Screen {
 	/**
 	 * Check capabilities and render the screen.
 	 *
+	 * @param int|null    $item_id Item ID
+	 * @param string|null $object_name Object name
 	 */
-	final public function maybe_render() {
+	final public function maybe_render( $item_id = null, $object_name = null ) {
+
+		$this->item_id = $item_id;
+
+		if ( null !== $object_name ) {
+			$this->object_name = $object_name;
+		}
 
 		if ( ! $this->check_capabilities() ) {
 			return;
@@ -336,32 +348,12 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Render the screen container, and then its contents.
-	 *
-	 * @access protected
-	 */
-	protected function render() {
-		$classes = 'accordion-section control-section control-screen control-screen-' . $this->type;
-		?>
-		<li id="accordion-screen-<?php echo esc_attr( $this->id ); ?>" class="<?php echo esc_attr( $classes ); ?>">
-			<h3 class="accordion-section-title" tabindex="0">
-				<?php echo esc_html( $this->title ); ?>
-				<span class="screen-reader-text"><?php _e( 'Press return or enter to open this screen' ); ?></span>
-			</h3>
-			<ul class="accordion-sub-container control-screen-content">
-				<?php $this->render_content(); ?>
-			</ul>
-		</li>
-		<?php
-	}
-
-	/**
 	 * Render the screen's JS templates.
 	 *
 	 * This function is only run for screen types that have been registered with
-	 * WP_Fields_API::register_panel_type().
+	 * WP_Fields_API::register_screen_type().
 	 *
-	 * @see WP_Fields_API::register_panel_type()
+	 * @see WP_Fields_API::register_screen_type()
 	 */
 	public function print_template() {
 
@@ -403,25 +395,301 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Render the sections that have been added to the screen.
+	 * Register screens, sections, controls, and fields
 	 *
-	 * @access protected
+	 * @param string      $object_type
+	 * @param string      $screen_id
+	 * @param null|string $object_name
+	 * @param array       $args
 	 */
-	protected function render_content() {
-		?>
-		<li class="screen-meta accordion-section control-section<?php if ( empty( $this->description ) ) { echo ' cannot-expand'; } ?>">
-			<div class="accordion-section-title" tabindex="0">
-				<span class="preview-notice"><?php
-					/* translators: %s is the site/screen title in the Fields API */
-					printf( __( 'You are editing %s' ), '<strong class="screen-title">' . esc_html( $this->title ) . '</strong>' );
-				?></span>
-			</div>
-			<?php if ( ! empty( $this->description ) ) : ?>
-				<div class="accordion-section-content description">
-					<?php echo $this->description; ?>
-				</div>
-			<?php endif; ?>
-		</li>
-		<?php
+	public static function register( $object_type = null, $screen_id = null, $object_name = null, $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Set object_name if not overridden
+		if ( ! isset( $args['object_name'] ) ) {
+			$args['object_name'] = $object_name;
+		}
+
+		// Setup screen
+		$screen = new self( $object_type, $screen_id, $args );
+
+		// Add screen to Fields API
+		$wp_fields->add_screen( $screen->object_type, $screen, $screen->object_name );
+
+		// Register control types fields for this screen
+		if ( method_exists( $screen, 'register_fields' ) ) {
+			$screen->register_control_types( $wp_fields );
+			$screen->register_fields( $wp_fields );
+		}
+
 	}
+
+	/**
+	 * Encapsulated registering of custom control types
+	 *
+	 * @param WP_Fields_API $wp_fields
+	 */
+	public function register_control_types( $wp_fields ) {
+
+		// None by default
+
+	}
+
+	/**
+	 * Encapsulated registering of sections, controls, and fields for a screen
+	 *
+	 * @param WP_Fields_API $wp_fields
+	 */
+	public function register_fields( $wp_fields ) {
+
+		/*
+		// Register control types
+		$wp_fields->register_control_type( 'control-type-id', 'Control_Class_Name' );
+
+		// Add section(s)
+		$wp_fields->add_section( $this->object_type, 'section-id', $this->object_name, array(
+			'title' => __( 'Section Heading' ),
+		    'screen' => $this->id,
+		) );
+
+		$field_args = array(
+			// 'sanitize_callback' => array( $this, 'my_sanitize_callback' ),
+			'control'                   => array(
+				'type'                  => 'text',
+				'section'               => 'section-id',
+				'label'                 => __( 'Control Label' ),
+				'description'           => __( 'Description of control' ),
+				// 'capabilities_callback' => array( $this, 'my_capabilities_callback' ),
+			),
+		);
+
+		$wp_fields->add_field( $this->object_type, 'field-id', $this->object_name, $field_args );
+		*/
+
+		//////////////
+		// Examples //
+		//////////////
+
+		// Section
+		$wp_fields->add_section( $this->object_type, 'example-my-fields', $this->object_name, array(
+			'title' => __( 'Fields API Example - My Fields' ),
+		    'screen' => $this->id,
+		) );
+
+		// Add example for each control type
+		$control_types = array(
+			'text',
+			'checkbox',
+			'multi-checkbox',
+			'radio',
+			'select',
+			'dropdown-pages',
+			'color',
+			'media',
+			'upload',
+			'image',
+		);
+
+		$option_types = array(
+			'multi-checkbox',
+			'radio',
+			'select',
+		);
+
+		foreach ( $control_types as $control_type ) {
+			$id    = 'example_my_' . $control_type . '_field';
+			$label = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
+
+			$field_args = array(
+				// Add a control to the field at the same time
+				'control' => array(
+					'type'    => $control_type,
+					'section' => 'example-my-fields',
+					'label'   => $label,
+				),
+			);
+
+			if ( in_array( $control_type, $option_types ) ) {
+				$field_args['control']['choices'] = array(
+					''         => 'N/A',
+					'option-1' => 'Option 1',
+					'option-2' => 'Option 2',
+					'option-3' => 'Option 3',
+					'option-4' => 'Option 4',
+					'option-5' => 'Option 5',
+				);
+			}
+
+			$wp_fields->add_field( $this->object_type, $id, $this->object_name, $field_args );
+		}
+
+	}
+
+	/**
+	 * Handle saving of fields
+	 *
+	 * @param int|null    $item_id     Item ID
+	 * @param string|null $object_name Object name
+	 */
+	public function save_fields( $item_id = null, $object_name = null ) {
+
+		$screen_nonce = $this->object_type . '_' . $this->id;
+
+		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $screen_nonce ) ) {
+			/**
+			 * @var $wp_fields WP_Fields_API
+			 */
+			global $wp_fields;
+
+			$controls = $wp_fields->get_controls( $this->object_type, $object_name );
+
+			foreach ( $controls as $control ) {
+				if ( empty( $control->field ) ) {
+					continue;
+				}
+
+				// Pass $object_name and $item_id into control
+				$control->object_name = $object_name;
+				$control->item_id = $item_id;
+
+				$field = $control->field;
+
+				// Pass $object_name and $item_id into field
+				$field->object_name = $object_name;
+
+				// Get value from $_POST
+				$value = null;
+
+				if ( ! empty( $_POST[ 'field_' . $control->id ] ) ) {
+					$value = $_POST[ 'field_' . $control->id ];
+				}
+
+				// Sanitize
+				$value = $field->sanitize( $value );
+
+				// Save value
+				$field->save( $value, $item_id );
+			}
+		}
+
+	}
+
+	/**
+	 * Render screen for implementation
+	 */
+	protected function render() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$screen_nonce = $this->object_type . '_' . $this->id;
+
+		wp_nonce_field( $screen_nonce, 'wp_fields_api_fields_save' );
+
+		$sections = $wp_fields->get_sections( $this->object_type, $this->object_name, $this->id );
+
+		if ( ! empty( $sections ) ) {
+			?>
+				<div class="screen-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-screen">
+					<?php
+						foreach ( $sections as $section ) {
+							$this->render_section( $section, $this->item_id, $this->object_name );
+						}
+					?>
+				</div>
+			<?php
+		}
+
+	}
+
+	/**
+	 * Render section for implementation
+	 *
+	 * @param WP_Fields_API_Section $section     Section object
+	 * @param int|null              $item_id     Item ID
+	 * @param string|null           $object_name Object name
+	 */
+	public function render_section( $section, $item_id = null, $object_name = null ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Pass $object_name and $item_id to Section
+		$section->object_name = $object_name;
+		$section->item_id     = $item_id;
+
+		$controls = $wp_fields->get_controls( $this->object_type, $section->object_name, $section->id );
+
+		if ( ! empty( $controls ) ) {
+			$content = $section->get_content();
+
+			if ( $content && $section->display_title ) {
+				?>
+				<h3><?php echo $content; ?></h3>
+				<?php
+			}
+
+			?>
+			<table class="form-table section-<?php echo esc_attr( $section->id ); ?>-wrap fields-api-section">
+				<?php
+					foreach ( $controls as $control ) {
+						$this->render_control( $control, $item_id, $section->object_name );
+					}
+				?>
+			</table>
+			<?php
+		}
+
+	}
+
+	/**
+	 * Render control for implementation
+	 *
+	 * @param WP_Fields_API_Control $control     Control object
+	 * @param int|null              $item_id     Item ID
+	 * @param string|null           $object_name Object name
+	 */
+	public function render_control( $control, $item_id = null, $object_name = null ) {
+
+		// Pass $object_name and $item_id to Control
+		$control->object_name = $object_name;
+		$control->item_id     = $item_id;
+
+		$label       = trim( $control->label );
+		$description = trim( $control->description );
+
+		// Avoid outputting them in render_content()
+		$control->label       = '';
+		$control->description = '';
+
+		// Setup field id / name
+		$control->input_attrs['id']   = 'field-' . $control->id;
+		$control->input_attrs['name'] = 'field_' . $control->id;
+		?>
+			<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
+				<th>
+					<?php if ( 0 < strlen( $label ) ) { ?>
+						<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php echo esc_html( $label ); ?></label>
+					<?php } ?>
+				</th>
+				<td>
+					<?php $control->render_content(); ?>
+
+					<?php if ( 0 < strlen( $description ) ) { ?>
+						<p class="description"><?php echo wp_kses_post( $description ); ?></p>
+					<?php } ?>
+				</td>
+			</tr>
+		<?php
+
+	}
+
 }
