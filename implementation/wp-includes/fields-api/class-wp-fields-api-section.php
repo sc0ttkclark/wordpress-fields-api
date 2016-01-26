@@ -57,6 +57,14 @@ class WP_Fields_API_Section {
 	public $object_name = '';
 
 	/**
+	 * Whether or not to display the heading title for section on render
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public $display_title = true;
+
+	/**
 	 * Priority of the section which informs load order of sections.
 	 *
 	 * @access public
