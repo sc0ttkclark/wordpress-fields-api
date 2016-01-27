@@ -20,11 +20,12 @@ function example_my_user_address( $wp_fields ) {
 	//////////////////////
 
 	$section_id = 'address';
-
-	$wp_fields->add_section( $object_type, $section_id, $object_name, array(
+	$section_args = array(
 		'title'  => __( 'Address', 'my-text-domain' ), // @todo Update text domain
 		'screen' => $screen_id,
-	) );
+	);
+
+	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
 
 	// Address Line 1
 	$field_id = 'address_1';

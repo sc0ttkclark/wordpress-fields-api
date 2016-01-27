@@ -20,11 +20,12 @@ function example_my_user_starter( $wp_fields ) {
 	/////////////////////////
 
 	$section_id = ''; // @todo Fill in section ID
-
-	$wp_fields->add_section( $object_type, $section_id, $object_name, array(
+	$section_args = array(
 		'title'  => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
 		'screen' => $screen_id,
-	) );
+	);
+
+	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
 
 	// My Field
 	$field_id = '';
