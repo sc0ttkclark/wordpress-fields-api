@@ -73,11 +73,11 @@ function _wp_fields_api_implementations() {
 	require_once( $implementation_dir . 'class-wp-fields-api-screen-term.php' );
 	require_once( $implementation_dir . 'class-wp-fields-api-screen-term-add.php' );
 
-	WP_Fields_API_Screen_Term_Add::register( 'term', 'term-add' );
 	WP_Fields_API_Screen_Term::register( 'term', 'term-edit' );
+	WP_Fields_API_Screen_Term_Add::register( 'term', 'term-add' );
 
 }
-add_action( 'fields_register', '_wp_fields_api_implementations' );
+add_action( 'fields_register', '_wp_fields_api_implementations', 9 );
 
 /**
  * Implement Fields API User edit to override WP Core.
