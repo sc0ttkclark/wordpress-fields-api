@@ -12,11 +12,32 @@
 class WP_Fields_API_Screen_Term_Add extends WP_Fields_API_Screen_Term {
 
 	/**
-	 * Render section for implementation
-	 *
-	 * @param WP_Fields_API_Section $section     Section object
-	 * @param int|null              $item_id     Item ID
-	 * @param string|null           $object_name Object name
+	 * {@inheritdoc}
+	 */
+	public function save_fields( $item_id = null, $object_name = null ) {
+
+		$term_name = '';
+
+		// Get tag name
+		if ( isset( $_POST['tag-name'] ) ) {
+			$term_name = $_POST['tag-name'];
+		}
+
+		// Save new term
+		$success = wp_insert_term( $term_name, $object_name, $_POST );
+
+		// Return if not successful
+		if ( is_wp_error( $success ) ) {
+			return $success;
+		}
+
+		// Save additional fields
+		return parent::save_fields( $item_id, $object_name );
+
+	}
+
+	/**
+	 * {@inheritdoc}
 	 */
 	public function render_section( $section, $item_id = null, $object_name = null ) {
 
@@ -54,11 +75,7 @@ class WP_Fields_API_Screen_Term_Add extends WP_Fields_API_Screen_Term {
 	}
 
 	/**
-	 * Render control for implementation
-	 *
-	 * @param WP_Fields_API_Control $control     Control object
-	 * @param int|null              $item_id     Item ID
-	 * @param string|null           $object_name Object name
+	 * {@inheritdoc}
 	 */
 	public function render_control( $control, $item_id = null, $object_name = null ) {
 

@@ -37,7 +37,7 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 			// @todo Needs 'form-required' class added to control wrapper somehow
 			'control' => array(
 				'type'        => 'text',
-				// @todo Control name should be tag-name
+				// @todo Control name should be tag-name (only for Add New screen)
 				'id'          => $this->id . '-name',
 				'section'     => $this->id . '-main',
 				'label'       => __( 'Name' ),
@@ -178,6 +178,24 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 		 * @param string $taxonomy Current taxonomy slug.
 		 */
 		do_action( "{$taxonomy}_edit_form_fields", $tag, $taxonomy );
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function save_fields( $item_id = null, $object_name = null ) {
+
+		// Save new term
+		$success = wp_update_term( $item_id, $object_name, $_POST );
+
+		// Return if not successful
+		if ( is_wp_error( $success ) ) {
+			return $success;
+		}
+
+		// Save additional fields
+		return parent::save_fields( $item_id, $object_name );
 
 	}
 

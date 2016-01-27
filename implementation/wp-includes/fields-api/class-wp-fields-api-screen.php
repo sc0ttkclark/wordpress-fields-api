@@ -542,6 +542,8 @@ class WP_Fields_API_Screen {
 	 *
 	 * @param int|null    $item_id     Item ID
 	 * @param string|null $object_name Object name
+	 *
+	 * @return int|WP_Error|null New item ID, WP_Error if there was a problem, null if no $item_id used
 	 */
 	public function save_fields( $item_id = null, $object_name = null ) {
 
@@ -583,6 +585,8 @@ class WP_Fields_API_Screen {
 				$field->save( $value, $item_id );
 			}
 		}
+
+		return $item_id;
 
 	}
 

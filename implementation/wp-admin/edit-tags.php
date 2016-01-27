@@ -7,8 +7,8 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( ABSPATH . '/wp-admin/admin.php' ); // WP Fields API modification
-global $taxnow, $taxonomy; // WP Fields API modification
+require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Remove WP Fields API modification
+global $taxnow, $taxonomy; // @todo Remove WP Fields API modification
 
 if ( ! $taxnow )
 	wp_die( __( 'Invalid taxonomy' ) );
@@ -29,6 +29,25 @@ if ( ! current_user_can( $tax->cap->manage_terms ) ) {
 			403
 	);
 }
+
+/**
+ * WP Fields API implementation >>>
+ */
+
+/**
+ * @var $wp_fields WP_Fields_API
+ */
+global $wp_fields;
+
+// Get screen
+$screen_add = $wp_fields->get_screen( 'term', 'term-add' );
+
+// Set taxonomy object name
+$screen_add->object_name = $taxonomy;
+
+/**
+ * <<< WP Fields API implementation
+ */
 
 /**
  * $post_type is set when the WP_Terms_List_Table instance is created
@@ -77,7 +96,16 @@ switch ( $wp_list_table->current_action() ) {
 			);
 		}
 
-		$ret = wp_insert_term( $_POST['tag-name'], $taxonomy, $_POST );
+		/**
+		 * WP Fields API implementation >>>
+		 */
+
+		$ret = $screen_add->save_fields( 0, $taxonomy );
+
+		/**
+		 * <<< WP Fields API implementation
+		 */
+
 		$location = 'edit-tags.php?taxonomy=' . $taxonomy;
 		if ( 'post' != $post_type )
 			$location .= '&post_type=' . $post_type;
@@ -160,8 +188,15 @@ switch ( $wp_list_table->current_action() ) {
 			wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
-		// WP Fields API modification
+		/**
+		 * WP Fields API implementation >>>
+		 */
+
 		include( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tag-form.php' );
+
+		/**
+		 * <<< WP Fields API implementation
+		 */
 
 		include( ABSPATH . 'wp-admin/admin-footer.php' );
 
@@ -183,7 +218,21 @@ switch ( $wp_list_table->current_action() ) {
 		if ( ! $tag )
 			wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
 
-		$ret = wp_update_term( $tag_ID, $taxonomy, $_POST );
+		/**
+		 * WP Fields API implementation >>>
+		 */
+
+		// Get screen
+		$screen_edit = $wp_fields->get_screen( 'term', 'term-edit' );
+
+		// Set taxonomy object name
+		$screen_edit->object_name = $taxonomy;
+
+		$ret = $screen_edit->save_fields( $tag_ID, $taxonomy );
+
+		/**
+		 * <<< WP Fields API implementation
+		 */
 
 		$location = 'edit-tags.php?taxonomy=' . $taxonomy;
 		if ( 'post' != $post_type )
@@ -472,19 +521,8 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 * WP Fields API implementation >>>
 								 */
 
-								/**
-								 * @var $wp_fields WP_Fields_API
-								 */
-								global $wp_fields;
-
-								// Get screen
-								$screen = $wp_fields->get_screen( 'term', 'term-add' );
-
-								// Set taxonomy object name
-								$screen->object_name = $taxonomy;
-
 								// Render screen controls
-								$screen->maybe_render();
+								$screen_add->maybe_render();
 
 								/**
 								 * <<< WP Fields API implementation
