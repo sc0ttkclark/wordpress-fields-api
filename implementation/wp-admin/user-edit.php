@@ -7,8 +7,8 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( ABSPATH . '/wp-admin/admin.php' ); // WP Fields API modification
-global $user_id, $action, $wp_http_referer; // WP Fields API modification
+require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Remove WP Fields API modification
+global $user_id, $action, $wp_http_referer; // @todo Remove WP Fields API modification
 
 wp_reset_vars( array( 'action', 'user_id', 'wp_http_referer' ) );
 
@@ -23,6 +23,21 @@ elseif ( ! $user_id && ! IS_PROFILE_PAGE )
 	wp_die(__( 'Invalid user ID.' ) );
 elseif ( ! get_userdata( $user_id ) )
 	wp_die( __('Invalid user ID.') );
+
+/**
+ * WP Fields API implementation >>>
+ */
+
+/**
+ * @var $wp_fields WP_Fields_API
+ */
+global $wp_fields;
+
+$screen = $wp_fields->get_screen( 'user', 'user-edit' );
+
+/**
+ * <<< WP Fields API implementation
+ */
 
 wp_enqueue_script('user-profile');
 
@@ -67,7 +82,7 @@ $user_can_edit = current_user_can( 'edit_posts' ) || current_user_can( 'edit_pag
  *
  * @param object $user User data object
  */
-if ( ! function_exists( 'use_ssl_preference' ) ) { // WP Fields API modification
+if ( ! function_exists( 'use_ssl_preference' ) ) { // @todo Remove WP Fields API modification
 function use_ssl_preference($user) {
 ?>
 	<tr class="user-use-ssl-wrap">
@@ -76,7 +91,7 @@ function use_ssl_preference($user) {
 	</tr>
 <?php
 }
-} // WP Fields API modification
+} // @todo Remove WP Fields API modification
 
 /**
  * Filter whether to allow administrators on Multisite to edit every user.
@@ -127,44 +142,15 @@ check_admin_referer('update-user_' . $user_id);
 if ( !current_user_can('edit_user', $user_id) )
 	wp_die(__('You do not have permission to edit this user.'));
 
-if ( IS_PROFILE_PAGE ) {
-	/**
-	 * Fires before the page loads on the 'Your Profile' editing screen.
-	 *
-	 * The action only fires if the current user is editing their own profile.
-	 *
-	 * @since 2.0.0
-	 *
-	 * @param int $user_id The user ID.
-	 */
-	do_action( 'personal_options_update', $user_id );
-} else {
-	/**
-	 * Fires before the page loads on the 'Edit User' screen.
-	 *
-	 * @since 2.7.0
-	 *
-	 * @param int $user_id The user ID.
-	 */
-	do_action( 'edit_user_profile_update', $user_id );
-}
+/**
+ * WP Fields API implementation >>>
+ */
 
-// Update the email address in signups, if present.
-if ( is_multisite() ) {
-	$user = get_userdata( $user_id );
+$errors = $screen->save_fields( $user_id );
 
-	if ( $user->user_login && isset( $_POST[ 'email' ] ) && is_email( $_POST[ 'email' ] ) && $wpdb->get_var( $wpdb->prepare( "SELECT user_login FROM {$wpdb->signups} WHERE user_login = %s", $user->user_login ) ) ) {
-		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->signups} SET user_email = %s WHERE user_login = %s", $_POST[ 'email' ], $user_login ) );
-	}
-}
-
-// Update the user.
-$errors = edit_user( $user_id );
-
-// Grant or revoke super admin status if requested.
-if ( is_multisite() && is_network_admin() && !IS_PROFILE_PAGE && current_user_can( 'manage_network_options' ) && !isset($super_admins) && empty( $_POST['super_admin'] ) == is_super_admin( $user_id ) ) {
-	empty( $_POST['super_admin'] ) ? revoke_super_admin( $user_id ) : grant_super_admin( $user_id );
-}
+/**
+ * <<< WP Fields API implementation
+ */
 
 if ( !is_wp_error( $errors ) ) {
 	$redirect = add_query_arg( 'updated', true, get_edit_user_link( $user_id ) );
@@ -236,18 +222,12 @@ if ( ! IS_PROFILE_PAGE ) {
 <?php
 /**
  * WP Fields API implementation >>>
- * Original Lines 233-573
  */
+
 $profile_user = get_userdata( $user_id );
 
-/**
- * @var $wp_fields WP_Fields_API
- */
-global $wp_fields;
-
-$screen = $wp_fields->get_screen( 'user', 'user-edit' );
-
 $screen->maybe_render( $user_id );
+
 /**
  * <<< WP Fields API implementation
  */

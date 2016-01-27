@@ -45,10 +45,6 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 	 */
 	public function register_fields( $wp_fields ) {
 
-		// @todo Saving: Figure out compatibility with edit_user usage in user-edit.php
-		// @todo Saving: Hook into personal_options_update on save
-		// @todo Saving: Hook into edit_user_profile_update on save
-
 		$this->register_control_types( $wp_fields );
 
 		////////////////////////////
@@ -125,7 +121,6 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		) );
 
 		$field_args = array(
-			// @todo Needs validation callback
 			'control' => array(
 				'type'        => 'text',
 				'section'     => 'name',
@@ -215,7 +210,6 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		) );
 
 		$field_args = array(
-			// @todo Needs validation callback
 			'control' => array(
 				'type'        => 'user-email',
 				'section'     => 'contact-info',
@@ -369,6 +363,77 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		// Add example fields
 		parent::register_fields( $wp_fields );
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function save_fields( $item_id = null, $object_name = null ) {
+
+		/**
+		 * @var $wpdb wpdb
+		 */
+		global $wpdb;
+
+		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
+			/**
+			 * Fires before the page loads on the 'Your Profile' editing screen.
+			 *
+			 * The action only fires if the current user is editing their own profile.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param int $user_id The user ID.
+			 */
+			do_action( 'personal_options_update', $item_id );
+		} else {
+			/**
+			 * Fires before the page loads on the 'Edit User' screen.
+			 *
+			 * @since 2.7.0
+			 *
+			 * @param int $user_id The user ID.
+			 */
+			do_action( 'edit_user_profile_update', $item_id );
+		}
+
+		// Update the email address in signups, if present.
+		if ( is_multisite() ) {
+			$user = get_userdata( $item_id );
+
+			if ( $user && $user->user_login && isset( $_POST[ 'email' ] ) && is_email( $_POST[ 'email' ] ) ) {
+				$signup_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT signup_id FROM {$wpdb->signups} WHERE user_login = %s", $user->user_login ) );
+
+				if ( 0 < $signup_id ) {
+					$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->signups} SET user_email = %s WHERE signup_id = %d", $_POST['email'], $signup_id ) );
+				}
+			}
+		}
+
+		// Update the user.
+		$errors = edit_user( $item_id );
+
+		global $super_admins;
+
+		// Grant or revoke super admin status if requested.
+		if ( ! defined( 'IS_PROFILE_PAGE' ) || ! IS_PROFILE_PAGE ) {
+			if ( is_multisite() && is_network_admin() && current_user_can( 'manage_network_options' ) && ! isset( $super_admins ) && empty( $_POST['super_admin'] ) == is_super_admin( $item_id ) ) {
+				if ( empty( $_POST['super_admin'] ) ) {
+					revoke_super_admin( $item_id );
+				} else {
+					grant_super_admin( $item_id );
+				}
+			}
+		}
+
+		// Return if not successful
+		if ( is_wp_error( $errors ) ) {
+			return $errors;
+		}
+
+		// Save additional fields
+		return parent::save_fields( $item_id, $object_name );
 
 	}
 
