@@ -2,7 +2,7 @@
 
 ## What is an Implementation?
 
-Implementations are screens that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the render() and save_fields() methods.
+Implementations are screens that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the `$scree->render()` and `$screen->save_fields()` methods.
 
 ## Creating an Implementation class
 
@@ -114,7 +114,7 @@ $screen->save_fields( $item_id, $object_name );
 
 ## Including your Implementation
 
-If you are adding an implementation for a WordPress Admin screen, you'll want to add it to the wordpress-fields-api.php file inside the _wp_fields_api_implementations() function. Follow the same format as the ones already there.
+If you are adding an implementation for a WordPress Admin screen, you'll want to add it to the `wordpress-fields-api.php` file inside the `_wp_fields_api_implementations()` function. Follow the same format as the ones already there.
  
 Otherwise, you can add your implementation through the normal `fields_register` hook:
  
