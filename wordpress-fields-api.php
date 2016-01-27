@@ -77,7 +77,7 @@ function _wp_fields_api_implementations() {
 	WP_Fields_API_Screen_Term_Add::register( 'term', 'term-add' );
 
 }
-add_action( 'fields_register', '_wp_fields_api_implementations', 9 );
+add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
 
 /**
  * Implement Fields API User edit to override WP Core.
