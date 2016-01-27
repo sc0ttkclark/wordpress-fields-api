@@ -1,7 +1,5 @@
 # Fields API Implementations
 
-====
-
 ## What is an Implementation?
 
 Implementations are screens that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the render() and save_fields() methods.
