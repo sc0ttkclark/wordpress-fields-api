@@ -38,28 +38,36 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 		$control_args = array(
 			// @todo Needs validation callback
 			// @todo Needs 'form-required' class added to control wrapper somehow
+			'input_name'  => 'name',
 			'type'        => 'text',
 			'section'     => $this->id . '-main',
 			'label'       => __( 'Name' ),
 			'description' => __( 'The name is how it appears on your site.' ),
 			'fields'      => 'name',
+			'internal'    => true,
 		);
 
-		// @todo Control name should be tag-name (only for Add New screen)
+		if ( 'term-add' == $this->id ) {
+			$control_args['input_name'] = 'tag-name';
+		}
+
 		$wp_fields->add_control( $this->object_type, $this->id . '-name', null, $control_args );
 
 		$control_args = array(
+			'input_name'  => 'slug',
 			'type'                  => 'text',
 			'section'               => $this->id . '-main',
 			'label'                 => __( 'Slug' ),
 			'description'           => __( 'The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.' ),
 			'capabilities_callback' => array( $this, 'capability_is_global_terms_disabled' ),
 			'fields'                => 'slug',
+			'internal'              => true,
 		);
 
 		$wp_fields->add_control( $this->object_type, $this->id . '-slug', null, $control_args );
 
 		$control_args = array(
+			'input_name'  => 'parent',
 			'type'                         => 'dropdown-terms',
 			'section'                      => $this->id . '-main',
 			'label'                        => __( 'Parent' ),
@@ -70,11 +78,13 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 			'exclude_tree_current_item_id' => true,
 			'placeholder_text'             => __( 'None' ),
 			'fields'                       => 'parent',
+			'internal'                     => true,
 		);
 
 		$wp_fields->add_control( $this->object_type, $this->id . '-parent', null, $control_args );
 
 		$control_args = array(
+			'input_name'  => 'description',
 			'type'        => 'textarea',
 			'section'     => $this->id . '-main',
 			'label'       => __( 'Description' ),
@@ -84,6 +94,7 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 				'cols' => '40',
 			),
 			'fields'      => 'description',
+			'internal'    => true,
 		);
 
 		$wp_fields->add_control( $this->object_type, $this->id . '-description', null, $control_args );

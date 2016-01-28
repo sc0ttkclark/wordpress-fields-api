@@ -67,6 +67,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'description'           => __( 'Disable the visual editor when writing' ),
 				'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
 				'checkbox_value'        => 'false',
+				'internal'              => true,
 			),
 		);
 
@@ -79,6 +80,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'label'                 => __( 'Admin Color Scheme' ),
 				'description'           => __( 'Disable the visual editor when writing' ),
 				'capabilities_callback' => array( $this, 'capability_has_color_scheme_control' ),
+				'internal'              => true,
 			),
 		);
 
@@ -93,6 +95,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'description'           => __( 'Enable keyboard shortcuts for comment moderation.' ) . ' ' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">More information</a>' ),
 				'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
 				'checkbox_value'        => 'true',
+				'internal'              => true,
 			),
 		);
 
@@ -106,6 +109,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'label'          => __( 'Toolbar' ),
 				'description'    => __( 'Show Toolbar when viewing site' ),
 				'checkbox_value' => 'true',
+				'internal'       => true,
 			),
 		);
 
@@ -129,6 +133,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'input_attrs' => array(
 					'disabled' => 'disabled',
 				),
+				'internal'    => true,
 			),
 		);
 
@@ -140,20 +145,22 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'section'               => $this->id . '-name',
 				'label'                 => __( 'Role' ),
 				'capabilities_callback' => array( $this, 'capability_show_roles' ),
+				'internal'              => true,
 			),
 		);
 
 		$wp_fields->add_field( $this->object_type, 'role', null, $field_args );
 
 		$field_args = array(
-			'value_callback'        => array( $this, 'value_is_super_admin' ),
+			'value_callback' => array( $this, 'value_is_super_admin' ),
 			//'update_value_callback' => array( $this, 'update_value_is_super_admin' ),
-			'control'               => array(
+			'control'        => array(
 				'type'                  => 'user-super-admin',
 				'section'               => $this->id . '-name',
 				'label'                 => __( 'Super Admin' ),
 				'description'           => __( 'Grant this user super admin privileges for the Network.' ),
 				'capabilities_callback' => array( $this, 'capability_can_grant_super_admin' ),
+				'internal'              => true,
 			),
 		);
 
@@ -161,9 +168,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'control' => array(
-				'type'    => 'text',
-				'section' => $this->id . '-name',
-				'label'   => __( 'First Name' ),
+				'type'     => 'text',
+				'section'  => $this->id . '-name',
+				'label'    => __( 'First Name' ),
+				'internal' => true,
 			),
 		);
 
@@ -171,9 +179,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'control' => array(
-				'type'    => 'text',
-				'section' => $this->id . '-name',
-				'label'   => __( 'Last Name' ),
+				'type'     => 'text',
+				'section'  => $this->id . '-name',
+				'label'    => __( 'Last Name' ),
+				'internal' => true,
 			),
 		);
 
@@ -186,6 +195,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'section'     => $this->id . '-name',
 				'label'       => __( 'Nickname' ),
 				'description' => __( '(required)' ),
+				'internal'    => true,
 			),
 		);
 
@@ -193,9 +203,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'control' => array(
-				'type'    => 'user-display-name',
-				'section' => $this->id . '-name',
-				'label'   => __( 'Display name publicly as' ),
+				'type'     => 'user-display-name',
+				'section'  => $this->id . '-name',
+				'label'    => __( 'Display name publicly as' ),
+				'internal' => true,
 			),
 		);
 
@@ -217,6 +228,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'section'     => $this->id . '-contact-info',
 				'label'       => __( 'E-mail' ),
 				'description' => __( '(required)' ),
+				'internal'    => true,
 			),
 		);
 
@@ -224,9 +236,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'control' => array(
-				'type'    => 'text',
-				'section' => $this->id . '-contact-info',
-				'label'   => __( 'Website' ),
+				'type'     => 'text',
+				'section'  => $this->id . '-contact-info',
+				'label'    => __( 'Website' ),
+				'internal' => true,
 			),
 		);
 
@@ -249,9 +262,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 			$field_args = array(
 				'control' => array(
-					'type'    => 'text',
-					'section' => $this->id . '-contact-info',
-					'label'   => $label,
+					'type'     => 'text',
+					'section'  => $this->id . '-contact-info',
+					'label'    => $label,
+					'internal' => true,
 				),
 			);
 
@@ -279,6 +293,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 				'section'     => $this->id . '-about',
 				'label'       => __( 'Biographical Info' ),
 				'description' => __( 'Share a little biographical information to fill out your profile. This may be shown publicly.' ),
+				'internal'    => true,
 			),
 		);
 
@@ -296,9 +311,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'control' => array(
-				'type'    => 'user-password',
-				'section' => $this->id . '-account-management',
-				'label'   => __( 'Password' ),
+				'type'     => 'user-password',
+				'section'  => $this->id . '-account-management',
+				'label'    => __( 'Password' ),
+				'internal' => true,
 			),
 		);
 
@@ -306,9 +322,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'control' => array(
-				'type'    => 'user-sessions',
-				'section' => $this->id . '-account-management',
-				'label'   => __( 'Sessions' ),
+				'type'     => 'user-sessions',
+				'section'  => $this->id . '-account-management',
+				'label'    => __( 'Sessions' ),
+				'internal' => true,
 			),
 		);
 
@@ -355,9 +372,10 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$field_args = array(
 			'control' => array(
-				'type'    => 'user-capabilities',
-				'section' => 'additional-capabilities',
-				'label'   => __( 'Capabilities' ),
+				'type'     => 'user-capabilities',
+				'section'  => 'additional-capabilities',
+				'label'    => __( 'Capabilities' ),
+				'internal' => true,
 			),
 		);
 
@@ -404,7 +422,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		if ( is_multisite() ) {
 			$user = get_userdata( $item_id );
 
-			if ( $user && $user->user_login && isset( $_POST[ 'email' ] ) && is_email( $_POST[ 'email' ] ) ) {
+			if ( $user && $user->user_login && isset( $_POST['email'] ) && is_email( $_POST['email'] ) ) {
 				$signup_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT signup_id FROM {$wpdb->signups} WHERE user_login = %s", $user->user_login ) );
 
 				if ( 0 < $signup_id ) {
