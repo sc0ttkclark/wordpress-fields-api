@@ -14,10 +14,27 @@ Please note: This plugin is still in the early stages of development and should 
 * [Posts about the WP Fields API on the Official WordPress.org Development blog](https://make.wordpress.org/core/tag/fields-api/)
 * [Architecture Documentation](https://docs.google.com/document/d/17yUTO_vlkC7P4_2c6dIDxa5jQbXvfV9SofC7_GOwFME/edit)
 
+## Documentation
+
+* [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md)
+* [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)
+
+### Example Code
+
+**User Profile Screen:**
+
+* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/_starter.php)
+* [Address section and fields example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/address.php)
+
+**Term Add / Edit Screen:**
+
+* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/term/_starter.php)
+
+
 ## Requirements
 
-* WordPress 4.3.x - No previous or more recent major version can be 100% supported and confirmed as working.
-* Fields API installed as a plugin
+* WordPress 4.4 - No previous or more recent major version can be 100% supported and confirmed as working.
+* Fields API installed as a [plugin](https://wordpress.org/plugin/fields-api/)
 
 Every Fields API release has to be based off of the latest WordPress stable release. This means that over time, we can only support the last stable release of WordPress.
 
@@ -33,16 +50,15 @@ Each of the APIs that this aims to unite all have the same essential needs. Base
 
 I am not focusing on any UI aspects at the moment besides implementation of the API underneath getting the field data for UI to use in core itself. It will be easier to tackle the API and the UI separately for both the purpose of development and core inclusion.
 
-## Unknowns / To dos
+## Where we need help
 
 There are still a lot of areas the API is not represented in code or in examples.
 
 [Check out a full list of things we currently need help with](https://github.com/sc0ttkclark/wordpress-fields-api/labels/help%20wanted)
 
-* Control types need fleshing out
 * Implementations are [in development amongst a few contributors](https://github.com/sc0ttkclark/wordpress-fields-api/labels/implementation)
 * We need [use-cases and examples](https://github.com/sc0ttkclark/wordpress-fields-api/issues/22), to be fleshed out in `/examples/{implementation}/{example}.md` inside this repo
-* [Core Proposal for Merge into WP 4.5](https://github.com/sc0ttkclark/wordpress-fields-api/issues/35) needs to be written up
+* [Core Proposal for Merge into WP 4.6](https://github.com/sc0ttkclark/wordpress-fields-api/issues/35) needs to be written up
 
 ## Contributing
 
