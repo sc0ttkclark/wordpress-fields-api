@@ -123,7 +123,7 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			$screen->object_name = $taxonomy;
 
 			// Render screen controls
-			$screen->maybe_render();
+			$screen->maybe_render( $tag_ID, $taxonomy );
 
 			/**
 			 * <<< WP Fields API implementation

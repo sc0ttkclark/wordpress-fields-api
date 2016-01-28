@@ -522,7 +522,7 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 */
 
 								// Render screen controls
-								$screen_add->maybe_render();
+								$screen_add->maybe_render( 0, $taxonomy );
 
 								/**
 								 * <<< WP Fields API implementation
