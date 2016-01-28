@@ -133,6 +133,12 @@ class WP_Fields_API_Control {
 
 	/**
 	 * @access public
+	 * @var array
+	 */
+	public $wrap_attrs = array();
+
+	/**
+	 * @access public
 	 * @var string
 	 */
 	public $type = 'text';
@@ -507,8 +513,40 @@ class WP_Fields_API_Control {
 			$this->input_attrs['name'] = $input_name;
 		}
 
-		foreach ( $this->input_attrs as $attr => $value ) {
-			echo $attr . '="' . esc_attr( $value ) . '" ';
+		$this->render_attrs( $this->input_attrs );
+
+	}
+
+	/**
+	 * Render the custom attributes for the control's wrapper element.
+	 *
+	 * @access public
+	 */
+	public function wrap_attrs() {
+
+		$classes = 'form-field ' . $this->object_type . '-' . $this->id . '-wrap field-' . $this->id . '-wrap fields-api-control';
+
+		if ( isset( $this->wrap_attrs['class'] ) ) {
+			$classes .= ' ' . $this->wrap_attrs['class'];
+		}
+
+		$this->wrap_attrs['class'] = $classes;
+
+		$this->render_attrs( $this->wrap_attrs );
+
+	}
+
+	/**
+	 * Render HTML attributes safely to the screen.
+	 *
+	 * @access public
+	 *
+	 * @param array $attrs
+	 */
+	public function render_attrs( $attrs = array() ) {
+
+		foreach ( $attrs as $attr => $value ) {
+			echo esc_attr( $attr ) . '="' . esc_attr( $value ) . '" ';
 		}
 
 	}

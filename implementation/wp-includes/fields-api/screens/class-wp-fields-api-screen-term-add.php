@@ -90,15 +90,15 @@ class WP_Fields_API_Screen_Term_Add extends WP_Fields_API_Screen_Term {
 		$control->label       = '';
 		$control->description = '';
 
-		// Setup field id / name
-		$control->input_attrs['id']   = 'field-' . $control->id;
-		$control->input_attrs['name'] = 'field_' . $control->id;
+		$input_id = 'field-' . $control->id;
 
-		// @todo Handle form-required and other classes
+		if ( isset( $control->input_attrs['id'] ) ) {
+			$input_id = $control->input_attrs['id'];
+		}
 		?>
-			<div class="form-field term-<?php echo esc_attr( $control->id ); ?>-wrap field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
+			<div <?php $control->wrap_attrs(); ?>>
 				<?php if ( 0 < strlen( $label ) ) { ?>
-					<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php echo esc_html( $label ); ?></label>
+					<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $label ); ?></label>
 				<?php } ?>
 
 				<?php $control->render_content(); ?>

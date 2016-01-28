@@ -88,8 +88,6 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 	 * Render a JS template for the content of the color picker control.
 	 */
 	public function content_template() {
-
-		// @todo Figure out what to do for render_content vs content_template for purposes of Customizer vs other Fields implementations
 		?>
 		<# var defaultValue = '';
 		if ( data.defaultValue ) {

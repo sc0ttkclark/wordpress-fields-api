@@ -19,12 +19,6 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 		// Make sure primary term fields are registered
 		$this->register_term_fields( $wp_fields );
 
-		// @todo Saving: Figure out compatibility with wp_insert_term / wp_update_term usage in edit-tags.php
-		// @todo Saving: Hook into create_term on save, check $object_name
-		// @todo Saving: Hook into edit_term on save, check $object_name
-
-		// @todo General: Controls need to output name="...."
-
 		////////////////
 		// Core: Term //
 		////////////////
@@ -36,8 +30,6 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 		) );
 
 		$control_args = array(
-			// @todo Needs validation callback
-			// @todo Needs 'form-required' class added to control wrapper somehow
 			'input_name'  => 'name',
 			'type'        => 'text',
 			'section'     => $this->id . '-main',
@@ -45,6 +37,9 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 			'description' => __( 'The name is how it appears on your site.' ),
 			'fields'      => 'name',
 			'internal'    => true,
+			'wrap_attr'  => array(
+				'class' => 'form-required',
+			),
 		);
 
 		if ( 'term-add' == $this->id ) {

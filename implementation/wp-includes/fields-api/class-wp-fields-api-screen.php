@@ -688,11 +688,17 @@ class WP_Fields_API_Screen {
 		// Avoid outputting them in render_content()
 		$control->label       = '';
 		$control->description = '';
+
+		$input_id = 'field-' . $control->id;
+
+		if ( isset( $control->input_attrs['id'] ) ) {
+			$input_id = $control->input_attrs['id'];
+		}
 		?>
-			<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
+			<tr <?php $control->wrap_attrs(); ?>>
 				<th>
 					<?php if ( 0 < strlen( $label ) ) { ?>
-						<label for="field-<?php echo esc_attr( $control->id ); ?>"><?php echo esc_html( $label ); ?></label>
+						<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $label ); ?></label>
 					<?php } ?>
 				</th>
 				<td>

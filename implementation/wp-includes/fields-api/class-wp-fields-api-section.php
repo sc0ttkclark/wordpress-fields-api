@@ -372,8 +372,6 @@ class WP_Fields_API_Section {
 
 	/**
 	 * Render the section, and the controls that have been added to it.
-	 *
-	 * // @todo Merge render_template / print_template() from Customizer
 	 */
 	protected function render() {
 		echo esc_html( $this->title );
