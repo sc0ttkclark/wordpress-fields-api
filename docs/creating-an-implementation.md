@@ -47,6 +47,8 @@ class WP_Fields_API_Screen_My_XYZ extends WP_Fields_API_Screen {
 
 		// Do any custom saving you want to do here, or just run parent::save_fields()
 		
+		// You can return a WP_Error with your error(s) too
+		
 		// Run default save
 		return parent::save_fields( $item_id, $object_name );
 
