@@ -36,6 +36,14 @@ class WP_Fields_API_Control {
 	public $id = '';
 
 	/**
+	 * Override default Input name, defaults to $this->id.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $input_name = '';
+
+	/**
 	 * Object type.
 	 *
 	 * @access public
@@ -58,6 +66,14 @@ class WP_Fields_API_Control {
 	 * @var int|string
 	 */
 	public $item_id;
+
+	/**
+	 * Whether a control is registered from WordPress core
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public $internal = false;
 
 	/**
 	 * All fields tied to the control.
@@ -475,6 +491,21 @@ class WP_Fields_API_Control {
 	 * @access public
 	 */
 	public function input_attrs() {
+
+		// Setup field id / name
+		if ( ! isset( $this->input_attrs['id'] ) ) {
+			$this->input_attrs['id'] = 'field-' . $this->id;
+		}
+
+		if ( ! isset( $this->input_attrs['name'] ) ) {
+			$input_name = $this->id;
+
+			if ( ! empty( $this->input_name ) ) {
+				$input_name = $this->input_name;
+			}
+
+			$this->input_attrs['name'] = $input_name;
+		}
 
 		foreach ( $this->input_attrs as $attr => $value ) {
 			echo $attr . '="' . esc_attr( $value ) . '" ';

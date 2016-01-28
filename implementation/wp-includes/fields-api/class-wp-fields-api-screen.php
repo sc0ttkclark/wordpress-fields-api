@@ -559,7 +559,7 @@ class WP_Fields_API_Screen {
 			$controls = $wp_fields->get_controls( $this->object_type, $object_name );
 
 			foreach ( $controls as $control ) {
-				if ( empty( $control->field ) ) {
+				if ( empty( $control->field ) || $control->internal ) {
 					continue;
 				}
 
@@ -575,8 +575,14 @@ class WP_Fields_API_Screen {
 				// Get value from $_POST
 				$value = null;
 
-				if ( ! empty( $_POST[ $control->id ] ) ) {
-					$value = $_POST[ $control->id ];
+				$input_name = $control->id;
+
+				if ( ! empty( $control->input_name ) ) {
+					$input_name = $control->input_name;
+				}
+
+				if ( ! empty( $_POST[ $input_name ] ) ) {
+					$value = $_POST[ $input_name ];
 				}
 
 				// Sanitize
@@ -682,10 +688,6 @@ class WP_Fields_API_Screen {
 		// Avoid outputting them in render_content()
 		$control->label       = '';
 		$control->description = '';
-
-		// Setup field id / name
-		$control->input_attrs['id']   = 'field-' . $control->id;
-		$control->input_attrs['name'] = $control->id;
 		?>
 			<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
 				<th>
