@@ -866,7 +866,7 @@ final class WP_Fields_API {
 		if ( ! empty( $control ) ) {
 			// Generate Control ID if not set
 			if ( empty( $control['id'] ) ) {
-				$control['id'] = 'control_' . sanitize_key( $object_type ) . '_' . sanitize_key( $object_name ) . '_' . sanitize_key( $id );
+				$control['id'] = sanitize_key( $id );
 			}
 
 			// Get Control ID
