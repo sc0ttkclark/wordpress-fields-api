@@ -2,7 +2,7 @@
 
 ## What is an Implementation?
 
-Implementations are screens that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the `$scree->render()` and `$screen->save_fields()` methods.
+Implementations are screens that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the `$screen->maybe_render()` and `$screen->save_fields()` methods.
 
 ## Creating an Implementation class
 
@@ -102,7 +102,7 @@ $screen = $wp_fields->get_screen( $object_type, $screen_id, $object_name );
 $item_id = 0;
 
 // Render screen controls
-$screen->render( $item_id, $object_name );
+$screen->maybe_render( $item_id, $object_name );
 ```
 
 ## Saving data for your screen
