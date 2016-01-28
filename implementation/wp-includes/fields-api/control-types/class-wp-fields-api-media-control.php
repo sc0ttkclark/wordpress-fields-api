@@ -5,13 +5,6 @@
  * @see WP_Fields_API_Control
  */
 class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
-	/**
-	 * Control type.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $type = 'media';
 
 	/**
 	 * Media control mime type.

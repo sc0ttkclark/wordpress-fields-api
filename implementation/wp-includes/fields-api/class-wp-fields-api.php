@@ -1560,7 +1560,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
-		$this->register_control_type( 'media_file', 'WP_Fields_API_Media_File_Control' );
+		$this->register_control_type( 'media-file', 'WP_Fields_API_Media_File_Control' );
 
 		/**
 		 * Fires once WordPress has loaded, allowing control types to be registered.

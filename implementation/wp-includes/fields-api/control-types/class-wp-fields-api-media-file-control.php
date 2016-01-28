@@ -5,7 +5,7 @@
  * @see WP_Fields_API_Media_Control
  */
 class WP_Fields_API_Media_File_Control extends WP_Fields_API_Media_Control {
-	public $type          = 'media_file';
+
 	public $mime_type     = '';
 	public $button_labels = array();
 
