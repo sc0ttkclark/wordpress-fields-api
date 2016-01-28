@@ -36,6 +36,6 @@ Use of object names can be used by custom object types at their discretion.
 
 The default object name is based on the object type, it adds an underscore to the object type -- `_{$object_type}`
 
-When no object name is provided (or it matches the default object name) then those screens/sections/controls/fields apply to all object names for an object type and will be inherited.
+When no object name is provided (or it matches the default object name) then those forms/sections/controls/fields apply to all object names for an object type and will be inherited.
 
-An example of that can be seen in the `WP_Fields_API_Screen_Term` implementation class, which adds the term `name`, `slug`, `parent`, and `description` fields to *all* taxonomies. Visibility ultimately rests with the section or control capabilities callback, which can further limit access to a specific section or control and prevent them from being viewed/used.
+An example of that can be seen in the `WP_Fields_API_Form_Term` implementation class, which adds the term `name`, `slug`, `parent`, and `description` fields to *all* taxonomies. Visibility ultimately rests with the section or control capabilities callback, which can further limit access to a specific section or control and prevent them from being viewed/used.

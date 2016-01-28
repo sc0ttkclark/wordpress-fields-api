@@ -16,7 +16,7 @@
  *
  * @see WP_Customize_Manager
  */
-class WP_Customize_Panel extends WP_Fields_API_Screen {
+class WP_Customize_Panel extends WP_Fields_API_Form {
 
 	/**
 	 * Object type.
@@ -53,16 +53,16 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 
 		parent::__construct( $this->object_type, $id, $args );
 
-		if ( ! has_filter( "fields_api_screen_active_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_panel_active' ) ) ) {
-			add_filter( "fields_api_screen_active_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_panel_active' ), 10, 2 );
+		if ( ! has_filter( "fields_api_form_active_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_panel_active' ) ) ) {
+			add_filter( "fields_api_form_active_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_panel_active' ), 10, 2 );
 		}
 
-		if ( ! has_action( "fields_api_render_screen_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_render_panel' ) ) ) {
-			add_action( "fields_api_render_screen_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_render_panel' ) );
+		if ( ! has_action( "fields_api_render_form_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_render_panel' ) ) ) {
+			add_action( "fields_api_render_form_{$this->object_type}", array( 'WP_Customize_Panel', 'customize_render_panel' ) );
 		}
 
 		if ( '' !== $this->id ) {
-			add_action( "fields_api_render_screen_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
+			add_action( "fields_api_render_form_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
 		}
 
 	}
@@ -72,12 +72,12 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 	 *
 	 * @access public
 	 *
-	 * @param bool                 $active  Whether the Fields API screen is active.
-	 * @param WP_Fields_API_Screen  $screen {@see WP_Fields_API_Screen} instance.
+	 * @param bool                 $active  Whether the Fields API form is active.
+	 * @param WP_Fields_API_Form  $form {@see WP_Fields_API_Form} instance.
 	 *
 	 * @return bool Whether the panel is active to the current preview.
 	 */
-	public static function customize_panel_active( $active, $screen ) {
+	public static function customize_panel_active( $active, $form ) {
 
 		/**
 		 * Filter response of {@see WP_Customize_Panel::active()}.
@@ -85,9 +85,9 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 		 * @since 4.1.0
 		 *
 		 * @param bool                 $active  Whether the Customizer panel is active.
-		 * @param WP_Customize_Panel   $screen {@see WP_Customize_Panel} instance.
+		 * @param WP_Customize_Panel   $form {@see WP_Customize_Panel} instance.
 		 */
-		$active = apply_filters( 'customize_panel_active', $active, $screen );
+		$active = apply_filters( 'customize_panel_active', $active, $form );
 
 		return $active;
 
@@ -96,18 +96,18 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 	/**
 	 * Backwards compatibility for fields_api_render_panel
 	 *
-	 * @param WP_Customize_Panel $screen {@see WP_Fields_API_Screen} instance.
+	 * @param WP_Customize_Panel $form {@see WP_Fields_API_Form} instance.
 	 */
-	public static function customize_render_panel( $screen ) {
+	public static function customize_render_panel( $form ) {
 
 		/**
 		 * Fires before rendering a Customizer panel.
 		 *
 		 * @since 4.0.0
 		 *
-		 * @param WP_Customize_Panel $screen WP_Customize_Panel instance.
+		 * @param WP_Customize_Panel $form WP_Customize_Panel instance.
 		 */
-		do_action( 'customize_render_panel', $screen );
+		do_action( 'customize_render_panel', $form );
 
 	}
 
@@ -227,7 +227,7 @@ class WP_Customize_Panel extends WP_Fields_API_Screen {
 /**
  * Customize Nav Menus Panel Class
  *
- * Needed to add screen options.
+ * Needed to add form options.
  *
  * @since 4.3.0
  *
@@ -245,18 +245,18 @@ class WP_Customize_Nav_Menus_Panel extends WP_Customize_Panel {
 	public $type = 'nav_menus';
 
 	/**
-	 * Render screen options for Menus.
+	 * Render form options for Menus.
 	 *
 	 * @since 4.3.0
 	 * @access public
 	 */
-	public function render_screen_options() {
-		// Essentially adds the screen options.
+	public function render_form_options() {
+		// Essentially adds the form options.
 		add_filter( 'manage_nav-menus_columns', array( $this, 'wp_nav_menu_manage_columns' ) );
 
-		// Display screen options.
+		// Display form options.
 		$screen = WP_Screen::get( 'nav-menus.php' );
-		$screen->render_screen_options();
+		$screen->render_form_options();
 	}
 
 	/**
@@ -308,14 +308,14 @@ class WP_Customize_Nav_Menus_Panel extends WP_Customize_Panel {
 				<button type="button" class="customize-help-toggle dashicons dashicons-editor-help" aria-expanded="false">
 					<span class="screen-reader-text"><?php _e( 'Help' ); ?></span>
 				</button>
-				<button type="button" class="customize-screen-options-toggle" aria-expanded="false">
+				<button type="button" class="customize-form-options-toggle" aria-expanded="false">
 					<span class="screen-reader-text"><?php _e( 'Menu Options' ); ?></span>
 				</button>
 			</div>
 			<# if ( data.description ) { #>
 			<div class="description customize-panel-description">{{{ data.description }}}</div>
 			<# } #>
-			<?php $this->render_screen_options(); ?>
+			<?php $this->render_form_options(); ?>
 		</li>
 	<?php
 	}

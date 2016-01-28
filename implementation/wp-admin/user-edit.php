@@ -33,7 +33,7 @@ elseif ( ! get_userdata( $user_id ) )
  */
 global $wp_fields;
 
-$screen = $wp_fields->get_screen( 'user', 'user-edit' );
+$form = $wp_fields->get_form( 'user', 'user-edit' );
 
 /**
  * <<< WP Fields API implementation
@@ -146,7 +146,7 @@ if ( !current_user_can('edit_user', $user_id) )
  * WP Fields API implementation >>>
  */
 
-$errors = $screen->save_fields( $user_id );
+$errors = $form->save_fields( $user_id );
 
 /**
  * <<< WP Fields API implementation
@@ -226,7 +226,7 @@ if ( ! IS_PROFILE_PAGE ) {
 
 $profile_user = get_userdata( $user_id );
 
-$screen->maybe_render( $user_id );
+$form->maybe_render( $user_id );
 
 /**
  * <<< WP Fields API implementation

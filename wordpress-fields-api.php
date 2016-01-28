@@ -62,19 +62,19 @@ add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
  */
 function _wp_fields_api_implementations() {
 
-	$implementation_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/screens/';
+	$implementation_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/forms/';
 
 	// User
-	require_once( $implementation_dir . 'class-wp-fields-api-screen-user-edit.php' );
+	require_once( $implementation_dir . 'class-wp-fields-api-form-user-edit.php' );
 
-	WP_Fields_API_Screen_User_Edit::register( 'user', 'user-edit' );
+	WP_Fields_API_Form_User_Edit::register( 'user', 'user-edit' );
 
 	// Term
-	require_once( $implementation_dir . 'class-wp-fields-api-screen-term.php' );
-	require_once( $implementation_dir . 'class-wp-fields-api-screen-term-add.php' );
+	require_once( $implementation_dir . 'class-wp-fields-api-form-term.php' );
+	require_once( $implementation_dir . 'class-wp-fields-api-form-term-add.php' );
 
-	WP_Fields_API_Screen_Term::register( 'term', 'term-edit' );
-	WP_Fields_API_Screen_Term_Add::register( 'term', 'term-add' );
+	WP_Fields_API_Form_Term::register( 'term', 'term-edit' );
+	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );

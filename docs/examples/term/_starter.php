@@ -12,8 +12,8 @@ function example_my_term_starter( $wp_fields ) {
 	// Object name: Category
 	$object_name = 'category'; // @todo Change to any taxonomy name
 
-	// Screen: Term Edit
-	$screen_id = 'term-edit'; // @todo Also available is term-add
+	// Form: Term Edit
+	$form_id = 'term-edit'; // @todo Also available is term-add
 
 	/////////////////////////
 	// Section: My Section //
@@ -22,7 +22,7 @@ function example_my_term_starter( $wp_fields ) {
 	$section_id = ''; // @todo Fill in section ID
 	$section_args = array(
 		'title'  => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
-		'screen' => $screen_id,
+		'form' => $form_id,
 	);
 
 	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );

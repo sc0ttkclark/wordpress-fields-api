@@ -146,7 +146,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 		$array['active'] = $this->active();
 
 		// Backwards compatibility
-		$array['panel'] = $array['screen'];
+		$array['panel'] = $array['form'];
 		$array['settings'] = $array['fields'];
 
 		return $array;

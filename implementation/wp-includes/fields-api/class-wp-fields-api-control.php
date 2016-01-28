@@ -92,7 +92,7 @@ class WP_Fields_API_Control {
 	public $field = 'default';
 
 	/**
-	 * The primary screen for the control (if there is one).
+	 * The primary form for the control (if there is one).
 	 *
 	 * @access public
 	 * @var string|WP_Fields_API_Section
@@ -100,12 +100,12 @@ class WP_Fields_API_Control {
 	public $section = '';
 
 	/**
-	 * The primary screen for the control (if there is one).
+	 * The primary form for the control (if there is one).
 	 *
 	 * @access public
-	 * @var string|WP_Fields_API_Screen
+	 * @var string|WP_Fields_API_Form
 	 */
-	public $screen = '';
+	public $form = '';
 
 	/**
 	 * @access public

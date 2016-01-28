@@ -17,7 +17,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Reset WP Fields instance for testing purposes
-		$wp_fields->remove_screen( true, true );
+		$wp_fields->remove_form( true, true );
 		$wp_fields->remove_section( true, true );
 		$wp_fields->remove_field( true, true );
 		$wp_fields->remove_control( true, true );
@@ -50,16 +50,16 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a section / screen
+		// Add a section / form
 		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Get containers for object type / name
 		$containers = $wp_fields->get_containers( 'post', 'my_custom_post_type' );
 
-		// There are two containers, the screen and the section
+		// There are two containers, the form and the section
 		$this->assertEquals( 2, count( $containers ) );
 
-		$this->assertArrayHasKey( 'my_test_screen', $containers );
+		$this->assertArrayHasKey( 'my_test_form', $containers );
 		$this->assertArrayHasKey( 'my_test_section', $containers );
 
 		// Get a containers that doesn't exist
@@ -87,251 +87,251 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a section / screen
+		// Add a section / form
 		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Get containers for object type / name
 		$containers = $wp_fields->get_containers( 'post', true );
 
-		// There are two containers, the screen and the section
+		// There are two containers, the form and the section
 		$this->assertEquals( 2, count( $containers ) );
 
 		$container_ids = wp_list_pluck( $containers, 'id' );
 
-		$this->assertContains( 'my_test_screen', $container_ids );
+		$this->assertContains( 'my_test_form', $container_ids );
 		$this->assertContains( 'my_test_section', $container_ids );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::add_screen()
+	 * Test WP_Fields_API::add_form()
 	 *
 	 * @param string $object_type
 	 * @param string $object_name
 	 */
-	public function test_add_screen( $object_type = 'post', $object_name = null ) {
+	public function test_add_form( $object_type = 'post', $object_name = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_screen( $object_type, 'my_test_screen', $object_name );
+		$wp_fields->add_form( $object_type, 'my_test_form', $object_name );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::add_screen()
+	 * Test WP_Fields_API::add_form()
 	 *
 	 * @param string $object_type
 	 * @param string $object_name
 	 */
-	public function test_add_screen_invalid( $object_type = 'post' ) {
+	public function test_add_form_invalid( $object_type = 'post' ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_screen( $object_type, null, null, array() );
+		$wp_fields->add_form( $object_type, null, null, array() );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::get_screens()
+	 * Test WP_Fields_API::get_forms()
 	 */
-	public function test_get_screens() {
+	public function test_get_forms() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( 'post', 'my_custom_post_type' );
+		// Add a form
+		$this->test_add_form( 'post', 'my_custom_post_type' );
 
-		// Get screens for object type / name
-		$screens = $wp_fields->get_screens( 'post', 'my_custom_post_type' );
+		// Get forms for object type / name
+		$forms = $wp_fields->get_forms( 'post', 'my_custom_post_type' );
 
-		$this->assertEquals( 1, count( $screens ) );
+		$this->assertEquals( 1, count( $forms ) );
 
-		$this->assertArrayHasKey( 'my_test_screen', $screens );
+		$this->assertArrayHasKey( 'my_test_form', $forms );
 
-		// Get a screen that doesn't exist
-		$screens = $wp_fields->get_screens( 'post', 'some_other_post_type' );
+		// Get a form that doesn't exist
+		$forms = $wp_fields->get_forms( 'post', 'some_other_post_type' );
 
-		$this->assertEquals( 0, count( $screens ) );
+		$this->assertEquals( 0, count( $forms ) );
 
-		// Get all screens for object type
-		$screens = $wp_fields->get_screens( 'post', true );
+		// Get all forms for object type
+		$forms = $wp_fields->get_forms( 'post', true );
 
-		$this->assertEquals( 1, count( $screens ) );
+		$this->assertEquals( 1, count( $forms ) );
 
-		$screen_ids = wp_list_pluck( $screens, 'id' );
+		$form_ids = wp_list_pluck( $forms, 'id' );
 
-		$this->assertContains( 'my_test_screen', $screen_ids );
+		$this->assertContains( 'my_test_form', $form_ids );
 
-		// Get all screens for all object types
-		$screens = $wp_fields->get_screens();
+		// Get all forms for all object types
+		$forms = $wp_fields->get_forms();
 
 		// Each array item is an object type with an array of object names
-		$this->assertEquals( 1, count( $screens ) );
+		$this->assertEquals( 1, count( $forms ) );
 
 		// Array keys are object types
-		$this->assertArrayHasKey( 'post', $screens );
+		$this->assertArrayHasKey( 'post', $forms );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::get_screens()
+	 * Test WP_Fields_API::get_forms()
 	 */
-	public function test_get_screens_no_object_name() {
+	public function test_get_forms_no_object_name() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( 'post' );
+		// Add a form
+		$this->test_add_form( 'post' );
 
-		// Get screens for object type / name
-		$screens = $wp_fields->get_screens( 'post' );
+		// Get forms for object type / name
+		$forms = $wp_fields->get_forms( 'post' );
 
-		$this->assertEquals( 1, count( $screens ) );
+		$this->assertEquals( 1, count( $forms ) );
 
-		$this->assertArrayHasKey( 'my_test_screen', $screens );
+		$this->assertArrayHasKey( 'my_test_form', $forms );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::get_screen()
+	 * Test WP_Fields_API::get_form()
 	 */
-	public function test_get_screen() {
+	public function test_get_form() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( 'post', 'my_custom_post_type' );
+		// Add a form
+		$this->test_add_form( 'post', 'my_custom_post_type' );
 
-		// Screen exists for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+		// Form exists for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form', 'my_custom_post_type' );
 
-		$this->assertNotEmpty( $screen );
+		$this->assertNotEmpty( $form );
 
-		$this->assertEquals( 'my_test_screen', $screen->id );
+		$this->assertEquals( 'my_test_form', $form->id );
 
-		// Screen doesn't exist for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen1' );
+		// Form doesn't exist for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form1' );
 
-		$this->assertEmpty( $screen );
+		$this->assertEmpty( $form );
 
-		// Screen doesn't exist for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen2', 'my_custom_post_type' );
+		// Form doesn't exist for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form2', 'my_custom_post_type' );
 
-		$this->assertEmpty( $screen );
+		$this->assertEmpty( $form );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::remove_screen()
+	 * Test WP_Fields_API::remove_form()
 	 */
-	public function test_remove_screen() {
+	public function test_remove_form() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( 'post', 'my_custom_post_type' );
+		// Add a form
+		$this->test_add_form( 'post', 'my_custom_post_type' );
 
-		// Screen exists for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+		// Form exists for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form', 'my_custom_post_type' );
 
-		$this->assertNotEmpty( $screen );
+		$this->assertNotEmpty( $form );
 
-		$this->assertEquals( 'my_test_screen', $screen->id );
+		$this->assertEquals( 'my_test_form', $form->id );
 
-		// Remove screen
-		$wp_fields->remove_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+		// Remove form
+		$wp_fields->remove_form( 'post', 'my_test_form', 'my_custom_post_type' );
 
-		// Screen no longer exists for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+		// Form no longer exists for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form', 'my_custom_post_type' );
 
-		$this->assertEmpty( $screen );
+		$this->assertEmpty( $form );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::remove_screen()
+	 * Test WP_Fields_API::remove_form()
 	 */
-	public function test_remove_screen_by_object_type() {
+	public function test_remove_form_by_object_type() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( 'post', 'my_custom_post_type' );
+		// Add a form
+		$this->test_add_form( 'post', 'my_custom_post_type' );
 
-		// Remove screen
-		$wp_fields->remove_screen( 'post', null, true );
+		// Remove form
+		$wp_fields->remove_form( 'post', null, true );
 
-		// Screen no longer exists for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+		// Form no longer exists for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form', 'my_custom_post_type' );
 
-		$this->assertEmpty( $screen );
+		$this->assertEmpty( $form );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::remove_screen()
+	 * Test WP_Fields_API::remove_form()
 	 */
-	public function test_remove_screen_default_object() {
+	public function test_remove_form_default_object() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( 'post' );
+		// Add a form
+		$this->test_add_form( 'post' );
 
-		// Remove screen
-		$wp_fields->remove_screen( 'post', 'my_test_screen' );
+		// Remove form
+		$wp_fields->remove_form( 'post', 'my_test_form' );
 
-		// Screen no longer exists for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen' );
+		// Form no longer exists for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form' );
 
-		$this->assertEmpty( $screen );
+		$this->assertEmpty( $form );
 
 	}
 
 	/**
-	 * Test WP_Fields_API::remove_screen()
+	 * Test WP_Fields_API::remove_form()
 	 */
-	public function test_remove_screen_by_object_name() {
+	public function test_remove_form_by_object_name() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( 'post', 'my_custom_post_type' );
+		// Add a form
+		$this->test_add_form( 'post', 'my_custom_post_type' );
 
-		// Remove screen
-		$wp_fields->remove_screen( 'post', true, 'my_custom_post_type' );
+		// Remove form
+		$wp_fields->remove_form( 'post', true, 'my_custom_post_type' );
 
-		// Screen no longer exists for this object type / name
-		$screen = $wp_fields->get_screen( 'post', 'my_test_screen', 'my_custom_post_type' );
+		// Form no longer exists for this object type / name
+		$form = $wp_fields->get_form( 'post', 'my_test_form', 'my_custom_post_type' );
 
-		$this->assertEmpty( $screen );
+		$this->assertEmpty( $form );
 
 	}
 
@@ -348,11 +348,11 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a screen
-		$this->test_add_screen( $object_type, $object_name );
+		// Add a form
+		$this->test_add_form( $object_type, $object_name );
 
 		$wp_fields->add_section( $object_type, 'my_test_section', $object_name, array(
-			'screen' => 'my_test_screen',
+			'form' => 'my_test_form',
 		) );
 
 	}
@@ -367,7 +367,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a screen
+		// Add a form
 		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Get sections for object type / name
@@ -382,8 +382,8 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$this->assertEquals( 0, count( $sections ) );
 
-		// Get sections by screen
-		$sections = $wp_fields->get_sections( 'post', 'my_custom_post_type', 'my_test_screen' );
+		// Get sections by form
+		$sections = $wp_fields->get_sections( 'post', 'my_custom_post_type', 'my_test_form' );
 
 		$this->assertEquals( 1, count( $sections ) );
 
@@ -418,7 +418,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a screen
+		// Add a form
 		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Section exists for this object type / name
@@ -450,7 +450,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a screen
+		// Add a form
 		$this->test_add_section( 'post', 'my_custom_post_type' );
 
 		// Section exists for this object type / name

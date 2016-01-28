@@ -2,12 +2,12 @@
 
 ## What is an Implementation?
 
-Implementations are screens that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the `$screen->maybe_render()` and `$screen->save_fields()` methods.
+Implementations are forms that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the `$form->maybe_render()` and `$form->save_fields()` methods.
 
 ## Creating an Implementation class
 
 ```php
-class WP_Fields_API_Screen_My_XYZ extends WP_Fields_API_Screen {
+class WP_Fields_API_Form_My_XYZ extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
@@ -36,12 +36,12 @@ class WP_Fields_API_Screen_My_XYZ extends WP_Fields_API_Screen {
 		// My Section //
 		////////////////
 
-		// May be useful to reference $this->id (Screen ID) if using across multiple object names
+		// May be useful to reference $this->id (Form ID) if using across multiple object names
 		$section_id = $this->id . '-my-section';
 		
 		$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, array(
 			'title'  => __( 'My Section', 'my-text-domain' ),
-			'screen' => $this->id,
+			'form' => $this->id,
 		) );
 
 		$field_id = 'my-field';
@@ -72,13 +72,13 @@ class WP_Fields_API_Screen_My_XYZ extends WP_Fields_API_Screen {
 
 	}
 	
-	// You may also look at WP_Fields_API_Screen::render_section() to customize markup used
-	// or WP_Fields_API_Screen::render_control() to customize markup used
+	// You may also look at WP_Fields_API_Form::render_section() to customize markup used
+	// or WP_Fields_API_Form::render_control() to customize markup used
 
 }
 ```
 
-## Rendering controls for your screen
+## Rendering controls for your form
 
 ```php
 /**
@@ -86,26 +86,26 @@ class WP_Fields_API_Screen_My_XYZ extends WP_Fields_API_Screen {
  */
 global $wp_fields;
 
-// Object type and Screen ID
+// Object type and Form ID
 $object_type = 'my-xyz';
-$screen_id = 'my-screen';
+$form_id = 'my-form';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
 $object_name = null;
 
-// Get the screen object
-$screen = $wp_fields->get_screen( $object_type, $screen_id, $object_name );
+// Get the form object
+$form = $wp_fields->get_form( $object_type, $form_id, $object_name );
 
 // This is the current item ID, like a Post ID, Term ID
 // Should be empty when adding new items
 $item_id = 0;
 
-// Render screen controls
-$screen->maybe_render( $item_id, $object_name );
+// Render form controls
+$form->maybe_render( $item_id, $object_name );
 ```
 
-## Saving data for your screen
+## Saving data for your form
 
 ```php
 /**
@@ -113,28 +113,28 @@ $screen->maybe_render( $item_id, $object_name );
  */
 global $wp_fields;
 
-// Object type and Screen ID
+// Object type and Form ID
 $object_type = 'my-xyz';
-$screen_id = 'my-screen';
+$form_id = 'my-form';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
 $object_name = null;
 
-// Get the screen object
-$screen = $wp_fields->get_screen( $object_type, $screen_id, $object_name );
+// Get the form object
+$form = $wp_fields->get_form( $object_type, $form_id, $object_name );
 
 // This is the current item ID, like a Post ID, Term ID
 // Should be empty when adding new items
 $item_id = 0;
 
-// Save screen fields
-$screen->save_fields( $item_id, $object_name );
+// Save form fields
+$form->save_fields( $item_id, $object_name );
 ```
 
 ## Including your Implementation
 
-If you are adding an implementation for a WordPress Admin screen, you'll want to add it to the `wordpress-fields-api.php` file inside the `_wp_fields_api_implementations()` function. Follow the same format as the ones already there.
+If you are adding an implementation for a WordPress Admin form, you'll want to add it to the `wordpress-fields-api.php` file inside the `_wp_fields_api_implementations()` function. Follow the same format as the ones already there.
  
 Otherwise, you can add your implementation through the normal `fields_register` hook:
  
@@ -147,18 +147,18 @@ function my_xyz_include_implementation() {
 	$implementation_dir = 'path/to/your/files/';
 
 	// Include your Implementation class
-	require_once( $implementation_dir . 'class-wp-fields-api-screen-my-xyz.php' );
+	require_once( $implementation_dir . 'class-wp-fields-api-form-my-xyz.php' );
 
-	// Object type and Screen ID
+	// Object type and Form ID
 	$object_type = 'my-xyz';
-	$screen_id = 'my-screen';
+	$form_id = 'my-form';
 	
 	// Set this to a specific post type, taxonomy,
 	// or comment type you want to register for
 	$object_name = null;
 	
 	// Run the registration of the encapsulated configuration
-	WP_Fields_API_Screen_My_XYZ::register( $object_type, $screen_id, $object_name );
+	WP_Fields_API_Form_My_XYZ::register( $object_type, $form_id, $object_name );
 
 }
 add_action( 'fields_register', 'my_xyz_include_implementation' );

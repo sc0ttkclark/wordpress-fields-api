@@ -12,9 +12,9 @@ Object Names are names of subsets of data, like Post Types, Taxonomies, or Comme
 
 See [Object Types and Names](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md) for more details
 
-## Screens
+## Forms
 
-Screens in the Fields API are more commonly linked to what appear in the WordPress Admin area as WP_Screen. A few come with the Fields API itself, but you can register new screens to your heart's content and output them wherever you'd like.
+Forms in the Fields API are more commonly linked to what appear in the WordPress Admin area as WP_Screen. A few come with the Fields API itself, but you can register new forms to your heart's content and output them wherever you'd like.
 
 See [Registering Fields](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md) for more details and examples.
  

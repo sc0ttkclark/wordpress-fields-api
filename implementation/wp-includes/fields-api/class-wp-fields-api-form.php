@@ -1,19 +1,19 @@
 <?php
 /**
- * WordPress Fields API Screen classes
+ * WordPress Fields API Form classes
  *
  * @package WordPress
  * @subpackage Fields_API
  */
 
 /**
- * Fields API Screen class.
+ * Fields API Form class.
  *
  * A UI container for sections, managed by WP_Fields_API.
  *
  * @see WP_Fields_API
  */
-class WP_Fields_API_Screen {
+class WP_Fields_API_Form {
 
 	/**
 	 * Incremented with each new class instantiation, then stored in $instance_number.
@@ -58,7 +58,7 @@ class WP_Fields_API_Screen {
 	public $object_name = '';
 
 	/**
-	 * Priority of the screen, defining the display order of screens and sections.
+	 * Priority of the form, defining the display order of forms and sections.
 	 *
 	 * @access public
 	 * @var integer
@@ -66,7 +66,7 @@ class WP_Fields_API_Screen {
 	public $priority = 160;
 
 	/**
-	 * Capability required for the screen.
+	 * Capability required for the form.
 	 *
 	 * @access public
 	 * @var string
@@ -74,7 +74,7 @@ class WP_Fields_API_Screen {
 	public $capability = 'edit_theme_options';
 
 	/**
-	 * Theme feature support for the screen.
+	 * Theme feature support for the form.
 	 *
 	 * @access public
 	 * @var string|array
@@ -82,7 +82,7 @@ class WP_Fields_API_Screen {
 	public $theme_supports = '';
 
 	/**
-	 * Title of the screen to show in UI.
+	 * Title of the form to show in UI.
 	 *
 	 * @access public
 	 * @var string
@@ -98,7 +98,7 @@ class WP_Fields_API_Screen {
 	public $description = '';
 
 	/**
-	 * Fields API sections for this screen.
+	 * Fields API sections for this form.
 	 *
 	 * @access public
 	 * @var array<WP_Fields_API_Section>
@@ -106,7 +106,7 @@ class WP_Fields_API_Screen {
 	public $sections = array();
 
 	/**
-	 * Type of this screen.
+	 * Type of this form.
 	 *
 	 * @access public
 	 * @var string
@@ -132,11 +132,11 @@ class WP_Fields_API_Screen {
 	 *
 	 * @access public
 	 *
-	 * @see WP_Fields_API_Screen::check_capabilities()
+	 * @see WP_Fields_API_Form::check_capabilities()
 	 *
 	 * @var callable Callback is called with one argument, the instance of
-	 *               WP_Fields_API_Screen, and returns bool to indicate whether
-	 *               the screen has capabilities to be used.
+	 *               WP_Fields_API_Form, and returns bool to indicate whether
+	 *               the form has capabilities to be used.
 	 */
 	public $capabilities_callback = '';
 
@@ -165,8 +165,8 @@ class WP_Fields_API_Screen {
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object_type   Object type.
-	 * @param string $id            A specific ID of the screen.
-	 * @param array  $args          Screen arguments.
+	 * @param string $id            A specific ID of the form.
+	 * @param array  $args          Form arguments.
 	 */
 	public function init( $object_type, $id, $args = array() ) {
 
@@ -204,15 +204,15 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Check whether screen is active to current Fields API preview.
+	 * Check whether form is active to current Fields API preview.
 	 *
 	 * @access public
 	 *
-	 * @return bool Whether the screen is active to the current preview.
+	 * @return bool Whether the form is active to the current preview.
 	 */
 	final public function active() {
 
-		$screen = $this;
+		$form = $this;
 		$active = true;
 
 		if ( is_callable( $this->active_callback ) ) {
@@ -220,20 +220,20 @@ class WP_Fields_API_Screen {
 		}
 
 		/**
-		 * Filter response of WP_Fields_API_Screen::active().
+		 * Filter response of WP_Fields_API_Form::active().
 		 *
 		 *
-		 * @param bool                $active  Whether the Fields API screen is active.
-		 * @param WP_Fields_API_Screen $screen   {@see WP_Fields_API_Screen} instance.
+		 * @param bool                $active  Whether the Fields API form is active.
+		 * @param WP_Fields_API_Form $form   {@see WP_Fields_API_Form} instance.
 		 */
-		$active = apply_filters( 'fields_api_screen_active_' . $this->object_type, $active, $screen );
+		$active = apply_filters( 'fields_api_form_active_' . $this->object_type, $active, $form );
 
 		return $active;
 
 	}
 
 	/**
-	 * Default callback used when invoking {@see WP_Fields_API_Screen::active()}.
+	 * Default callback used when invoking {@see WP_Fields_API_Form::active()}.
 	 *
 	 * Subclasses can override this with their specific logic, or they may
 	 * provide an 'active_callback' argument to the constructor.
@@ -267,9 +267,9 @@ class WP_Fields_API_Screen {
 
 	/**
 	 * Checks required user capabilities and whether the theme has the
-	 * feature support required by the screen.
+	 * feature support required by the form.
 	 *
-	 * @return bool False if theme doesn't support the screen or user can't change screen, otherwise true.
+	 * @return bool False if theme doesn't support the form or user can't change form, otherwise true.
 	 */
 	public function check_capabilities() {
 
@@ -292,9 +292,9 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Get the screen's content template for insertion into the Fields API screen.
+	 * Get the form's content template for insertion into the Fields API form.
 	 *
-	 * @return string Content for the screen.
+	 * @return string Content for the form.
 	 */
 	final public function get_content() {
 
@@ -311,7 +311,7 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Check capabilities and render the screen.
+	 * Check capabilities and render the form.
 	 *
 	 * @param int|null    $item_id Item ID
 	 * @param string|null $object_name Object name
@@ -329,31 +329,31 @@ class WP_Fields_API_Screen {
 		}
 
 		/**
-		 * Fires before rendering a Fields API screen.
+		 * Fires before rendering a Fields API form.
 		 *
-		 * @param WP_Fields_API_Screen $this WP_Fields_API_Screen instance.
+		 * @param WP_Fields_API_Form $this WP_Fields_API_Form instance.
 		 */
-		do_action( "fields_api_render_screen_{$this->object_type}", $this );
+		do_action( "fields_api_render_form_{$this->object_type}", $this );
 
 		/**
-		 * Fires before rendering a specific Fields API screen.
+		 * Fires before rendering a specific Fields API form.
 		 *
 		 * The dynamic portion of the hook name, `$this->id`, refers to
-		 * the ID of the specific Fields API screen to be rendered.
+		 * the ID of the specific Fields API form to be rendered.
 		 */
-		do_action( "fields_api_render_screen_{$this->object_type}_{$this->object_name}_{$this->id}" );
+		do_action( "fields_api_render_form_{$this->object_type}_{$this->object_name}_{$this->id}" );
 
 		$this->render();
 
 	}
 
 	/**
-	 * Render the screen's JS templates.
+	 * Render the form's JS templates.
 	 *
-	 * This function is only run for screen types that have been registered with
-	 * WP_Fields_API::register_screen_type().
+	 * This function is only run for form types that have been registered with
+	 * WP_Fields_API::register_form_type().
 	 *
-	 * @see WP_Fields_API::register_screen_type()
+	 * @see WP_Fields_API::register_form_type()
 	 */
 	public function print_template() {
 
@@ -362,12 +362,12 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * An Underscore (JS) template for rendering this screen's container.
+	 * An Underscore (JS) template for rendering this form's container.
 	 *
-	 * Class variables for this screen class are available in the `data` JS object;
-	 * export custom variables by overriding WP_Fields_API_Screen::json().
+	 * Class variables for this form class are available in the `data` JS object;
+	 * export custom variables by overriding WP_Fields_API_Form::json().
 	 *
-	 * @see WP_Fields_API_Screen::print_template()
+	 * @see WP_Fields_API_Form::print_template()
 	 *
 	 * @since 4.3.0
 	 * @access protected
@@ -379,12 +379,12 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * An Underscore (JS) template for this screen's content
+	 * An Underscore (JS) template for this form's content
 	 *
 	 * Class variables for this control class are available in the `data` JS object;
-	 * export custom variables by overriding {@see WP_Fields_API_Screen::to_json()}.
+	 * export custom variables by overriding {@see WP_Fields_API_Form::to_json()}.
 	 *
-	 * @see WP_Fields_API_Screen::print_template()
+	 * @see WP_Fields_API_Form::print_template()
 	 *
 	 * @access protected
 	 */
@@ -395,20 +395,20 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Register screens, sections, controls, and fields
+	 * Register forms, sections, controls, and fields
 	 *
 	 * @param string      $object_type
-	 * @param string      $screen_id
+	 * @param string      $form_id
 	 * @param null|string $object_name
 	 * @param array       $args
 	 *
-	 * @return WP_Fields_API_Screen
+	 * @return WP_Fields_API_Form
 	 */
-	public static function register( $object_type = null, $screen_id = null, $object_name = null, $args = array() ) {
+	public static function register( $object_type = null, $form_id = null, $object_name = null, $args = array() ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
-		 * @var $screen    WP_Fields_API_Screen
+		 * @var $form    WP_Fields_API_Form
 		 */
 		global $wp_fields;
 
@@ -419,19 +419,19 @@ class WP_Fields_API_Screen {
 
 		$class_name = get_called_class();
 
-		// Setup screen
-		$screen = new $class_name( $object_type, $screen_id, $args );
+		// Setup form
+		$form = new $class_name( $object_type, $form_id, $args );
 
-		// Add screen to Fields API
-		$wp_fields->add_screen( $screen->object_type, $screen, $screen->object_name );
+		// Add form to Fields API
+		$wp_fields->add_form( $form->object_type, $form, $form->object_name );
 
-		// Register control types for this screen
-		$screen->register_control_types( $wp_fields );
+		// Register control types for this form
+		$form->register_control_types( $wp_fields );
 
-		// Register fields for this screen
-		$screen->register_fields( $wp_fields );
+		// Register fields for this form
+		$form->register_fields( $wp_fields );
 
-		return $screen;
+		return $form;
 
 	}
 
@@ -447,7 +447,7 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Encapsulated registering of sections, controls, and fields for a screen
+	 * Encapsulated registering of sections, controls, and fields for a form
 	 *
 	 * @param WP_Fields_API $wp_fields
 	 */
@@ -460,7 +460,7 @@ class WP_Fields_API_Screen {
 		// Add section(s)
 		$wp_fields->add_section( $this->object_type, 'section-id', $this->object_name, array(
 			'title' => __( 'Section Heading' ),
-		    'screen' => $this->id,
+		    'form' => $this->id,
 		) );
 
 		$field_args = array(
@@ -484,7 +484,7 @@ class WP_Fields_API_Screen {
 		// Section
 		$wp_fields->add_section( $this->object_type, $this->id . '-example-my-fields', $this->object_name, array(
 			'title' => __( 'Fields API Example - My Fields' ),
-		    'screen' => $this->id,
+		    'form' => $this->id,
 		) );
 
 		// Add example for each control type
@@ -548,9 +548,9 @@ class WP_Fields_API_Screen {
 	 */
 	public function save_fields( $item_id = null, $object_name = null ) {
 
-		$screen_nonce = $this->object_type . '_' . $this->id;
+		$form_nonce = $this->object_type . '_' . $this->id;
 
-		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $screen_nonce ) ) {
+		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $form_nonce ) ) {
 			/**
 			 * @var $wp_fields WP_Fields_API
 			 */
@@ -598,7 +598,7 @@ class WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Render screen for implementation
+	 * Render form for implementation
 	 */
 	protected function render() {
 
@@ -607,15 +607,15 @@ class WP_Fields_API_Screen {
 		 */
 		global $wp_fields;
 
-		$screen_nonce = $this->object_type . '_' . $this->id;
+		$form_nonce = $this->object_type . '_' . $this->id;
 
-		wp_nonce_field( $screen_nonce, 'wp_fields_api_fields_save' );
+		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 
 		$sections = $wp_fields->get_sections( $this->object_type, $this->object_name, $this->id );
 
 		if ( ! empty( $sections ) ) {
 			?>
-				<div class="screen-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-screen">
+				<div class="form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
 					<?php
 						foreach ( $sections as $section ) {
 							$this->render_section( $section, $this->item_id, $this->object_name );

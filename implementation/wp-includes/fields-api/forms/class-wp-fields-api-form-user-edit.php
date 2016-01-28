@@ -1,15 +1,15 @@
 <?php
 /**
- * This is an implementation for Fields API for the User Edit Profile screen in the WordPress Dashboard
+ * This is an implementation for Fields API for the User Edit Profile form in the WordPress Dashboard
  *
  * @package    WordPress
  * @subpackage Fields_API
  */
 
 /**
- * Class WP_Fields_API_Screen_User_Edit
+ * Class WP_Fields_API_Form_User_Edit
  */
-class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
+class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
@@ -53,7 +53,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-personal-options', null, array(
 			'title'  => __( 'Personal Options' ),
-			'screen' => $this->id,
+			'form' => $this->id,
 			// @todo Needs action compatibility for personal_options( $profileuser )
 			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
 		) );
@@ -121,7 +121,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-name', null, array(
 			'title'  => __( 'Name' ),
-			'screen' => $this->id,
+			'form' => $this->id,
 		) );
 
 		$field_args = array(
@@ -218,7 +218,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-contact-info', null, array(
 			'title'  => __( 'Contact Info' ),
-			'screen' => $this->id,
+			'form' => $this->id,
 		) );
 
 		$field_args = array(
@@ -284,7 +284,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-about', null, array(
 			'title'  => $about_title,
-			'screen' => $this->id,
+			'form' => $this->id,
 		) );
 
 		$field_args = array(
@@ -305,7 +305,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-account-management', null, array(
 			'title'                 => __( 'Account Management' ),
-			'screen'                => $this->id,
+			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
 
@@ -340,7 +340,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		// @todo Figure out how best to run actions after section
 		//if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
 		/**
-		 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing screen.
+		 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing form.
 		 *
 		 * The action only fires if the current user is editing their own profile.
 		 *
@@ -351,7 +351,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		//do_action( 'show_user_profile', $profileuser );
 		//} else {
 		/**
-		 * Fires after the 'About the User' settings table on the 'Edit User' screen.
+		 * Fires after the 'About the User' settings table on the 'Edit User' form.
 		 *
 		 * @since 2.0.0
 		 *
@@ -366,7 +366,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, 'additional-capabilities', null, array(
 			'title'                 => __( 'Additional Capabilities' ),
-			'screen'                => $this->id,
+			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );
 
@@ -398,7 +398,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 
 		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
 			/**
-			 * Fires before the page loads on the 'Your Profile' editing screen.
+			 * Fires before the page loads on the 'Your Profile' editing form.
 			 *
 			 * The action only fires if the current user is editing their own profile.
 			 *
@@ -409,7 +409,7 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 			do_action( 'personal_options_update', $item_id );
 		} else {
 			/**
-			 * Fires before the page loads on the 'Edit User' screen.
+			 * Fires before the page loads on the 'Edit User' form.
 			 *
 			 * @since 2.7.0
 			 *
@@ -589,9 +589,9 @@ class WP_Fields_API_Screen_User_Edit extends WP_Fields_API_Screen {
 		 */
 		global $wp_fields;
 
-		$screen_obj = $wp_fields->get_screen( $section->object_type, $section->screen, $section->object_name );
+		$form_obj = $wp_fields->get_form( $section->object_type, $section->form, $section->object_name );
 
-		$profileuser = get_userdata( $screen_obj->item_id );
+		$profileuser = get_userdata( $form_obj->item_id );
 
 		$total_roles = count( $profileuser->roles );
 		$total_caps  = count( $profileuser->caps );
