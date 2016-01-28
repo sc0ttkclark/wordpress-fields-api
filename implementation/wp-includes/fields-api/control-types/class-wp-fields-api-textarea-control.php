@@ -19,7 +19,7 @@ class WP_Fields_API_Textarea_Control extends WP_Fields_API_Control {
 			if ( ! empty( $this->description ) ) : ?>
 				<span class="description fields-control-description"><?php echo $this->description; ?></span>
 			<?php endif; ?>
-			<textarea <?php $this->input_attrs(); ?> <?php $this->link(); ?>><?php echo esc_textarea( $this->value( $this->item_id ) ); ?></textarea>
+			<textarea <?php $this->input_attrs(); ?> <?php $this->link(); ?>><?php echo esc_textarea( $this->value() ); ?></textarea>
 		</label>
 		<?php
 

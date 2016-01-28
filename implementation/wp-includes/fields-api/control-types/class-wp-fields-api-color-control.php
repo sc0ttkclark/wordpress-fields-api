@@ -68,7 +68,7 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 
 		$this->input_attrs['class'] = 'color-picker-hex';
 		$this->input_attrs['placeholder'] = __( 'Hex Value' );
-		$this->input_attrs['data-default-color'] = $this->value( $this->item_id );
+		$this->input_attrs['data-default-color'] = $this->value();
 
 		?>
 		<label>
@@ -78,7 +78,7 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 			if ( ! empty( $this->description ) ) : ?>
 				<span class="description fields-control-description"><?php echo $this->description; ?></span>
 			<?php endif; ?>
-			<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value( $this->item_id ) ); ?>" <?php $this->link(); ?> />
+			<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
 		</label>
 		<?php
 

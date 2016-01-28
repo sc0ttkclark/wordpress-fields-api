@@ -490,6 +490,7 @@ class WP_Fields_API_Screen {
 		// Add example for each control type
 		$control_types = array(
 			'text',
+			'textarea',
 			'checkbox',
 			'multi-checkbox',
 			'radio',
@@ -574,8 +575,8 @@ class WP_Fields_API_Screen {
 				// Get value from $_POST
 				$value = null;
 
-				if ( ! empty( $_POST[ 'field_' . $control->id ] ) ) {
-					$value = $_POST[ 'field_' . $control->id ];
+				if ( ! empty( $_POST[ $control->id ] ) ) {
+					$value = $_POST[ $control->id ];
 				}
 
 				// Sanitize
@@ -684,7 +685,7 @@ class WP_Fields_API_Screen {
 
 		// Setup field id / name
 		$control->input_attrs['id']   = 'field-' . $control->id;
-		$control->input_attrs['name'] = 'field_' . $control->id;
+		$control->input_attrs['name'] = $control->id;
 		?>
 			<tr class="field-<?php echo esc_attr( $control->id ); ?>-wrap fields-api-control">
 				<th>
