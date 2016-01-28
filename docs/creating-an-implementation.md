@@ -12,6 +12,24 @@ class WP_Fields_API_Screen_My_XYZ extends WP_Fields_API_Screen {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function register_control_types( $wp_fields ) {
+	
+		// Not all implementations need control types, but if you need
+		// to register them, this method makes that easy
+	
+		$implementation_dir = 'path/to/your/files/';
+		
+		// Include control type(s)
+		require_once( $implementation_dir . 'class-wp-fields-api-my-xyz-type-control.php' );
+		
+		// Register control type(s)
+		$wp_fields->register_control_type( 'my-xyz-type', 'WP_Fields_API_My_XYZ_Type_Control' );
+	
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function register_fields( $wp_fields ) {
 	
 		////////////////
