@@ -30,6 +30,7 @@ function example_my_term_starter( $wp_fields ) {
 	// My Field
 	$field_id = '';
 	$field_args = array(
+		// You can register a control for this field at the same time
 		'control' => array(
 			'type'        => 'text', // @todo Change control type if needed
 			'section'     => $section_id,
