@@ -1,15 +1,15 @@
 <?php
 /*
-Plugin Name: WordPress Fields API
+Plugin Name: Fields API
 Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
-Description: WordPress Fields API prototype and proposal
-Version: 0.0.1
+Description: WordPress Fields API prototype and proposal for WordPress core
+Version: 0.1
 Author: Scott Kingsley Clark
 Author URI: http://scottkclark.com/
 License: GPL2+
 GitHub Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
 GitHub Branch: master
-Requires WP: 4.1
+Requires WP: 4.4
 */
 
 /**
