@@ -73,12 +73,12 @@ class WP_Fields_API_Section {
 	public $priority = 160;
 
 	/**
-	 * Screen in which to show the section, making it a sub-section.
+	 * Form in which to show the section, making it a sub-section.
 	 *
 	 * @access public
-	 * @var string|WP_Fields_API_Screen
+	 * @var string|WP_Fields_API_Form
 	 */
-	public $screen = '';
+	public $form = '';
 
 	/**
 	 * Capability required for the section.
@@ -215,11 +215,11 @@ class WP_Fields_API_Section {
 			$this->active_callback = array( $this, 'active_callback' );
 		}
 
-		/*if ( $this->screen ) {
-			$screen_obj = $wp_fields->get_screen( $this->object_type, $this->screen, $this->object_name );
+		/*if ( $this->form ) {
+			$form_obj = $wp_fields->get_form( $this->object_type, $this->form, $this->object_name );
 
-			if ( $screen_obj ) {
-				$this->screen = $screen_obj;
+			if ( $form_obj ) {
+				$this->form = $form_obj;
 			}
 		}*/
 
@@ -280,7 +280,7 @@ class WP_Fields_API_Section {
 	 */
 	public function json() {
 
-		$array = wp_array_slice_assoc( (array) $this, array( 'id', 'description', 'priority', 'screen', 'type' ) );
+		$array = wp_array_slice_assoc( (array) $this, array( 'id', 'description', 'priority', 'form', 'type' ) );
 		$array['title'] = html_entity_decode( $this->title, ENT_QUOTES, get_bloginfo( 'charset' ) );
 		$array['content'] = $this->get_content();
 		$array['active'] = $this->active();

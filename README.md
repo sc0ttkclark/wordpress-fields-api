@@ -23,12 +23,12 @@ Please note: This plugin is still in the early stages of development and should 
 
 ### Example Code
 
-**User Profile Screen:**
+**User Profile Form:**
 
 * [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/_starter.php)
 * [Address section and fields example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/address.php)
 
-**Term Add / Edit Screen:**
+**Term Add / Edit Form:**
 
 * [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/term/_starter.php)
 

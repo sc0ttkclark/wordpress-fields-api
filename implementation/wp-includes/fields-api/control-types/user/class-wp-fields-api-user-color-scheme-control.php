@@ -49,7 +49,7 @@ class WP_Fields_API_User_Color_Scheme_Control extends WP_Fields_API_Radio_Contro
 		$user_id = $this->item_id;
 
 		/**
-		 * Fires in the 'Admin Color Scheme' section of the user editing screen.
+		 * Fires in the 'Admin Color Scheme' section of the user editing form.
 		 *
 		 * The section is only enabled if a callback is hooked to the action,
 		 * and if there is more than one defined color scheme for the admin.

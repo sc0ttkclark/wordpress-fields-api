@@ -1,15 +1,15 @@
 <?php
 /**
- * This is an implementation for Fields API for the Term screens in the WordPress Dashboard
+ * This is an implementation for Fields API for the Term forms in the WordPress Dashboard
  *
  * @package    WordPress
  * @subpackage Fields_API
  */
 
 /**
- * Class WP_Fields_API_Screen_Term
+ * Class WP_Fields_API_Form_Term
  */
-class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
+class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
@@ -25,7 +25,7 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-main', null, array(
 			'title'         => __( 'Term' ),
-			'screen'        => $this->id,
+			'form'        => $this->id,
 			'display_title' => false,
 		) );
 
@@ -202,7 +202,7 @@ class WP_Fields_API_Screen_Term extends WP_Fields_API_Screen {
 	}
 
 	/**
-	 * Register term fields once for all term screens
+	 * Register term fields once for all term forms
 	 *
 	 * @param WP_Fields_API $wp_fields
 	 */

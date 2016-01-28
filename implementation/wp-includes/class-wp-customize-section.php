@@ -36,7 +36,7 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 	 * @var array Internal mapping of backwards compatible properties
 	 */
 	private $property_map = array(
-		'panel' => 'screen'
+		'panel' => 'form'
 	);
 
 	/**
@@ -222,9 +222,9 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 
 		$array = parent::json();
 
-		if ( $this->screen ) {
+		if ( $this->form ) {
 			/* translators: &#9656; is the unicode right-pointing triangle, and %s is the section title in the Customizer */
-			$array['customizeAction'] = sprintf( __( 'Customizing &#9656; %s' ), esc_html( $this->manager->get_panel( $this->screen )->title ) );
+			$array['customizeAction'] = sprintf( __( 'Customizing &#9656; %s' ), esc_html( $this->manager->get_panel( $this->form )->title ) );
 		} else {
 			$array['customizeAction'] = __( 'Customizing' );
 		}

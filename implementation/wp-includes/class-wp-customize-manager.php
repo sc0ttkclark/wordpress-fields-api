@@ -439,7 +439,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @return WP_Fields_API_Screen[]|WP_Fields_API_Section[]
+	 * @return WP_Fields_API_Form[]|WP_Fields_API_Section[]
 	 *
 	 * @uses WP_Fields_API::get_containers
 	 */
@@ -480,7 +480,7 @@ final class WP_Customize_Manager {
 	 * @since 4.0.0
 	 * @access public
 	 *
-	 * @return WP_Fields_API_Screen[] Panels.
+	 * @return WP_Fields_API_Form[] Panels.
 	 *
 	 * @uses WP_Fields_API::get_panels
 	 */
@@ -491,7 +491,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_screens( 'customizer', $this->get_customizer_object_name() );
+		return $wp_fields->get_forms( 'customizer', $this->get_customizer_object_name() );
 
 	}
 
@@ -743,7 +743,7 @@ final class WP_Customize_Manager {
 		$panels = $this->panels();
 
 		foreach ( $panels as $panel_id => $panel ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'screen', $id, $this->get_customizer_object_name() ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'form', $id, $this->get_customizer_object_name() ) ) {
 				continue;
 			}
 
@@ -1121,7 +1121,7 @@ final class WP_Customize_Manager {
 	 * @param WP_Customize_Panel|string $id   Customize Panel object, or Panel ID.
 	 * @param array                     $args Optional. Panel arguments. Default empty array.
 	 *
-	 * @uses WP_Fields_API::add_screen
+	 * @uses WP_Fields_API::add_form
 	 */
 	public function add_panel( $id, $args = array() ) {
 
@@ -1137,7 +1137,7 @@ final class WP_Customize_Manager {
 			$args = array();
 		}
 
-		$wp_fields->add_screen( 'customizer', $id, $this->get_customizer_object_name(), $args );
+		$wp_fields->add_form( 'customizer', $id, $this->get_customizer_object_name(), $args );
 
 	}
 
@@ -1150,7 +1150,7 @@ final class WP_Customize_Manager {
 	 * @param string $id Panel ID to get.
 	 * @return WP_Customize_Panel|void Requested panel instance, if set.
 	 *
-	 * @uses WP_Fields_API::get_screen
+	 * @uses WP_Fields_API::get_form
 	 */
 	public function get_panel( $id ) {
 
@@ -1159,7 +1159,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$panel = $wp_fields->get_screen( 'customizer', $id, $this->get_customizer_object_name() );
+		$panel = $wp_fields->get_form( 'customizer', $id, $this->get_customizer_object_name() );
 
 		if ( $panel && is_a( $panel, 'WP_Customize_Panel' ) ) {
 			return $panel;
@@ -1175,7 +1175,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @param string $id Panel ID to remove.
 	 *
-	 * @uses WP_Fields_API::remove_screen
+	 * @uses WP_Fields_API::remove_form
 	 */
 	public function remove_panel( $id ) {
 
@@ -1184,7 +1184,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_screen( 'customizer', $id, $this->get_customizer_object_name() );
+		$wp_fields->remove_form( 'customizer', $id, $this->get_customizer_object_name() );
 
 	}
 
@@ -1200,7 +1200,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @param string $panel Name of a custom panel which is a subclass of WP_Customize_Panel.
 	 *
-	 * @uses WP_Fields_API::register_screen_type
+	 * @uses WP_Fields_API::register_form_type
 	 */
 	public function register_panel_type( $panel ) {
 
@@ -1219,7 +1219,7 @@ final class WP_Customize_Manager {
 			$type = 'panel';
 		}
 
-		$wp_fields->register_screen_type( $type, $panel );
+		$wp_fields->register_form_type( $type, $panel );
 
 	}
 
@@ -1229,7 +1229,7 @@ final class WP_Customize_Manager {
 	 * @since 4.3.0
 	 * @access public
 	 *
-	 * @uses WP_Fields_API::render_screen_templates
+	 * @uses WP_Fields_API::render_form_templates
 	 */
 	public function render_panel_templates() {
 
@@ -1238,7 +1238,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->render_screen_templates();
+		$wp_fields->render_form_templates();
 
 	}
 

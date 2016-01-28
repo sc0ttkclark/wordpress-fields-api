@@ -22,12 +22,12 @@ final class WP_Fields_API {
 	protected static $containers = array();
 
 	/**
-	 * Registered Screens
+	 * Registered Forms
 	 *
 	 * @access protected
 	 * @var array
 	 */
-	protected static $screens = array();
+	protected static $forms = array();
 
 	/**
 	 * Registered Sections
@@ -54,12 +54,12 @@ final class WP_Fields_API {
 	protected static $controls = array();
 
 	/**
-	 * Screen types that may be rendered.
+	 * Form types that may be rendered.
 	 *
 	 * @access protected
 	 * @var array
 	 */
-	protected static $registered_screen_types = array();
+	protected static $registered_form_types = array();
 
 	/**
 	 * Section types that may be rendered.
@@ -86,7 +86,7 @@ final class WP_Fields_API {
 	protected static $registered_control_types = array();
 
 	/**
-	 * IDs for Screens, Sections, and Controls which are valid and have been prepared.
+	 * IDs for Forms, Sections, and Controls which are valid and have been prepared.
 	 *
 	 * @access protected
 	 * @var array
@@ -107,7 +107,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'class-wp-fields-api-field.php' );
 		require_once( $fields_api_dir . 'class-wp-fields-api-control.php' );
 		require_once( $fields_api_dir . 'class-wp-fields-api-section.php' );
-		require_once( $fields_api_dir . 'class-wp-fields-api-screen.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-form.php' );
 
 		// Include control types
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-textarea-control.php' );
@@ -146,7 +146,7 @@ final class WP_Fields_API {
 	/**
 	 * Trigger the `fields_register` action hook on `wp_loaded`.
 	 *
-	 * Fields, Sections, Screens, and Controls should be registered on this hook.
+	 * Fields, Sections, Forms, and Controls should be registered on this hook.
 	 *
 	 * @access public
 	 */
@@ -170,7 +170,7 @@ final class WP_Fields_API {
 	 * @param string|boolean|null $object_name   Object name (for post types and taxonomies).
 	 *                                           True for all containers for all object names.
 	 *
-	 * @return WP_Fields_API_Screen[]|WP_Fields_API_Section[]
+	 * @return WP_Fields_API_Form[]|WP_Fields_API_Section[]
 	 */
 	public function get_containers( $object_type = null, $object_name = null ) {
 
@@ -218,16 +218,16 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Get the registered screens.
+	 * Get the registered forms.
 	 *
 	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
-	 * @return WP_Fields_API_Screen[]
+	 * @return WP_Fields_API_Form[]
 	 */
-	public function get_screens( $object_type = null, $object_name = null ) {
+	public function get_forms( $object_type = null, $object_name = null ) {
 
 		$primary_object_name = '_' . $object_type;
 
@@ -236,68 +236,68 @@ final class WP_Fields_API {
 			$object_name = $primary_object_name;
 		}
 
-		$screens = array();
+		$forms = array();
 
 		if ( null === $object_type ) {
 			// Late init.
-			foreach ( self::$screens as $object_type => $object_names ) {
-				foreach ( $object_names as $object_name => $screens ) {
-					$this->get_screens( $object_type, $object_name );
+			foreach ( self::$forms as $object_type => $object_names ) {
+				foreach ( $object_names as $object_name => $forms ) {
+					$this->get_forms( $object_type, $object_name );
 				}
 			}
 
-			$screens = self::$screens;
-		} elseif ( isset( self::$screens[ $object_type ][ $object_name ] ) ) {
+			$forms = self::$forms;
+		} elseif ( isset( self::$forms[ $object_type ][ $object_name ] ) ) {
 			// Late init.
-			foreach ( self::$screens[ $object_type ][ $object_name ] as $id => $screen ) {
+			foreach ( self::$forms[ $object_type ][ $object_name ] as $id => $form ) {
 				// Late init
-				self::$screens[ $object_type ][ $object_name ][ $id ] = $this->setup_screen( $object_type, $id, $object_name, $screen );
+				self::$forms[ $object_type ][ $object_name ][ $id ] = $this->setup_form( $object_type, $id, $object_name, $form );
 			}
 
-			$screens = self::$screens[ $object_type ][ $object_name ];
+			$forms = self::$forms[ $object_type ][ $object_name ];
 
 			// Object name inheritance for getting data that covers all object names
 			if ( $primary_object_name !== $object_name ) {
-				$screens = array_merge( $this->get_screens( $object_type, $primary_object_name ), $screens );
+				$forms = array_merge( $this->get_forms( $object_type, $primary_object_name ), $forms );
 			}
 		} elseif ( true === $object_name ) {
-			// Get all screens.
+			// Get all forms.
 			// Late init.
-			foreach ( self::$screens[ $object_type ] as $object_name => $object_screens ) {
-				$screens = array_merge( $screens, array_values( $this->get_screens( $object_type, $object_name ) ) );
+			foreach ( self::$forms[ $object_type ] as $object_name => $object_forms ) {
+				$forms = array_merge( $forms, array_values( $this->get_forms( $object_type, $object_name ) ) );
 			}
 		} elseif ( $primary_object_name !== $object_name ) {
 			// Object name inheritance for getting data that covers all object names
-			$screens = $this->get_screens( $object_type, $primary_object_name );
+			$forms = $this->get_forms( $object_type, $primary_object_name );
 		}
 
-		return $screens;
+		return $forms;
 
 	}
 
 	/**
-	 * Add a field screen.
+	 * Add a field form.
 	 *
 	 * @access public
 	 *
 	 * @param string                      $object_type Object type.
-	 * @param WP_Fields_API_Screen|string $id          Field Screen object, or Screen ID.
+	 * @param WP_Fields_API_Form|string $id          Field Form object, or Form ID.
 	 * @param string                      $object_name Object name (for post types and taxonomies).
-	 * @param array                       $args        Optional. Screen arguments. Default empty array.
+	 * @param array                       $args        Optional. Form arguments. Default empty array.
 	 */
-	public function add_screen( $object_type, $id, $object_name = null, $args = array() ) {
+	public function add_form( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return;
 		}
 
-		if ( is_a( $id, 'WP_Fields_API_Screen' ) ) {
-			$screen = $id;
+		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
+			$form = $id;
 
-			$id = $screen->id;
+			$id = $form->id;
 		} else {
 			// Save for late init.
-			$screen = $args;
+			$form = $args;
 		}
 
 		// $object_name defaults to '_{$object_type}' for internal handling.
@@ -305,30 +305,30 @@ final class WP_Fields_API {
 			$object_name = '_' . $object_type;
 		}
 
-		if ( ! isset( self::$screens[ $object_type ] ) ) {
-			self::$screens[ $object_type ] = array();
+		if ( ! isset( self::$forms[ $object_type ] ) ) {
+			self::$forms[ $object_type ] = array();
 		}
 
-		if ( ! isset( self::$screens[ $object_type ][ $object_name ] ) ) {
-			self::$screens[ $object_type ][ $object_name ] = array();
+		if ( ! isset( self::$forms[ $object_type ][ $object_name ] ) ) {
+			self::$forms[ $object_type ][ $object_name ] = array();
 		}
 
-		self::$screens[ $object_type ][ $object_name ][ $id ] = $screen;
+		self::$forms[ $object_type ][ $object_name ][ $id ] = $form;
 
 	}
 
 	/**
-	 * Retrieve a field screen.
+	 * Retrieve a field form.
 	 *
 	 * @access public
 	 *
 	 * @param string $object_type Object type.
-	 * @param string $id          Screen ID to get.
+	 * @param string $id          Form ID to get.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *
-	 * @return WP_Fields_API_Screen|null Requested screen instance.
+	 * @return WP_Fields_API_Form|null Requested form instance.
 	 */
-	public function get_screen( $object_type, $id, $object_name = null ) {
+	public function get_form( $object_type, $id, $object_name = null ) {
 
 		$primary_object_name = '_' . $object_type;
 
@@ -337,78 +337,78 @@ final class WP_Fields_API {
 			$object_name = $primary_object_name;
 		}
 
-		$screen = null;
+		$form = null;
 
-		if ( isset( self::$screens[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$forms[ $object_type ][ $object_name ][ $id ] ) ) {
 			// Late init
-			self::$screens[ $object_type ][ $object_name ][ $id ] = $this->setup_screen( $object_type, $id, $object_name, self::$screens[ $object_type ][ $object_name ][ $id ] );
+			self::$forms[ $object_type ][ $object_name ][ $id ] = $this->setup_form( $object_type, $id, $object_name, self::$forms[ $object_type ][ $object_name ][ $id ] );
 
-			$screen = self::$screens[ $object_type ][ $object_name ][ $id ];
+			$form = self::$forms[ $object_type ][ $object_name ][ $id ];
 		} elseif ( $primary_object_name !== $object_name ) {
 			// Object name inheritance for getting data that covers all object names
-			$screen = $this->get_screen( $object_type, $id, $primary_object_name );
+			$form = $this->get_form( $object_type, $id, $primary_object_name );
 		}
 
-		return $screen;
+		return $form;
 
 	}
 
 	/**
-	 * Setup the screen.
+	 * Setup the form.
 	 *
 	 * @access public
 	 *
 	 * @param string $object_type Object type.
-	 * @param string $id          ID of the screen.
+	 * @param string $id          ID of the form.
 	 * @param string $object_name Object name (for post types and taxonomies).
-	 * @param array  $args        Screen arguments.
+	 * @param array  $args        Form arguments.
 	 *
-	 * @return WP_Fields_API_Screen|null $screen The screen object.
+	 * @return WP_Fields_API_Form|null $form The form object.
 	 */
-	public function setup_screen( $object_type, $id, $object_name = null, $args = null ) {
+	public function setup_form( $object_type, $id, $object_name = null, $args = null ) {
 
-		$screen = null;
+		$form = null;
 
-		$screen_class = 'WP_Fields_API_Screen';
+		$form_class = 'WP_Fields_API_Form';
 
-		if ( is_a( $args, $screen_class ) ) {
-			$screen = $args;
+		if ( is_a( $args, $form_class ) ) {
+			$form = $args;
 		} elseif ( is_array( $args ) ) {
 			$args['object_name'] = $object_name;
 
 			if ( ! empty( $args['type'] ) ) {
-				if ( ! empty( self::$registered_screen_types[ $args['type'] ] ) ) {
-					$screen_class = self::$registered_screen_types[ $args['type'] ];
-				} elseif ( in_array( $args['type'], self::$registered_screen_types ) ) {
-					$screen_class = $args['type'];
+				if ( ! empty( self::$registered_form_types[ $args['type'] ] ) ) {
+					$form_class = self::$registered_form_types[ $args['type'] ];
+				} elseif ( in_array( $args['type'], self::$registered_form_types ) ) {
+					$form_class = $args['type'];
 				}
 			}
 
-			$screen = new $screen_class( $object_type, $id, $args );
+			$form = new $form_class( $object_type, $id, $args );
 		}
 
-		return $screen;
+		return $form;
 
 	}
 
 	/**
-	 * Remove a screen.
+	 * Remove a form.
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type Object type, set true to remove all screens.
-	 * @param string $id          Screen ID to remove, set true to remove all screens from an object.
+	 * @param string $object_type Object type, set true to remove all forms.
+	 * @param string $id          Form ID to remove, set true to remove all forms from an object.
 	 * @param string $object_name Object name (for post types and taxonomies), set true to remove to all objects from an object type.
 	 */
-	public function remove_screen( $object_type, $id, $object_name = null ) {
+	public function remove_form( $object_type, $id, $object_name = null ) {
 
 		if ( true === $object_type ) {
-			// Remove all screens
-			self::$screens = array();
+			// Remove all forms
+			self::$forms = array();
 		} elseif ( true === $object_name ) {
-			// Remove all screens for an object type
-			if ( isset( self::$screens[ $object_type ] ) ) {
-				unset( self::$screens[ $object_type ] );
+			// Remove all forms for an object type
+			if ( isset( self::$forms[ $object_type ] ) ) {
+				unset( self::$forms[ $object_type ] );
 			}
 		} else {
 			if ( empty( $object_name ) && ! empty( $object_type ) ) {
@@ -416,52 +416,52 @@ final class WP_Fields_API {
 			}
 
 			if ( true === $id && null !== $object_name ) {
-				// Remove all screens for an object type
-				if ( isset( self::$screens[ $object_type ][ $object_name ] ) ) {
-					unset( self::$screens[ $object_type ][ $object_name ] );
+				// Remove all forms for an object type
+				if ( isset( self::$forms[ $object_type ][ $object_name ] ) ) {
+					unset( self::$forms[ $object_type ][ $object_name ] );
 				}
-			} elseif ( isset( self::$screens[ $object_type ][ $object_name ][ $id ] ) ) {
-				// Remove screen from object type and name
-				unset( self::$screens[ $object_type ][ $object_name ][ $id ] );
+			} elseif ( isset( self::$forms[ $object_type ][ $object_name ][ $id ] ) ) {
+				// Remove form from object type and name
+				unset( self::$forms[ $object_type ][ $object_name ][ $id ] );
 			}
 		}
 
 	}
 
 	/**
-	 * Register a screen type.
+	 * Register a form type.
 	 *
 	 * @access public
 	 *
-	 * @see    WP_Fields_API_Screen
+	 * @see    WP_Fields_API_Form
 	 *
-	 * @param string $type         Screen type ID.
-	 * @param string $screen_class Name of a custom screen which is a subclass of WP_Fields_API_Screen.
+	 * @param string $type         Form type ID.
+	 * @param string $form_class Name of a custom form which is a subclass of WP_Fields_API_Form.
 	 */
-	public function register_screen_type( $type, $screen_class = null ) {
+	public function register_form_type( $type, $form_class = null ) {
 
-		if ( null === $screen_class ) {
-			$screen_class = $type;
+		if ( null === $form_class ) {
+			$form_class = $type;
 		}
 
-		self::$registered_screen_types[ $type ] = $screen_class;
+		self::$registered_form_types[ $type ] = $form_class;
 
 	}
 
 	/**
-	 * Render JS templates for all registered screen types.
+	 * Render JS templates for all registered form types.
 	 *
 	 * @access public
 	 */
-	public function render_screen_templates() {
+	public function render_form_templates() {
 
 		/**
-		 * @var WP_Fields_API_Screen $screen
+		 * @var WP_Fields_API_Form $form
 		 */
-		foreach ( self::$registered_screen_types as $screen_type => $screen_class ) {
-			$screen = $this->setup_screen( null, 'temp', null, array( 'type' => $screen_type ) );
+		foreach ( self::$registered_form_types as $form_type => $form_class ) {
+			$form = $this->setup_form( null, 'temp', null, array( 'type' => $form_type ) );
 
-			$screen->print_template();
+			$form->print_template();
 		}
 
 	}
@@ -473,11 +473,11 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $object_name Object name (for post types and taxonomies).
-	 * @param string $screen      Screen ID.
+	 * @param string $form      Form ID.
 	 *
 	 * @return WP_Fields_API_Section[]
 	 */
-	public function get_sections( $object_type = null, $object_name = null, $screen = null ) {
+	public function get_sections( $object_type = null, $object_name = null, $form = null ) {
 
 		$primary_object_name = '_' . $object_type;
 
@@ -498,29 +498,29 @@ final class WP_Fields_API {
 
 			$sections = self::$sections;
 
-			// Get only sections for a specific screen
-			if ( null !== $screen ) {
-				$screen_sections = array();
+			// Get only sections for a specific form
+			if ( null !== $form ) {
+				$form_sections = array();
 
 				foreach ( $sections as $object_type => $object_names ) {
 					foreach ( $object_names as $object_name => $object_sections ) {
 						foreach ( $object_sections as $id => $section ) {
-							if ( $screen == $section->screen->id ) {
-								if ( ! isset( $screen_sections[ $object_type ] ) ) {
-									$screen_sections[ $object_type ] = array();
+							if ( $form == $section->form->id ) {
+								if ( ! isset( $form_sections[ $object_type ] ) ) {
+									$form_sections[ $object_type ] = array();
 								}
 
-								if ( ! isset( $screen_sections[ $object_type ][ $object_name ] ) ) {
-									$screen_sections[ $object_type ][ $object_name ] = array();
+								if ( ! isset( $form_sections[ $object_type ][ $object_name ] ) ) {
+									$form_sections[ $object_type ][ $object_name ] = array();
 								}
 
-								$screen_sections[ $object_type ][ $object_name ][ $id ] = $screen;
+								$form_sections[ $object_type ][ $object_name ][ $id ] = $form;
 							}
 						}
 					}
 				}
 
-				$sections = $screen_sections;
+				$sections = $form_sections;
 			}
 		} elseif ( isset( self::$sections[ $object_type ][ $object_name ] ) ) {
 			// Late init
@@ -536,28 +536,28 @@ final class WP_Fields_API {
 				$sections = array_merge( $this->get_sections( $object_type, $primary_object_name ), $sections );
 			}
 
-			// Get only sections for a specific screen
-			if ( null !== $screen ) {
-				$screen_sections = array();
+			// Get only sections for a specific form
+			if ( null !== $form ) {
+				$form_sections = array();
 
 				foreach ( $sections as $id => $section ) {
-					if ( $screen == $section->screen ) {
-						$screen_sections[ $id ] = $section;
+					if ( $form == $section->form ) {
+						$form_sections[ $id ] = $section;
 					}
 				}
 
-				$sections = $screen_sections;
+				$sections = $form_sections;
 			}
 		} elseif ( true === $object_name ) {
 			// Get all sections
 
 			// Late init
 			foreach ( self::$sections[ $object_type ] as $object_name => $object_sections ) {
-				$sections = array_merge( $sections, array_values( $this->get_sections( $object_type, $object_name, $screen ) ) );
+				$sections = array_merge( $sections, array_values( $this->get_sections( $object_type, $object_name, $form ) ) );
 			}
 		} elseif ( $primary_object_name !== $object_name ) {
 			// Object name inheritance for getting data that covers all object names
-			$sections = $this->get_sections( $object_type, $primary_object_name, $screen );
+			$sections = $this->get_sections( $object_type, $primary_object_name, $form );
 		}
 
 		return $sections;
@@ -1003,7 +1003,7 @@ final class WP_Fields_API {
 	 * @see    WP_Fields_API_Field
 	 *
 	 * @param string $type         Field type ID.
-	 * @param string $screen_class Name of a custom field type which is a subclass of WP_Fields_API_Field.
+	 * @param string $form_class Name of a custom field type which is a subclass of WP_Fields_API_Field.
 	 */
 	public function register_field_type( $type, $field_class = null ) {
 
@@ -1310,8 +1310,8 @@ final class WP_Fields_API {
 	 *
 	 * @access protected
 	 *
-	 * @param  {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $a Object A.
-	 * @param  {WP_Fields_API_Screen|WP_Fields_API_Section|WP_Fields_API_Control} $b Object B.
+	 * @param  {WP_Fields_API_Form|WP_Fields_API_Section|WP_Fields_API_Control} $a Object A.
+	 * @param  {WP_Fields_API_Form|WP_Fields_API_Section|WP_Fields_API_Control} $b Object B.
 	 *
 	 * @return int
 	 */
@@ -1334,7 +1334,7 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Prepare screens, sections, and controls for all objects.
+	 * Prepare forms, sections, and controls for all objects.
 	 *
 	 * For each, check if required related components exist,
 	 * whether the user has the necessary capabilities,
@@ -1358,7 +1358,7 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Prepare object screens, sections, and controls.
+	 * Prepare object forms, sections, and controls.
 	 *
 	 * For each, check if required related components exist,
 	 * whether the user has the necessary capabilities,
@@ -1379,7 +1379,7 @@ final class WP_Fields_API {
 		$prepared_ids = array(
 			'control'   => array(),
 			'section'   => array(),
-			'screen'    => array(),
+			'form'    => array(),
 			'container' => array(),
 		);
 
@@ -1391,8 +1391,8 @@ final class WP_Fields_API {
 		// Get sections
 		$sections = $this->get_sections( $object_type, $object_name );
 
-		// Get screens
-		$screens = $this->get_screens( $object_type, $object_name );
+		// Get forms
+		$forms = $this->get_forms( $object_type, $object_name );
 
 		// Controls
 
@@ -1400,10 +1400,10 @@ final class WP_Fields_API {
 		uasort( $controls, array( $this, '_cmp_priority' ) );
 
 		foreach ( $controls as $id => $control ) {
-			// Check if section or screen exists
+			// Check if section or form exists
 			if ( $control->section && ! isset( $sections[ $control->section ] ) ) {
 				continue;
-			} elseif ( $control->screen && ! isset( $screens[ $control->screen ] ) ) {
+			} elseif ( $control->form && ! isset( $forms[ $control->form ] ) ) {
 				continue;
 			}
 
@@ -1418,9 +1418,9 @@ final class WP_Fields_API {
 			if ( $control->section ) {
 				// Add control to section controls
 				$sections[ $control->section ]->controls[] = $control;
-			} elseif ( $control->screen ) {
-				// Add control to screen controls
-				$screens[ $control->screen ]->controls[] = $control;
+			} elseif ( $control->form ) {
+				// Add control to form controls
+				$forms[ $control->form ]->controls[] = $control;
 			}
 		}
 
@@ -1440,15 +1440,15 @@ final class WP_Fields_API {
 				usort( $section->controls, array( $this, '_cmp_priority' ) );
 			}
 
-			if ( ! $section->screen ) {
+			if ( ! $section->form ) {
 				// Top-level section.
 
 				// Add to prepared IDs
 				$prepared_ids['section'][]   = $id;
 				$prepared_ids['container'][] = $id;
-			} elseif ( $section->screen && isset( $screens[ $section->screen ] ) ) {
-				// This section belongs to a screen.
-				$screens[ $section->screen ]->sections[ $id ] = $section;
+			} elseif ( $section->form && isset( $forms[ $section->form ] ) ) {
+				// This section belongs to a form.
+				$forms[ $section->form ]->sections[ $id ] = $section;
 
 				// Add to prepared IDs
 				$prepared_ids['section'][]   = $id;
@@ -1456,29 +1456,29 @@ final class WP_Fields_API {
 			}
 		}
 
-		// Screens
+		// Forms
 
-		// Sort screens by priority
-		uasort( $screens, array( $this, '_cmp_priority' ) );
+		// Sort forms by priority
+		uasort( $forms, array( $this, '_cmp_priority' ) );
 
-		foreach ( $screens as $id => $screen ) {
-			// Check if screen has sections or can be seen by user
-			if ( ! $screen->check_capabilities() ) {
+		foreach ( $forms as $id => $form ) {
+			// Check if form has sections or can be seen by user
+			if ( ! $form->check_capabilities() ) {
 				continue;
 			}
 
-			if ( $screen->sections ) {
-				// Sort screen sections by priority
-				uasort( $screen->sections, array( $this, '_cmp_priority' ) );
+			if ( $form->sections ) {
+				// Sort form sections by priority
+				uasort( $form->sections, array( $this, '_cmp_priority' ) );
 			}
 
 			// Add to prepared IDs
-			$prepared_ids['screen'][]    = $id;
+			$prepared_ids['form'][]    = $id;
 			$prepared_ids['container'][] = $id;
 		}
 
-		// Merge screens and top-level sections together.
-		$containers = array_merge( $screens, $sections );
+		// Merge forms and top-level sections together.
+		$containers = array_merge( $forms, $sections );
 
 		// Sort containers by priority
 		uasort( $containers, array( $this, '_cmp_priority' ) );
@@ -1507,16 +1507,16 @@ final class WP_Fields_API {
 
 		self::$sections[ $object_type ][ $object_name ] = $sections;
 
-		// Save screens
-		if ( ! isset( self::$screens[ $object_type ] ) ) {
-			self::$screens[ $object_type ] = array();
+		// Save forms
+		if ( ! isset( self::$forms[ $object_type ] ) ) {
+			self::$forms[ $object_type ] = array();
 		}
 
-		if ( ! isset( self::$screens[ $object_type ][ $object_name ] ) ) {
-			self::$screens[ $object_type ][ $object_name ] = array();
+		if ( ! isset( self::$forms[ $object_type ][ $object_name ] ) ) {
+			self::$forms[ $object_type ][ $object_name ] = array();
 		}
 
-		self::$screens[ $object_type ][ $object_name ] = $screens;
+		self::$forms[ $object_type ][ $object_name ] = $forms;
 
 		// Save containers
 		if ( ! isset( self::$containers[ $object_type ] ) ) {
@@ -1577,7 +1577,7 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $object_type Object type.
-	 * @param string $type        Type including screen, section, or field.
+	 * @param string $type        Type including form, section, or field.
 	 * @param string $id          Object ID.
 	 * @param string $object_name Object name (for post types and taxonomies).
 	 *

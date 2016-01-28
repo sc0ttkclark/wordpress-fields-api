@@ -12,8 +12,8 @@ function example_my_user_starter( $wp_fields ) {
 	// Object name: n/a
 	$object_name = null;
 
-	// Screen: User Edit Profile
-	$screen_id = 'user-edit';
+	// Form: User Edit Profile
+	$form_id = 'user-edit';
 
 	/////////////////////////
 	// Section: My Section //
@@ -22,7 +22,7 @@ function example_my_user_starter( $wp_fields ) {
 	$section_id = ''; // @todo Fill in section ID
 	$section_args = array(
 		'title'  => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
-		'screen' => $screen_id,
+		'form' => $form_id,
 	);
 
 	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );

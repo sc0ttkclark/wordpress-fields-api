@@ -39,11 +39,11 @@ if ( ! current_user_can( $tax->cap->manage_terms ) ) {
  */
 global $wp_fields;
 
-// Get screen
-$screen_add = $wp_fields->get_screen( 'term', 'term-add' );
+// Get form
+$form_add = $wp_fields->get_form( 'term', 'term-add' );
 
 // Set taxonomy object name
-$screen_add->object_name = $taxonomy;
+$form_add->object_name = $taxonomy;
 
 /**
  * <<< WP Fields API implementation
@@ -100,7 +100,7 @@ switch ( $wp_list_table->current_action() ) {
 		 * WP Fields API implementation >>>
 		 */
 
-		$ret = $screen_add->save_fields( 0, $taxonomy );
+		$ret = $form_add->save_fields( 0, $taxonomy );
 
 		/**
 		 * <<< WP Fields API implementation
@@ -222,13 +222,13 @@ switch ( $wp_list_table->current_action() ) {
 		 * WP Fields API implementation >>>
 		 */
 
-		// Get screen
-		$screen_edit = $wp_fields->get_screen( 'term', 'term-edit' );
+		// Get form
+		$form_edit = $wp_fields->get_form( 'term', 'term-edit' );
 
 		// Set taxonomy object name
-		$screen_edit->object_name = $taxonomy;
+		$form_edit->object_name = $taxonomy;
 
-		$ret = $screen_edit->save_fields( $tag_ID, $taxonomy );
+		$ret = $form_edit->save_fields( $tag_ID, $taxonomy );
 
 		/**
 		 * <<< WP Fields API implementation
@@ -521,8 +521,8 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 * WP Fields API implementation >>>
 								 */
 
-								// Render screen controls
-								$screen_add->maybe_render( 0, $taxonomy );
+								// Render form controls
+								$form_add->maybe_render( 0, $taxonomy );
 
 								/**
 								 * <<< WP Fields API implementation

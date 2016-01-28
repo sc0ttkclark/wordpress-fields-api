@@ -1,15 +1,15 @@
 <?php
 /**
- * This is an implementation for Fields API for the Term Add New screen in the WordPress Dashboard
+ * This is an implementation for Fields API for the Term Add New form in the WordPress Dashboard
  *
  * @package    WordPress
  * @subpackage Fields_API
  */
 
 /**
- * Class WP_Fields_API_Screen_Term_Add
+ * Class WP_Fields_API_Form_Term_Add
  */
-class WP_Fields_API_Screen_Term_Add extends WP_Fields_API_Screen_Term {
+class WP_Fields_API_Form_Term_Add extends WP_Fields_API_Form_Term {
 
 	/**
 	 * {@inheritdoc}

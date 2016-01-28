@@ -1,29 +1,29 @@
 # Fields API Registration
 
-## Screens
+## Forms
 
-Screens in the Fields API are more commonly linked to what appear in the WordPress Admin area as WP_Screen. A few come with the Fields API itself, but you can register new screens to your heart's content and output them wherever you'd like.
+Forms in the Fields API are more commonly linked to what appear in the WordPress Admin area as WP_Screen. A few come with the Fields API itself, but you can register new forms to your heart's content and output them wherever you'd like.
 
-See [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md) for examples of creating your own intelligent screens.
+See [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md) for examples of creating your own intelligent forms.
 
-### Registering screens
+### Registering forms
 
-When a screen needs no saving or rendering mechanism (see [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)), it can be registered through the `fields_register` action, using code like this:
+When a form needs no saving or rendering mechanism (see [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)), it can be registered through the `fields_register` action, using code like this:
 
 ```php
-// Object type and Screen ID
+// Object type and Form ID
 $object_type = 'my-xyz';
-$screen_id = 'my-screen';
+$form_id = 'my-form';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
 $object_name = null;
 
-// Register screen
-$wp_fields->add_screen( $object_type, $screen_id, $object_name );
+// Register form
+$wp_fields->add_form( $object_type, $form_id, $object_name );
 ```
 
-**Please note:** Registering screens are not normally required for working within the existing WordPress Admin area unless you need custom admin screens. They can also be used on the front-end as well.
+**Please note:** Registering forms are not normally required for working within the existing WordPress Admin area unless you need custom admin forms. They can also be used on the front-end as well.
  
 ## Sections
 
@@ -34,9 +34,9 @@ Sections are groupings of controls that give context to what they are for.
 Sections can be registered through the `fields_register` action, using code like this:
 
 ```php
-// Object type and Screen ID
+// Object type and Form ID
 $object_type = 'term';
-$screen_id = 'term-edit';
+$form_id = 'term-edit';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
@@ -46,7 +46,7 @@ $object_name = 'xyz';
 $section_id = 'my-section'; // @todo Fill in section ID
 $section_args = array(
 	'title'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
-	'screen' => $screen_id,
+	'form' => $form_id,
 );
 
 // Register section
@@ -79,9 +79,9 @@ Control types are the types of controls that are registered and available for ge
 Controls can be registered through the `fields_register` action, using code like this:
 
 ```php
-// Object type and Screen ID
+// Object type and Form ID
 $object_type = 'term';
-$screen_id = 'term-edit';
+$form_id = 'term-edit';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
@@ -173,8 +173,8 @@ function example_my_term_xyz( $wp_fields ) {
 	// Object name: XYZ
 	$object_name = 'xyz'; // @todo Change to any taxonomy name
 
-	// Screen: Term Edit
-	$screen_id = 'term-edit'; // @todo Also available is term-add
+	// Form: Term Edit
+	$form_id = 'term-edit'; // @todo Also available is term-add
 
 	/////////////////////////
 	// Section: My Section //
@@ -183,7 +183,7 @@ function example_my_term_xyz( $wp_fields ) {
 	$section_id = 'my-section'; // @todo Fill in section ID
 	$section_args = array(
 		'title'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
-		'screen' => $screen_id,
+		'form' => $form_id,
 	);
 
 	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
