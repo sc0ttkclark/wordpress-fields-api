@@ -59,6 +59,8 @@ Controls are the input fields used to display field values and allow for changes
 
 ### Control Types
 
+Control types are the types of controls that are registered and available for general use. Some are included with the Fields API, but custom control types can also be registered for advanced usage.
+
 * `text` - Text input
 * `{html5-type}` - Use any HTML5 input type you'd like `<input type="{type} ... />`
 * `textarea` - Textarea input
