@@ -80,15 +80,18 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 	// Get form
 	$form = $wp_fields->get_form( 'settings', 'settings-general' );
 
-	// Render form controls
-	$form->maybe_render();
-
 	/**
 	 * <<< WP Fields API implementation
 	 */
 	?>
 
 	<h1>CORE</h1>
+	<form method="post" action="options.php" novalidate="novalidate">
+		<?php
+		// Render form controls
+		$form->maybe_render();
+		?>
+	</form>
 	<h1><?php echo esc_html( $title ); ?></h1>
 
 	<form method="post" action="options.php" novalidate="novalidate">
