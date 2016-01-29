@@ -44,4 +44,4 @@ See [Registering Fields](https://github.com/sc0ttkclark/wordpress-fields-api/blo
 
 ## Visual Structure for Forms, Sections, and Controls
 
-![Structure Example](https://raw.github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/terminology.png)
+![Structure Example](https://raw.githubusercontent.com/sc0ttkclark/wordpress-fields-api/master/docs/terminology.png)
