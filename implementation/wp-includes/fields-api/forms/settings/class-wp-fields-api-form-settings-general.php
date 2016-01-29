@@ -148,18 +148,98 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
-						'type'                  => 'user-role',
-						'section'               => $this->id . '-options-general',
-						'label'                 => __( 'New User Default Role' ),
-						'input_attrs'       => array(
-								'id'            => 'default_role',
-								'name'          => 'default_role',
-						),
-						'internal'    => true,
+					'type'             => 'user-role',
+					'section'          => $this->id . '-options-general',
+					'label'            => __( 'New User Default Role' ),
+					'input_attrs'      => array(
+						'id'    => 'default_role',
+						'name'  => 'default_role',
+					),
+					'internal'          => true,
 				),
 		);
 		$wp_fields->add_field( $this->object_type, 'default_role', null, $field_args );
 
+		/**
+		 * Date Format
+		 */
+		// @todo Caps Check
+		// @todo custom control type because of nested fields
+		$current_time = time();
+		$field_args = array(
+				'control' => array(
+					'type'              => 'radio',
+					'section'           => $this->id . '-options-general',
+					'label'             => __( 'Date Format' ),
+						'input_attrs'   => array(
+							'id'    => 'date_format',
+							'name'  => 'date_format',
+						),
+					'internal'          => true,
+					'choices'           => array(
+						date( 'F j, Y', $current_time ),
+						date( 'Y-m-d', $current_time ),
+						date( 'm/d/y', $current_time ),
+						date( 'd/m/y', $current_time ),
+					)
+				),
+		);
+		$wp_fields->add_field( $this->object_type, 'date_format', null, $field_args );
+
+		/**
+		 * Time Format
+		 */
+		// @todo Caps Check
+		// @todo custom control type because of nested fields
+		$current_time = time();
+		$field_args = array(
+				'control' => array(
+						'type'              => 'radio',
+						'section'           => $this->id . '-options-general',
+						'label'             => __( 'Time Format' ),
+						'description'       => sprintf( '<a href="%s">' . __( 'Documentation on date and time formatting.') . '<a/>', 'https://codex.wordpress.org/Formatting_Date_and_Time' ),
+						'input_attrs'   => array(
+								'id'    => 'time_format',
+								'name'  => 'time_format',
+						),
+						'internal'          => true,
+						'choices'           => array(
+								date( 'g:i a', $current_time ),
+								date( 'g:i A', $current_time ),
+								date( 'H:i', $current_time ),
+						)
+				),
+		);
+		$wp_fields->add_field( $this->object_type, 'time_format', null, $field_args );
+
+		/**
+		 * Week Starts On
+		 */
+		// @todo Caps Check
+		$field_args = array(
+				'control' => array(
+						'type'              => 'select',
+						'section'           => $this->id . '-options-general',
+						'label'             => __( 'Week Starts On' ),
+						'internal'          => true,
+						'input_attrs'   => array(
+								'id'    => 'start_of_week',
+								'name'  => 'start_of_week',
+						),
+						'choices'           => array(
+							__( 'Sunday' ),
+							__( 'Monday' ),
+							__( 'Tuesday' ),
+							__( 'Wednesday' ),
+							__( 'Thursday' ),
+							__( 'Friday' ),
+							__( 'Saturday' ),
+						)
+				),
+		);
+		$wp_fields->add_field( $this->object_type, 'start_of_week', null, $field_args );
+
+		// @todo implent languages dropdown
 	}
 
 }
