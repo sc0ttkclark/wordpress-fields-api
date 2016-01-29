@@ -14,8 +14,21 @@ require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
 if ( ! current_user_can( 'manage_options' ) )
 	wp_die( __( 'You do not have sufficient permissions to manage options for this site.' ) );
 
+/**
+ * WP Fields API implementation >>>
+ */
+
+/**
+ * @var $wp_fields WP_Fields_API
+ */
 global $wp_fields;
+
+// Get form
 $form = $wp_fields->get_form( 'settings', 'settings-general' );
+
+/**
+ * <<< WP Fields API implementation
+ */
 
 $title = __('General Settings');
 $parent_file = 'options-general.php';
@@ -55,7 +68,24 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 <div class="wrap">
 
 	<?php
-	$form->maybe_render( 'settings-general' );
+	/**
+	 * WP Fields API implementation >>>
+	 */
+
+	/**
+	 * @var $wp_fields WP_Fields_API
+	 */
+	global $wp_fields;
+
+	// Get form
+	$form = $wp_fields->get_form( 'settings', 'settings-general' );
+
+	// Render form controls
+	$form->maybe_render();
+
+	/**
+	 * <<< WP Fields API implementation
+	 */
 	?>
 
 	<h1>CORE</h1>
