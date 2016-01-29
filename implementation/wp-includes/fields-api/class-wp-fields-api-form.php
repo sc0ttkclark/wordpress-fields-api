@@ -615,7 +615,7 @@ class WP_Fields_API_Form {
 
 		if ( ! empty( $sections ) ) {
 			?>
-				<div class="form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
+				<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?> form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
 					<?php
 						foreach ( $sections as $section ) {
 							$this->render_section( $section, $this->item_id, $this->object_name );
@@ -628,11 +628,7 @@ class WP_Fields_API_Form {
 	}
 
 	/**
-	 * Render section for implementation
-	 *
-	 * @param WP_Fields_API_Section $section     Section object
-	 * @param int|null              $item_id     Item ID
-	 * @param string|null           $object_name Object name
+	 * {@inheritdoc}
 	 */
 	public function render_section( $section, $item_id = null, $object_name = null ) {
 
@@ -657,24 +653,20 @@ class WP_Fields_API_Form {
 			}
 
 			?>
-			<table class="form-table section-<?php echo esc_attr( $section->id ); ?>-wrap fields-api-section">
+			<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?>-section section-<?php echo esc_attr( $section->id ); ?>-wrap fields-api-section">
 				<?php
 					foreach ( $controls as $control ) {
 						$this->render_control( $control, $item_id, $section->object_name );
 					}
 				?>
-			</table>
+			</div>
 			<?php
 		}
 
 	}
 
 	/**
-	 * Render control for implementation
-	 *
-	 * @param WP_Fields_API_Control $control     Control object
-	 * @param int|null              $item_id     Item ID
-	 * @param string|null           $object_name Object name
+	 * {@inheritdoc}
 	 */
 	public function render_control( $control, $item_id = null, $object_name = null ) {
 
@@ -695,20 +687,17 @@ class WP_Fields_API_Form {
 			$input_id = $control->input_attrs['id'];
 		}
 		?>
-			<tr <?php $control->wrap_attrs(); ?>>
-				<th>
-					<?php if ( 0 < strlen( $label ) ) { ?>
-						<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $label ); ?></label>
-					<?php } ?>
-				</th>
-				<td>
-					<?php $control->render_content(); ?>
+			<div <?php $control->wrap_attrs(); ?>>
+				<?php if ( 0 < strlen( $label ) ) { ?>
+					<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $label ); ?></label>
+				<?php } ?>
 
-					<?php if ( 0 < strlen( $description ) ) { ?>
-						<p class="description"><?php echo wp_kses_post( $description ); ?></p>
-					<?php } ?>
-				</td>
-			</tr>
+				<?php $control->render_content(); ?>
+
+				<?php if ( 0 < strlen( $description ) ) { ?>
+					<p class="description"><?php echo wp_kses_post( $description ); ?></p>
+				<?php } ?>
+			</div>
 		<?php
 
 	}
