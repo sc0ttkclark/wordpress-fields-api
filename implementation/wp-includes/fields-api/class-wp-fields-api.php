@@ -109,6 +109,9 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'class-wp-fields-api-section.php' );
 		require_once( $fields_api_dir . 'class-wp-fields-api-form.php' );
 
+		// Include form types
+		require_once( $fields_api_dir . 'form-types/class-wp-fields-api-table-form.php' );
+
 		// Include control types
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-textarea-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
@@ -124,7 +127,7 @@ final class WP_Fields_API {
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
 
-		add_action( 'fields_register', array( $this, 'register_controls' ) );
+		add_action( 'fields_register', array( $this, 'register_defaults' ) );
 
 	}
 
@@ -1543,11 +1546,14 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Register some default controls.
+	 * Register some default form and control types.
 	 *
 	 * @access public
 	 */
-	public function register_controls() {
+	public function register_defaults() {
+
+		/* Form Types */
+		$this->register_form_type( 'table', 'WP_Fields_API_Table_Form' );
 
 		/* Control Types */
 		$this->register_control_type( 'text', 'WP_Fields_API_Control' );

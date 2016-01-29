@@ -8,8 +8,10 @@
 
 /**
  * Class WP_Fields_API_Form_Term
+ *
+ * @todo Switch to WP_Fields_API_Form when styles work for divs on all admin pages properly (currently only Term Add New has styling for div forms)
  */
-class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
+class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 
 	/**
 	 * {@inheritdoc}
