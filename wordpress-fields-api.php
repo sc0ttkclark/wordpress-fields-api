@@ -76,6 +76,11 @@ function _wp_fields_api_implementations() {
 	WP_Fields_API_Form_Term::register( 'term', 'term-edit' );
 	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
 
+	// Settings
+	require_once( $implementation_dir . 'options/class-wp-fields-api-form-options-general.php' );
+
+	WP_Fields_API_Form_Options_General::register( 'options', 'options-general' );
+
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
 
