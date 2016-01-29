@@ -43,7 +43,7 @@ class WP_Fields_API_Settings_API {
 				add_settings_section(
 					$section_id,
 					$section->title,
-					array( $section, 'get_description' ),
+					array( $section, 'render_description' ),
 					$form_id
 				);
 
