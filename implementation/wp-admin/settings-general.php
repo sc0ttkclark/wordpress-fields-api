@@ -24,7 +24,7 @@ if ( ! current_user_can( 'manage_options' ) )
 global $wp_fields;
 
 // Get form
-$form = $wp_fields->get_form( 'settings', 'settings-general' );
+$form = $wp_fields->get_form( 'settings', 'general' );
 
 /**
  * <<< WP Fields API implementation
@@ -67,31 +67,15 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 ?>
 <div class="wrap">
 
-	<?php
-	/**
-	 * WP Fields API implementation >>>
-	 */
+	<h1><?php echo esc_html( $title ); ?></h1>
 
-	/**
-	 * @var $wp_fields WP_Fields_API
-	 */
-	global $wp_fields;
-
-	// Get form
-	$form = $wp_fields->get_form( 'settings', 'settings-general' );
-
-	/**
-	 * <<< WP Fields API implementation
-	 */
-	?>
-
-	<h1>CORE</h1>
 	<form method="post" action="options.php" novalidate="novalidate">
 		<?php
 		// Render form controls
 		$form->maybe_render();
 		?>
 	</form>
+
 	<h1><?php echo esc_html( $title ); ?></h1>
 
 	<form method="post" action="options.php" novalidate="novalidate">

@@ -84,7 +84,13 @@ function _wp_fields_api_implementations() {
 	// Settings
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
 
-	WP_Fields_API_Form_Settings_General::register( 'settings', 'settings-general' );
+	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
+
+	// Settings API compatibility
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );
+
+	// Run Settings API compatibility (has it's own hooks)
+	new WP_Fields_API_Settings_API;
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
