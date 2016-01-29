@@ -18,6 +18,25 @@ class WP_Fields_API_Form_Options_General extends WP_Fields_API_Form {
 
 	}
 
+	public function register_fields( $wp_fields ) {
+		$this->register_control_types( $wp_fields );
+
+		$field_args = array(
+				'control' => array(
+						'type'        => 'text',
+						'section'     => 'options-general-blogname',
+						'label'       => __( 'Site Title' ),
+						//'description' => __( 'Usernames cannot be changed.' ),
+						//'input_attrs' => array(
+						//		'disabled' => 'disabled',
+						//),
+						'internal'    => true,
+				),
+		);
+
+		$wp_fields->add_field( 'options', 'blogname', null, $field_args );
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */

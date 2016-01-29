@@ -5,15 +5,17 @@
  * @package WordPress
  * @subpackage Administration
  */
-
 /** WordPress Administration Bootstrap */
-require_once( dirname( __FILE__ ) . '/admin.php' );
+require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Remove WP Fields API modification
 
 /** WordPress Translation Install API */
 require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
 
 if ( ! current_user_can( 'manage_options' ) )
 	wp_die( __( 'You do not have sufficient permissions to manage options for this site.' ) );
+
+global $wp_fields;
+$form = $wp_fields->get_form( 'options', 'options-general' );
 
 $title = __('General Settings');
 $parent_file = 'options-general.php';
@@ -47,9 +49,16 @@ get_current_screen()->set_help_sidebar(
 );
 
 include( ABSPATH . 'wp-admin/admin-header.php' );
-?>
 
+// FIELDS API IMPLEMENTATION
+?>
 <div class="wrap">
+
+	<?php
+	$form->maybe_render( 'options-general' );
+	?>
+
+	<h1>CORE</h1>
 	<h1><?php echo esc_html( $title ); ?></h1>
 
 	<form method="post" action="options.php" novalidate="novalidate">

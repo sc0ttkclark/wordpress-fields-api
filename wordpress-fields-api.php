@@ -126,3 +126,23 @@ function _wp_fields_api_term_include() {
 
 }
 add_action( 'load-edit-tags.php', '_wp_fields_api_term_include' );
+
+/**
+ * Implement Fields API Term to override WP Core.
+ */
+function _wp_fields_api_options_general_include() {
+
+	static $overridden;
+
+	if ( empty( $overridden ) ) {
+		$overridden = true;
+
+		// Load our overrides
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/options-general.php' );
+
+		// Bail on original core file, don't run the rest
+		exit;
+	}
+
+}
+add_action( 'load-options-general.php', '_wp_fields_api_options_general_include' );
