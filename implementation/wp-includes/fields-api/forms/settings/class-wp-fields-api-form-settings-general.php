@@ -25,6 +25,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 		/**
 		 * Site Name
 		 */
+		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -44,6 +45,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 		/**
 		 * Tagline
 		 */
+		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -64,6 +66,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 		/**
 		 * WordPress URL
 		 */
+		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -82,6 +85,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 		/**
 		 * Home URL
 		 */
+		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -101,6 +105,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 		/**
 		 * Admin Email Address
 		 */
+		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -118,8 +123,9 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 		$wp_fields->add_field( $this->object_type, 'admin_email', null, $field_args );
 
 		/**
-		 * Registration
+		 * Open Registration
 		 */
+		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'checkbox',
@@ -134,6 +140,25 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Table_Form {
 				),
 		);
 		$wp_fields->add_field( $this->object_type, 'users_can_register', null, $field_args );
+
+
+		/**
+		 * Default Role
+		 */
+		// @todo Caps Check
+		$field_args = array(
+				'control' => array(
+						'type'                  => 'user-role',
+						'section'               => $this->id . '-options-general',
+						'label'                 => __( 'New User Default Role' ),
+						'input_attrs'       => array(
+								'id'            => 'default_role',
+								'name'          => 'default_role',
+						),
+						'internal'    => true,
+				),
+		);
+		$wp_fields->add_field( $this->object_type, 'default_role', null, $field_args );
 
 	}
 
