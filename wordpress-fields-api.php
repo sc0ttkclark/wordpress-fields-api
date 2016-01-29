@@ -29,6 +29,11 @@ define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
  */
 function _wp_fields_api_include() {
 
+	// Bail if we're already in WP core (depending on the name used)
+	if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
+		return;
+	}
+
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
 	// Init Fields API class
@@ -76,6 +81,17 @@ function _wp_fields_api_implementations() {
 	WP_Fields_API_Form_Term::register( 'term', 'term-edit' );
 	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
 
+	// Settings
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
+
+	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
+
+	// Settings API compatibility
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );
+
+	// Run Settings API compatibility (has it's own hooks)
+	new WP_Fields_API_Settings_API;
+
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
 
@@ -121,3 +137,23 @@ function _wp_fields_api_term_include() {
 
 }
 add_action( 'load-edit-tags.php', '_wp_fields_api_term_include' );
+
+/**
+ * Implement Fields API Term to override WP Core.
+ */
+function _wp_fields_api_settings_general_include() {
+
+	static $overridden;
+
+	if ( empty( $overridden ) ) {
+		$overridden = true;
+
+		// Load our overrides
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/settings-general.php' );
+
+		// Bail on original core file, don't run the rest
+		exit;
+	}
+
+}
+add_action( 'load-options-general.php', '_wp_fields_api_settings_general_include' );
