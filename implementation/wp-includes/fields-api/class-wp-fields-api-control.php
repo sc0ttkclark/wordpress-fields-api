@@ -454,10 +454,11 @@ class WP_Fields_API_Control {
 
 		$id    = 'fields-control-' . str_replace( '[', '-', str_replace( ']', '', $this->id ) );
 		$class = 'fields-control fields-control-' . $this->type;
-
-		?><li id="<?php echo esc_attr( $id ); ?>" class="<?php echo esc_attr( $class ); ?>">
-			<?php $this->render_content(); ?>
-		</li><?php
+		?>
+			<div id="<?php echo esc_attr( $id ); ?>" class="<?php echo esc_attr( $class ); ?>">
+				<?php $this->render_content(); ?>
+			</div>
+		<?php
 
 	}
 

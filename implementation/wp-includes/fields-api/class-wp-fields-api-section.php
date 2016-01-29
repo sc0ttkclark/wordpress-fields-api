@@ -317,6 +317,17 @@ class WP_Fields_API_Section {
 	}
 
 	/**
+	 * Get the section's description.
+	 *
+	 * @return string Description of the section.
+	 */
+	final public function render_description() {
+
+		return wp_kses_post( $this->description );
+
+	}
+
+	/**
 	 * Get the section's content template for insertion into the Fields UI.
 	 *
 	 * @return string Contents of the section.
