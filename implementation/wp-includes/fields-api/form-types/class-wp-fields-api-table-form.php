@@ -12,53 +12,22 @@
 class WP_Fields_API_Table_Form extends WP_Fields_API_Form {
 
 	/**
-	 * Render section for implementation
-	 *
-	 * @param WP_Fields_API_Section $section     Section object
-	 * @param int|null              $item_id     Item ID
-	 * @param string|null           $object_name Object name
+	 * {@inheritdoc}
 	 */
-	public function render_section( $section, $item_id = null, $object_name = null ) {
+	public function render_controls( $controls, $item_id = null, $object_name = null ) {
 
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		// Pass $object_name and $item_id to Section
-		$section->object_name = $object_name;
-		$section->item_id     = $item_id;
-
-		$controls = $wp_fields->get_controls( $this->object_type, $section->object_name, $section->id );
-
-		if ( ! empty( $controls ) ) {
-			$content = $section->get_content();
-
-			if ( $content && $section->display_title ) {
-				?>
-				<h3><?php echo $content; ?></h3>
-				<?php
-			}
-
-			?>
-			<table class="form-table fields-form-<?php echo esc_attr( $this->object_type ); ?>-section section-<?php echo esc_attr( $section->id ); ?>-wrap fields-api-section">
-				<?php
-					foreach ( $controls as $control ) {
-						$this->render_control( $control, $item_id, $section->object_name );
-					}
-				?>
-			</table>
+		?>
+		<table class="form-table">
 			<?php
-		}
+				parent::render_controls( $controls, $item_id, $object_name );
+			?>
+		</table>
+		<?php
 
 	}
 
 	/**
-	 * Render control for implementation
-	 *
-	 * @param WP_Fields_API_Control $control     Control object
-	 * @param int|null              $item_id     Item ID
-	 * @param string|null           $object_name Object name
+	 * {@inheritdoc}
 	 */
 	public function render_control( $control, $item_id = null, $object_name = null ) {
 

@@ -628,7 +628,11 @@ class WP_Fields_API_Form {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Render section and it's controls
+	 *
+	 * @param WP_Fields_API_Section $section     Section object
+	 * @param null|int              $item_id     Item ID
+	 * @param null|string           $object_name Object name
 	 */
 	public function render_section( $section, $item_id = null, $object_name = null ) {
 
@@ -645,19 +649,16 @@ class WP_Fields_API_Form {
 
 		if ( ! empty( $controls ) ) {
 			$content = $section->get_content();
-
-			if ( $content && $section->display_title ) {
-				?>
-				<h3><?php echo $content; ?></h3>
-				<?php
-			}
-
 			?>
 			<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?>-section section-<?php echo esc_attr( $section->id ); ?>-wrap fields-api-section">
 				<?php
-					foreach ( $controls as $control ) {
-						$this->render_control( $control, $item_id, $section->object_name );
+					if ( $content && $section->display_title ) {
+						?>
+						<h3><?php echo $content; ?></h3>
+						<?php
 					}
+
+					$this->render_controls( $controls, $item_id, $section->object_name );
 				?>
 			</div>
 			<?php
@@ -666,7 +667,26 @@ class WP_Fields_API_Form {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Render controls
+	 *
+	 * @param WP_Fields_API_Control[] $controls    Control objects
+	 * @param null|int                $item_id     Item ID
+	 * @param null|string             $object_name Object name
+	 */
+	public function render_controls( $controls, $item_id = null, $object_name = null ) {
+
+		foreach ( $controls as $control ) {
+			$this->render_control( $control, $item_id, $object_name );
+		}
+
+	}
+
+	/**
+	 * Render control wrapper, label, description, and control input
+	 *
+	 * @param WP_Fields_API_Control $control     Control object
+	 * @param null|int              $item_id     Item ID
+	 * @param null|string           $object_name Object name
 	 */
 	public function render_control( $control, $item_id = null, $object_name = null ) {
 
