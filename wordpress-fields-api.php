@@ -77,9 +77,9 @@ function _wp_fields_api_implementations() {
 	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
 
 	// Settings
-	require_once( $implementation_dir . 'options/class-wp-fields-api-form-options-general.php' );
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
 
-	WP_Fields_API_Form_Options_General::register( 'options', 'options-general' );
+	WP_Fields_API_Form_Options_General::register( 'settings', 'settings-general' );
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
@@ -130,7 +130,7 @@ add_action( 'load-edit-tags.php', '_wp_fields_api_term_include' );
 /**
  * Implement Fields API Term to override WP Core.
  */
-function _wp_fields_api_options_general_include() {
+function _wp_fields_api_settings_general_include() {
 
 	static $overridden;
 
@@ -138,11 +138,11 @@ function _wp_fields_api_options_general_include() {
 		$overridden = true;
 
 		// Load our overrides
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/options-general.php' );
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/settings-general.php' );
 
 		// Bail on original core file, don't run the rest
 		exit;
 	}
 
 }
-add_action( 'load-options-general.php', '_wp_fields_api_options_general_include' );
+add_action( 'load-options-general.php', '_wp_fields_api_settings_general_include' );
