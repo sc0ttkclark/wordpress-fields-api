@@ -29,6 +29,11 @@ define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
  */
 function _wp_fields_api_include() {
 
+	// Bail if we're already in WP core (depending on the name used)
+	if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
+		return;
+	}
+
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
 	// Init Fields API class
