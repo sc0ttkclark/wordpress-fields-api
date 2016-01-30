@@ -2,7 +2,7 @@
 /**
  * WordPress Fields API Meta Box Section class
  *
- * @package WordPress
+ * @package    WordPress
  * @subpackage Fields API
  */
 
@@ -31,21 +31,6 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 	 * @var array
 	 */
 	public $mb_callback_args = array();
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct() {
-
-		$class = get_called_class();
-
-		if ( ! has_action( 'add_meta_boxes', array( $class, 'add_meta_boxes' ) ) ) {
-			add_action( 'add_meta_boxes', array( $class, 'add_meta_boxes' ) );
-		}
-
-		parent::__construct();
-
-	}
 
 	/**
 	 * Add meta boxes for sections
@@ -80,16 +65,64 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			 * @var $section WP_Fields_API_Meta_Box_Section
 			 */
 
+			// Add primary callback arguments
+			$section->mb_callback_args['fields_api']  = true;
+			$section->mb_callback_args['object_type'] = $object_type;
+			$section->mb_callback_args['section']     = $section;
+
 			// Add meta box
-			add_meta_box(
-				$section->id,
-				$section->title,
-				array( $section, 'render_meta_box' ),
-				null,
-				$section->mb_context,
-				$section->mb_priority,
-				$section->mb_callback_args
-			);
+			add_meta_box( $section->id, $section->title, array(
+					'WP_Fields_API_Meta_Box_Section',
+					'render_meta_box'
+				), null, $section->mb_context, $section->mb_priority, $section->mb_callback_args );
+		}
+
+	}
+
+	/**
+	 * Render meta box output for section
+	 *
+	 * @param WP_Post|WP_Comment $object Current Object
+	 * @param array              $box    Meta box options
+	 */
+	public function render_meta_box( $object, $box ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) || empty( $box['args']['section'] ) ) {
+			return;
+		}
+
+		/**
+		 * @var $section WP_Fields_API_Meta_Box_Section
+		 */
+
+		$section = $box['args']['section'];
+
+		$item_id     = 0;
+		$object_name = null;
+
+		if ( ! empty( $object->ID ) ) {
+			// Get Post ID and type
+			$item_id     = $object->ID;
+			$object_name = $object->post_type;
+		} elseif ( ! empty( $object->comment_ID ) ) {
+			// Get Comment ID and type
+			$item_id     = $object->comment_ID;
+			$object_name = $object->comment_type;
+		}
+
+		$form = $section->form;
+
+		if ( ! is_object( $form ) ) {
+			$form = $wp_fields->get_form( $box['args']['object_type'], $form, $object_name );
+		}
+
+		if ( is_a( $form, 'WP_Fields_API_Form' ) ) {
+			$form->render_section( $section, $item_id, $object_name );
 		}
 
 	}

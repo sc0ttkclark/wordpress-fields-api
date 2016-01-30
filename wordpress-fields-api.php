@@ -92,6 +92,9 @@ function _wp_fields_api_implementations() {
 	// Run Settings API compatibility (has it's own hooks)
 	new WP_Fields_API_Settings_API;
 
+	// Post / comment editor support for meta boxes
+	add_action( 'add_meta_boxes', array( 'WP_Fields_API_Meta_Box_Section', 'add_meta_boxes' ) );
+
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
 
