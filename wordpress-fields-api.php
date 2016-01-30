@@ -97,10 +97,11 @@ function _wp_fields_api_implementations() {
 	add_action( 'add_meta_boxes', array( 'WP_Fields_API_Meta_Box_Section', 'add_meta_boxes' ) );
 
 	// Post types
-	WP_Fields_API_Table_Form::register( 'post', 'post-edit' );
+	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'post' );
+	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'page' );
 
 	// Comment types
-	WP_Fields_API_Table_Form::register( 'comment', 'comment-edit' );
+	WP_Fields_API_Table_Form::register( 'comment', 'comment-edit', 'comment' );
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
