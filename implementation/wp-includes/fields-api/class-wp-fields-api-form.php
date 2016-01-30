@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPress Fields API Form classes
+ * WordPress Fields API Form class
  *
  * @package WordPress
  * @subpackage Fields_API

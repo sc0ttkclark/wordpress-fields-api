@@ -112,6 +112,9 @@ final class WP_Fields_API {
 		// Include form types
 		require_once( $fields_api_dir . 'form-types/class-wp-fields-api-table-form.php' );
 
+		// Include section types
+		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-section.php' );
+
 		// Include control types
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-textarea-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
@@ -1569,6 +1572,9 @@ final class WP_Fields_API {
 
 		/* Form Types */
 		$this->register_form_type( 'table', 'WP_Fields_API_Table_Form' );
+
+		/* Section Types */
+		$this->register_section_type( 'meta-box', 'WP_Fields_API_Meta_Box_Section' );
 
 		/* Control Types */
 		$this->register_control_type( 'text', 'WP_Fields_API_Control' );
