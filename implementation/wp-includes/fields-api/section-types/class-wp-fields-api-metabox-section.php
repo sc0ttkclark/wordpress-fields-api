@@ -71,10 +71,18 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			$section->mb_callback_args['section']     = $section;
 
 			// Add meta box
-			add_meta_box( $section->id, $section->title, array(
+			add_meta_box(
+				$section->id,
+				$section->title,
+				array(
 					'WP_Fields_API_Meta_Box_Section',
 					'render_meta_box'
-				), null, $section->mb_context, $section->mb_priority, $section->mb_callback_args );
+				),
+				null,
+				$section->mb_context,
+				$section->mb_priority,
+				$section->mb_callback_args
+			);
 		}
 
 	}
@@ -117,7 +125,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 
 		$form = $section->form;
 
-		if ( ! is_object( $form ) ) {
+		if ( ! is_object( $form ) && ! empty( $box['args']['object_type'] ) ) {
 			$form = $wp_fields->get_form( $box['args']['object_type'], $form, $object_name );
 		}
 
