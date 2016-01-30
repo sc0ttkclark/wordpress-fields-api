@@ -35,9 +35,10 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 	/**
 	 * Add meta boxes for sections
 	 *
-	 * @param string $object_name Object name, if 'comment' then it's the comment object type
+	 * @param string             $object_name Object name, if 'comment' then it's the comment object type
+	 * @param WP_Post|WP_Comment $object      Current Object
 	 */
-	public static function add_meta_boxes( $object_name ) {
+	public static function add_meta_boxes( $object_name, $object = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -46,8 +47,21 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 
 		$object_type = 'post';
 
-		if ( 'comment' == $object_name ) {
-			$object_type = 'comment';
+		if ( $object ) {
+			if ( ! empty( $object->ID ) ) {
+				// Get Post ID and type
+				$object_type = 'post';
+				$object_name = $object->post_type;
+			} elseif ( ! empty( $object->comment_ID ) ) {
+				$object_type = 'comment';
+				$object_name = $object->comment_type;
+
+				if ( empty( $object_name ) ) {
+					$object_name = 'comment';
+				}
+			} elseif ( 'comment' == $object_name ) {
+				$object_type = 'comment';
+			}
 		}
 
 		$form_id = $object_type . '-edit';
@@ -66,7 +80,12 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			 */
 
 			// Add primary callback arguments
-			$section->mb_callback_args['fields_api']  = true;
+			$section->mb_callback_args['fields_api'] = true;
+
+			// Only normal context can be used
+			if ( 'comment' == $section->object_type ) {
+				$section->mb_context = 'normal';
+			}
 
 			// Add meta box
 			add_meta_box(
@@ -110,6 +129,10 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			// Get Comment ID and type
 			$item_id     = $object->comment_ID;
 			$object_name = $object->comment_type;
+
+			if ( empty( $object_name ) ) {
+				$object_name = 'comment';
+			}
 		}
 
 		$form = $this->form;
