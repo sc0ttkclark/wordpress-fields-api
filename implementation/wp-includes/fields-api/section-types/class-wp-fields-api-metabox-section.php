@@ -74,10 +74,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			add_meta_box(
 				$section->id,
 				$section->title,
-				array(
-					'WP_Fields_API_Meta_Box_Section',
-					'render_meta_box'
-				),
+				array( 'WP_Fields_API_Meta_Box_Section', 'render_meta_box' ),
 				null,
 				$section->mb_context,
 				$section->mb_priority,
