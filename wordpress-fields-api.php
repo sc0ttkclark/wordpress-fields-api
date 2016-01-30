@@ -95,6 +95,12 @@ function _wp_fields_api_implementations() {
 	// Post / comment editor support for meta boxes
 	add_action( 'add_meta_boxes', array( 'WP_Fields_API_Meta_Box_Section', 'add_meta_boxes' ) );
 
+	// Post types
+	WP_Fields_API_Table_Form::register( 'post', 'post-edit' );
+
+	// Comment types
+	WP_Fields_API_Table_Form::register( 'comment', 'comment-edit' );
+
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
 
