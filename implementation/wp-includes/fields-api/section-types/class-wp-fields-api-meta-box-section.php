@@ -67,14 +67,12 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 
 			// Add primary callback arguments
 			$section->mb_callback_args['fields_api']  = true;
-			$section->mb_callback_args['object_type'] = $object_type;
-			$section->mb_callback_args['section']     = $section;
 
 			// Add meta box
 			add_meta_box(
 				$section->id,
 				$section->title,
-				array( 'WP_Fields_API_Meta_Box_Section', 'render_meta_box' ),
+				array( $section, 'render_meta_box' ),
 				null,
 				$section->mb_context,
 				$section->mb_priority,
@@ -97,15 +95,9 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 		 */
 		global $wp_fields;
 
-		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) || empty( $box['args']['section'] ) ) {
+		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) ) {
 			return;
 		}
-
-		/**
-		 * @var $section WP_Fields_API_Meta_Box_Section
-		 */
-
-		$section = $box['args']['section'];
 
 		$item_id     = 0;
 		$object_name = null;
@@ -120,15 +112,25 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			$object_name = $object->comment_type;
 		}
 
-		$form = $section->form;
+		$form = $this->form;
 
-		if ( ! is_object( $form ) && ! empty( $box['args']['object_type'] ) ) {
-			$form = $wp_fields->get_form( $box['args']['object_type'], $form, $object_name );
+		if ( ! is_object( $form ) ) {
+			$form = $wp_fields->get_form( $this->object_type, $form, $object_name );
 		}
 
 		if ( is_a( $form, 'WP_Fields_API_Form' ) ) {
-			$form->render_section( $section, $item_id, $object_name );
+			$form->render_section( $this, $item_id, $object_name );
 		}
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function render() {
+
+		// Meta boxes don't use section titles
+		return '';
 
 	}
 

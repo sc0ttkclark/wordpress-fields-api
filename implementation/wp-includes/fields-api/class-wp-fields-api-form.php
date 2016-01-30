@@ -482,10 +482,16 @@ class WP_Fields_API_Form {
 		//////////////
 
 		// Section
-		$wp_fields->add_section( $this->object_type, $this->id . '-example-my-fields', $this->object_name, array(
+		$section_args = array(
 			'title' => __( 'Fields API Example - My Fields' ),
 		    'form' => $this->id,
-		) );
+		);
+
+		if ( in_array( $this->object_type, array( 'post', 'comment' ) ) ) {
+			$section_args['type'] = 'meta-box';
+		}
+
+		$wp_fields->add_section( $this->object_type, $this->id . '-example-my-fields', $this->object_name, $section_args );
 
 		// Add example for each control type
 		$control_types = array(
