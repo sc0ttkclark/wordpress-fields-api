@@ -77,6 +77,17 @@ class WP_Fields_API_Field {
 	public $capabilities_callback = '';
 
 	/**
+	 * register_meta Auth Callback.
+	 *
+	 * @access public
+	 *
+	 * @see register_meta
+	 *
+	 * @var callable
+	 */
+	public $meta_auth_callback = '';
+
+	/**
 	 * Value Callback.
 	 *
 	 * @access public

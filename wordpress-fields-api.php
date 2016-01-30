@@ -82,6 +82,7 @@ function _wp_fields_api_implementations() {
 	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
 
 	// Settings
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
 
 	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
@@ -91,6 +92,16 @@ function _wp_fields_api_implementations() {
 
 	// Run Settings API compatibility (has it's own hooks)
 	new WP_Fields_API_Settings_API;
+
+	// Post / comment editor support for meta boxes
+	add_action( 'add_meta_boxes', array( 'WP_Fields_API_Meta_Box_Section', 'add_meta_boxes' ), 10, 2 );
+
+	// Post types
+	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'post' );
+	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'page' );
+
+	// Comment types
+	WP_Fields_API_Table_Form::register( 'comment', 'comment-edit', 'comment' );
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
