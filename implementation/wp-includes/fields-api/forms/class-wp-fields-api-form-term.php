@@ -96,7 +96,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 
 		$wp_fields->add_control( $this->object_type, $this->id . '-description', null, $control_args );
 
-		// Add example fields
+		// Add example fields (maybe)
 		parent::register_fields( $wp_fields );
 
 		return;
@@ -190,7 +190,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 	 */
 	public function save_fields( $item_id = null, $object_name = null ) {
 
-		// Save new term
+		// Save term
 		$success = wp_update_term( $item_id, $object_name, $_POST );
 
 		// Return if not successful

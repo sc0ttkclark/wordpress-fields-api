@@ -453,29 +453,9 @@ class WP_Fields_API_Form {
 	 */
 	public function register_fields( $wp_fields ) {
 
-		/*
-		// Register control types
-		$wp_fields->register_control_type( 'control-type-id', 'Control_Class_Name' );
-
-		// Add section(s)
-		$wp_fields->add_section( $this->object_type, 'section-id', $this->object_name, array(
-			'title' => __( 'Section Heading' ),
-		    'form' => $this->id,
-		) );
-
-		$field_args = array(
-			// 'sanitize_callback' => array( $this, 'my_sanitize_callback' ),
-			'control'                   => array(
-				'type'                  => 'text',
-				'section'               => 'section-id',
-				'label'                 => __( 'Control Label' ),
-				'description'           => __( 'Description of control' ),
-				// 'capabilities_callback' => array( $this, 'my_capabilities_callback' ),
-			),
-		);
-
-		$wp_fields->add_field( $this->object_type, 'field-id', $this->object_name, $field_args );
-		*/
+		if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) || ! WP_FIELDS_API_EXAMPLES ) {
+			return;
+		}
 
 		//////////////
 		// Examples //

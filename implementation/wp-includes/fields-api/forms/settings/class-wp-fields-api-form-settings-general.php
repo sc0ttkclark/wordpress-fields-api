@@ -238,6 +238,9 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		$wp_fields->add_field( $this->object_type, 'start_of_week', null, $field_args );
 
 		// @todo implent languages dropdown
+
+		// Add example fields (maybe)
+		parent::register_fields( $wp_fields );
 	}
 
 	/**

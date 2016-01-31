@@ -381,7 +381,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 
 		$wp_fields->add_field( $this->object_type, 'capabilities', null, $field_args );
 
-		// Add example fields
+		// Add example fields (maybe)
 		parent::register_fields( $wp_fields );
 
 	}
