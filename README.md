@@ -1,4 +1,4 @@
-# WordPress Fields API v0.1 Beta
+# WordPress Fields API v0.0.4 Beta
 
 [![Travis](https://secure.travis-ci.org/sc0ttkclark/wordpress-fields-api.png?branch=master)](http://travis-ci.org/sc0ttkclark/wordpress-fields-api)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/?branch=master)
@@ -31,7 +31,6 @@ Please note: This plugin is still in the early stages of development and should 
 **Term Add / Edit Form:**
 
 * [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/term/_starter.php)
-
 
 ## Requirements
 
