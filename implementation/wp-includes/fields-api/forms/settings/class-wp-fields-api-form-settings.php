@@ -19,7 +19,8 @@ class WP_Fields_API_Form_Settings extends WP_Fields_API_Table_Form {
 		// Add Settings API hidden form fields and nonce
 		settings_fields( $this->id );
 
-		parent::render();
+		// Render Settings API fields
+		do_settings_sections( $this->id );
 
 	}
 
