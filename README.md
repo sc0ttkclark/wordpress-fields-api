@@ -70,7 +70,7 @@ There are also [GitHub issues](https://github.com/sc0ttkclark/wordpress-fields-a
 
 ### Pull Requests
 
-To submit a pull request, please base it off of the `master` branch.
+To submit a pull request, please base it off of the `develop` branch which we use for ongoing development towards the next release. The `master` branch represents the last stable beta release.
 
 ## LICENSE
 
