@@ -1,10 +1,9 @@
 <?php
 /**
- * WordPress Fields API Section classes
+ * WordPress Fields API Section class
  *
  * @package WordPress
- * @subpackage Customize
- * @since 3.4.0
+ * @subpackage Fields API
  */
 
 /**

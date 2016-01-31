@@ -34,6 +34,10 @@ function _wp_fields_api_include() {
 		return;
 	}
 
+	if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) ) {
+		define( 'WP_FIELDS_API_EXAMPLES', false );
+	}
+
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
 	// Init Fields API class
@@ -92,6 +96,16 @@ function _wp_fields_api_implementations() {
 
 	// Run Settings API compatibility (has it's own hooks)
 	new WP_Fields_API_Settings_API;
+
+	// Post / comment editor support for meta boxes
+	add_action( 'add_meta_boxes', array( 'WP_Fields_API_Meta_Box_Section', 'add_meta_boxes' ), 10, 2 );
+
+	// Post types
+	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'post' );
+	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'page' );
+
+	// Comment types
+	WP_Fields_API_Table_Form::register( 'comment', 'comment-edit', 'comment' );
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );

@@ -112,6 +112,9 @@ final class WP_Fields_API {
 		// Include form types
 		require_once( $fields_api_dir . 'form-types/class-wp-fields-api-table-form.php' );
 
+		// Include section types
+		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-section.php' );
+
 		// Include control types
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-textarea-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
@@ -885,6 +888,21 @@ final class WP_Fields_API {
 			$this->add_control( $object_type, $control_id, $object_name, $control );
 		}
 
+		// Meta types call register_meta() for their fields
+		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ( ! empty( $field['internal'] ) || ! empty( $field->internal ) ) ) {
+			// Set callbacks
+			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
+			$auth_callback = null;
+
+			if ( ! empty( $field['meta_auth_callback'] ) ) {
+				$auth_callback = $field['meta_auth_callback'];
+			} elseif ( ! empty( $field->meta_auth_callback ) ) {
+				$auth_callback = $field->meta_auth_callback;
+			}
+
+			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
+		}
+
 	}
 
 	/**
@@ -1555,6 +1573,9 @@ final class WP_Fields_API {
 		/* Form Types */
 		$this->register_form_type( 'table', 'WP_Fields_API_Table_Form' );
 
+		/* Section Types */
+		$this->register_section_type( 'meta-box', 'WP_Fields_API_Meta_Box_Section' );
+
 		/* Control Types */
 		$this->register_control_type( 'text', 'WP_Fields_API_Control' );
 		$this->register_control_type( 'textarea', 'WP_Fields_API_Textarea_Control' );
@@ -1602,6 +1623,27 @@ final class WP_Fields_API {
 		}
 
 		return $found;
+
+	}
+
+	/**
+	 * Hook into register_meta() sanitize callback and call field
+	 *
+	 * @param mixed  $meta_value Meta value to sanitize.
+	 * @param string $meta_key   Meta key.
+	 * @param string $meta_type  Meta type.
+	 *
+	 * @return mixed
+	 */
+	public function register_meta_sanitize_callback( $meta_value, $meta_key, $meta_type ) {
+
+		$field = $this->get_field( $meta_type, $meta_key );
+
+		if ( $field ) {
+			$meta_value = $field->sanitize( $meta_value );
+		}
+
+		return $meta_value;
 
 	}
 
