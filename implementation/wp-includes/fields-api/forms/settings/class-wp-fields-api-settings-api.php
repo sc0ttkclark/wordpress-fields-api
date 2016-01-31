@@ -135,11 +135,7 @@ class WP_Fields_API_Settings_API {
 
 		$description = trim( $control->description );
 
-		// Avoid outputting them in render_content()
-		$control->label       = '';
-		$control->description = '';
-
-		$control->render_content();
+		$control->maybe_render();
 
 		if ( 0 < strlen( $description ) ) {
 			?>

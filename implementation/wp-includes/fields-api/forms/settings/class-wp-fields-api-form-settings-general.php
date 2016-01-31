@@ -132,7 +132,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 								'id'            => 'users_can_register',
 								'name'          => 'users_can_register',
 						),
-						'description'       => __( 'Anyone can register' ),
+						'checkbox_label' => __( 'Anyone can register' ),
 						'capabilities_callback' => array( $this, 'capability_is_not_multisite' ),
 						'internal'    => true,
 				),
