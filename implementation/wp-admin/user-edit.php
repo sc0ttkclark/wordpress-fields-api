@@ -7,8 +7,11 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Remove WP Fields API modification
-global $user_id, $action, $wp_http_referer; // @todo Remove WP Fields API modification
+
+// @todo Remove WP Fields API modification
+if ( !defined('ABSPATH') )
+	die('-1');
+global $user_id, $action, $wp_http_referer, $submenu_file, $parent_file; // @todo Remove WP Fields API modification
 
 wp_reset_vars( array( 'action', 'user_id', 'wp_http_referer' ) );
 

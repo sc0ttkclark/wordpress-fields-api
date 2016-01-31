@@ -113,65 +113,70 @@ function _wp_fields_api_implementations() {
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
 
-/**
- * Implement Fields API User edit to override WP Core.
- */
-function _wp_fields_api_user_edit_include() {
+add_action( 'load-user-edit.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-profile.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-edit-tags.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-general.php', '_wp_fields_api_load_include', 999 );
+
+function _wp_fields_api_load_include() {
+
+	global $pagenow;
 
 	static $overridden;
 
 	if ( empty( $overridden ) ) {
-		$overridden = true;
+		$overridden = array();
+	}
 
-		// Load our overrides
-		//require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/user.php' );
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/user-edit.php' );
+	$load_path = WP_FIELDS_API_DIR . 'implementation/wp-admin/';
+
+	if ( file_exists( $load_path . $pagenow ) && ! in_array( $pagenow, $overridden ) ) {
+		$overridden[] = $pagenow;
+
+		_wp_fields_api_override_compatibility();
+
+		// Load our override
+		require_once( $load_path . $pagenow );
 
 		// Bail on original core file, don't run the rest
 		exit;
 	}
 
 }
-add_action( 'load-user-edit.php', '_wp_fields_api_user_edit_include' );
-add_action( 'load-profile.php', '_wp_fields_api_user_edit_include' );
-
 
 /**
- * Implement Fields API Term to override WP Core.
+ * Used to maintain compatibiltiy on all overrides
  */
-function _wp_fields_api_term_include() {
+function _wp_fields_api_override_compatibility() {
 
-	static $overridden;
+	global $typenow, $pagenow, $taxnow;
 
-	if ( empty( $overridden ) ) {
-		$overridden = true;
+	/*
+	 * The following hooks are fired to ensure backward compatibility.
+	 * In all other cases, 'load-' . $pagenow should be used instead.
+	 */
+	if ( $typenow == 'page' ) {
+		if ( $pagenow == 'post-new.php' )
+			do_action( 'load-page-new.php' );
+		elseif ( $pagenow == 'post.php' )
+			do_action( 'load-page.php' );
+	}  elseif ( $pagenow == 'edit-tags.php' ) {
+		if ( $taxnow == 'category' )
+			do_action( 'load-categories.php' );
+		elseif ( $taxnow == 'link_category' )
+			do_action( 'load-edit-link-categories.php' );
+	}
 
-		// Load our overrides
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tags.php' );
-
-		// Bail on original core file, don't run the rest
-		exit;
+	if ( ! empty( $_REQUEST['action'] ) ) {
+		/**
+		 * Fires when an 'action' request variable is sent.
+		 *
+		 * The dynamic portion of the hook name, `$_REQUEST['action']`,
+		 * refers to the action derived from the `GET` or `POST` request.
+		 *
+		 * @since 2.6.0
+		 */
+		do_action( 'admin_action_' . $_REQUEST['action'] );
 	}
 
 }
-add_action( 'load-edit-tags.php', '_wp_fields_api_term_include' );
-
-/**
- * Implement Fields API Term to override WP Core.
- */
-function _wp_fields_api_settings_general_include() {
-
-	static $overridden;
-
-	if ( empty( $overridden ) ) {
-		$overridden = true;
-
-		// Load our overrides
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/settings-general.php' );
-
-		// Bail on original core file, don't run the rest
-		exit;
-	}
-
-}
-add_action( 'load-options-general.php', '_wp_fields_api_settings_general_include' );

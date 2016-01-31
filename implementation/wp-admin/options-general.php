@@ -6,7 +6,11 @@
  * @subpackage Administration
  */
 /** WordPress Administration Bootstrap */
-require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Remove WP Fields API modification
+
+// @todo Remove WP Fields API modification
+if ( !defined('ABSPATH') )
+	die('-1');
+global $parent_file, $title; // @todo Remove WP Fields API modification
 
 /** WordPress Translation Install API */
 require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
@@ -62,8 +66,6 @@ get_current_screen()->set_help_sidebar(
 );
 
 include( ABSPATH . 'wp-admin/admin-header.php' );
-
-// FIELDS API IMPLEMENTATION
 ?>
 <div class="wrap">
 
@@ -71,8 +73,16 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 
 	<form method="post" action="options.php" novalidate="novalidate">
 		<?php
+		/**
+		 * WP Fields API implementation >>>
+		 */
+
 		// Render form controls
 		$form->maybe_render();
+
+		/**
+		 * <<< WP Fields API implementation
+		 */
 		?>
 
 		<?php submit_button(); ?>

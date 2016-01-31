@@ -7,8 +7,11 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Remove WP Fields API modification
-global $taxnow, $taxonomy; // @todo Remove WP Fields API modification
+
+// @todo Remove WP Fields API modification
+if ( !defined('ABSPATH') )
+	die('-1');
+global $taxnow, $taxonomy, $submenu_file, $parent_file; // @todo Remove WP Fields API modification
 
 if ( ! $taxnow )
 	wp_die( __( 'Invalid taxonomy' ) );

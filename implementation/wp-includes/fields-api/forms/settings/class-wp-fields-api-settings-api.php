@@ -35,7 +35,7 @@ class WP_Fields_API_Settings_API {
 			// Get Form
 			$form_id = $section->form;
 			$section_id = $section->id;
-			$section_title = $section->title;
+			$section_title = $section->label;
 
 			if ( is_object( $form_id ) ) {
 				$form_id = $form_id->id;
@@ -63,7 +63,6 @@ class WP_Fields_API_Settings_API {
 					}
 
 					if ( ! $added_section ) {
-
 						add_settings_section(
 							$section_id,
 							$section_title,

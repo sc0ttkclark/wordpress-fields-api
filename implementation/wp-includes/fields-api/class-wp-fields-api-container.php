@@ -10,6 +10,7 @@
  * Fields API Container class.
  */
 class WP_Fields_API_Container {
+
 	/**
 	 * Container type
 	 *

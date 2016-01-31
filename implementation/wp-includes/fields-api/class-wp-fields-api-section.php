@@ -50,7 +50,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 		?>
 		<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?>-section section-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-section">
 			<?php
-				if ( ! empty( $this->label ) && $this->display_label ) {
+				if ( $this->label && $this->display_label ) {
 					?>
 					<h3><?php $this->render_label(); ?></h3>
 					<?php

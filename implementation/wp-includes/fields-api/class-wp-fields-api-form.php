@@ -105,7 +105,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		// Section
 		$section_args = array(
-			'title' => __( 'Fields API Example - My Fields' ),
+			'label' => __( 'Fields API Example - My Fields' ),
 			'form'  => $this->id,
 		);
 

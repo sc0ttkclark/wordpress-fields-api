@@ -27,7 +27,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 		////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-main', null, array(
-			'title'         => __( 'Term' ),
+			'label'         => __( 'Term' ),
 			'form'          => $this->id,
 			'display_label' => false,
 		) );
