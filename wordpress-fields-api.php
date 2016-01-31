@@ -79,8 +79,7 @@ function _wp_fields_api_implementations() {
 	// Post
 	require_once( $implementation_dir . 'class-wp-fields-api-form-post.php' );
 
-	WP_Fields_API_Form_Post::register( 'post', 'post-edit', 'post' );
-	WP_Fields_API_Form_Post::register( 'post', 'post-edit', 'page' );
+	WP_Fields_API_Form_Post::register( 'post', 'post-edit' );
 
 	// Term
 	require_once( $implementation_dir . 'class-wp-fields-api-form-term.php' );
@@ -97,7 +96,7 @@ function _wp_fields_api_implementations() {
 	// Comment
 	require_once( $implementation_dir . 'class-wp-fields-api-form-comment.php' );
 
-	WP_Fields_API_Form_Comment::register( 'comment', 'comment-edit', 'comment' );
+	WP_Fields_API_Form_Comment::register( 'comment', 'comment-edit' );
 
 	// Settings
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
