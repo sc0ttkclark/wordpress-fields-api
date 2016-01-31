@@ -26,6 +26,13 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 	public $mb_priority = 'default';
 
 	/**
+	 * Meta box callback for rendering fields
+	 *
+	 * @var callable
+	 */
+	public $mb_callback;
+
+	/**
 	 * Meta box callback arguments
 	 *
 	 * @var array
@@ -79,6 +86,9 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			 * @var $section WP_Fields_API_Meta_Box_Section
 			 */
 
+			// Meta boxes don't display section titles
+			$section->display_title = false;
+
 			// Add primary callback arguments
 			$section->mb_callback_args['fields_api'] = true;
 
@@ -87,11 +97,16 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 				$section->mb_context = 'normal';
 			}
 
+			// Set default callback
+			if ( empty( $section->mb_callback ) || ! is_callable( $section->mb_callback ) ) {
+				$section->mb_callback = array( $section, 'render_meta_box' );
+			}
+
 			// Add meta box
 			add_meta_box(
 				$section->id,
 				$section->title,
-				array( $section, 'render_meta_box' ),
+				$section->mb_callback,
 				null,
 				$section->mb_context,
 				$section->mb_priority,
@@ -144,16 +159,6 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 		if ( is_a( $form, 'WP_Fields_API_Form' ) ) {
 			$form->render_section( $this, $item_id, $object_name );
 		}
-
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function render() {
-
-		// Meta boxes don't use section titles
-		return '';
 
 	}
 
