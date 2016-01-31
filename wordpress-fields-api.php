@@ -3,7 +3,7 @@
 Plugin Name: Fields API
 Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
 Description: WordPress Fields API prototype and proposal for WordPress core
-Version: 0.1
+Version: 0.0.4 Beta
 Author: Scott Kingsley Clark
 Author URI: http://scottkclark.com/
 License: GPL2+
