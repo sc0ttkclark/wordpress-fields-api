@@ -45,14 +45,17 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 		 */
 		global $wp_fields;
 
+		$item_id     = 0;
 		$object_type = 'post';
 
 		if ( $object ) {
 			if ( ! empty( $object->ID ) ) {
 				// Get Post ID and type
+				$item_id     = $object->ID;
 				$object_type = 'post';
 				$object_name = $object->post_type;
 			} elseif ( ! empty( $object->comment_ID ) ) {
+				$item_id     = $object->comment_ID;
 				$object_type = 'comment';
 				$object_name = $object->comment_type;
 
@@ -60,6 +63,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 					$object_name = 'comment';
 				}
 			} elseif ( 'comment' == $object_name ) {
+				$item_id     = $object->comment_ID;
 				$object_type = 'comment';
 			}
 		}
@@ -80,6 +84,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 			 */
 
 			// Set object name
+			$section->item_id     = $item_id;
 			$section->object_name = $object_name;
 
 			if ( ! $section->check_capabilities() ) {

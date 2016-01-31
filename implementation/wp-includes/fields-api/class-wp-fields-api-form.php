@@ -34,7 +34,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 * @access public
 	 * @var int|string
 	 */
-	public $item_id;
+	public $item_id = 0;
 
 	/**
 	 * Register forms, sections, controls, and fields
@@ -168,6 +168,10 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				$field_args['control']['checkbox_label'] = 'Example checkbox label';
 			}
 
+			if ( 'dropdown-terms' == $control_type ) {
+				$field_args['control']['taxonomy'] = 'category';
+			}
+
 			$wp_fields->add_field( $this->object_type, $id, $this->object_name, $field_args );
 		}
 
@@ -183,7 +187,15 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 */
 	public function save_fields( $item_id = null, $object_name = null ) {
 
-		$form_nonce = $this->object_type . '_' . $this->id;
+		if ( ! empty( $item_id ) ) {
+			$this->item_id = $item_id;
+		}
+
+		if ( ! empty( $object_name ) ) {
+			$this->object_name = $object_name;
+		}
+
+		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
 
 		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $form_nonce ) ) {
 			/**
@@ -191,7 +203,9 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			 */
 			global $wp_fields;
 
-			$controls = $wp_fields->get_controls( $this->object_type, $object_name );
+			$controls = $wp_fields->get_controls( $this->object_type, $this->object_name );
+
+			$values = array();
 
 			foreach ( $controls as $control ) {
 				if ( empty( $control->field ) || $control->internal ) {
@@ -199,13 +213,13 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				}
 
 				// Pass $object_name and $item_id into control
-				$control->object_name = $object_name;
-				$control->item_id     = $item_id;
+				$control->object_name = $this->object_name;
+				$control->item_id     = $this->item_id;
 
 				$field = $control->field;
 
 				// Pass $object_name and $item_id into field
-				$field->object_name = $object_name;
+				$field->object_name = $this->object_name;
 
 				// Get value from $_POST
 				$value = null;
@@ -223,12 +237,32 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				// Sanitize
 				$value = $field->sanitize( $value );
 
+				if ( is_wp_error( $value ) ) {
+					return $value;
+				}
+
+				$values[ $field->id ] = $value;
+			}
+
+			foreach ( $controls as $control ) {
+				if ( empty( $control->field ) || $control->internal ) {
+					continue;
+				}
+
+				$field = $control->field;
+
+				$value = $values[ $field->id ];
+
 				// Save value
-				$field->save( $value, $item_id );
+				$success = $field->save( $value, $this->item_id );
+
+				if ( is_wp_error( $success ) ) {
+					return $success;
+				}
 			}
 		}
 
-		return $item_id;
+		return $this->item_id;
 
 	}
 
@@ -242,7 +276,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		 */
 		global $wp_fields;
 
-		$form_nonce = $this->object_type . '_' . $this->id;
+		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
 
 		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 

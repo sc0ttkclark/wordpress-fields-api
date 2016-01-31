@@ -56,6 +56,11 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 			'0' => $placeholder_text,
 		);
 
+		// Handle default taxonomy
+		if ( empty( $this->taxonomy ) && 'term' == $this->object_type && ! empty( $this->object_name ) ) {
+			$this->taxonomy = $this->object_name;
+		}
+
 		if ( empty( $this->taxonomy ) ) {
 			return $choices;
 		}

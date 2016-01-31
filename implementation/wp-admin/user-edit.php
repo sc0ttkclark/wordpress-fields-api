@@ -35,6 +35,8 @@ global $wp_fields;
 
 $form = $wp_fields->get_form( 'user', 'user-edit' );
 
+$form->item_id = $user_id;
+
 /**
  * <<< WP Fields API implementation
  */
@@ -146,7 +148,7 @@ if ( !current_user_can('edit_user', $user_id) )
  * WP Fields API implementation >>>
  */
 
-$errors = $form->save_fields( $user_id );
+$errors = $form->save_fields();
 
 /**
  * <<< WP Fields API implementation
@@ -226,7 +228,7 @@ if ( ! IS_PROFILE_PAGE ) {
 
 $profile_user = get_userdata( $user_id );
 
-$form->maybe_render( $user_id );
+$form->maybe_render();
 
 /**
  * <<< WP Fields API implementation

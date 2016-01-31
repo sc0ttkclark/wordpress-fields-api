@@ -40,7 +40,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	 * @access public
 	 * @var int|string
 	 */
-	public $item_id;
+	public $item_id = 0;
 
 	/**
 	 * Render the section, and the controls that have been added to it.

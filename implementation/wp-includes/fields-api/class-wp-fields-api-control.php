@@ -28,7 +28,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 * @access public
 	 * @var int|string
 	 */
-	public $item_id;
+	public $item_id = 0;
 
 	/**
 	 * All fields tied to the control.

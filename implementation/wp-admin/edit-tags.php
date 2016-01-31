@@ -43,7 +43,8 @@ global $wp_fields;
 $form_add = $wp_fields->get_form( 'term', 'term-add' );
 
 // Set taxonomy object name
-$form_add->object_name = $taxonomy;
+$form_add->item_id     = 0;
+$form_add->object_name = $taxnow;
 
 /**
  * <<< WP Fields API implementation
@@ -100,7 +101,7 @@ switch ( $wp_list_table->current_action() ) {
 		 * WP Fields API implementation >>>
 		 */
 
-		$ret = $form_add->save_fields( 0, $taxonomy );
+		$ret = $form_add->save_fields();
 
 		/**
 		 * <<< WP Fields API implementation
@@ -226,9 +227,10 @@ switch ( $wp_list_table->current_action() ) {
 		$form_edit = $wp_fields->get_form( 'term', 'term-edit' );
 
 		// Set taxonomy object name
+		$form_edit->item_id     = $tag_ID;
 		$form_edit->object_name = $taxonomy;
 
-		$ret = $form_edit->save_fields( $tag_ID, $taxonomy );
+		$ret = $form_edit->save_fields();
 
 		/**
 		 * <<< WP Fields API implementation
@@ -522,7 +524,7 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								 */
 
 								// Render form controls
-								$form_add->maybe_render( 0, $taxonomy );
+								$form_add->maybe_render();
 
 								/**
 								 * <<< WP Fields API implementation

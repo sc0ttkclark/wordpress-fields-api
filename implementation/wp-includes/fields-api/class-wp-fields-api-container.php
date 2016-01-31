@@ -411,6 +411,16 @@ class WP_Fields_API_Container {
 	 */
 	final public function maybe_render() {
 
+		$args = func_get_args();
+
+		if ( ! empty( $args[0] ) && isset( $this->item_id ) ) {
+			$this->item_id = $args[0];
+		}
+
+		if ( ! empty( $args[1] ) ) {
+			$this->object_name = $args[1];
+		}
+
 		if ( ! $this->check_capabilities() ) {
 			return;
 		}
