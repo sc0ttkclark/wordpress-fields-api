@@ -73,10 +73,14 @@ function _wp_fields_api_implementations() {
 
 	$implementation_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/forms/';
 
-	// User
-	require_once( $implementation_dir . 'class-wp-fields-api-form-user-edit.php' );
+	// Meta boxes
+	add_action( 'add_meta_boxes', array( 'WP_Fields_API_Meta_Box_Section', 'add_meta_boxes' ), 10, 2 );
 
-	WP_Fields_API_Form_User_Edit::register( 'user', 'user-edit' );
+	// Post
+	require_once( $implementation_dir . 'class-wp-fields-api-form-post.php' );
+
+	WP_Fields_API_Form_Post::register( 'post', 'post-edit', 'post' );
+	WP_Fields_API_Form_Post::register( 'post', 'post-edit', 'page' );
 
 	// Term
 	require_once( $implementation_dir . 'class-wp-fields-api-form-term.php' );
@@ -84,6 +88,16 @@ function _wp_fields_api_implementations() {
 
 	WP_Fields_API_Form_Term::register( 'term', 'term-edit' );
 	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
+
+	// User
+	require_once( $implementation_dir . 'class-wp-fields-api-form-user-edit.php' );
+
+	WP_Fields_API_Form_User_Edit::register( 'user', 'user-edit' );
+
+	// Comment
+	require_once( $implementation_dir . 'class-wp-fields-api-form-comment.php' );
+
+	WP_Fields_API_Form_Comment::register( 'comment', 'comment-edit', 'comment' );
 
 	// Settings
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
@@ -96,16 +110,6 @@ function _wp_fields_api_implementations() {
 
 	// Run Settings API compatibility (has it's own hooks)
 	new WP_Fields_API_Settings_API;
-
-	// Post / comment editor support for meta boxes
-	add_action( 'add_meta_boxes', array( 'WP_Fields_API_Meta_Box_Section', 'add_meta_boxes' ), 10, 2 );
-
-	// Post types
-	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'post' );
-	WP_Fields_API_Table_Form::register( 'post', 'post-edit', 'page' );
-
-	// Comment types
-	WP_Fields_API_Table_Form::register( 'comment', 'comment-edit', 'comment' );
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );

@@ -41,7 +41,7 @@ class WP_Fields_API_Settings_API {
 				$form_id = $form_id->id;
 			}
 
-			if ( ! $section->display_title ) {
+			if ( ! $section->display_label ) {
 				$section_title = '';
 			}
 

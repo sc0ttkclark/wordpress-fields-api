@@ -19,7 +19,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		$wp_fields->add_section( $this->object_type, $this->id . '-options-general', null, array(
 				'title'  => __( 'General Settings' ),
 				'form' => $this->id,
-				'display_title' => false,
+				'display_label' => false,
 		) );
 
 		/**

@@ -11,7 +11,7 @@
  *
  * @todo Switch to WP_Fields_API_Form when styles work for divs on all admin pages properly (currently only Term Add New has styling for div forms)
  */
-class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
+class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
@@ -28,7 +28,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 		$wp_fields->add_section( $this->object_type, $this->id . '-main', null, array(
 			'title'         => __( 'Term' ),
 			'form'        => $this->id,
-			'display_title' => false,
+			'display_label' => false,
 		) );
 
 		$control_args = array(

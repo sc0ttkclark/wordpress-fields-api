@@ -9,7 +9,7 @@
 /**
  * Class WP_Fields_API_Form_User_Edit
  */
-class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
+class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
