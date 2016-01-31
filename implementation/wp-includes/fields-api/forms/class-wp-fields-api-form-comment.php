@@ -1,15 +1,15 @@
 <?php
 /**
- * This is an implementation for Fields API for the Post editor in the WordPress Dashboard
+ * This is an implementation for Fields API for the Comment editor in the WordPress Dashboard
  *
  * @package    WordPress
  * @subpackage Fields_API
  */
 
 /**
- * Class WP_Fields_API_Form_Post
+ * Class WP_Fields_API_Form_Comment
  */
-class WP_Fields_API_Form_Post extends WP_Fields_API_Table_Form {
+class WP_Fields_API_Form_Comment extends WP_Fields_API_Table_Form {
 
 	/**
 	 * {@inheritdoc}

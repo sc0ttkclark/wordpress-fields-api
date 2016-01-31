@@ -2,7 +2,7 @@
 /**
  * WordPress Fields API Form class
  *
- * @package WordPress
+ * @package    WordPress
  * @subpackage Fields_API
  */
 
@@ -118,7 +118,7 @@ class WP_Fields_API_Form {
 	 *
 	 * @access public
 	 *
-	 * @see WP_Fields_API_Section::active()
+	 * @see    WP_Fields_API_Section::active()
 	 *
 	 * @var callable Callback is called with one argument, the instance of
 	 *               {@see WP_Fields_API_Section}, and returns bool to indicate
@@ -132,7 +132,7 @@ class WP_Fields_API_Form {
 	 *
 	 * @access public
 	 *
-	 * @see WP_Fields_API_Form::check_capabilities()
+	 * @see    WP_Fields_API_Form::check_capabilities()
 	 *
 	 * @var callable Callback is called with one argument, the instance of
 	 *               WP_Fields_API_Form, and returns bool to indicate whether
@@ -164,9 +164,9 @@ class WP_Fields_API_Form {
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            A specific ID of the form.
-	 * @param array  $args          Form arguments.
+	 * @param string $object_type Object type.
+	 * @param string $id          A specific ID of the form.
+	 * @param array  $args        Form arguments.
 	 */
 	public function init( $object_type, $id, $args = array() ) {
 
@@ -212,7 +212,7 @@ class WP_Fields_API_Form {
 	 */
 	final public function active() {
 
-		$form = $this;
+		$form   = $this;
 		$active = true;
 
 		if ( is_callable( $this->active_callback ) ) {
@@ -223,7 +223,7 @@ class WP_Fields_API_Form {
 		 * Filter response of WP_Fields_API_Form::active().
 		 *
 		 *
-		 * @param bool                $active  Whether the Fields API form is active.
+		 * @param bool               $active Whether the Fields API form is active.
 		 * @param WP_Fields_API_Form $form   {@see WP_Fields_API_Form} instance.
 		 */
 		$active = apply_filters( 'fields_api_form_active_' . $this->object_type, $active, $form );
@@ -257,8 +257,8 @@ class WP_Fields_API_Form {
 
 		$array = wp_array_slice_assoc( (array) $this, array( 'id', 'title', 'description', 'priority', 'type' ) );
 
-		$array['content'] = $this->get_content();
-		$array['active'] = $this->active();
+		$array['content']        = $this->get_content();
+		$array['active']         = $this->active();
 		$array['instanceNumber'] = $this->instance_number;
 
 		return $array;
@@ -313,7 +313,7 @@ class WP_Fields_API_Form {
 	/**
 	 * Check capabilities and render the form.
 	 *
-	 * @param int|null    $item_id Item ID
+	 * @param int|null    $item_id     Item ID
 	 * @param string|null $object_name Object name
 	 */
 	final public function maybe_render( $item_id = null, $object_name = null ) {
@@ -367,9 +367,9 @@ class WP_Fields_API_Form {
 	 * Class variables for this form class are available in the `data` JS object;
 	 * export custom variables by overriding WP_Fields_API_Form::json().
 	 *
-	 * @see WP_Fields_API_Form::print_template()
+	 * @see    WP_Fields_API_Form::print_template()
 	 *
-	 * @since 4.3.0
+	 * @since  4.3.0
 	 * @access protected
 	 */
 	protected function render_template() {
@@ -384,7 +384,7 @@ class WP_Fields_API_Form {
 	 * Class variables for this control class are available in the `data` JS object;
 	 * export custom variables by overriding {@see WP_Fields_API_Form::to_json()}.
 	 *
-	 * @see WP_Fields_API_Form::print_template()
+	 * @see    WP_Fields_API_Form::print_template()
 	 *
 	 * @access protected
 	 */
@@ -408,7 +408,7 @@ class WP_Fields_API_Form {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
-		 * @var $form    WP_Fields_API_Form
+		 * @var $form      WP_Fields_API_Form
 		 */
 		global $wp_fields;
 
@@ -453,29 +453,9 @@ class WP_Fields_API_Form {
 	 */
 	public function register_fields( $wp_fields ) {
 
-		/*
-		// Register control types
-		$wp_fields->register_control_type( 'control-type-id', 'Control_Class_Name' );
-
-		// Add section(s)
-		$wp_fields->add_section( $this->object_type, 'section-id', $this->object_name, array(
-			'title' => __( 'Section Heading' ),
-		    'form' => $this->id,
-		) );
-
-		$field_args = array(
-			// 'sanitize_callback' => array( $this, 'my_sanitize_callback' ),
-			'control'                   => array(
-				'type'                  => 'text',
-				'section'               => 'section-id',
-				'label'                 => __( 'Control Label' ),
-				'description'           => __( 'Description of control' ),
-				// 'capabilities_callback' => array( $this, 'my_capabilities_callback' ),
-			),
-		);
-
-		$wp_fields->add_field( $this->object_type, 'field-id', $this->object_name, $field_args );
-		*/
+		if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) || ! WP_FIELDS_API_EXAMPLES ) {
+			return;
+		}
 
 		//////////////
 		// Examples //
@@ -484,7 +464,7 @@ class WP_Fields_API_Form {
 		// Section
 		$section_args = array(
 			'title' => __( 'Fields API Example - My Fields' ),
-		    'form' => $this->id,
+			'form'  => $this->id,
 		);
 
 		if ( in_array( $this->object_type, array( 'post', 'comment' ) ) ) {
@@ -521,10 +501,11 @@ class WP_Fields_API_Form {
 			$field_args = array(
 				// Add a control to the field at the same time
 				'control' => array(
-					'type'    => $control_type,
-					'id'      => $this->id . '-' . $id,
-					'section' => $this->id . '-example-my-fields',
-					'label'   => $label,
+					'type'        => $control_type,
+					'id'          => $this->id . '-' . $id,
+					'section'     => $this->id . '-example-my-fields',
+					'label'       => $label,
+					'description' => 'Example field description',
 				),
 			);
 
@@ -571,7 +552,7 @@ class WP_Fields_API_Form {
 
 				// Pass $object_name and $item_id into control
 				$control->object_name = $object_name;
-				$control->item_id = $item_id;
+				$control->item_id     = $item_id;
 
 				$field = $control->field;
 

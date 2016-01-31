@@ -34,6 +34,10 @@ function _wp_fields_api_include() {
 		return;
 	}
 
+	if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) ) {
+		define( 'WP_FIELDS_API_EXAMPLES', false );
+	}
+
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
 	// Init Fields API class

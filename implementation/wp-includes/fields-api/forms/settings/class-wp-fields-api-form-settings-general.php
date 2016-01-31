@@ -25,7 +25,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * Site Name
 		 */
-		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -34,7 +33,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 						'input_attrs'       => array(
 							'class'         => 'regular-text',
 							'id'            => 'blogname',
-							'placeholder'   => __( 'Local WordPress Dev' ),
 							'name'          => 'blogname',
 						),
 						'internal'          => true,
@@ -45,7 +43,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * Tagline
 		 */
-		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -55,7 +52,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 						'input_attrs'       => array(
 							'class'             => 'regular-text',
 							'id'                => 'blogdescription',
-							'placeholder'       => __( 'Just another WordPress site.' ),
 							'name'              => 'blogdescription',
 						),
 						'internal'    => true,
@@ -66,7 +62,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * WordPress URL
 		 */
-		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -77,6 +72,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 								'id'            => 'siteurl',
 								'name'          => 'siteurl',
 						),
+						'capabilities_callback' => array( $this, 'capability_is_not_multisite' ),
 						'internal'    => true,
 				),
 		);
@@ -85,7 +81,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * Home URL
 		 */
-		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -97,6 +92,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 								'name'          => 'home',
 						),
 						'description'       => sprintf( __( 'Enter the address here if you <a href="%s">want your site home page to be different from your WordPress installation directory</a>.' ), 'https://codex.wordpress.org/Giving_WordPress_Its_Own_Directory' ),
+						'capabilities_callback' => array( $this, 'capability_is_not_multisite' ),
 						'internal'    => true,
 				),
 		);
@@ -105,7 +101,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * Admin Email Address
 		 */
-		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'text',
@@ -117,15 +112,17 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 								'name'          => 'admin_email',
 						),
 						'description'       => __( 'This address is used for admin purposes, like new user notification.' ),
+						'capabilities_callback' => array( $this, 'capability_is_not_multisite' ),
 						'internal'    => true,
 				),
 		);
 		$wp_fields->add_field( $this->object_type, 'admin_email', null, $field_args );
 
+		// @todo Use new_admin_email if is_multisite()
+
 		/**
 		 * Open Registration
 		 */
-		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 						'type'              => 'checkbox',
@@ -136,6 +133,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 								'name'          => 'users_can_register',
 						),
 						'description'       => __( 'Anyone can register' ),
+						'capabilities_callback' => array( $this, 'capability_is_not_multisite' ),
 						'internal'    => true,
 				),
 		);
@@ -145,7 +143,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * Default Role
 		 */
-		// @todo Caps Check
 		$field_args = array(
 				'control' => array(
 					'type'             => 'user-role',
@@ -155,6 +152,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 						'id'    => 'default_role',
 						'name'  => 'default_role',
 					),
+					'capabilities_callback' => array( $this, 'capability_is_not_multisite' ),
 					'internal'          => true,
 				),
 		);
@@ -177,10 +175,10 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 						),
 					'internal'          => true,
 					'choices'           => array(
-						date( 'F j, Y', $current_time ),
-						date( 'Y-m-d', $current_time ),
-						date( 'm/d/y', $current_time ),
-						date( 'd/m/y', $current_time ),
+						date_i18n( 'F j, Y', $current_time ),
+						date_i18n( 'Y-m-d', $current_time ),
+						date_i18n( 'm/d/y', $current_time ),
+						date_i18n( 'd/m/y', $current_time ),
 					)
 				),
 		);
@@ -240,6 +238,22 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		$wp_fields->add_field( $this->object_type, 'start_of_week', null, $field_args );
 
 		// @todo implent languages dropdown
+
+		// Add example fields (maybe)
+		parent::register_fields( $wp_fields );
+	}
+
+	/**
+	 * Control only visible if WordPress is not multisite.
+	 *
+	 * @param WP_Fields_API_Control $control Control object
+	 *
+	 * @return bool
+	 */
+	public function capability_is_not_multisite( $control ) {
+
+		return ! is_multisite();
+
 	}
 
 }
