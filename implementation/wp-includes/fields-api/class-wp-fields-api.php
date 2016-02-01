@@ -245,7 +245,7 @@ final class WP_Fields_API {
 		}
 
 		// @todo Remove this when done testing
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
 			$form = $this->setup_form( $object_type, $id, $object_name, $form );
 		}
 
@@ -573,7 +573,7 @@ final class WP_Fields_API {
 		}
 
 		// @todo Remove this when done testing
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
 			$section = $this->setup_section( $object_type, $id, $object_name, $section );
 		}
 
@@ -848,7 +848,7 @@ final class WP_Fields_API {
 		}
 
 		// @todo Remove this when done testing
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
 			$field = $this->setup_field( $object_type, $id, $object_name, $field );
 		}
 
@@ -1190,7 +1190,7 @@ final class WP_Fields_API {
 		}
 
 		// @todo Remove this when done testing
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
 			$control = $this->setup_control( $object_type, $id, $object_name, $control );
 		}
 
