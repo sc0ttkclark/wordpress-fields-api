@@ -38,6 +38,39 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	public $meta_auth_callback = '';
 
 	/**
+	 * register_rest_field Get Callback.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var callable
+	 */
+	public $rest_get_callback = '';
+
+	/**
+	 * register_rest_field Update Callback.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var callable
+	 */
+	public $rest_update_callback = '';
+
+	/**
+	 * register_rest_field Schema Callback.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var callable
+	 */
+	public $rest_schema_callback = '';
+
+	/**
 	 * Value Callback.
 	 *
 	 * @access public
