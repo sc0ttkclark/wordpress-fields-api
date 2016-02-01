@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class WP_Test_Fields_API_Testcase
  *
@@ -37,69 +38,6 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		$this->assertTrue( is_a( $wp_fields, 'WP_Fields_API' ) );
-
-	}
-
-	/**
-	 * Test WP_Fields_API::get_containers()
-	 */
-	public function test_get_containers() {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		// Add a section / form
-		$this->test_add_section( 'post', 'my_custom_post_type' );
-
-		// Get containers for object type / name
-		$containers = $wp_fields->get_containers( 'post', 'my_custom_post_type' );
-
-		// There are two containers, the form and the section
-		$this->assertEquals( 2, count( $containers ) );
-
-		$this->assertArrayHasKey( 'my_test_form', $containers );
-		$this->assertArrayHasKey( 'my_test_section', $containers );
-
-		// Get a containers that doesn't exist
-		$containers = $wp_fields->get_containers( 'post' );
-
-		$this->assertEquals( 0, count( $containers ) );
-
-		// Get all containers for all object types
-		$containers = $wp_fields->get_containers();
-
-		// Each array item is an object type with an array of object names
-		$this->assertEquals( 1, count( $containers ) );
-
-		$this->assertArrayHasKey( 'post', $containers );
-
-	}
-
-	/**
-	 * Test WP_Fields_API::get_containers()
-	 */
-	public function test_get_containers_all() {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		// Add a section / form
-		$this->test_add_section( 'post', 'my_custom_post_type' );
-
-		// Get containers for object type / name
-		$containers = $wp_fields->get_containers( 'post', true );
-
-		// There are two containers, the form and the section
-		$this->assertEquals( 2, count( $containers ) );
-
-		$container_ids = wp_list_pluck( $containers, 'id' );
-
-		$this->assertContains( 'my_test_form', $container_ids );
-		$this->assertContains( 'my_test_section', $container_ids );
 
 	}
 
@@ -389,6 +327,19 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'my_test_section', $sections );
 
+		$this->assertEquals( 'my_test_form', $sections['my_test_section']->get_parent()->id );
+
+		// Get sections *from* form
+		$form = $wp_fields->get_form( 'post', 'my_test_form', 'my_custom_post_type' );
+
+		$sections = $form->get_children( 'section' );
+
+		$this->assertEquals( 1, count( $sections ) );
+
+		$this->assertArrayHasKey( 'my_test_section', $sections );
+
+		$this->assertEquals( 'my_test_form', $sections['my_test_section']->get_parent()->id );
+
 		// Get all sections for object type
 		$sections = $wp_fields->get_sections( 'post', true );
 
@@ -427,6 +378,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertNotEmpty( $section );
 
 		$this->assertEquals( 'my_test_section', $section->id );
+		$this->assertEquals( 'my_test_form', $section->get_parent()->id );
 
 		// Section doesn't exist for this object type / name
 		$section = $wp_fields->get_section( 'post', 'my_test_section', 'some_other_post_type' );
@@ -488,9 +440,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$wp_fields->add_field( $object_type, 'my_test_field', $object_name, array(
 			'control' => array(
-				'id' => 'my_test_field_control',
-				'label' => 'My Test Field',
-				'type' => 'text',
+				'id'      => 'my_test_field_control',
+				'label'   => 'My Test Field',
+				'type'    => 'text',
 				'section' => 'my_test_section',
 			),
 		) );
@@ -521,13 +473,6 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$fields = $wp_fields->get_fields( 'post', 'some_other_post_type' );
 
 		$this->assertEquals( 0, count( $fields ) );
-
-		// Get fields by section
-		$fields = $wp_fields->get_fields( 'post', 'my_custom_post_type', 'my_test_section' );
-
-		$this->assertEquals( 1, count( $fields ) );
-
-		$this->assertArrayHasKey( 'my_test_field', $fields );
 
 	}
 
@@ -611,9 +556,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$wp_fields->add_control( $object_type, 'my_test_control', $object_name, array(
 			'section' => 'my_test_section',
-			'fields' => 'my_test_field',
-			'label' => 'My Test Control Field',
-			'type' => 'text',
+			'field'   => 'my_test_field',
+			'label'   => 'My Test Control Field',
+			'type'    => 'text',
 		) );
 
 	}
@@ -640,7 +585,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'my_test_control', $controls );
 		$this->assertArrayHasKey( 'my_test_field_control', $controls );
 
-		$this->assertEquals( 'my_test_section', $controls['my_test_control']->section );
+		$this->assertEquals( 'my_test_section', $controls['my_test_control']->get_parent()->id );
 
 		// Get a control that doesn't exist
 		$controls = $wp_fields->get_controls( 'post', 'some_other_post_type' );
@@ -655,7 +600,19 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'my_test_control', $controls );
 		$this->assertArrayHasKey( 'my_test_field_control', $controls );
 
-		$this->assertEquals( 'my_test_section', $controls['my_test_control']->section );
+		$this->assertEquals( 'my_test_section', $controls['my_test_control']->get_parent()->id );
+
+		// Get sections *from* form
+		$section = $wp_fields->get_section( 'post', 'my_test_section', 'my_custom_post_type' );
+
+		$controls = $section->get_children( 'control' );
+
+		$this->assertEquals( 2, count( $controls ) );
+
+		$this->assertArrayHasKey( 'my_test_control', $controls );
+		$this->assertArrayHasKey( 'my_test_field_control', $controls );
+
+		$this->assertEquals( 'my_test_section', $controls['my_test_control']->get_parent()->id );
 
 	}
 
@@ -678,9 +635,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertNotEmpty( $control );
 
 		$this->assertEquals( 'my_test_field_control', $control->id );
-		$this->assertNotEmpty( $control->field );
-		$this->assertEquals( 'my_test_field', $control->field->id );
-		$this->assertEquals( 'my_test_section', $control->section );
+		$this->assertNotEmpty( $control->get_field() );
+		$this->assertEquals( 'my_test_field', $control->get_field()->id );
+		$this->assertEquals( 'my_test_section', $control->get_parent()->id );
 
 		// Control exists for this object type / name
 		$control = $wp_fields->get_control( 'post', 'my_test_control', 'my_custom_post_type' );
@@ -688,9 +645,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertNotEmpty( $control );
 
 		$this->assertEquals( 'my_test_control', $control->id );
-		$this->assertNotEmpty( $control->field );
-		$this->assertEquals( 'my_test_field', $control->field->id );
-		$this->assertEquals( 'my_test_section', $control->section );
+		$this->assertNotEmpty( $control->get_field() );
+		$this->assertEquals( 'my_test_field', $control->get_field()->id );
+		$this->assertEquals( 'my_test_section', $control->get_parent()->id );
 
 		// Control doesn't exist for this object type / name
 		$control = $wp_fields->get_control( 'post', 'my_test_control', 'some_other_post_type' );
@@ -723,8 +680,8 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertNotEmpty( $control );
 
 		$this->assertEquals( 'my_test_control', $control->id );
-		$this->assertEquals( 'my_test_field', $control->field->id );
-		$this->assertEquals( 'my_test_section', $control->section );
+		$this->assertEquals( 'my_test_field', $control->get_field()->id );
+		$this->assertEquals( 'my_test_section', $control->get_parent()->id );
 
 		// Remove control
 		$wp_fields->remove_control( 'post', 'my_test_control', 'my_custom_post_type' );

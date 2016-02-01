@@ -14,14 +14,6 @@ final class WP_Fields_API {
 	private static $instance;
 
 	/**
-	 * Registered Containers
-	 *
-	 * @access protected
-	 * @var array
-	 */
-	protected static $containers = array();
-
-	/**
 	 * Registered Forms
 	 *
 	 * @access protected
@@ -84,14 +76,6 @@ final class WP_Fields_API {
 	 * @var array
 	 */
 	protected static $registered_control_types = array();
-
-	/**
-	 * IDs for Forms, Sections, and Controls which are valid and have been prepared.
-	 *
-	 * @access protected
-	 * @var array
-	 */
-	protected static $prepared_ids = array();
 
 	/**
 	 * Include the library and bootstrap.
@@ -158,67 +142,11 @@ final class WP_Fields_API {
 	public function wp_loaded() {
 
 		/**
-		 * Fires when the Fields API is avaiable, and components can be registered.
+		 * Fires when the Fields API is available, and components can be registered.
 		 *
 		 * @param WP_Fields_API $this The Fields manager object.
 		 */
 		do_action( 'fields_register', $this );
-
-	}
-
-	/**
-	 * Get the registered containers.
-	 *
-	 * @access public
-	 *
-	 * @param string|null         $object_type   Object type. Null for all containers for all object types.
-	 * @param string|boolean|null $object_name   Object name (for post types and taxonomies).
-	 *                                           True for all containers for all object names.
-	 *
-	 * @return WP_Fields_API_Form[]|WP_Fields_API_Section[]
-	 */
-	public function get_containers( $object_type = null, $object_name = null ) {
-
-		$primary_object_name = '_' . $object_type;
-
-		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
-		}
-
-		// Setup containers.
-		if ( empty( self::$containers ) ) {
-			if ( true === $object_name ) {
-				$this->prepare_controls( $object_type );
-			} else {
-				$this->prepare_object_controls( $object_type, $object_name );
-			}
-		}
-
-		$containers = array();
-
-		if ( null === $object_type ) {
-			// Get all containers.
-			$containers = self::$containers;
-		} elseif ( isset( self::$containers[ $object_type ][ $object_name ] ) ) {
-			// Get all containers by object name.
-			$containers = self::$containers[ $object_type ][ $object_name ];
-
-			// Object name inheritance for getting data that covers all object names
-			if ( $primary_object_name !== $object_name ) {
-				$containers = array_merge( $this->get_containers( $object_type, $primary_object_name ), $containers );
-			}
-		} elseif ( true === $object_name ) {
-			// Get all containers by object type.
-			foreach ( self::$containers[ $object_type ] as $object_name => $object_containers ) {
-				$containers = array_merge( $containers, array_values( $this->get_containers( $object_type, $object_name ) ) );
-			}
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$containers = $this->get_containers( $object_type, $primary_object_name );
-		}
-
-		return $containers;
 
 	}
 
@@ -258,8 +186,6 @@ final class WP_Fields_API {
 				// Late init
 				self::$forms[ $object_type ][ $object_name ][ $id ] = $this->setup_form( $object_type, $id, $object_name, $form );
 			}
-
-			$forms = self::$forms[ $object_type ][ $object_name ];
 
 			// Object name inheritance for getting data that covers all object names
 			if ( $primary_object_name !== $object_name ) {
@@ -316,6 +242,11 @@ final class WP_Fields_API {
 
 		if ( ! isset( self::$forms[ $object_type ][ $object_name ] ) ) {
 			self::$forms[ $object_type ][ $object_name ] = array();
+		}
+
+		// @todo Remove this when done testing
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+			$form = $this->setup_form( $object_type, $id, $object_name, $form );
 		}
 
 		self::$forms[ $object_type ][ $object_name ][ $id ] = $form;
@@ -389,6 +320,9 @@ final class WP_Fields_API {
 				}
 			}
 
+			/**
+			 * @var $form WP_Fields_API_Form
+			 */
 			$form = new $form_class( $object_type, $id, $args );
 		}
 
@@ -466,7 +400,7 @@ final class WP_Fields_API {
 		foreach ( self::$registered_form_types as $form_type => $form_class ) {
 			$form = $this->setup_form( null, 'temp', null, array( 'type' => $form_type ) );
 
-			$form->print_template();
+			//$form->print_template();
 		}
 
 	}
@@ -476,9 +410,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type Object type.
-	 * @param string $object_name Object name (for post types and taxonomies).
-	 * @param string $form      Form ID.
+	 * @param string                    $object_type Object type.
+	 * @param string                    $object_name Object name (for post types and taxonomies).
+	 * @param string|WP_Fields_API_Form $form        Form ID or object.
 	 *
 	 * @return WP_Fields_API_Section[]
 	 */
@@ -493,6 +427,16 @@ final class WP_Fields_API {
 
 		$sections = array();
 
+		$form_id = null;
+
+		if ( $form ) {
+			$form_id = $form;
+
+			if ( is_object( $form ) ) {
+				$form_id = $form->id;
+			}
+		}
+
 		if ( null === $object_type ) {
 			// Late init
 			foreach ( self::$sections as $object_type => $object_names ) {
@@ -504,13 +448,18 @@ final class WP_Fields_API {
 			$sections = self::$sections;
 
 			// Get only sections for a specific form
-			if ( null !== $form ) {
+			if ( $form_id ) {
 				$form_sections = array();
 
+				/**
+				 * @var $section WP_Fields_API_Section
+				 */
 				foreach ( $sections as $object_type => $object_names ) {
 					foreach ( $object_names as $object_name => $object_sections ) {
 						foreach ( $object_sections as $id => $section ) {
-							if ( $form == $section->form->id ) {
+							$section_form = $section->get_form();
+
+							if ( $section_form && $form_id == $section_form->id ) {
 								if ( ! isset( $form_sections[ $object_type ] ) ) {
 									$form_sections[ $object_type ] = array();
 								}
@@ -519,7 +468,7 @@ final class WP_Fields_API {
 									$form_sections[ $object_type ][ $object_name ] = array();
 								}
 
-								$form_sections[ $object_type ][ $object_name ][ $id ] = $form;
+								$form_sections[ $object_type ][ $object_name ][ $id ] = $section;
 							}
 						}
 					}
@@ -530,6 +479,10 @@ final class WP_Fields_API {
 		} elseif ( isset( self::$sections[ $object_type ][ $object_name ] ) ) {
 			// Late init
 			foreach ( self::$sections[ $object_type ][ $object_name ] as $id => $section ) {
+				if ( is_array( $section ) && empty( $section['type'] ) && is_a( $form, 'WP_Fields_API_Form' ) && $form->default_section_type ) {
+					$section['type'] = $form->default_section_type;
+				}
+
 				// Late init
 				self::$sections[ $object_type ][ $object_name ][ $id ] = $this->setup_section( $object_type, $id, $object_name, $section );
 			}
@@ -538,15 +491,24 @@ final class WP_Fields_API {
 
 			// Object name inheritance for getting data that covers all object names
 			if ( $primary_object_name !== $object_name ) {
-				$sections = array_merge( $this->get_sections( $object_type, $primary_object_name ), $sections );
+				$object_sections = $this->get_sections( $object_type, $primary_object_name );
+
+				if ( $object_sections ) {
+					$sections = array_merge( $sections, $object_sections );
+				}
 			}
 
 			// Get only sections for a specific form
-			if ( null !== $form ) {
+			if ( $form_id ) {
 				$form_sections = array();
 
+				/**
+				 * @var $section WP_Fields_API_Section
+				 */
 				foreach ( $sections as $id => $section ) {
-					if ( $form == $section->form ) {
+					$section_form = $section->get_form();
+
+					if ( $section_form && $form_id == $section_form->id ) {
 						$form_sections[ $id ] = $section;
 					}
 				}
@@ -558,7 +520,11 @@ final class WP_Fields_API {
 
 			// Late init
 			foreach ( self::$sections[ $object_type ] as $object_name => $object_sections ) {
-				$sections = array_merge( $sections, array_values( $this->get_sections( $object_type, $object_name, $form ) ) );
+				$object_sections = $this->get_sections( $object_type, $object_name, $form );
+
+				if ( $object_sections ) {
+					$sections = array_merge( $sections, array_values( $object_sections ) );
+				}
 			}
 		} elseif ( $primary_object_name !== $object_name ) {
 			// Object name inheritance for getting data that covers all object names
@@ -606,25 +572,9 @@ final class WP_Fields_API {
 			self::$sections[ $object_type ][ $object_name ] = array();
 		}
 
-		// Handle default section types
-		if ( is_array( $section ) && empty( $section['type'] ) ) {
-			$form = null;
-
-			if ( ! empty( $section['form'] ) ) {
-				$form = $section['form'];
-
-				if ( ! is_object( $form ) ) {
-					$form = $this->get_form( $object_type, $form, $object_name );
-				}
-
-				if ( $form ) {
-					$default_section_type = $form->default_section_type;
-
-					if ( $default_section_type ) {
-						$section['type'] = $default_section_type;
-					}
-				}
-			}
+		// @todo Remove this when done testing
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+			$section = $this->setup_section( $object_type, $id, $object_name, $section );
 		}
 
 		self::$sections[ $object_type ][ $object_name ][ $id ] = $section;
@@ -698,6 +648,9 @@ final class WP_Fields_API {
 				}
 			}
 
+			/**
+			 * @var $section WP_Fields_API_Section
+			 */
 			$section = new $section_class( $object_type, $id, $args );
 		}
 
@@ -775,7 +728,7 @@ final class WP_Fields_API {
 		foreach ( self::$registered_control_types as $section_type => $section_class ) {
 			$section = $this->setup_section( null, 'temp', null, array( 'type' => $section_type ) );
 
-			$section->print_template();
+			//$section->print_template();
 		}
 
 	}
@@ -821,14 +774,22 @@ final class WP_Fields_API {
 
 			// Object name inheritance for getting data that covers all object names
 			if ( $primary_object_name !== $object_name ) {
-				$fields = array_merge( $this->get_fields( $object_type, $primary_object_name ), $fields );
+				$object_fields = $this->get_fields( $object_type, $primary_object_name );
+
+				if ( $object_fields ) {
+					$fields = array_merge( $fields, $object_fields );
+				}
 			}
 		} elseif ( true === $object_name ) {
 			// Get all fields
 
 			// Late init
 			foreach ( self::$fields[ $object_type ] as $object_name => $object_fields ) {
-				$fields = array_merge( $fields, array_values( $this->get_fields( $object_type, $object_name ) ) );
+				$object_fields = $this->get_fields( $object_type, $object_name );
+
+				if ( $object_fields ) {
+					$fields = array_merge( $fields, array_values( $object_fields ) );
+				}
 			}
 		} elseif ( $primary_object_name !== $object_name ) {
 			// Object name inheritance for getting data that covers all object names
@@ -886,6 +847,11 @@ final class WP_Fields_API {
 			self::$fields[ $object_type ][ $object_name ] = array();
 		}
 
+		// @todo Remove this when done testing
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+			$field = $this->setup_field( $object_type, $id, $object_name, $field );
+		}
+
 		self::$fields[ $object_type ][ $object_name ][ $id ] = $field;
 
 		// Control handling
@@ -902,14 +868,14 @@ final class WP_Fields_API {
 			unset( $control['id'] );
 
 			// Add field
-			$control['fields'] = $id;
+			$control['field'] = $id;
 
 			// Add control for field
 			$this->add_control( $object_type, $control_id, $object_name, $control );
 		}
 
 		// Meta types call register_meta() for their fields
-		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ( ! empty( $field['internal'] ) || ! empty( $field->internal ) ) ) {
+		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ( ( is_array( $field ) && ! empty( $field['internal'] ) ) || ( is_object( $field ) && ! empty( $field->internal ) ) ) ) {
 			// Set callbacks
 			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
 			$auth_callback = null;
@@ -992,6 +958,9 @@ final class WP_Fields_API {
 				}
 			}
 
+			/**
+			 * @var $field WP_Fields_API_Field
+			 */
 			$field = new $field_class( $object_type, $id, $args );
 		}
 
@@ -1044,7 +1013,7 @@ final class WP_Fields_API {
 	 * @see    WP_Fields_API_Field
 	 *
 	 * @param string $type         Field type ID.
-	 * @param string $form_class Name of a custom field type which is a subclass of WP_Fields_API_Field.
+	 * @param string $field_class  Name of a custom field type which is a subclass of WP_Fields_API_Field.
 	 */
 	public function register_field_type( $type, $field_class = null ) {
 
@@ -1061,9 +1030,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type Object type.
-	 * @param string $object_name Object name (for post types and taxonomies).
-	 * @param string $section     Section ID.
+	 * @param string                       $object_type Object type.
+	 * @param string                       $object_name Object name (for post types and taxonomies).
+	 * @param string|WP_Fields_API_Section $section     Section ID.
 	 *
 	 * @return WP_Fields_API_Control[]
 	 */
@@ -1078,6 +1047,16 @@ final class WP_Fields_API {
 
 		$controls = array();
 
+		$section_id = null;
+
+		if ( $section ) {
+			$section_id = $section;
+
+			if ( is_object( $section ) ) {
+				$section_id = $section->id;
+			}
+		}
+
 		if ( null === $object_type ) {
 			// Late init
 			foreach ( self::$controls as $object_type => $object_names ) {
@@ -1089,13 +1068,18 @@ final class WP_Fields_API {
 			$controls = self::$controls;
 
 			// Get only controls for a specific section
-			if ( null !== $section ) {
+			if ( $section_id ) {
 				$section_controls = array();
 
+				/**
+				 * @var $control WP_Fields_API_Control
+				 */
 				foreach ( $controls as $object_type => $object_names ) {
 					foreach ( $object_names as $object_name => $object_controls ) {
 						foreach ( $object_controls as $id => $control ) {
-							if ( $section == $control->section->id ) {
+							$control_section = $control->get_section();
+
+							if ( $control_section && $section_id == $control_section->id ) {
 								if ( ! isset( $section_controls[ $object_type ] ) ) {
 									$section_controls[ $object_type ] = array();
 								}
@@ -1123,16 +1107,24 @@ final class WP_Fields_API {
 
 			// Object name inheritance for getting data that covers all object names
 			if ( $primary_object_name !== $object_name ) {
-				$controls = array_merge( $this->get_controls( $object_type, $primary_object_name ), $controls );
+				$object_controls = $this->get_controls( $object_type, $primary_object_name );
+
+				if ( $object_controls ) {
+					$controls = array_merge( $controls, $object_controls );
+				}
 			}
 
 			// Get only controls for a specific section
-			if ( null !== $section ) {
+			if ( $section_id ) {
 				$section_controls = array();
 
+				/**
+				 * @var $control WP_Fields_API_Control
+				 */
 				foreach ( $controls as $id => $control ) {
-					// $control->section is not an object, like $control->field is
-					if ( $section == $control->section ) {
+					$control_section = $control->get_section();
+
+					if ( $control_section && $section_id == $control_section->id ) {
 						$section_controls[ $id ] = $control;
 					}
 				}
@@ -1144,7 +1136,11 @@ final class WP_Fields_API {
 
 			// Late init
 			foreach ( self::$controls[ $object_type ] as $object_name => $object_controls ) {
-				$controls = array_merge( $controls, array_values( $this->get_controls( $object_type, $object_name, $section ) ) );
+				$object_controls = $this->get_controls( $object_type, $object_name, $section );
+
+				if ( $object_controls ) {
+					$controls = array_merge( $controls, array_values( $object_controls ) );
+				}
 			}
 		} elseif ( $primary_object_name !== $object_name ) {
 			// Object name inheritance for getting data that covers all object names
@@ -1191,6 +1187,11 @@ final class WP_Fields_API {
 
 		if ( ! isset( self::$controls[ $object_type ][ $object_name ] ) ) {
 			self::$controls[ $object_type ][ $object_name ] = array();
+		}
+
+		// @todo Remove this when done testing
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+			$control = $this->setup_control( $object_type, $id, $object_name, $control );
 		}
 
 		self::$controls[ $object_type ][ $object_name ][ $id ] = $control;
@@ -1264,7 +1265,16 @@ final class WP_Fields_API {
 				}
 			}
 
+			/**
+			 * @var $control WP_Fields_API_Control
+			 */
 			$control = new $control_class( $object_type, $id, $args );
+
+		}
+
+		if ( $control ) {
+			// Setup field
+			$control->get_field();
 		}
 
 		return $control;
@@ -1341,7 +1351,7 @@ final class WP_Fields_API {
 		foreach ( self::$registered_control_types as $control_type => $control_class ) {
 			$control = $this->setup_control( null, 'temp', null, array( 'type' => $control_type ) );
 
-			$control->print_template();
+			//$control->print_template();
 		}
 
 	}
@@ -1351,235 +1361,63 @@ final class WP_Fields_API {
 	 *
 	 * @access protected
 	 *
-	 * @param  {WP_Fields_API_Form|WP_Fields_API_Section|WP_Fields_API_Control} $a Object A.
-	 * @param  {WP_Fields_API_Form|WP_Fields_API_Section|WP_Fields_API_Control} $b Object B.
+	 * @param WP_Fields_API_Container $a Object A.
+	 * @param WP_Fields_API_Container $b Object B.
 	 *
 	 * @return int
 	 */
-	protected final function _cmp_priority( $a, $b ) {
+	public static function _cmp_priority( $a, $b ) {
 
-		if ( is_int( $a->priority ) && is_int( $b->priority ) ) {
-			// Priority integers
-			$compare = $a->priority - $b->priority;
+		$compare = 0;
 
-			if ( $a->priority === $b->priority ) {
-				$compare = $a->instance_number - $a->instance_number;
+		if ( isset( $a->priority ) || isset( $b->priority ) ) {
+			$priorities = array(
+				'high'    => 0,
+				'core'    => 100,
+				'default' => 200,
+				'low'     => 300,
+			);
+
+			// Set defaults
+			$a_priority = $priorities['default'];
+			$b_priority = $priorities['default'];
+
+			if ( isset( $a->priority ) ) {
+				$a_priority = $a->priority;
 			}
-		} else {
-			// Priority strings
-			$compare = 0;
+
+			if ( isset( $b->priority ) ) {
+				$b_priority = $b->priority;
+			}
+
+			// Convert string priority
+			if ( ! is_int( $a_priority ) ) {
+				if ( isset( $priorities[ $a_priority ] ) ) {
+					$a_priority = $priorities[ $a_priority ];
+				} else {
+					$a_priority = $priorities['default'];
+				}
+			}
+
+			// Convert string priority
+			if ( ! is_int( $b_priority ) ) {
+				if ( isset( $priorities[ $b_priority ] ) ) {
+					$b_priority = $priorities[ $b_priority ];
+				} else {
+					$b_priority = $priorities['default'];
+				}
+			}
+
+			// Priority integers
+			$compare = $a_priority - $b_priority;
+
+			// Tie breakers can use instance number
+			if ( $a_priority === $b_priority && isset( $a->instance_number ) && isset( $b->instance_number ) ) {
+				$compare = $a->instance_number - $b->instance_number;
+			}
 		}
 
 		return $compare;
-
-	}
-
-	/**
-	 * Prepare forms, sections, and controls for all objects.
-	 *
-	 * For each, check if required related components exist,
-	 * whether the user has the necessary capabilities,
-	 * and sort by priority.
-	 *
-	 * @access public
-	 *
-	 * @param string $object_type Object type.
-	 */
-	public function prepare_controls( $object_type = null ) {
-
-		// Prepare controls for all object types
-		foreach ( self::$fields as $object => $object_names ) {
-			if ( null === $object_type || $object === $object_type ) {
-				foreach ( $object_names as $object_name => $fields ) {
-					$this->prepare_object_controls( $object, $object_name );
-				}
-			}
-		}
-
-	}
-
-	/**
-	 * Prepare object forms, sections, and controls.
-	 *
-	 * For each, check if required related components exist,
-	 * whether the user has the necessary capabilities,
-	 * and sort by priority.
-	 *
-	 * @access public
-	 *
-	 * @param string $object_type Object type.
-	 * @param string $object_name Object name (for post types and taxonomies).
-	 */
-	public function prepare_object_controls( $object_type, $object_name = null ) {
-
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
-		}
-
-		// Reset prepared IDs
-		$prepared_ids = array(
-			'control'   => array(),
-			'section'   => array(),
-			'form'    => array(),
-			'container' => array(),
-		);
-
-		// Setup
-
-		// Get controls
-		$controls = $this->get_controls( $object_type, $object_name );
-
-		// Get sections
-		$sections = $this->get_sections( $object_type, $object_name );
-
-		// Get forms
-		$forms = $this->get_forms( $object_type, $object_name );
-
-		// Controls
-
-		// Sort controls by priority
-		uasort( $controls, array( $this, '_cmp_priority' ) );
-
-		foreach ( $controls as $id => $control ) {
-			// Check if section or form exists
-			if ( $control->section && ! isset( $sections[ $control->section ] ) ) {
-				continue;
-			} elseif ( $control->form && ! isset( $forms[ $control->form ] ) ) {
-				continue;
-			}
-
-			// Check if control can be used by user
-			if ( ! $control->check_capabilities() ) {
-				continue;
-			}
-
-			// Add to prepared IDs
-			$prepared_ids['control'][] = $id;
-
-			if ( $control->section ) {
-				// Add control to section controls
-				$sections[ $control->section ]->controls[] = $control;
-			} elseif ( $control->form ) {
-				// Add control to form controls
-				$forms[ $control->form ]->controls[] = $control;
-			}
-		}
-
-		// Sections
-
-		// Sort sections by priority
-		uasort( $sections, array( $this, '_cmp_priority' ) );
-
-		foreach ( $sections as $id => $section ) {
-			// Check if section can be seen by user
-			if ( ! $section->check_capabilities() ) {
-				continue;
-			}
-
-			if ( $section->controls ) {
-				// Sort section controls by priority
-				usort( $section->controls, array( $this, '_cmp_priority' ) );
-			}
-
-			if ( ! $section->form ) {
-				// Top-level section.
-
-				// Add to prepared IDs
-				$prepared_ids['section'][]   = $id;
-				$prepared_ids['container'][] = $id;
-			} elseif ( $section->form && isset( $forms[ $section->form ] ) ) {
-				// This section belongs to a form.
-				$forms[ $section->form ]->sections[ $id ] = $section;
-
-				// Add to prepared IDs
-				$prepared_ids['section'][]   = $id;
-				$prepared_ids['container'][] = $id;
-			}
-		}
-
-		// Forms
-
-		// Sort forms by priority
-		uasort( $forms, array( $this, '_cmp_priority' ) );
-
-		foreach ( $forms as $id => $form ) {
-			// Check if form has sections or can be seen by user
-			if ( ! $form->check_capabilities() ) {
-				continue;
-			}
-
-			if ( $form->sections ) {
-				// Sort form sections by priority
-				uasort( $form->sections, array( $this, '_cmp_priority' ) );
-			}
-
-			// Add to prepared IDs
-			$prepared_ids['form'][]    = $id;
-			$prepared_ids['container'][] = $id;
-		}
-
-		// Merge forms and top-level sections together.
-		$containers = array_merge( $forms, $sections );
-
-		// Sort containers by priority
-		uasort( $containers, array( $this, '_cmp_priority' ) );
-
-		// Saving
-
-		// Save controls
-		if ( ! isset( self::$controls[ $object_type ] ) ) {
-			self::$controls[ $object_type ] = array();
-		}
-
-		if ( ! isset( self::$controls[ $object_type ][ $object_name ] ) ) {
-			self::$controls[ $object_type ][ $object_name ] = array();
-		}
-
-		self::$controls[ $object_type ][ $object_name ] = $controls;
-
-		// Save sections
-		if ( ! isset( self::$sections[ $object_type ] ) ) {
-			self::$sections[ $object_type ] = array();
-		}
-
-		if ( ! isset( self::$sections[ $object_type ][ $object_name ] ) ) {
-			self::$sections[ $object_type ][ $object_name ] = array();
-		}
-
-		self::$sections[ $object_type ][ $object_name ] = $sections;
-
-		// Save forms
-		if ( ! isset( self::$forms[ $object_type ] ) ) {
-			self::$forms[ $object_type ] = array();
-		}
-
-		if ( ! isset( self::$forms[ $object_type ][ $object_name ] ) ) {
-			self::$forms[ $object_type ][ $object_name ] = array();
-		}
-
-		self::$forms[ $object_type ][ $object_name ] = $forms;
-
-		// Save containers
-		if ( ! isset( self::$containers[ $object_type ] ) ) {
-			self::$containers[ $object_type ] = array();
-		}
-
-		if ( ! isset( self::$containers[ $object_type ][ $object_name ] ) ) {
-			self::$containers[ $object_type ][ $object_name ] = array();
-		}
-
-		self::$containers[ $object_type ][ $object_name ] = $containers;
-
-		// Saved prepared IDs
-		if ( ! isset( self::$prepared_ids[ $object_type ] ) ) {
-			self::$prepared_ids[ $object_type ] = array();
-		}
-
-		if ( ! isset( self::$prepared_ids[ $object_type ][ $object_name ] ) ) {
-			self::$prepared_ids[ $object_type ][ $object_name ] = array();
-		}
-
-		self::$prepared_ids[ $object_type ][ $object_name ] = $prepared_ids;
 
 	}
 
@@ -1617,34 +1455,6 @@ final class WP_Fields_API {
 	}
 
 	/**
-	 * Check if an object ID was prepared or not
-	 *
-	 * @access public
-	 *
-	 * @param string $object_type Object type.
-	 * @param string $type        Type including form, section, or field.
-	 * @param string $id          Object ID.
-	 * @param string $object_name Object name (for post types and taxonomies).
-	 *
-	 * @return boolean
-	 */
-	public function is_prepared( $object_type, $type, $id, $object_name = null ) {
-
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
-		}
-
-		$found = false;
-
-		if ( ! empty( self::$prepared_ids[ $object_type ][ $object_name ][ $type ] ) && in_array( $id, self::$prepared_ids[ $object_type ][ $object_name ][ $type ] ) ) {
-			$found = true;
-		}
-
-		return $found;
-
-	}
-
-	/**
 	 * Hook into register_meta() sanitize callback and call field
 	 *
 	 * @param mixed  $meta_value Meta value to sanitize.
@@ -1662,6 +1472,202 @@ final class WP_Fields_API {
 		}
 
 		return $meta_value;
+
+	}
+
+	/**
+	 * Get Fields API stats
+	 *
+	 * @param null|string $object_type Object type
+	 * @param null|string $object_name Object name
+	 *
+	 * @return array
+	 */
+	public function get_stats( $object_type = null, $object_name = null ) {
+
+		$stats = array(
+			'forms'      => 0,
+			'form-types' => 0,
+
+			'sections'      => 0,
+			'section-types' => 0,
+
+			'controls'      => 0,
+			'control-types' => 0,
+
+			'fields'      => 0,
+			'field-types' => 0,
+
+			'object-types' => 0,
+			'object-names' => 0,
+
+			'all-objects' => 0,
+		);
+
+		$stats['form-types'] = count( self::$registered_form_types );
+		$stats['section-types'] = count( self::$registered_section_types );
+		$stats['control-types'] = count( self::$registered_control_types );
+		$stats['field-types'] = count( self::$registered_field_types );
+
+		$object_types = array();
+		$object_names = array();
+
+		if ( empty( $object_type ) ) {
+			foreach ( self::$forms as $object_type => $object_name_forms ) {
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $object_name;
+
+					$stats['forms'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+
+			foreach ( self::$sections as $object_type => $object_name_forms ) {
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $object_name;
+
+					$stats['sections'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+
+			foreach ( self::$controls as $object_type => $object_name_forms ) {
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $form_object_name;
+
+					$stats['controls'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+
+			foreach ( self::$fields as $object_type => $object_name_forms ) {
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $form_object_name;
+
+					$stats['fields'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+		} else {
+			if ( ! empty( self::$forms[ $object_type ] ) ) {
+				$object_name_forms = self::$forms[ $object_type ];
+
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $form_object_name;
+
+					$stats['forms'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+
+			if ( ! empty( self::$sections[ $object_type ] ) ) {
+				$object_name_forms = self::$sections[ $object_type ];
+
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $form_object_name;
+
+					$stats['sections'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+
+			if ( ! empty( self::$controls[ $object_type ] ) ) {
+				$object_name_forms = self::$controls[ $object_type ];
+
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $form_object_name;
+
+					$stats['controls'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+
+			if ( ! empty( self::$fields[ $object_type ] ) ) {
+				$object_name_forms = self::$fields[ $object_type ];
+
+				foreach ( $object_name_forms as $form_object_name => $objects ) {
+					if ( $object_name && $object_name !== $form_object_name ) {
+						continue;
+					}
+
+					$object_names[] = $form_object_name;
+
+					$stats['fields'] += count( $objects );
+
+					if ( $object_name ) {
+						$object_types[] = $object_type;
+					}
+				}
+			}
+		}
+
+		if ( ! $object_name ) {
+			$object_types = array_merge( $object_types, array_keys( self::$forms ), array_keys( self::$sections ), array_keys( self::$controls ), array_keys( self::$fields ) );
+		}
+
+		$object_types = array_unique( $object_types );
+		$object_types = array_filter( $object_types );
+		$stats['object-types'] = count( $object_types );
+
+		$object_names = array_unique( $object_names );
+		$object_names = array_filter( $object_names );
+		$stats['object-names'] = count( $object_names );
+
+		$stats['all-objects'] += $stats['forms'];
+		$stats['all-objects'] += $stats['sections'];
+		$stats['all-objects'] += $stats['controls'];
+		$stats['all-objects'] += $stats['fields'];
+
+		return $stats;
 
 	}
 

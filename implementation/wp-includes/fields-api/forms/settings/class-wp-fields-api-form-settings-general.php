@@ -194,7 +194,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 				'type'        => 'radio',
 				'section'     => $this->id . '-options-general',
 				'label'       => __( 'Time Format' ),
-				'description' => sprintf( '<a href="%s">' . __( 'Documentation on date and time formatting.' ) . '<a/>', 'https://codex.wordpress.org/Formatting_Date_and_Time' ),
+				'description' => sprintf( '<a href="%s">' . __( 'Documentation on date and time formatting.' ) . '</a>', 'https://codex.wordpress.org/Formatting_Date_and_Time' ),
 				'input_attrs' => array(
 					'id'   => 'time_format',
 					'name' => 'time_format',
@@ -236,7 +236,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		);
 		$wp_fields->add_field( $this->object_type, 'start_of_week', null, $field_args );
 
-		// @todo implent languages dropdown
+		// @todo implement languages dropdown
 
 		// Add example fields (maybe)
 		parent::register_fields( $wp_fields );

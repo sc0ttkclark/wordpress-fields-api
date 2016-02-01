@@ -589,9 +589,9 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		 */
 		global $wp_fields;
 
-		$form_obj = $wp_fields->get_form( $section->object_type, $section->form, $section->object_name );
+		$item_id = $this->get_item_id();
 
-		$profileuser = get_userdata( $form_obj->item_id );
+		$profileuser = get_userdata( $item_id );
 
 		$total_roles = count( $profileuser->roles );
 		$total_caps  = count( $profileuser->caps );
@@ -646,6 +646,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 * @param mixed               $value
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
+	 *
+	 * @return string|WP_Error Sanitized value or error
 	 */
 	public function sanitize_rich_editing( $value, $item_id, $field ) {
 
@@ -665,6 +667,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 * @param mixed               $value
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
+	 *
+	 * @return string|WP_Error Sanitized value or error
 	 */
 	public function sanitize_admin_bar_front( $value, $item_id, $field ) {
 
@@ -684,6 +688,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 * @param mixed               $value
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
+	 *
+	 * @return string|WP_Error Sanitized value or error
 	 */
 	public function sanitize_comment_shortcuts( $value, $item_id, $field ) {
 

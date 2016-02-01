@@ -32,7 +32,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $exclude_current_item_id = false;
 
 	/**
-	 * @var bool Whether to exclude current item ID and decendents from list
+	 * @var bool Whether to exclude current item ID and descendants from list
 	 */
 	public $exclude_tree_current_item_id = false;
 

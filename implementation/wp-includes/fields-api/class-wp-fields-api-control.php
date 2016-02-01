@@ -31,36 +31,20 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public $item_id = 0;
 
 	/**
-	 * All fields tied to the control.
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $fields = array();
-
-	/**
 	 * The primary field for the control (if there is one).
 	 *
 	 * @access public
 	 * @var string|WP_Fields_API_Field
 	 */
-	public $field = 'default';
+	public $field = '';
 
 	/**
-	 * The primary form for the control (if there is one).
+	 * The section for the control (if there is one).
 	 *
 	 * @access public
 	 * @var string|WP_Fields_API_Section
 	 */
 	public $section = '';
-
-	/**
-	 * The primary form for the control (if there is one).
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Form
-	 */
-	public $form = '';
 
 	/**
 	 * @access public
@@ -102,31 +86,48 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 
 		parent::init( $object_type, $id, $args );
 
-		// Process fields.
-		if ( empty( $this->fields ) ) {
-			$this->fields = $id;
+		// Setup field
+		if ( ! $this->field ) {
+			$this->field = $id;
 		}
 
-		$fields = array();
+		if ( $this->field ) {
+			$field = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
 
-		if ( is_array( $this->fields ) ) {
-			foreach ( $this->fields as $key => $field ) {
-				$field_obj = $wp_fields->get_field( $this->object_type, $field, $this->object_name );
-
-				if ( $field_obj ) {
-					$fields[ $key ] = $field_obj;
-				}
-			}
-		} else {
-			$field_obj = $wp_fields->get_field( $this->object_type, $this->fields, $this->object_name );
-
-			if ( $field_obj ) {
-				$this->field       = $field_obj;
-				$fields['default'] = $field_obj;
+			if ( $field ) {
+				$this->add_child( $field );
 			}
 		}
 
-		$this->fields = $fields;
+	}
+
+	/**
+	 * Get the section for this control.
+	 *
+	 * @return WP_Fields_API_Section|null
+	 */
+	public function get_section() {
+
+		return $this->get_parent();
+
+	}
+
+	/**
+	 * Get associated field
+	 *
+	 * @return null|WP_Fields_API_Field
+	 */
+	public function get_field() {
+
+		$fields = $this->get_children( 'field' );
+
+		$field = null;
+
+		if ( $fields ) {
+			$field = current( $fields );
+		}
+
+		return $field;
 
 	}
 
@@ -154,23 +155,20 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 
 	/**
 	 * Fetch a field's value.
-	 * Grabs the main field by default.
 	 *
-	 * @param string $field_key
 	 * @return mixed The requested field's value, if the field exists.
 	 */
-	final public function value( $field_key = 'default' ) {
+	final public function value() {
 
-		if ( isset( $this->fields[ $field_key ] ) ) {
-			/**
-			 * @var $field WP_Fields_API_Field
-			 */
-			$field = $this->fields[ $field_key ];
+		$field = $this->get_field();
 
-			return $field->value( $this->item_id );
+		$value = null;
+
+		if ( $field ) {
+			$value = $field->value( $this->item_id );
 		}
 
-		return null;
+		return $value;
 
 	}
 
@@ -179,21 +177,13 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public function check_capabilities() {
 
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
+		$field = $this->get_field();
 
-		/**
-		 * @var $field WP_Fields_API_Field
-		 */
-		foreach ( $this->fields as $field ) {
-			if ( ! $field || ! $field->check_capabilities() ) {
-				return false;
-			}
+		if ( ! $field || ! $field->check_capabilities() ) {
+			return false;
 		}
 
-		$section = $wp_fields->get_section( $this->object_type, $this->section, $this->object_name );
+		$section = $this->get_section();
 
 		if ( $section && ! $section->check_capabilities() ) {
 			return false;
@@ -222,7 +212,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	/**
 	 * Render the control's content.
 	 *
-	 * Allows the content to be overriden without having to rewrite the wrapper in $this->render().
+	 * Allows the content to be overridden without having to rewrite the wrapper in $this->render().
 	 *
 	 * Supports basic input types `text`, `checkbox`, `textarea`, `radio`, `select` and `dropdown-pages`.
 	 * Additional input types such as `email`, `url`, `number`, `hidden` and `date` are supported implicitly.
@@ -240,30 +230,26 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	/**
 	 * Get the data link attribute for a field.
 	 *
-	 *
-	 * @param string $field_key
-	 * @return string Data link parameter, if $field_key is a valid field, empty string otherwise.
+	 * @return string Data link parameter, if field exists, empty string otherwise.
 	 */
-	public function get_link( $field_key = 'default' ) {
+	public function get_link() {
 
-		if ( ! isset( $this->fields[ $field_key ] ) ) {
+		$field = $this->get_field();
+
+		if ( ! $field ) {
 			return '';
 		}
 
-		return 'data-fields-field-link="' . esc_attr( $this->fields[ $field_key ]->id ) . '"';
+		return 'data-fields-field-link="' . esc_attr( $field->id ) . '"';
 
 	}
 
 	/**
 	 * Render the data link attribute for the control's input element.
-	 *
-	 * @uses WP_Fields_API_Control::get_link()
-	 *
-	 * @param string $field_key
 	 */
-	public function link( $field_key = 'default' ) {
+	public function link() {
 
-		echo $this->get_link( $field_key );
+		echo $this->get_link();
 
 	}
 

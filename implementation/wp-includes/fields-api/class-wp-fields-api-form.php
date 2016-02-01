@@ -37,6 +37,17 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	public $item_id = 0;
 
 	/**
+	 * Get the sections for this form.
+	 *
+	 * @return WP_Fields_API_Section[]
+	 */
+	public function get_sections() {
+
+		return $this->get_children( 'section' );
+
+	}
+
+	/**
 	 * Register forms, sections, controls, and fields
 	 *
 	 * @param string      $object_type
@@ -103,76 +114,83 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		// Examples //
 		//////////////
 
-		// Section
-		$section_args = array(
-			'label' => __( 'Fields API Example - My Fields' ),
-			'form'  => $this->id,
-		);
+		$total_examples = 25;
 
-		if ( in_array( $this->object_type, array( 'post', 'comment' ) ) ) {
-			$section_args['type'] = 'meta-box';
-		}
-
-		$wp_fields->add_section( $this->object_type, $this->id . '-example-my-fields', $this->object_name, $section_args );
-
-		// Add example for each control type
-		$control_types = array(
-			'text',
-			'textarea',
-			'checkbox',
-			'multi-checkbox',
-			'radio',
-			'select',
-			'dropdown-pages',
-			'dropdown-terms',
-			'color',
-			'media',
-			'media-file',
-		);
-
-		$option_types = array(
-			'multi-checkbox',
-			'radio',
-			'select',
-		);
-
-		foreach ( $control_types as $control_type ) {
-			$id    = 'example_my_' . $control_type . '_field';
-			$label = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
-
-			$field_args = array(
-				// Add a control to the field at the same time
-				'control' => array(
-					'type'        => $control_type,
-					'id'          => $this->id . '-' . $id,
-					'section'     => $this->id . '-example-my-fields',
-					'label'       => $label,
-					'description' => 'Example field description',
-				),
+		for ( $x = 1; $x < $total_examples; $x ++ ) {
+			// Section
+			$section_id   = $this->id . '-example-my-fields-' . $x;
+			$section_args = array(
+				'label'    => __( 'Fields API Example - My Fields %d' ),
+				'form'     => $this->id,
 			);
 
-			if ( in_array( $control_type, $option_types ) ) {
-				$field_args['control']['choices'] = array(
-					''         => 'N/A',
-					'option-1' => 'Option 1',
-					'option-2' => 'Option 2',
-					'option-3' => 'Option 3',
-					'option-4' => 'Option 4',
-					'option-5' => 'Option 5',
+			$section_args['label'] = sprintf( $section_args['label'], $x );
+
+			if ( in_array( $this->object_type, array( 'post', 'comment' ) ) ) {
+				$section_args['type'] = 'meta-box';
+			}
+
+			$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
+
+			// Add example for each control type
+			$control_types = array(
+				'text',
+				'textarea',
+				'checkbox',
+				'multi-checkbox',
+				'radio',
+				'select',
+				'dropdown-pages',
+				'dropdown-terms',
+				'color',
+				'media',
+				'media-file',
+			);
+
+			$option_types = array(
+				'multi-checkbox',
+				'radio',
+				'select',
+			);
+
+			foreach ( $control_types as $control_type ) {
+				$field_id = 'example_my_' . $x . '_' . $control_type . '_field';
+				$label    = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
+
+				$field_args = array(
+					// Add a control to the field at the same time
+					'control' => array(
+						'type'        => $control_type,
+						'id'          => $this->id . '-' . $field_id,
+						'section'     => $section_id,
+						'label'       => $label,
+						'description' => 'Example field description',
+					),
 				);
 
-				if ( 'multi-checkbox' == $control_type ) {
-					unset( $field_args['control']['choices'][''] );
+				if ( in_array( $control_type, $option_types ) ) {
+					$field_args['control']['choices'] = array(
+						''         => 'N/A',
+						'option-1' => 'Option 1',
+						'option-2' => 'Option 2',
+						'option-3' => 'Option 3',
+						'option-4' => 'Option 4',
+						'option-5' => 'Option 5',
+					);
+
+					if ( 'multi-checkbox' == $control_type ) {
+						unset( $field_args['control']['choices'][''] );
+					}
+				} elseif ( 'checkbox' == $control_type ) {
+					$field_args['control']['checkbox_label'] = 'Example checkbox label';
 				}
-			} elseif ( 'checkbox' == $control_type ) {
-				$field_args['control']['checkbox_label'] = 'Example checkbox label';
-			}
 
-			if ( 'dropdown-terms' == $control_type ) {
-				$field_args['control']['taxonomy'] = 'category';
-			}
+				if ( 'dropdown-terms' == $control_type ) {
+					$field_args['control']['taxonomy'] = 'category';
+				}
 
-			$wp_fields->add_field( $this->object_type, $id, $this->object_name, $field_args );
+				$wp_fields->add_field( $this->object_type, $field_id, $this->object_name, $field_args );
+			}
 		}
 
 	}
@@ -271,16 +289,11 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 */
 	protected function render() {
 
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
 		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
 
 		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 
-		$sections = $wp_fields->get_sections( $this->object_type, $this->object_name, $this->id );
+		$sections = $this->get_sections();
 
 		if ( ! empty( $sections ) ) {
 			?>

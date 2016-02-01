@@ -62,28 +62,40 @@ class WP_Fields_API_Container {
 	public $object_name = '';
 
 	/**
-	 * Priority of the container which informs load order of container.
+	 * Priority of the container which informs load order of container, shown in order of lowest to highest.
 	 *
 	 * @access public
 	 * @var integer
 	 */
-	public $priority = 160;
+	public $priority = 200;
 
 	/**
 	 * Children objects
 	 *
 	 * @access public
-	 * @var WP_Fields_API_Container[]
+	 * @var array
 	 */
-	protected $children = array();
+	protected $children = array(
+		'section' => array(), // For forms
+		'control' => array(), // For sections
+		'field'   => array(), // For controls
+	);
 
 	/**
 	 * Parent object
 	 *
 	 * @access public
-	 * @var WP_Fields_API_Container
+	 * @var WP_Fields_API_Container|null
 	 */
 	protected $parent;
+
+	/**
+	 * Whether children have been sorted yet
+	 *
+	 * @access protected
+	 * @var bool[]
+	 */
+	protected $sorted = array();
 
 	/**
 	 * Label to show in the UI.
@@ -208,11 +220,76 @@ class WP_Fields_API_Container {
 	/**
 	 * Get child objects of container
 	 *
-	 * @return WP_Fields_API_Container[]
+	 * @param string|true $child_type
+	 *
+	 * @return WP_Fields_API_Container[]|array
 	 */
-	public function get_children() {
+	public function get_children( $child_type = 'control' ) {
 
-		return $this->children;
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$children = array();
+
+		// Get children from Fields API configuration
+		if ( empty( $this->children[ $child_type ] ) ) {
+			$object_children = array();
+
+			if ( 'section' === $child_type && 'form' === $this->container_type ) {
+				// Get form sections
+				$object_children = $wp_fields->get_sections( $this->object_type, $this->object_name, $this );
+			} elseif ( 'control' === $child_type && 'section' === $this->container_type ) {
+				// Get section controls
+				$object_children = $wp_fields->get_controls( $this->object_type, $this->object_name, $this );
+			} elseif ( 'field' === $child_type && 'control' === $this->container_type && ! empty( $this->field ) ) {
+				// Get section controls
+				$object_children = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
+			}
+
+			if ( ! empty( $object_children ) ) {
+				if ( ! is_array( $object_children ) ) {
+					$object_children = array( $object_children );
+				}
+
+				$this->children[ $child_type ] = $object_children;
+
+				if ( isset( $this->sorted[ $child_type ] ) ) {
+					unset( $this->sorted[ $child_type ] );
+				}
+			}
+		}
+
+		if ( isset( $this->children[ $child_type ] ) ) {
+			// Get children of a specific type
+			$children = $this->children[ $child_type ];
+
+			// Handle sorting
+			if ( ! isset( $this->sorted[ $child_type ] ) ) {
+				uasort( $children, array( 'WP_Fields_API', '_cmp_priority' ) );
+
+				$this->children[ $child_type ] = $children;
+
+				$this->sorted[ $child_type ] = true;
+			}
+		} elseif ( true === $child_type ) {
+			// Get all children
+			$children = $this->children;
+
+			// Handle sorting
+			foreach ( $children as $child_type => $child_type_children ) {
+				if ( ! isset( $this->sorted[ $child_type ] ) ) {
+					uasort( $child_type_children, array( 'WP_Fields_API', '_cmp_priority' ) );
+
+					$this->children[ $child_type ] = $child_type_children;
+
+					$this->sorted[ $child_type ] = true;
+				}
+			}
+		}
+
+		return $children;
 
 	}
 
@@ -220,10 +297,24 @@ class WP_Fields_API_Container {
 	 * Add child object to container
 	 *
 	 * @param WP_Fields_API_Container $child
+	 * @param string                  $child_type
 	 */
-	public function add_child( $child ) {
+	public function add_child( $child, $child_type = 'control' ) {
 
-		$this->children[ $child->id ] = $child;
+		if ( ! isset( $this->children[ $child_type ] ) ) {
+			$this->children[ $child_type ] = array();
+		}
+
+		if ( isset( $this->sorted[ $child_type ] ) ) {
+			unset( $this->sorted[ $child_type ] );
+		}
+
+		// Set parent
+		if ( 'field' !== $child->container_type ) {
+			$child->set_parent( $this );
+		}
+
+		$this->children[ $child_type ][ $child->id ] =& $child;
 
 	}
 
@@ -231,11 +322,44 @@ class WP_Fields_API_Container {
 	 * Remove child object from container
 	 *
 	 * @param string $child_id
+	 * @param string $child_type
 	 */
-	public function remove_child( $child_id ) {
+	public function remove_child( $child_id, $child_type = 'control' ) {
 
-		if ( isset( $this->children[ $child_id ] ) ) {
-			unset( $this->children[ $child_id ] );
+		if ( isset( $this->children[ $child_type ][ $child_id ] ) ) {
+			/**
+			 * @var $child WP_Fields_API_Container
+			 */
+			$child = $this->children[ $child_type ][ $child_id ];
+
+			$child->set_parent( null );
+
+			unset( $this->children[ $child_type ][ $child_id ] );
+		}
+
+	}
+
+	/**
+	 * Remove all child objects from container
+	 *
+	 * @param string|true $child_type
+	 */
+	public function remove_children( $child_type = 'control' ) {
+
+		if ( true !== $child_type ) {
+			$this->children[ $child_type ] = array();
+
+			if ( isset( $this->sorted[ $child_type ] ) ) {
+				unset( $this->sorted[ $child_type ] );
+			}
+		} else {
+			foreach ( $this->children as $child_type => $child_type_children ) {
+				$this->children[ $child_type ] = array();
+
+				if ( isset( $this->sorted[ $child_type ] ) ) {
+					unset( $this->sorted[ $child_type ] );
+				}
+			}
 		}
 
 	}
@@ -243,9 +367,39 @@ class WP_Fields_API_Container {
 	/**
 	 * Get parent object of container
 	 *
-	 * @return WP_Fields_API_Container
+	 * @return WP_Fields_API_Container|null
 	 */
 	public function get_parent() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Get children from Fields API configuration
+		if ( empty( $this->parent ) ) {
+			$parent = null;
+
+			if ( 'section' === $this->container_type && ! empty( $this->form ) ) {
+				// Get section form
+				if ( is_a( $this->form, 'WP_Fields_API_Form' ) ) {
+					$parent = $this->form;
+				} else {
+					$parent = $wp_fields->get_form( $this->object_type, $this->form, $this->object_name );
+				}
+			} elseif ( 'control' === $this->container_type && ! empty( $this->section ) ) {
+				// Get section form
+				if ( is_a( $this->section, 'WP_Fields_API_Section' ) ) {
+					$parent = $this->section;
+				} else {
+					$parent = $wp_fields->get_section( $this->object_type, $this->section, $this->object_name );
+				}
+			}
+
+			if ( ! empty( $parent ) ) {
+				$this->parent = $parent;
+			}
+		}
 
 		return $this->parent;
 
@@ -254,11 +408,92 @@ class WP_Fields_API_Container {
 	/**
 	 * Set parent object of container
 	 *
-	 * @param WP_Fields_API_Container $object
+	 * @param WP_Fields_API_Container|null $object
 	 */
 	public function set_parent( $object ) {
 
-		$this->parent = $object;
+		$this->parent =& $object;
+
+	}
+
+	/**
+	 * Get object type from container or parent
+	 *
+	 * @return string|null Object type
+	 */
+	public function get_object_type() {
+
+		$parent = $this->parent;
+
+		if ( ! $this->object_type && $parent ) {
+			// Get object type from any parent that has it
+			while ( $parent && $parent = $parent->get_parent() ) {
+				if ( ! empty( $parent->object_type ) ) {
+					$this->object_type = $parent->object_type;
+
+					break;
+				}
+			}
+		}
+
+		return $this->object_type;
+
+	}
+
+	/**
+	 * Get object name from container or parent
+	 *
+	 * @return string|null Object name
+	 */
+	public function get_object_name() {
+
+		$parent = $this->parent;
+
+		if ( ! $this->object_name && $parent ) {
+			$object_type = $this->get_object_type();
+
+			$default_object_name = '_' . $object_type;
+
+			// Get object type from any parent that has it
+			while ( $parent && $parent = $parent->get_parent() ) {
+				if ( $parent->object_name && $default_object_name !== $parent->object_name ) {
+					$this->object_name = $parent->object_name;
+
+					break;
+				}
+			}
+		}
+
+		return $this->object_name;
+
+	}
+
+	/**
+	 * Get parent object of container
+	 *
+	 * @return int|null
+	 */
+	public function get_item_id() {
+
+		$parent = $this->parent;
+
+		$item_id = 0;
+
+		if ( ! empty( $this->item_id ) ) {
+			// Get Item ID from container
+			$item_id = $this->item_id;
+		} elseif ( empty( $this->item_id ) && $parent ) {
+			// Get Item ID from any parent that has it
+			while ( $parent && $parent = $parent->get_parent() ) {
+				if ( ! empty( $parent->item_id ) ) {
+					$item_id = $parent->item_id;
+
+					break;
+				}
+			}
+		}
+
+		return $item_id;
 
 	}
 
@@ -277,16 +512,27 @@ class WP_Fields_API_Container {
 
 		// Get parent
 		$json['parent'] = '';
+		$json['parentType'] = '';
 
-		if ( $this->parent ) {
-			$json['parent'] = $this->parent->id;
+		$parent = $this->get_parent();
+
+		if ( $parent ) {
+			$json['parent'] = $parent->id;
+			$json['parentType'] = $parent->container_type;
 		}
 
 		// Get children
 		$json['children'] = array();
 
-		if ( $this->children ) {
-			$json['children'] = wp_list_pluck( $this->children, 'id' );
+		$children = $this->get_children( null );
+
+		if ( $children ) {
+			/**
+			 * @var $child_type_children array
+			 */
+			foreach ( $children as $child_type => $child_type_children ) {
+				$json['children'][ $child_type ] = wp_list_pluck( $child_type_children, 'id' );
+			}
 		}
 
 		return $json;
