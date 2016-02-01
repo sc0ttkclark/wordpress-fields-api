@@ -71,6 +71,15 @@ There are also [GitHub issues](https://github.com/sc0ttkclark/wordpress-fields-a
 
 To submit a pull request, please base it off of the `develop` branch which we use for ongoing development towards the next release. The `master` branch represents the last stable beta release.
 
+### Testing
+
+There are a few things that can be enabled for testing purposes:
+
+* `define( 'WP_FIELDS_API_EXAMPLES', true );` Enable example section, controls, and fields for each form.
+* `?fields-api-memory-test=1` Enable memory testing of 25 example sections, set to any number greater than 1 to customize how many example sections to add. _Requires WP_DEBUG on_
+* `?no-fields-api=1` Disable Fields API from loading, useful for memory split testing. _Requires WP_DEBUG to be turned on_
+* `?no-fields-api-late-init=1` Disable Fields API Late Init, which means when any form, section, control, or field are added, the object will be setup right away instead of only as needed by current page. Useful for memory split testing. _Requires WP_DEBUG to be turned on_
+
 ## LICENSE
 
 GPLv2 or later. See [License](LICENSE.txt).
