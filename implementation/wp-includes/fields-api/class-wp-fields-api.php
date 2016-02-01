@@ -922,6 +922,22 @@ final class WP_Fields_API {
 			$this->add_control( $object_type, $control_id, $object_name, $control );
 		}
 
+		$this->register_meta_integration( $object_type, $id, $field, $object_name );
+
+		return true;
+
+	}
+
+	/**
+	 * Register meta integration for register_meta and REST API
+	 *
+	 * @param string                    $object_type
+	 * @param string                    $id
+	 * @param array|WP_Fields_API_Field $field
+	 * @param string                    $object_name
+	 */
+	public function register_meta_integration( $object_type, $id, $field, $object_name ) {
+
 		// Meta types call register_meta() and register_rest_field() for their fields
 		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ! $this->get_field_arg( $field, 'internal' ) ) {
 			// Set callbacks
@@ -942,8 +958,6 @@ final class WP_Fields_API {
 				register_rest_field( $object_type, $id, $rest_field_args );
 			}
 		}
-
-		return true;
 
 	}
 
