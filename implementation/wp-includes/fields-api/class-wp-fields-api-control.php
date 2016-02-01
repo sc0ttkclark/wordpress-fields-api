@@ -20,7 +20,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $input_name = '';
+	public $input_name;
 
 	/**
 	 * Item ID of current item passed to WP_Fields_API_Field for value()
