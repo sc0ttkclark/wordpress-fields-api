@@ -43,7 +43,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $id = '';
+	public $id;
 
 	/**
 	 * Object type.
@@ -51,7 +51,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $object_type = '';
+	public $object_type;
 
 	/**
 	 * Object name (for post types and taxonomies).
@@ -59,7 +59,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $object_name = '';
+	public $object_name;
 
 	/**
 	 * Item ID of current item
@@ -111,7 +111,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $label = '';
+	public $label;
 
 	/**
 	 * Whether to display the label in the UI.
@@ -127,7 +127,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $description = '';
+	public $description;
 
 	/**
 	 * Type of container.
@@ -172,7 +172,7 @@ class WP_Fields_API_Container {
 	 *               WP_Fields_API_Container, and returns bool to indicate whether
 	 *               the container has capabilities to be used.
 	 */
-	public $capabilities_callback = '';
+	public $capabilities_callback;
 
 	/**
 	 * Render Callback.
@@ -184,7 +184,7 @@ class WP_Fields_API_Container {
 	 * @var callable Callback is called with one argument, the instance of
 	 *               WP_Fields_API_Container.
 	 */
-	public $render_callback = '';
+	public $render_callback;
 
 	/**
 	 * The primary form (if there is one).
@@ -192,7 +192,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string|WP_Fields_API_Field
 	 */
-	public $form = '';
+	public $form;
 
 	/**
 	 * The primary section (if there is one).
@@ -200,7 +200,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string|WP_Fields_API_Field
 	 */
-	public $section = '';
+	public $section;
 
 	/**
 	 * The primary control (if there is one).
@@ -208,7 +208,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string|WP_Fields_API_Control
 	 */
-	public $control = '';
+	public $control;
 
 	/**
 	 * The primary field (if there is one).
@@ -216,7 +216,7 @@ class WP_Fields_API_Container {
 	 * @access public
 	 * @var string|WP_Fields_API_Field
 	 */
-	public $field = '';
+	public $field;
 
 	/**
 	 * Constructor.

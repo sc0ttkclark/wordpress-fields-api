@@ -21,8 +21,8 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 *
 	 * @var callback
 	 */
-	public $sanitize_callback    = '';
-	public $sanitize_js_callback = '';
+	public $sanitize_callback;
+	public $sanitize_js_callback;
 
 	protected $id_data = array();
 
@@ -35,7 +35,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 *
 	 * @var callable
 	 */
-	public $meta_auth_callback = '';
+	public $meta_auth_callback;
 
 	/**
 	 * register_rest_field Get Callback.
@@ -46,7 +46,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 *
 	 * @var callable
 	 */
-	public $rest_get_callback = '';
+	public $rest_get_callback;
 
 	/**
 	 * register_rest_field Update Callback.
@@ -57,7 +57,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 *
 	 * @var callable
 	 */
-	public $rest_update_callback = '';
+	public $rest_update_callback;
 
 	/**
 	 * register_rest_field Schema Callback.
@@ -68,7 +68,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 *
 	 * @var callable
 	 */
-	public $rest_schema_callback = '';
+	public $rest_schema_callback;
 
 	/**
 	 * Value Callback.
@@ -80,7 +80,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 * @var callable Callback is called with two arguments, the item ID and the instance of
 	 *               WP_Fields_API_Field. It returns a string for the value to use.
 	 */
-	public $value_callback = '';
+	public $value_callback;
 
 	/**
 	 * Update Value Callback.
@@ -92,7 +92,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 * @var callable Callback is called with three arguments, the value being saved, the item ID, and the instance of
 	 *               WP_Fields_API_Field.
 	 */
-	public $update_value_callback = '';
+	public $update_value_callback;
 
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
