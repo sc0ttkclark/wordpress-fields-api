@@ -14,7 +14,12 @@ class WP_Fields_API_User_Email_Control extends WP_Fields_API_Control {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render_content() {
+	public $type = 'user-email';
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function render_content() {
 
 		$current_user = get_userdata( get_current_user_id() );
 

@@ -14,7 +14,12 @@ class WP_Fields_API_User_Super_Admin_Control extends WP_Fields_API_Checkbox_Cont
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render_content() {
+	public $type = 'user-super-admin';
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function render_content() {
 
 		$profileuser = get_userdata( $this->item_id );
 

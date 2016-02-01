@@ -35,13 +35,13 @@ class WP_Fields_API_Settings_API {
 			// Get Form
 			$form_id = $section->form;
 			$section_id = $section->id;
-			$section_title = $section->title;
+			$section_title = $section->label;
 
 			if ( is_object( $form_id ) ) {
 				$form_id = $form_id->id;
 			}
 
-			if ( ! $section->display_title ) {
+			if ( ! $section->display_label ) {
 				$section_title = '';
 			}
 
@@ -63,7 +63,6 @@ class WP_Fields_API_Settings_API {
 					}
 
 					if ( ! $added_section ) {
-
 						add_settings_section(
 							$section_id,
 							$section_title,
@@ -135,11 +134,7 @@ class WP_Fields_API_Settings_API {
 
 		$description = trim( $control->description );
 
-		// Avoid outputting them in render_content()
-		$control->label       = '';
-		$control->description = '';
-
-		$control->render_content();
+		$control->maybe_render();
 
 		if ( 0 < strlen( $description ) ) {
 			?>

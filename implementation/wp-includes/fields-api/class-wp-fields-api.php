@@ -104,15 +104,14 @@ final class WP_Fields_API {
 		$fields_api_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/';
 
 		// Include API classes
-		require_once( $fields_api_dir . 'class-wp-fields-api-field.php' );
-		require_once( $fields_api_dir . 'class-wp-fields-api-control.php' );
-		require_once( $fields_api_dir . 'class-wp-fields-api-section.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-container.php' );
 		require_once( $fields_api_dir . 'class-wp-fields-api-form.php' );
-
-		// Include form types
-		require_once( $fields_api_dir . 'form-types/class-wp-fields-api-table-form.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-section.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-control.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-field.php' );
 
 		// Include section types
+		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-table-section.php' );
 		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-section.php' );
 
 		// Include control types
@@ -605,6 +604,27 @@ final class WP_Fields_API {
 
 		if ( ! isset( self::$sections[ $object_type ][ $object_name ] ) ) {
 			self::$sections[ $object_type ][ $object_name ] = array();
+		}
+
+		// Handle default section types
+		if ( is_array( $section ) && empty( $section['type'] ) ) {
+			$form = null;
+
+			if ( ! empty( $section['form'] ) ) {
+				$form = $section['form'];
+
+				if ( ! is_object( $form ) ) {
+					$form = $this->get_form( $object_type, $form, $object_name );
+				}
+
+				if ( $form ) {
+					$default_section_type = $form->default_section_type;
+
+					if ( $default_section_type ) {
+						$section['type'] = $default_section_type;
+					}
+				}
+			}
 		}
 
 		self::$sections[ $object_type ][ $object_name ][ $id ] = $section;
@@ -1570,11 +1590,9 @@ final class WP_Fields_API {
 	 */
 	public function register_defaults() {
 
-		/* Form Types */
-		$this->register_form_type( 'table', 'WP_Fields_API_Table_Form' );
-
 		/* Section Types */
 		$this->register_section_type( 'meta-box', 'WP_Fields_API_Meta_Box_Section' );
+		$this->register_section_type( 'table', 'WP_Fields_API_Table_Section' );
 
 		/* Control Types */
 		$this->register_control_type( 'text', 'WP_Fields_API_Control' );

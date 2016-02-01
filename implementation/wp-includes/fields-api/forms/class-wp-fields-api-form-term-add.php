@@ -14,6 +14,11 @@ class WP_Fields_API_Form_Term_Add extends WP_Fields_API_Form_Term {
 	/**
 	 * {@inheritdoc}
 	 */
+	public $default_section_type = 'default';
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function save_fields( $item_id = null, $object_name = null ) {
 
 		$term_name = '';

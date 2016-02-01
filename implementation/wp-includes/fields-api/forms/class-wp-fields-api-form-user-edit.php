@@ -9,7 +9,7 @@
 /**
  * Class WP_Fields_API_Form_User_Edit
  */
-class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
+class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
@@ -52,7 +52,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		////////////////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-personal-options', null, array(
-			'title'  => __( 'Personal Options' ),
+			'label'  => __( 'Personal Options' ),
 			'form' => $this->id,
 			// @todo Needs action compatibility for personal_options( $profileuser )
 			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
@@ -120,7 +120,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-name', null, array(
-			'title'  => __( 'Name' ),
+			'label'  => __( 'Name' ),
 			'form' => $this->id,
 		) );
 
@@ -217,7 +217,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		////////////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-contact-info', null, array(
-			'title'  => __( 'Contact Info' ),
+			'label'  => __( 'Contact Info' ),
 			'form' => $this->id,
 		) );
 
@@ -283,7 +283,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		}
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-about', null, array(
-			'title'  => $about_title,
+			'label'  => $about_title,
 			'form' => $this->id,
 		) );
 
@@ -304,7 +304,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		//////////////////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-account-management', null, array(
-			'title'                 => __( 'Account Management' ),
+			'label'                 => __( 'Account Management' ),
 			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
@@ -365,7 +365,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		///////////////////////////////////
 
 		$wp_fields->add_section( $this->object_type, 'additional-capabilities', null, array(
-			'title'                 => __( 'Additional Capabilities' ),
+			'label'                 => __( 'Additional Capabilities' ),
 			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );

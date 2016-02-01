@@ -9,7 +9,12 @@
 /**
  * Class WP_Fields_API_Form_Comment
  */
-class WP_Fields_API_Form_Comment extends WP_Fields_API_Table_Form {
+class WP_Fields_API_Form_Comment extends WP_Fields_API_Form {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public $default_section_type = 'meta-box';
 
 	/**
 	 * {@inheritdoc}

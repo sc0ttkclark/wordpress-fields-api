@@ -14,7 +14,12 @@ class WP_Fields_API_User_Sessions_Control extends WP_Fields_API_Control {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render_content() {
+	public $type = 'user-sessions';
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function render_content() {
 
 		$profileuser = get_userdata( $this->item_id );
 
