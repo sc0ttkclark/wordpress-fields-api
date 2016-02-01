@@ -187,6 +187,8 @@ final class WP_Fields_API {
 				self::$forms[ $object_type ][ $object_name ][ $id ] = $this->setup_form( $object_type, $id, $object_name, $form );
 			}
 
+			$forms = self::$forms[ $object_type ][ $object_name ][ $id ];
+
 			// Object name inheritance for getting data that covers all object names
 			if ( $primary_object_name !== $object_name ) {
 				$forms = array_merge( $this->get_forms( $object_type, $primary_object_name ), $forms );
