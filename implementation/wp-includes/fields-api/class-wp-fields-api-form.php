@@ -106,6 +106,8 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 */
 	public function register_fields( $wp_fields ) {
 
+		// @todo Remove this when done testing
+
 		if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) || ! WP_FIELDS_API_EXAMPLES ) {
 			return;
 		}
@@ -114,17 +116,27 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		// Examples //
 		//////////////
 
-		$total_examples = 25;
+		$total_examples = 1;
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['fields-api-memory-test'] ) ) {
+			$total_examples = 25;
+
+			if ( 1 < $_GET['fields-api-memory-test'] ) {
+				$total_examples = absint( $_GET['fields-api-memory-test'] );
+			}
+		}
 
 		for ( $x = 1; $x < $total_examples; $x ++ ) {
 			// Section
 			$section_id   = $this->id . '-example-my-fields-' . $x;
 			$section_args = array(
-				'label'    => __( 'Fields API Example - My Fields %d' ),
+				'label'    => __( 'Fields API Example - My Fields' ),
 				'form'     => $this->id,
 			);
 
-			$section_args['label'] = sprintf( $section_args['label'], $x );
+			if ( 1 < $total_examples ) {
+				$section_args['label'] .= ' ' . $x;
+			}
 
 			if ( in_array( $this->object_type, array( 'post', 'comment' ) ) ) {
 				$section_args['type'] = 'meta-box';
