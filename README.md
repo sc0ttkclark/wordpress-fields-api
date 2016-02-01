@@ -1,4 +1,4 @@
-# WordPress Fields API v0.0.4 Beta
+# WordPress Fields API v0.0.6 Beta
 
 [![Travis](https://secure.travis-ci.org/sc0ttkclark/wordpress-fields-api.png?branch=master)](http://travis-ci.org/sc0ttkclark/wordpress-fields-api)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/?branch=master)
