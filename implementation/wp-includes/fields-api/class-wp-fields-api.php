@@ -923,43 +923,21 @@ final class WP_Fields_API {
 		}
 
 		// Meta types call register_meta() and register_rest_field() for their fields
-		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ( ( is_array( $field ) && ! empty( $field['internal'] ) ) || ( is_object( $field ) && ! empty( $field->internal ) ) ) ) {
+		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ! $this->get_field_arg( $field, 'internal' ) ) {
 			// Set callbacks
 			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
-			$auth_callback = null;
-
-			if ( is_array( $field ) && ! empty( $field['meta_auth_callback'] ) ) {
-				$auth_callback = $field['meta_auth_callback'];
-			} elseif ( is_object( $field ) && ! empty( $field->meta_auth_callback ) ) {
-				$auth_callback = $field->meta_auth_callback;
-			}
+			$auth_callback = $this->get_field_arg( $field, 'meta_auth_callback' );
 
 			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
 
-			if ( function_exists( 'register_rest_field' ) ) {
+			if ( function_exists( 'register_rest_field' ) && $this->get_field_arg( $field, 'show_in_rest' ) ) {
 				$rest_field_args = array(
-					'get_callback'    => null,
-					'update_callback' => null,
-					'schema'          => null,
+					'get_callback'    => $this->get_field_arg( $field, 'rest_get_callback' ),
+					'update_callback' => $this->get_field_arg( $field, 'rest_update_callback' ),
+					'schema'          => $this->get_field_arg( $field, 'rest_schema_callback' ),
+					'type'            => $this->get_field_arg( $field, 'rest_field_type' ),
+					'description'     => $this->get_field_arg( $field, 'rest_field_description' ),
 				);
-
-				if ( is_array( $field ) && ! empty( $field['rest_get_callback'] ) ) {
-					$rest_field_args['get_callback'] = $field['rest_get_callback'];
-				} elseif ( is_object( $field ) && ! empty( $field->rest_get_callback ) ) {
-					$rest_field_args['get_callback'] = $field->rest_get_callback;
-				}
-
-				if ( is_array( $field ) && ! empty( $field['rest_update_callback'] ) ) {
-					$rest_field_args['update_callback'] = $field['rest_update_callback'];
-				} elseif ( is_object( $field ) && ! empty( $field->rest_update_callback ) ) {
-					$rest_field_args['update_callback'] = $field->rest_update_callback;
-				}
-
-				if ( is_array( $field ) && ! empty( $field['rest_schema_callback'] ) ) {
-					$rest_field_args['schema'] = $field['rest_schema_callback'];
-				} elseif ( is_object( $field ) && ! empty( $field->rest_schema_callback ) ) {
-					$rest_field_args['schema'] = $field->rest_schema_callback;
-				}
 
 				register_rest_field( $object_type, $id, $rest_field_args );
 			}
@@ -1762,6 +1740,28 @@ final class WP_Fields_API {
 		$stats['all-objects'] += $stats['fields'];
 
 		return $stats;
+
+	}
+
+	/**
+	 * Get argument from field array or object
+	 *
+	 * @param array|object $field
+	 * @param string $arg
+	 *
+	 * @return null|mixed
+	 */
+	public function get_field_arg( $field, $arg ) {
+
+		$value = null;
+
+		if ( is_array( $field ) && isset( $field[ $arg ] ) ) {
+			$value = $field[ $arg ];
+		} elseif ( is_object( $field ) && isset( $field->{$arg} ) ) {
+			$value = $field->{$arg};
+		}
+
+		return $value;
 
 	}
 
