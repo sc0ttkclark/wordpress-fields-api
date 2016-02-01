@@ -217,11 +217,13 @@ final class WP_Fields_API {
 	 * @param WP_Fields_API_Form|string $id          Field Form object, or Form ID.
 	 * @param string                      $object_name Object name (for post types and taxonomies).
 	 * @param array                       $args        Optional. Form arguments. Default empty array.
+	 *
+	 * @return bool|WP_Error True on success, or error
 	 */
 	public function add_form( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
-			return;
+			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
@@ -251,7 +253,13 @@ final class WP_Fields_API {
 			$form = $this->setup_form( $object_type, $id, $object_name, $form );
 		}
 
+		if ( isset( self::$forms[ $object_type ][ $object_name ][ $id ] ) ) {
+			return new WP_Error( '', __( 'Form already exists.', 'fields-api' ) );
+		}
+
 		self::$forms[ $object_type ][ $object_name ][ $id ] = $form;
+
+		return true;
 
 	}
 
@@ -546,11 +554,13 @@ final class WP_Fields_API {
 	 * @param WP_Fields_API_Section|string $id          Field Section object, or Section ID.
 	 * @param string                       $object_name Object name (for post types and taxonomies).
 	 * @param array                        $args        Section arguments.
+	 *
+	 * @return bool|WP_Error True on success, or error
 	 */
 	public function add_section( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
-			return;
+			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
@@ -579,7 +589,13 @@ final class WP_Fields_API {
 			$section = $this->setup_section( $object_type, $id, $object_name, $section );
 		}
 
+		if ( isset( self::$sections[ $object_type ][ $object_name ][ $id ] ) ) {
+			return new WP_Error( '', __( 'Section already exists.', 'fields-api' ) );
+		}
+
 		self::$sections[ $object_type ][ $object_name ][ $id ] = $section;
+
+		return true;
 
 	}
 
@@ -812,11 +828,13 @@ final class WP_Fields_API {
 	 * @param string                     $object_name Object name (for post types and taxonomies).
 	 * @param array                      $args        Field arguments; passed to WP_Fields_API_Field
 	 *                                                constructor.
+	 *
+	 * @return bool|WP_Error True on success, or error
 	 */
 	public function add_field( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
-			return;
+			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		$control = array();
@@ -852,6 +870,10 @@ final class WP_Fields_API {
 		// @todo Remove this when done testing
 		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
 			$field = $this->setup_field( $object_type, $id, $object_name, $field );
+		}
+
+		if ( isset( self::$fields[ $object_type ][ $object_name ][ $id ] ) ) {
+			return new WP_Error( '', __( 'Field already exists.', 'fields-api' ) );
 		}
 
 		self::$fields[ $object_type ][ $object_name ][ $id ] = $field;
@@ -890,6 +912,8 @@ final class WP_Fields_API {
 
 			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
 		}
+
+		return true;
 
 	}
 
@@ -1163,11 +1187,13 @@ final class WP_Fields_API {
 	 * @param string                       $object_name Object name (for post types and taxonomies).
 	 * @param array                        $args        Control arguments; passed to WP_Fields_API_Control
 	 *                                                  constructor.
+	 *
+	 * @return bool|WP_Error True on success, or error
 	 */
 	public function add_control( $object_type, $id, $object_name = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
-			return;
+			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
@@ -1196,7 +1222,13 @@ final class WP_Fields_API {
 			$control = $this->setup_control( $object_type, $id, $object_name, $control );
 		}
 
+		if ( isset( self::$controls[ $object_type ][ $object_name ][ $id ] ) ) {
+			return new WP_Error( '', __( 'Control already exists.', 'fields-api' ) );
+		}
+
 		self::$controls[ $object_type ][ $object_name ][ $id ] = $control;
+
+		return true;
 
 	}
 
