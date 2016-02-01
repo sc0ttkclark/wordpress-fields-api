@@ -43,6 +43,14 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	public $item_id = 0;
 
 	/**
+	 * Control objects in section
+	 *
+	 * @access
+	 * @var array
+	 */
+	public $controls = array();
+
+	/**
 	 * Render the section, and the controls that have been added to it.
 	 */
 	protected function render() {
