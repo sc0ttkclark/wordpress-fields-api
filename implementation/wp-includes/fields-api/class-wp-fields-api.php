@@ -931,12 +931,12 @@ final class WP_Fields_API {
 	/**
 	 * Register meta integration for register_meta and REST API
 	 *
-	 * @param string                    $object_type
-	 * @param string                    $id
-	 * @param array|WP_Fields_API_Field $field
-	 * @param string                    $object_name
+	 * @param string                    $object_type Object type
+	 * @param string                    $id          Field ID
+	 * @param array|WP_Fields_API_Field $field       Field object or options array
+	 * @param string|null               $object_name Object name
 	 */
-	public function register_meta_integration( $object_type, $id, $field, $object_name ) {
+	public function register_meta_integration( $object_type, $id, $field, $object_name = null ) {
 
 		// Meta types call register_meta() and register_rest_field() for their fields
 		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ! $this->get_field_arg( $field, 'internal' ) ) {
