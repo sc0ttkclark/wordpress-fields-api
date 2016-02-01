@@ -922,19 +922,47 @@ final class WP_Fields_API {
 			$this->add_control( $object_type, $control_id, $object_name, $control );
 		}
 
-		// Meta types call register_meta() for their fields
+		// Meta types call register_meta() and register_rest_field() for their fields
 		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ( ( is_array( $field ) && ! empty( $field['internal'] ) ) || ( is_object( $field ) && ! empty( $field->internal ) ) ) ) {
 			// Set callbacks
 			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
 			$auth_callback = null;
 
-			if ( ! empty( $field['meta_auth_callback'] ) ) {
+			if ( is_array( $field ) && ! empty( $field['meta_auth_callback'] ) ) {
 				$auth_callback = $field['meta_auth_callback'];
-			} elseif ( ! empty( $field->meta_auth_callback ) ) {
+			} elseif ( is_object( $field ) && ! empty( $field->meta_auth_callback ) ) {
 				$auth_callback = $field->meta_auth_callback;
 			}
 
 			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
+
+			if ( function_exists( 'register_rest_field' ) ) {
+				$rest_field_args = array(
+					'get_callback'    => null,
+					'update_callback' => null,
+					'schema'          => null,
+				);
+
+				if ( is_array( $field ) && ! empty( $field['rest_get_callback'] ) ) {
+					$rest_field_args['get_callback'] = $field['rest_get_callback'];
+				} elseif ( is_object( $field ) && ! empty( $field->rest_get_callback ) ) {
+					$rest_field_args['get_callback'] = $field->rest_get_callback;
+				}
+
+				if ( is_array( $field ) && ! empty( $field['rest_update_callback'] ) ) {
+					$rest_field_args['update_callback'] = $field['rest_update_callback'];
+				} elseif ( is_object( $field ) && ! empty( $field->rest_update_callback ) ) {
+					$rest_field_args['update_callback'] = $field->rest_update_callback;
+				}
+
+				if ( is_array( $field ) && ! empty( $field['rest_schema_callback'] ) ) {
+					$rest_field_args['schema'] = $field['rest_schema_callback'];
+				} elseif ( is_object( $field ) && ! empty( $field->rest_schema_callback ) ) {
+					$rest_field_args['schema'] = $field->rest_schema_callback;
+				}
+
+				register_rest_field( $object_type, $id, $rest_field_args );
+			}
 		}
 
 		return true;
