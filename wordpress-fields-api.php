@@ -113,9 +113,20 @@ function _wp_fields_api_implementations() {
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
 
+// Post
+add_action( 'load-post.php', '_wp_fields_api_load_include', 999 );
+
+// Term
+add_action( 'load-edit-tags.php', '_wp_fields_api_load_include', 999 );
+
+// User
 add_action( 'load-user-edit.php', '_wp_fields_api_load_include', 999 );
 add_action( 'load-profile.php', '_wp_fields_api_load_include', 999 );
-add_action( 'load-edit-tags.php', '_wp_fields_api_load_include', 999 );
+
+// Comment
+add_action( 'load-comment.php', '_wp_fields_api_load_include', 999 );
+
+// Settings
 add_action( 'load-options-general.php', '_wp_fields_api_load_include', 999 );
 
 function _wp_fields_api_load_include() {

@@ -10,7 +10,8 @@
 // @todo Remove WP Fields API modification
 if ( !defined('ABSPATH') )
 	die('-1');
-global $parent_file, $title; // @todo Remove WP Fields API modification
+global $submenu_file, $parent_file, $title, $pagenow; // @todo Remove WP Fields API modification
+$submenu_file = $parent_file; // @todo Remove WP Fields API modification
 
 /** WordPress Translation Install API */
 require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
