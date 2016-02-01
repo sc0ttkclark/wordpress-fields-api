@@ -533,7 +533,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 */
 	public function capability_can_grant_super_admin( $control ) {
 
-		$profileuser = get_userdata( $control->item_id );
+		$profileuser = get_userdata( $control->get_item_id() );
 
 		/**
 		 * @var $super_admins string[]
@@ -559,7 +559,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 */
 	public function capability_show_password_fields( $control ) {
 
-		$profileuser = get_userdata( $control->item_id );
+		$profileuser = get_userdata( $control->get_item_id() );
 
 		/** This filter is documented in wp-admin/user-new.php */
 		$show_password_fields = apply_filters( 'show_password_fields', true, $profileuser );

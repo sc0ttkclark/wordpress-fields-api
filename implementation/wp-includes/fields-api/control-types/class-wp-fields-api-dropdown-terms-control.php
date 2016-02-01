@@ -67,12 +67,14 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 
 		$args = $this->get_args;
 
-		if ( ! isset( $args['exclude'] ) && $this->exclude_current_item_id && 0 < $this->item_id ) {
-			$args['exclude'] = $this->item_id;
+		$item_id = $this->get_item_id();
+
+		if ( ! isset( $args['exclude'] ) && $this->exclude_current_item_id && 0 < $item_id ) {
+			$args['exclude'] = $item_id;
 		}
 
-		if ( ! isset( $args['exclude_tree'] ) && $this->exclude_tree_current_item_id && 0 < $this->item_id ) {
-			$args['exclude_tree'] = $this->item_id;
+		if ( ! isset( $args['exclude_tree'] ) && $this->exclude_tree_current_item_id && 0 < $item_id ) {
+			$args['exclude_tree'] = $item_id;
 		}
 
 		$terms = get_terms( $this->taxonomy, $args );

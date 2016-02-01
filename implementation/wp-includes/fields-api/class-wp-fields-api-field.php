@@ -92,15 +92,16 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 * Check user capabilities and theme supports, and then save
 	 * the value of the field.
 	 *
-	 * @param mixed $value   The value to save.
-	 * @param int   $item_id The Item ID.
+	 * @param mixed    $value   The value to save.
+	 * @param int|null $item_id The Item ID.
 	 *
 	 * @return false|mixed False if cap check fails or value isn't set.
 	 */
-	public function save() {
+	public function save( $value, $item_id = null ) {
 
-		$value   = func_get_arg(0);
-		$item_id = func_get_arg(1);
+		if ( null === $item_id ) {
+			$item_id = $this->get_item_id();
+		}
 
 		if ( ! $this->check_capabilities() || false === $value ) {
 			return false;

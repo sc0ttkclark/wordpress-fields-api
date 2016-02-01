@@ -29,25 +29,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	public $default_section_type = 'table';
 
 	/**
-	 * Item ID of current item
-	 *
-	 * @access public
-	 * @var int|string
-	 */
-	public $item_id = 0;
-
-	/**
-	 * Get the sections for this form.
-	 *
-	 * @return WP_Fields_API_Section[]
-	 */
-	public function get_sections() {
-
-		return $this->get_children( 'section' );
-
-	}
-
-	/**
 	 * Register forms, sections, controls, and fields
 	 *
 	 * @param string      $object_type
@@ -126,11 +107,11 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			}
 		}
 
-		for ( $x = 1; $x < $total_examples; $x ++ ) {
+		for ( $x = 1; $x <= $total_examples; $x ++ ) {
 			// Section
 			$section_id   = $this->id . '-example-my-fields-' . $x;
 			$section_args = array(
-				'label'    => __( 'Fields API Example - My Fields' ),
+				'label'    => __( 'Fields API Example - My Fields', 'fields-api' ),
 				'form'     => $this->id,
 			);
 
@@ -242,13 +223,12 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					continue;
 				}
 
-				// Pass $object_name and $item_id into control
+				// Pass $object_name into control
 				$control->object_name = $this->object_name;
-				$control->item_id     = $this->item_id;
 
 				$field = $control->field;
 
-				// Pass $object_name and $item_id into field
+				// Pass $object_name into field
 				$field->object_name = $this->object_name;
 
 				// Get value from $_POST
@@ -284,7 +264,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				$value = $values[ $field->id ];
 
 				// Save value
-				$success = $field->save( $value, $this->item_id );
+				$success = $field->save( $value );
 
 				if ( is_wp_error( $success ) ) {
 					return $success;
@@ -312,9 +292,8 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?> form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
 					<?php
 						foreach ( $sections as $section ) {
-							// Pass $object_name and $item_id to Section
+							// Pass $object_name into section
 							$section->object_name = $this->object_name;
-							$section->item_id     = $this->item_id;
 
 							$section->maybe_render();
 						}

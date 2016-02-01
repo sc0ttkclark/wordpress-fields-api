@@ -21,7 +21,7 @@ class WP_Fields_API_User_Display_Name_Control extends WP_Fields_API_Select_Contr
 	 */
 	public function choices() {
 
-		$profileuser = get_userdata( $this->item_id );
+		$profileuser = get_userdata( $this->get_item_id() );
 
 		$choices = array();
 

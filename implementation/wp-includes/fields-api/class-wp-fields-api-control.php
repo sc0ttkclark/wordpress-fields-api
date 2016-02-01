@@ -31,22 +31,6 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public $item_id = 0;
 
 	/**
-	 * The primary field for the control (if there is one).
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Field
-	 */
-	public $field = '';
-
-	/**
-	 * The section for the control (if there is one).
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Section
-	 */
-	public $section = '';
-
-	/**
 	 * @access public
 	 * @var int
 	 */
@@ -98,6 +82,25 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 				$this->add_child( $field );
 			}
 		}
+
+	}
+
+	/**
+	 * Get the form for this control's section.
+	 *
+	 * @return WP_Fields_API_Form|null
+	 */
+	public function get_form() {
+
+		$section = $this->get_section();
+
+		$form = null;
+
+		if ( $section ) {
+			$form = $section->get_form();
+		}
+
+		return $form;
 
 	}
 
@@ -165,7 +168,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		$value = null;
 
 		if ( $field ) {
-			$value = $field->value( $this->item_id );
+			$value = $field->value( $this->get_item_id() );
 		}
 
 		return $value;

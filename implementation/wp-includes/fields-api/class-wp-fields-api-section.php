@@ -19,36 +19,12 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	protected $container_type = 'section';
 
 	/**
-	 * Form in which to show the section, making it a sub-section.
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Form
-	 */
-	public $form = '';
-
-	/**
 	 * Type of this section.
 	 *
 	 * @access public
 	 * @var string
 	 */
 	public $type = 'default';
-
-	/**
-	 * Item ID of current item
-	 *
-	 * @access public
-	 * @var int|string
-	 */
-	public $item_id = 0;
-
-	/**
-	 * Control objects in section
-	 *
-	 * @access
-	 * @var array
-	 */
-	public $controls = array();
 
 	/**
 	 * Get the form for this section.
@@ -58,17 +34,6 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	public function get_form() {
 
 		return $this->get_parent();
-
-	}
-
-	/**
-	 * Get the controls for this section.
-	 *
-	 * @return WP_Fields_API_Control[]
-	 */
-	public function get_controls() {
-
-		return $this->get_children( 'control' );
 
 	}
 
@@ -103,9 +68,8 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 		$controls = $this->get_controls();
 
 		foreach ( $controls as $control ) {
-			// Pass $object_name and $item_id to Control
+			// Pass $object_name into control
 			$control->object_name = $this->object_name;
-			$control->item_id     = $this->item_id;
 
 			if ( ! $control->check_capabilities() ) {
 				continue;

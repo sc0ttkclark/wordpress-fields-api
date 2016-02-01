@@ -76,8 +76,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 			 * @var $section WP_Fields_API_Meta_Box_Section
 			 */
 
-			// Set object name
-			$section->item_id     = $item_id;
+			// Pass object name into section
 			$section->object_name = $object_name;
 
 			if ( ! $section->check_capabilities() ) {
@@ -177,8 +176,14 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 			}
 		}
 
-		$this->item_id     = $item_id;
-		$this->object_name = $object_name;
+		$form = $this->get_form();
+
+		if ( $form ) {
+			$form->item_id     = $item_id;
+			$form->object_name = $object_name;
+		}
+
+		$form->object_name = $object_name;
 
 		$this->maybe_render();
 
