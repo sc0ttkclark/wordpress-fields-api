@@ -9,9 +9,10 @@
 /**
  * Class WP_Fields_API_Form_Term
  *
- * @todo Switch to WP_Fields_API_Form when styles work for divs on all admin pages properly (currently only Term Add New has styling for div forms)
+ * @todo Switch to WP_Fields_API_Form when styles work for divs on all admin pages properly (currently only Term Add
+ *       New has styling for div forms)
  */
-class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
+class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
@@ -26,9 +27,9 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 		////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-main', null, array(
-			'title'         => __( 'Term' ),
-			'form'        => $this->id,
-			'display_title' => false,
+			'label'         => __( 'Term' ),
+			'form'          => $this->id,
+			'display_label' => false,
 		) );
 
 		$control_args = array(
@@ -39,7 +40,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 			'description' => __( 'The name is how it appears on your site.' ),
 			'fields'      => 'name',
 			'internal'    => true,
-			'wrap_attr'  => array(
+			'wrap_attr'   => array(
 				'class' => 'form-required',
 			),
 		);
@@ -51,7 +52,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 		$wp_fields->add_control( $this->object_type, $this->id . '-name', null, $control_args );
 
 		$control_args = array(
-			'input_name'  => 'slug',
+			'input_name'            => 'slug',
 			'type'                  => 'text',
 			'section'               => $this->id . '-main',
 			'label'                 => __( 'Slug' ),
@@ -64,7 +65,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 		$wp_fields->add_control( $this->object_type, $this->id . '-slug', null, $control_args );
 
 		$control_args = array(
-			'input_name'  => 'parent',
+			'input_name'                   => 'parent',
 			'type'                         => 'dropdown-terms',
 			'section'                      => $this->id . '-main',
 			'label'                        => __( 'Parent' ),
@@ -75,6 +76,9 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Table_Form {
 			'exclude_tree_current_item_id' => true,
 			'placeholder_text'             => __( 'None' ),
 			'fields'                       => 'parent',
+			'get_args'                     => array(
+				'hide_empty' => false,
+			),
 			'internal'                     => true,
 		);
 

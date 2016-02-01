@@ -1,10 +1,20 @@
 <?php
 /**
+ * @package    WordPress
+ * @subpackage Fields_API
+ */
+
+/**
  * Fields API Dropdown Pages Control class.
  *
  * @see WP_Fields_API_Control
  */
 class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public $type = 'dropdown-terms';
 
 	/**
 	 * @var string Taxonomy name
@@ -32,9 +42,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $placeholder_text = '';
 
 	/**
-	 * Setup term choices for use by control
-	 *
-	 * @return array
+	 * {@inheritdoc}
 	 */
 	public function choices() {
 
@@ -47,6 +55,11 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 		$choices = array(
 			'0' => $placeholder_text,
 		);
+
+		// Handle default taxonomy
+		if ( empty( $this->taxonomy ) && 'term' == $this->object_type && ! empty( $this->object_name ) ) {
+			$this->taxonomy = $this->object_name;
+		}
 
 		if ( empty( $this->taxonomy ) ) {
 			return $choices;

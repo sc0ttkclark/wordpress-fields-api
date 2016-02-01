@@ -14,7 +14,12 @@ class WP_Fields_API_User_Password_Control extends WP_Fields_API_Control {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render_content() {
+	public $type = 'user-password';
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function render_content() {
 
 ?>
 	<table class="form-table">

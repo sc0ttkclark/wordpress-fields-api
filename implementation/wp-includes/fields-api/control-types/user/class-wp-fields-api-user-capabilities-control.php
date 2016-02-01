@@ -14,7 +14,12 @@ class WP_Fields_API_User_Capabilities_Control extends WP_Fields_API_Control {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render_content() {
+	public $type = 'user-capabilities';
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function render_content() {
 
 		/**
 		 * @var $wp_roles WP_Roles
@@ -37,7 +42,7 @@ class WP_Fields_API_User_Capabilities_Control extends WP_Fields_API_Control {
 
 		$output = implode( ', ', $output );
 
-		echo $output;
+		echo esc_html( $output );
 
 	}
 
