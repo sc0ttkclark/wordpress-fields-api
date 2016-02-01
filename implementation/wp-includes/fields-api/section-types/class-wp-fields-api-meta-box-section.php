@@ -26,13 +26,6 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 	public $mb_context = 'advanced';
 
 	/**
-	 * Meta box priority
-	 *
-	 * @var string
-	 */
-	public $mb_priority = 'default';
-
-	/**
 	 * Add meta boxes for sections
 	 *
 	 * @param string             $object_name Object name, if 'comment' then it's the comment object type
@@ -104,6 +97,9 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 				$section->mb_context = 'normal';
 			}
 
+			// Convert priority
+			$mb_priority = self::get_mb_priority( $section->priority );
+
 			// Add meta box
 			add_meta_box(
 				$section->id,
@@ -111,10 +107,44 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 				array( $section, 'render_meta_box' ),
 				null,
 				$section->mb_context,
-				$section->mb_priority,
+				$mb_priority,
 				$callback_args
 			);
 		}
+
+	}
+
+	/**
+	 * Get Meta Box Priority from Section priority
+	 *
+	 * @param $priority
+	 *
+	 * @return string
+	 */
+	public static function get_mb_priority( $priority ) {
+
+		$priorities = array(
+			'high'    => 0,
+			'core'    => 100,
+			'default' => 200,
+			'low'     => 300,
+		);
+
+		if ( in_array( $priority, $priorities ) ) {
+			if ( 240 <= $priority ) {
+				$priority = 'low';
+			} elseif ( 160 <= $priority ) {
+				$priority = 'default';
+			} elseif ( 80 <= $priority ) {
+				$priority = 'core';
+			} else {
+				$priority = 'high';
+			}
+		} else {
+			$priority = 'default';
+		}
+
+		return $priority;
 
 	}
 
