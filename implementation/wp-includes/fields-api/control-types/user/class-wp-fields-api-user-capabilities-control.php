@@ -26,7 +26,7 @@ class WP_Fields_API_User_Capabilities_Control extends WP_Fields_API_Control {
 		 */
 		global $wp_roles;
 
-		$profileuser = get_userdata( $this->item_id );
+		$profileuser = get_userdata( $this->get_item_id() );
 
 		$output = array();
 

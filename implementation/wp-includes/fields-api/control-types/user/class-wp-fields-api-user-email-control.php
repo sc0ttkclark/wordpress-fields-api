@@ -23,7 +23,7 @@ class WP_Fields_API_User_Email_Control extends WP_Fields_API_Control {
 
 		$current_user = get_userdata( get_current_user_id() );
 
-		$profileuser = get_userdata( $this->item_id );
+		$profileuser = get_userdata( $this->get_item_id() );
 
 		parent::render_content();
 

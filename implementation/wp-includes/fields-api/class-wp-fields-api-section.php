@@ -68,9 +68,8 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 		$controls = $this->get_controls();
 
 		foreach ( $controls as $control ) {
-			// Pass $object_name and $item_id to Control
+			// Pass $object_name into control
 			$control->object_name = $this->object_name;
-			$control->item_id     = $this->item_id;
 
 			if ( ! $control->check_capabilities() ) {
 				continue;

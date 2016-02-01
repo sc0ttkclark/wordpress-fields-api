@@ -168,7 +168,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		$value = null;
 
 		if ( $field ) {
-			$value = $field->value( $this->item_id );
+			$value = $field->value( $this->get_item_id() );
 		}
 
 		return $value;
