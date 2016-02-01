@@ -107,7 +107,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			}
 		}
 
-		for ( $x = 1; $x < $total_examples; $x ++ ) {
+		for ( $x = 1; $x <= $total_examples; $x ++ ) {
 			// Section
 			$section_id   = $this->id . '-example-my-fields-' . $x;
 			$section_args = array(
