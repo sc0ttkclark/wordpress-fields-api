@@ -29,25 +29,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	public $default_section_type = 'table';
 
 	/**
-	 * Item ID of current item
-	 *
-	 * @access public
-	 * @var int|string
-	 */
-	public $item_id = 0;
-
-	/**
-	 * Get the sections for this form.
-	 *
-	 * @return WP_Fields_API_Section[]
-	 */
-	public function get_sections() {
-
-		return $this->get_children( 'section' );
-
-	}
-
-	/**
 	 * Register forms, sections, controls, and fields
 	 *
 	 * @param string      $object_type

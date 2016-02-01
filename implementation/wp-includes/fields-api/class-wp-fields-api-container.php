@@ -62,6 +62,14 @@ class WP_Fields_API_Container {
 	public $object_name = '';
 
 	/**
+	 * Item ID of current item
+	 *
+	 * @access public
+	 * @var int|string
+	 */
+	public $item_id = 0;
+
+	/**
 	 * Priority of the container which informs load order of container, shown in order of lowest to highest.
 	 *
 	 * @access public
@@ -179,6 +187,38 @@ class WP_Fields_API_Container {
 	public $render_callback = '';
 
 	/**
+	 * The primary form (if there is one).
+	 *
+	 * @access public
+	 * @var string|WP_Fields_API_Field
+	 */
+	public $form = '';
+
+	/**
+	 * The primary section (if there is one).
+	 *
+	 * @access public
+	 * @var string|WP_Fields_API_Field
+	 */
+	public $section = '';
+
+	/**
+	 * The primary control (if there is one).
+	 *
+	 * @access public
+	 * @var string|WP_Fields_API_Control
+	 */
+	public $control = '';
+
+	/**
+	 * The primary field (if there is one).
+	 *
+	 * @access public
+	 * @var string|WP_Fields_API_Field
+	 */
+	public $field = '';
+
+	/**
 	 * Constructor.
 	 *
 	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
@@ -218,6 +258,28 @@ class WP_Fields_API_Container {
 	}
 
 	/**
+	 * Get the section for this container.
+	 *
+	 * @return WP_Fields_API_Section[]
+	 */
+	public function get_sections() {
+
+		return $this->get_children( 'section' );
+
+	}
+
+	/**
+	 * Get the controls for this container.
+	 *
+	 * @return WP_Fields_API_Control[]
+	 */
+	public function get_controls() {
+
+		return $this->get_children( 'control' );
+
+	}
+
+	/**
 	 * Get child objects of container
 	 *
 	 * @param string|true $child_type
@@ -237,15 +299,19 @@ class WP_Fields_API_Container {
 		if ( empty( $this->children[ $child_type ] ) ) {
 			$object_children = array();
 
-			if ( 'section' === $child_type && 'form' === $this->container_type ) {
-				// Get form sections
+			if ( 'section' === $child_type ) {
+				// Get sections for container
 				$object_children = $wp_fields->get_sections( $this->object_type, $this->object_name, $this );
-			} elseif ( 'control' === $child_type && 'section' === $this->container_type ) {
-				// Get section controls
+			} elseif ( 'control' === $child_type ) {
+				// Get controls for container
 				$object_children = $wp_fields->get_controls( $this->object_type, $this->object_name, $this );
 			} elseif ( 'field' === $child_type && 'control' === $this->container_type && ! empty( $this->field ) ) {
-				// Get section controls
-				$object_children = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
+				// Get field for container
+				if ( is_a( $this->field, 'WP_Fields_API_Field' ) ) {
+					$object_children = $this->field;
+				} else {
+					$object_children = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
+				}
 			}
 
 			if ( ! empty( $object_children ) ) {
@@ -377,22 +443,29 @@ class WP_Fields_API_Container {
 		global $wp_fields;
 
 		// Get children from Fields API configuration
-		if ( empty( $this->parent ) ) {
+		if ( empty( $this->parent ) && 'form' !== $this->container_type ) {
 			$parent = null;
 
-			if ( 'section' === $this->container_type && ! empty( $this->form ) ) {
-				// Get section form
+			if ( ! empty( $this->form ) ) {
+				// Get form
 				if ( is_a( $this->form, 'WP_Fields_API_Form' ) ) {
 					$parent = $this->form;
 				} else {
 					$parent = $wp_fields->get_form( $this->object_type, $this->form, $this->object_name );
 				}
-			} elseif ( 'control' === $this->container_type && ! empty( $this->section ) ) {
-				// Get section form
+			} elseif ( ! empty( $this->section ) ) {
+				// Get section
 				if ( is_a( $this->section, 'WP_Fields_API_Section' ) ) {
 					$parent = $this->section;
 				} else {
 					$parent = $wp_fields->get_section( $this->object_type, $this->section, $this->object_name );
+				}
+			} elseif ( ! empty( $this->control ) ) {
+				// Get control
+				if ( is_a( $this->control, 'WP_Fields_API_Control' ) ) {
+					$parent = $this->control;
+				} else {
+					$parent = $wp_fields->get_section( $this->object_type, $this->control, $this->object_name );
 				}
 			}
 

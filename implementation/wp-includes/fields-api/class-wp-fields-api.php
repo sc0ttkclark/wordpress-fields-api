@@ -276,6 +276,10 @@ final class WP_Fields_API {
 	 */
 	public function get_form( $object_type, $id, $object_name = null ) {
 
+		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
+			return $id;
+		}
+
 		$primary_object_name = '_' . $object_type;
 
 		// Default to _object_type for internal handling
@@ -586,6 +590,22 @@ final class WP_Fields_API {
 
 		// @todo Remove this when done testing
 		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
+			if ( is_array( $section ) && empty( $section['type'] ) ) {
+				$form = null;
+
+				if ( ! empty( $section['form'] ) ) {
+					$form = $section['form'];
+				}
+
+				if ( ! is_a( $form, 'WP_Fields_API_Form' ) ) {
+					$form = $this->get_form( $object_type, $form, $object_name );
+				}
+
+				if ( $form && $form->default_section_type ) {
+					$section['type'] = $form->default_section_type;
+				}
+			}
+
 			$section = $this->setup_section( $object_type, $id, $object_name, $section );
 		}
 
@@ -611,6 +631,10 @@ final class WP_Fields_API {
 	 * @return WP_Fields_API_Section|null Requested section instance.
 	 */
 	public function get_section( $object_type, $id, $object_name = null ) {
+
+		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
+			return $id;
+		}
 
 		$primary_object_name = '_' . $object_type;
 
@@ -930,6 +954,10 @@ final class WP_Fields_API {
 	 */
 	public function get_field( $object_type, $id, $object_name = null ) {
 
+		if ( is_a( $id, 'WP_Fields_API_Field' ) ) {
+			return $id;
+		}
+
 		$primary_object_name = '_' . $object_type;
 
 		// Default to _object_type for internal handling
@@ -1244,6 +1272,10 @@ final class WP_Fields_API {
 	 * @return WP_Fields_API_Control|null $control The control object.
 	 */
 	public function get_control( $object_type, $id, $object_name = null ) {
+
+		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
+			return $id;
+		}
 
 		$primary_object_name = '_' . $object_type;
 
