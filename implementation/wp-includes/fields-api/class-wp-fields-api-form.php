@@ -118,7 +118,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		$total_examples = 1;
 
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['fields-api-memory-test'] ) ) {
+		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['fields-api-memory-test'] ) ) {
 			$total_examples = 25;
 
 			if ( 1 < $_GET['fields-api-memory-test'] ) {

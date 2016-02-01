@@ -13,7 +13,7 @@
  */
 
 // @todo Remove this when done testing
-if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api'] ) ) {
+if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api'] ) ) {
 	return;
 }
 
