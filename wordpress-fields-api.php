@@ -1,16 +1,21 @@
 <?php
-/*
-Plugin Name: Fields API
-Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
-Description: WordPress Fields API prototype and proposal for WordPress core
-Version: 0.0.4 Beta
-Author: Scott Kingsley Clark
-Author URI: http://scottkclark.com/
-License: GPL2+
-GitHub Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
-GitHub Branch: master
-Requires WP: 4.4
-*/
+/**
+ * Plugin Name: Fields API
+ * Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
+ * Description: WordPress Fields API prototype and proposal for WordPress core
+ * Version: 0.0.4 Beta
+ * Author: Scott Kingsley Clark
+ * Author URI: http://scottkclark.com/
+ * License: GPL2+
+ * GitHub Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
+ * GitHub Branch: master
+ * Requires WP: 4.4
+ */
+
+// @todo Remove this when done testing
+if ( defined( 'WP_DEBUG' ) && WP_DEBUG && ! empty( $_GET['no-fields-api'] ) ) {
+	return;
+}
 
 /**
  * @package    WordPress

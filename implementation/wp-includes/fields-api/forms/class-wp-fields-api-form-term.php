@@ -38,7 +38,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'section'     => $this->id . '-main',
 			'label'       => __( 'Name' ),
 			'description' => __( 'The name is how it appears on your site.' ),
-			'fields'      => 'name',
+			'field'       => 'name',
 			'internal'    => true,
 			'wrap_attr'   => array(
 				'class' => 'form-required',
@@ -58,7 +58,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'label'                 => __( 'Slug' ),
 			'description'           => __( 'The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.' ),
 			'capabilities_callback' => array( $this, 'capability_is_global_terms_disabled' ),
-			'fields'                => 'slug',
+			'field'                 => 'slug',
 			'internal'              => true,
 		);
 
@@ -75,7 +75,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'capabilities_callback'        => array( $this, 'capability_is_taxonomy_hierarchical' ),
 			'exclude_tree_current_item_id' => true,
 			'placeholder_text'             => __( 'None' ),
-			'fields'                       => 'parent',
+			'field'                        => 'parent',
 			'get_args'                     => array(
 				'hide_empty' => false,
 			),
@@ -94,7 +94,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 				'rows' => '5',
 				'cols' => '40',
 			),
-			'fields'      => 'description',
+			'field'       => 'description',
 			'internal'    => true,
 		);
 

@@ -51,6 +51,28 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	public $controls = array();
 
 	/**
+	 * Get the form for this section.
+	 *
+	 * @return WP_Fields_API_Form|null
+	 */
+	public function get_form() {
+
+		return $this->get_parent();
+
+	}
+
+	/**
+	 * Get the controls for this section.
+	 *
+	 * @return WP_Fields_API_Control[]
+	 */
+	public function get_controls() {
+
+		return $this->get_children( 'control' );
+
+	}
+
+	/**
 	 * Render the section, and the controls that have been added to it.
 	 */
 	protected function render() {
@@ -78,12 +100,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	 */
 	protected function render_controls() {
 
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		$controls = $wp_fields->get_controls( $this->object_type, $this->object_name, $this->id );
+		$controls = $this->get_controls();
 
 		foreach ( $controls as $control ) {
 			// Pass $object_name and $item_id to Control

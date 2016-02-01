@@ -94,7 +94,7 @@ $control_args = array(
 	'section'     => $section_id,
 	'label'       => __( 'My Field', 'my-text-domain' ), // @todo Fill in label, update text domain
 	'description' => __( 'Description of My Field', 'my-text-domain' ), // @todo Fill in description, update text domain
-	'fields'      => 'my-field', // @todo Fill in field ID
+	'field'       => 'my-field', // @todo Fill in field ID
 );
 
 // Register control

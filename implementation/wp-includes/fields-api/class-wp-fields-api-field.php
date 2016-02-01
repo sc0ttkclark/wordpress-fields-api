@@ -7,44 +7,7 @@
  * @package    WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Field {
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $id = '';
-
-	/**
-	 * Object type.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_type = '';
-
-	/**
-	 * Object name (for post types and taxonomies).
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_name = '';
-
-	/**
-	 * Capability required to edit this field.
-	 *
-	 * @var string
-	 */
-	public $capability = '';
-
-	/**
-	 * Theme feature support for the field.
-	 *
-	 * @access public
-	 * @var string|array
-	 */
-	public $theme_supports = '';
+class WP_Fields_API_Field extends WP_Fields_API_Container {
 
 	/**
 	 * Default value for field
@@ -62,19 +25,6 @@ class WP_Fields_API_Field {
 	public $sanitize_js_callback = '';
 
 	protected $id_data = array();
-
-	/**
-	 * Capabilities Callback.
-	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Field::check_capabilities()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               WP_Fields_API_Field, and returns bool to indicate whether
-	 *               the field has capabilities to be used.
-	 */
-	public $capabilities_callback = '';
 
 	/**
 	 * register_meta Auth Callback.
@@ -112,21 +62,6 @@ class WP_Fields_API_Field {
 	public $update_value_callback = '';
 
 	/**
-	 * Constructor.
-	 *
-	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
-	 *
-	 * @return WP_Fields_API_Field $field
-	 */
-	public function __construct() {
-
-		$args = func_get_args();
-
-		call_user_func_array( array( $this, 'init' ), $args );
-
-	}
-
-	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object_type   Object type.
@@ -138,23 +73,7 @@ class WP_Fields_API_Field {
 	 */
 	public function init( $object_type, $id, $args = array() ) {
 
-		$this->object_type = $object_type;
-
-		if ( is_array( $id ) ) {
-			$args = $id;
-
-			$id = '';
-		} else {
-			$this->id = $id;
-		}
-
-		$keys = array_keys( get_object_vars( $this ) );
-
-		foreach ( $keys as $key ) {
-			if ( isset( $args[ $key ] ) ) {
-				$this->$key = $args[ $key ];
-			}
-		}
+		parent::init( $object_type, $id, $args );
 
 		// Parse the ID for array keys.
 		$this->id_data['keys'] = preg_split( '/\[/', str_replace( ']', '', $this->id ) );
@@ -165,14 +84,6 @@ class WP_Fields_API_Field {
 
 		if ( ! empty( $this->id_data['keys'] ) ) {
 			$this->id .= '[' . implode( '][', $this->id_data['keys'] ) . ']';
-		}
-
-		if ( $this->sanitize_callback ) {
-			add_filter( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", $this->sanitize_callback, 10, 2 );
-		}
-
-		if ( $this->sanitize_js_callback ) {
-			add_filter( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
 		}
 
 	}
@@ -225,6 +136,10 @@ class WP_Fields_API_Field {
 	public function sanitize( $value ) {
 
 		$value = wp_unslash( $value );
+
+		if ( is_callable( $this->sanitize_callback ) ) {
+			$value = call_user_func( $this->sanitize_callback, $value, $this );
+		}
 
 		/**
 		 * Filter a Customize field value in un-slashed form.
@@ -520,6 +435,10 @@ class WP_Fields_API_Field {
 
 		$value = $this->value();
 
+		if ( is_callable( $this->sanitize_js_callback ) ) {
+			$value = call_user_func( $this->sanitize_js_callback, $value, $this );
+		}
+
 		/**
 		 * Filter a Customize field value for use in JavaScript.
 		 *
@@ -622,11 +541,11 @@ class WP_Fields_API_Field {
 	/**
 	 * Will attempt to replace a specific value in a multidimensional array.
 	 *
-	 * @param       $root
-	 * @param       $keys
-	 * @param mixed $value The value to update.
+	 * @param string $root
+	 * @param array  $keys
+	 * @param mixed  $value The value to update.
 	 *
-	 * @return
+	 * @return string
 	 */
 	final protected function multidimensional_replace( $root, $keys, $value ) {
 
