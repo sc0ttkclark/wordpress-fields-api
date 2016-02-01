@@ -102,6 +102,25 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	}
 
 	/**
+	 * Get the form for this control's section.
+	 *
+	 * @return WP_Fields_API_Form|null
+	 */
+	public function get_form() {
+
+		$section = $this->get_section();
+
+		$form = null;
+
+		if ( $section ) {
+			$form = $section->get_form();
+		}
+
+		return $form;
+
+	}
+
+	/**
 	 * Get the section for this control.
 	 *
 	 * @return WP_Fields_API_Section|null
