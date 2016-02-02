@@ -1,3 +1,5 @@
+![WordPress Fields API](https://raw.githubusercontent.com/sc0ttkclark/wordpress-fields-api/assets/banner-github.png)
+
 # WordPress Fields API v0.0.6 Beta
 
 [![Travis](https://secure.travis-ci.org/sc0ttkclark/wordpress-fields-api.png?branch=master)](http://travis-ci.org/sc0ttkclark/wordpress-fields-api)
