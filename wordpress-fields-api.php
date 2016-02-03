@@ -109,7 +109,7 @@ function _wp_fields_api_implementations() {
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-writing.php' );
 
 	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
-	WP_Fields_API_Form_Settings_General::register( 'settings', 'writing' );
+	WP_Fields_API_Form_Settings_Writing::register( 'settings', 'writing' );
 
 	// Settings API compatibility
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );

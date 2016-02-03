@@ -78,6 +78,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		 * WP Fields API implementation >>>
 		 */
 
+		// WP_Fields_API Modifications
 		// Render form controls
 		$form->maybe_render();
 

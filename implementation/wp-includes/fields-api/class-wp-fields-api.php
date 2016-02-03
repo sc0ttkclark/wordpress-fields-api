@@ -106,6 +106,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-select-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-pages-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-terms-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-post-format-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-color-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-file-control.php' );
@@ -1527,6 +1528,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
 		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
 		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
+		$this->register_control_type( 'dropdown-post-format', 'WP_Fields_API_Dropdown_Post_Format_Control' );
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
 		$this->register_control_type( 'media-file', 'WP_Fields_API_Media_File_Control' );
