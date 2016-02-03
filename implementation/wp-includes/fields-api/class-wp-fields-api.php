@@ -1279,6 +1279,8 @@ final class WP_Fields_API {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
+		$field = array();
+
 		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
 			$control = $id;
 
@@ -1286,6 +1288,29 @@ final class WP_Fields_API {
 		} else {
 			// Save for late init
 			$control = $args;
+
+			if ( isset( $control['field'] ) && ( is_a( $control['field'], 'WP_Fields_API_Field' ) || is_array( $control['field'] ) ) ) {
+				$field = $control['field'];
+
+				if ( is_a( $control['field'], 'WP_Fields_API_Field' ) ) {
+					$control['field'] = $control['field']->id;
+				} elseif ( is_array( $control['field'] ) ) {
+					if ( ! empty( $control['field']['id'] ) ) {
+						$control['field'] = $control['field']['id'];
+					} else {
+						$field['id'] = $id;
+
+						$control['field'] = $id;
+					}
+				} else {
+					$field = array(
+						'id' => $id,
+					);
+
+					// Remove from control args
+					unset( $control['field'] );
+				}
+			}
 		}
 
 		if ( empty( $object_name ) && ! empty( $object_type ) ) {
@@ -1310,6 +1335,23 @@ final class WP_Fields_API {
 		}
 
 		self::$controls[ $object_type ][ $object_name ][ $id ] = $control;
+
+		// Field handling
+		if ( ! empty( $field ) ) {
+			// Generate Field ID if not set
+			if ( empty( $field['id'] ) ) {
+				$field['id'] = $id;
+			}
+
+			// Get Field ID
+			$field_id = $field['id'];
+
+			// Field ID from field args
+			unset( $field['id'] );
+
+			// Add field for control
+			$this->add_field( $object_type, $field_id, $object_name, $field );
+		}
 
 		return true;
 
