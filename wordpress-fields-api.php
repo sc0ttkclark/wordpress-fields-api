@@ -107,9 +107,11 @@ function _wp_fields_api_implementations() {
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-writing.php' );
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-reading.php' );
 
 	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
 	WP_Fields_API_Form_Settings_Writing::register( 'settings', 'writing' );
+	WP_Fields_API_Form_Settings_Reading::register( 'settings', 'reading' );
 
 	// Settings API compatibility
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );
@@ -136,6 +138,7 @@ add_action( 'load-comment.php', '_wp_fields_api_load_include', 999 );
 // Settings
 add_action( 'load-options-general.php', '_wp_fields_api_load_include', 999 );
 add_action( 'load-options-writing.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-reading.php', '_wp_fields_api_load_include', 999 );
 
 function _wp_fields_api_load_include() {
 
