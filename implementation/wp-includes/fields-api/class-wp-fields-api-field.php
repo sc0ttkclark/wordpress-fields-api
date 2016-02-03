@@ -7,44 +7,7 @@
  * @package    WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Field {
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $id = '';
-
-	/**
-	 * Object type.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_type = '';
-
-	/**
-	 * Object name (for post types and taxonomies).
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_name = '';
-
-	/**
-	 * Capability required to edit this field.
-	 *
-	 * @var string
-	 */
-	public $capability = '';
-
-	/**
-	 * Theme feature support for the field.
-	 *
-	 * @access public
-	 * @var string|array
-	 */
-	public $theme_supports = '';
+class WP_Fields_API_Field extends WP_Fields_API_Container {
 
 	/**
 	 * Default value for field
@@ -58,23 +21,10 @@ class WP_Fields_API_Field {
 	 *
 	 * @var callback
 	 */
-	public $sanitize_callback    = '';
-	public $sanitize_js_callback = '';
+	public $sanitize_callback;
+	public $sanitize_js_callback;
 
 	protected $id_data = array();
-
-	/**
-	 * Capabilities Callback.
-	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Field::check_capabilities()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               WP_Fields_API_Field, and returns bool to indicate whether
-	 *               the field has capabilities to be used.
-	 */
-	public $capabilities_callback = '';
 
 	/**
 	 * register_meta Auth Callback.
@@ -85,7 +35,73 @@ class WP_Fields_API_Field {
 	 *
 	 * @var callable
 	 */
-	public $meta_auth_callback = '';
+	public $meta_auth_callback;
+
+	/**
+	 * Whether to register field with register_rest_field.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var bool
+	 */
+	public $show_in_rest = false;
+
+	/**
+	 * register_rest_field field type.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var bool
+	 */
+	public $rest_field_type = 'string';
+
+	/**
+	 * register_rest_field field description.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var bool
+	 */
+	public $rest_field_description = '';
+
+	/**
+	 * register_rest_field Get Callback.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var callable
+	 */
+	public $rest_get_callback;
+
+	/**
+	 * register_rest_field Update Callback.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var callable
+	 */
+	public $rest_update_callback;
+
+	/**
+	 * register_rest_field Schema Callback.
+	 *
+	 * @access public
+	 *
+	 * @see register_rest_field
+	 *
+	 * @var callable
+	 */
+	public $rest_schema_callback;
 
 	/**
 	 * Value Callback.
@@ -97,7 +113,7 @@ class WP_Fields_API_Field {
 	 * @var callable Callback is called with two arguments, the item ID and the instance of
 	 *               WP_Fields_API_Field. It returns a string for the value to use.
 	 */
-	public $value_callback = '';
+	public $value_callback;
 
 	/**
 	 * Update Value Callback.
@@ -109,22 +125,7 @@ class WP_Fields_API_Field {
 	 * @var callable Callback is called with three arguments, the value being saved, the item ID, and the instance of
 	 *               WP_Fields_API_Field.
 	 */
-	public $update_value_callback = '';
-
-	/**
-	 * Constructor.
-	 *
-	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
-	 *
-	 * @return WP_Fields_API_Field $field
-	 */
-	public function __construct() {
-
-		$args = func_get_args();
-
-		call_user_func_array( array( $this, 'init' ), $args );
-
-	}
+	public $update_value_callback;
 
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
@@ -138,23 +139,7 @@ class WP_Fields_API_Field {
 	 */
 	public function init( $object_type, $id, $args = array() ) {
 
-		$this->object_type = $object_type;
-
-		if ( is_array( $id ) ) {
-			$args = $id;
-
-			$id = '';
-		} else {
-			$this->id = $id;
-		}
-
-		$keys = array_keys( get_object_vars( $this ) );
-
-		foreach ( $keys as $key ) {
-			if ( isset( $args[ $key ] ) ) {
-				$this->$key = $args[ $key ];
-			}
-		}
+		parent::init( $object_type, $id, $args );
 
 		// Parse the ID for array keys.
 		$this->id_data['keys'] = preg_split( '/\[/', str_replace( ']', '', $this->id ) );
@@ -167,29 +152,22 @@ class WP_Fields_API_Field {
 			$this->id .= '[' . implode( '][', $this->id_data['keys'] ) . ']';
 		}
 
-		if ( $this->sanitize_callback ) {
-			add_filter( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", $this->sanitize_callback, 10, 2 );
-		}
-
-		if ( $this->sanitize_js_callback ) {
-			add_filter( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", $this->sanitize_js_callback, 10, 2 );
-		}
-
 	}
 
 	/**
 	 * Check user capabilities and theme supports, and then save
 	 * the value of the field.
 	 *
-	 * @param mixed $value   The value to save.
-	 * @param int   $item_id The Item ID.
+	 * @param mixed    $value   The value to save.
+	 * @param int|null $item_id The Item ID.
 	 *
 	 * @return false|mixed False if cap check fails or value isn't set.
 	 */
-	public function save() {
+	public function save( $value, $item_id = null ) {
 
-		$value   = func_get_arg(0);
-		$item_id = func_get_arg(1);
+		if ( null === $item_id ) {
+			$item_id = $this->get_item_id();
+		}
 
 		if ( ! $this->check_capabilities() || false === $value ) {
 			return false;
@@ -225,6 +203,10 @@ class WP_Fields_API_Field {
 	public function sanitize( $value ) {
 
 		$value = wp_unslash( $value );
+
+		if ( is_callable( $this->sanitize_callback ) ) {
+			$value = call_user_func( $this->sanitize_callback, $value, $this );
+		}
 
 		/**
 		 * Filter a Customize field value in un-slashed form.
@@ -520,6 +502,10 @@ class WP_Fields_API_Field {
 
 		$value = $this->value();
 
+		if ( is_callable( $this->sanitize_js_callback ) ) {
+			$value = call_user_func( $this->sanitize_js_callback, $value, $this );
+		}
+
 		/**
 		 * Filter a Customize field value for use in JavaScript.
 		 *
@@ -622,11 +608,11 @@ class WP_Fields_API_Field {
 	/**
 	 * Will attempt to replace a specific value in a multidimensional array.
 	 *
-	 * @param       $root
-	 * @param       $keys
-	 * @param mixed $value The value to update.
+	 * @param string $root
+	 * @param array  $keys
+	 * @param mixed  $value The value to update.
 	 *
-	 * @return
+	 * @return string
 	 */
 	final protected function multidimensional_replace( $root, $keys, $value ) {
 

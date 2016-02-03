@@ -19,16 +19,16 @@ function example_my_term_starter( $wp_fields ) {
 	// Section: My Section //
 	/////////////////////////
 
-	$section_id = ''; // @todo Fill in section ID
+	$section_id   = ''; // @todo Fill in section ID
 	$section_args = array(
-		'title'  => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
-		'form' => $form_id,
+		'title' => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+		'form'  => $form_id,
 	);
 
 	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
 
 	// My Field
-	$field_id = '';
+	$field_id   = '';
 	$field_args = array(
 		// You can register a control for this field at the same time
 		'control' => array(
@@ -41,6 +41,6 @@ function example_my_term_starter( $wp_fields ) {
 
 	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
 
-
 }
+
 add_action( 'fields_register', 'example_my_term_starter' );

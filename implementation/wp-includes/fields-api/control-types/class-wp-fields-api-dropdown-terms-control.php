@@ -1,10 +1,20 @@
 <?php
 /**
+ * @package    WordPress
+ * @subpackage Fields_API
+ */
+
+/**
  * Fields API Dropdown Pages Control class.
  *
  * @see WP_Fields_API_Control
  */
 class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public $type = 'dropdown-terms';
 
 	/**
 	 * @var string Taxonomy name
@@ -22,7 +32,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $exclude_current_item_id = false;
 
 	/**
-	 * @var bool Whether to exclude current item ID and decendents from list
+	 * @var bool Whether to exclude current item ID and descendants from list
 	 */
 	public $exclude_tree_current_item_id = false;
 
@@ -32,9 +42,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $placeholder_text = '';
 
 	/**
-	 * Setup term choices for use by control
-	 *
-	 * @return array
+	 * {@inheritdoc}
 	 */
 	public function choices() {
 
@@ -48,18 +56,25 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 			'0' => $placeholder_text,
 		);
 
+		// Handle default taxonomy
+		if ( empty( $this->taxonomy ) && 'term' == $this->object_type && ! empty( $this->object_name ) ) {
+			$this->taxonomy = $this->object_name;
+		}
+
 		if ( empty( $this->taxonomy ) ) {
 			return $choices;
 		}
 
 		$args = $this->get_args;
 
-		if ( ! isset( $args['exclude'] ) && $this->exclude_current_item_id && 0 < $this->item_id ) {
-			$args['exclude'] = $this->item_id;
+		$item_id = $this->get_item_id();
+
+		if ( ! isset( $args['exclude'] ) && $this->exclude_current_item_id && 0 < $item_id ) {
+			$args['exclude'] = $item_id;
 		}
 
-		if ( ! isset( $args['exclude_tree'] ) && $this->exclude_tree_current_item_id && 0 < $this->item_id ) {
-			$args['exclude_tree'] = $this->item_id;
+		if ( ! isset( $args['exclude_tree'] ) && $this->exclude_tree_current_item_id && 0 < $item_id ) {
+			$args['exclude_tree'] = $item_id;
 		}
 
 		$terms = get_terms( $this->taxonomy, $args );

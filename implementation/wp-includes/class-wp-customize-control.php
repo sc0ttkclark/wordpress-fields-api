@@ -39,7 +39,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	 * @var array Internal mapping of backwards compatible properties
 	 */
 	private $property_map = array(
-		'settings' => 'fields',
+		'settings' => 'field',
 		'setting'  => 'field',
 	);
 
@@ -147,7 +147,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 
 		// Backwards compatibility
 		$array['panel'] = $array['form'];
-		$array['settings'] = $array['fields'];
+		$array['settings'] = $array['field'];
 
 		return $array;
 
