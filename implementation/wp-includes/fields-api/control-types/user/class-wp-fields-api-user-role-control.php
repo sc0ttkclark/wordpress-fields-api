@@ -12,7 +12,12 @@
 class WP_Fields_API_User_Role_Control extends WP_Fields_API_Select_Control {
 
 	/**
-	 * Setup color scheme choices for use by control
+	 * {@inheritdoc}
+	 */
+	public $type = 'user-role';
+
+	/**
+	 * {@inheritdoc}
 	 */
 	public function choices() {
 

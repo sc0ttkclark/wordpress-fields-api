@@ -7,8 +7,11 @@
  */
 
 /** WordPress Administration Bootstrap */
-require_once( ABSPATH . '/wp-admin/admin.php' ); // @todo Remove WP Fields API modification
-global $user_id, $action, $wp_http_referer; // @todo Remove WP Fields API modification
+
+// @todo Remove WP Fields API modification
+if ( !defined('ABSPATH') )
+	die('-1');
+global $user_id, $action, $wp_http_referer, $submenu_file, $parent_file, $title; // @todo Remove WP Fields API modification
 
 wp_reset_vars( array( 'action', 'user_id', 'wp_http_referer' ) );
 
@@ -34,6 +37,8 @@ elseif ( ! get_userdata( $user_id ) )
 global $wp_fields;
 
 $form = $wp_fields->get_form( 'user', 'user-edit' );
+
+$form->item_id = $user_id;
 
 /**
  * <<< WP Fields API implementation
@@ -146,7 +151,7 @@ if ( !current_user_can('edit_user', $user_id) )
  * WP Fields API implementation >>>
  */
 
-$errors = $form->save_fields( $user_id );
+$errors = $form->save_fields();
 
 /**
  * <<< WP Fields API implementation
@@ -226,7 +231,7 @@ if ( ! IS_PROFILE_PAGE ) {
 
 $profile_user = get_userdata( $user_id );
 
-$form->maybe_render( $user_id );
+$form->maybe_render();
 
 /**
  * <<< WP Fields API implementation

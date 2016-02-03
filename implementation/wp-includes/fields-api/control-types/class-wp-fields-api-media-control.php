@@ -1,10 +1,20 @@
 <?php
 /**
+ * @package    WordPress
+ * @subpackage Fields_API
+ */
+
+/**
  * Fields API Media Control class.
  *
  * @see WP_Fields_API_Control
  */
 class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public $type = 'media';
 
 	/**
 	 * Media control mime type.
@@ -23,14 +33,11 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 	public $button_labels = array();
 
 	/**
-	 * Constructor.
-	 *
-	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
-	 * @param string               $id      Control ID.
-	 * @param array                $args    Optional. Arguments to override class property defaults.
+	 * {@inheritdoc}
 	 */
-	public function __construct( $manager, $id, $args = array() ) {
-		parent::__construct( $manager, $id, $args );
+	public function init( $object_type, $id, $args = array() ) {
+
+		parent::init( $object_type, $id, $args );
 
 		$this->button_labels = array(
 			'select'       => __( 'Select File' ),
@@ -41,13 +48,16 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 			'frame_title'  => __( 'Select File' ),
 			'frame_button' => __( 'Choose File' ),
 		);
+
 	}
 
 	/**
-	 * Enqueue control related scripts/styles.
+	 * {@inheritdoc}
 	 */
 	public function enqueue() {
+
 		wp_enqueue_media();
+
 	}
 
 	/**
@@ -55,44 +65,55 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 	 *
 	 * @see WP_Fields_API_Control::to_json()
 	 */
-	public function to_json() {
-		parent::to_json();
-		$this->json['label'] = html_entity_decode( $this->label, ENT_QUOTES, get_bloginfo( 'charset' ) );
-		$this->json['mime_type'] = $this->mime_type;
-		$this->json['button_labels'] = $this->button_labels;
-		$this->json['canUpload'] = current_user_can( 'upload_files' );
+	public function json() {
+
+		$json = parent::json();
+
+		$json['mime_type']     = $this->mime_type;
+		$json['button_labels'] = $this->button_labels;
+		$json['canUpload']     = current_user_can( 'upload_files' );
 
 		$value = $this->value();
 
-		if ( is_object( $this->setting ) ) {
-			if ( $this->setting->default ) {
+		if ( is_object( $this->field ) ) {
+			if ( $this->field->default ) {
 				// Fake an attachment model - needs all fields used by template.
 				// Note that the default value must be a URL, NOT an attachment ID.
-				$type = in_array( substr( $this->setting->default, -3 ), array( 'jpg', 'png', 'gif', 'bmp' ) ) ? 'image' : 'document';
+				$type = 'document';
+
+				if ( in_array( substr( $this->field->default, - 3 ), array( 'jpg', 'png', 'gif', 'bmp' ) ) ) {
+					$type = 'image';
+				}
+
 				$default_attachment = array(
-					'id' => 1,
-					'url' => $this->setting->default,
-					'type' => $type,
-					'icon' => wp_mime_type_icon( $type ),
-					'title' => basename( $this->setting->default ),
+					'id'    => 1,
+					'url'   => $this->field->default,
+					'type'  => $type,
+					'icon'  => wp_mime_type_icon( $type ),
+					'title' => basename( $this->field->default ),
 				);
 
 				if ( 'image' === $type ) {
 					$default_attachment['sizes'] = array(
-						'full' => array( 'url' => $this->setting->default ),
+						'full' => array(
+							'url' => $this->field->default,
+						),
 					);
 				}
 
-				$this->json['defaultAttachment'] = $default_attachment;
+				$json['defaultAttachment'] = $default_attachment;
 			}
 
-			if ( $value && $this->setting->default && $value === $this->setting->default ) {
+			if ( $value && $this->field->default && $value === $this->field->default ) {
 				// Set the default as the attachment.
-				$this->json['attachment'] = $this->json['defaultAttachment'];
+				$json['attachment'] = $json['defaultAttachment'];
 			} elseif ( $value ) {
-				$this->json['attachment'] = wp_prepare_attachment_for_js( $value );
+				$json['attachment'] = wp_prepare_attachment_for_js( $value );
 			}
 		}
+
+		return $json;
+
 	}
 
 	/**
@@ -100,7 +121,11 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 	 *
 	 * @see WP_Fields_API_Media_Control::content_template()
 	 */
-	public function render_content() {}
+	protected function render_content() {
+
+		// @todo Figure out render for non-JS forms
+
+	}
 
 	/**
 	 * Render a JS template for the content of the media control.

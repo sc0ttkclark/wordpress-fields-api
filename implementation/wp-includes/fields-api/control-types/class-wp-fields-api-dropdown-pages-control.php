@@ -1,10 +1,20 @@
 <?php
 /**
+ * @package    WordPress
+ * @subpackage Fields_API
+ */
+
+/**
  * Fields API Dropdown Pages Control class.
  *
  * @see WP_Fields_API_Control
  */
 class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public $type = 'dropdown-pages';
 
 	/**
 	 * @var array Arguments to send to get_pages
@@ -17,9 +27,7 @@ class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control 
 	public $placeholder_text = '';
 
 	/**
-	 * Setup page choices for use by control
-	 *
-	 * @return array
+	 * {@inheritdoc}
 	 */
 	public function choices() {
 

@@ -12,7 +12,12 @@
 class WP_Fields_API_User_Color_Scheme_Control extends WP_Fields_API_Radio_Control {
 
 	/**
-	 * Setup color scheme choices for use by control
+	 * {@inheritdoc}
+	 */
+	public $type = 'user-color-scheme';
+
+	/**
+	 * {@inheritdoc}
 	 */
 	public function choices() {
 
@@ -44,9 +49,9 @@ class WP_Fields_API_User_Color_Scheme_Control extends WP_Fields_API_Radio_Contro
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render_content() {
+	protected function render_content() {
 
-		$user_id = $this->item_id;
+		$user_id = $this->get_item_id();
 
 		/**
 		 * Fires in the 'Admin Color Scheme' section of the user editing form.

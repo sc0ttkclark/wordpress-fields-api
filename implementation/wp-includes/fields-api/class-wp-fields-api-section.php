@@ -11,113 +11,12 @@
  *
  * A UI container for controls, managed by the WP_Fields_API.
  */
-class WP_Fields_API_Section {
+class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
-	 * Incremented with each new class instantiation, then stored in $instance_number.
-	 *
-	 * Used when sorting two instances whose priorities are equal.
-	 *
-	 * @access protected
-	 * @var int
+	 * {@inheritdoc}
 	 */
-	protected static $instance_count = 0;
-
-	/**
-	 * Order in which this instance was created in relation to other instances.
-	 *
-	 * @access public
-	 * @var int
-	 */
-	public $instance_number = 0;
-
-	/**
-	 * Unique identifier.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $id = '';
-
-	/**
-	 * Object type.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_type = '';
-
-	/**
-	 * Object name (for post types and taxonomies).
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_name = '';
-
-	/**
-	 * Whether or not to display the heading title for section on render
-	 *
-	 * @access public
-	 * @var bool
-	 */
-	public $display_title = true;
-
-	/**
-	 * Priority of the section which informs load order of sections.
-	 *
-	 * @access public
-	 * @var integer
-	 */
-	public $priority = 160;
-
-	/**
-	 * Form in which to show the section, making it a sub-section.
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Form
-	 */
-	public $form = '';
-
-	/**
-	 * Capability required for the section.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $capability = 'edit_theme_options';
-
-	/**
-	 * Theme feature support for the section.
-	 *
-	 * @access public
-	 * @var string|array
-	 */
-	public $theme_supports = '';
-
-	/**
-	 * Title of the section to show in UI.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $title = '';
-
-	/**
-	 * Description to show in the UI.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $description = '';
-
-	/**
-	 * Fields API controls for this section.
-	 *
-	 * @access public
-	 * @var array<WP_Fields_API_Controls>
-	 */
-	public $controls = array();
+	protected $container_type = 'section';
 
 	/**
 	 * Type of this section.
@@ -128,255 +27,13 @@ class WP_Fields_API_Section {
 	public $type = 'default';
 
 	/**
-	 * Active callback.
+	 * Get the form for this section.
 	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Section::active()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               {@see WP_Fields_API_Section}, and returns bool to indicate
-	 *               whether the section is active (such as it relates to the URL
-	 *               currently being previewed).
+	 * @return WP_Fields_API_Form|null
 	 */
-	public $active_callback = '';
+	public function get_form() {
 
-	/**
-	 * Capabilities Callback.
-	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Section::check_capabilities()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               WP_Fields_API_Section, and returns bool to indicate whether
-	 *               the section has capabilities to be used.
-	 */
-	public $capabilities_callback = '';
-
-	/**
-	 * Item ID of current item
-	 *
-	 * @access public
-	 * @var int|string
-	 */
-	public $item_id;
-
-	/**
-	 * Constructor.
-	 *
-	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
-	 */
-	public function __construct() {
-
-		$args = func_get_args();
-
-		call_user_func_array( array( $this, 'init' ), $args );
-
-	}
-
-	/**
-	 * Secondary constructor; Any supplied $args override class property defaults.
-	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            A specific ID of the section.
-	 * @param array  $args          Section arguments.
-	 */
-	public function init( $object_type, $id, $args = array() ) {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		$this->object_type = $object_type;
-
-		if ( is_array( $id ) ) {
-			$args = $id;
-
-			$id = '';
-		} else {
-			$this->id = $id;
-		}
-
-		$keys = array_keys( get_object_vars( $this ) );
-
-		foreach ( $keys as $key ) {
-			if ( isset( $args[ $key ] ) ) {
-				$this->$key = $args[ $key ];
-			}
-		}
-
-		self::$instance_count += 1;
-		$this->instance_number = self::$instance_count;
-
-		if ( empty( $this->active_callback ) ) {
-			$this->active_callback = array( $this, 'active_callback' );
-		}
-
-		/*if ( $this->form ) {
-			$form_obj = $wp_fields->get_form( $this->object_type, $this->form, $this->object_name );
-
-			if ( $form_obj ) {
-				$this->form = $form_obj;
-			}
-		}*/
-
-		$this->controls = array(); // Users cannot customize the $controls array.
-
-	}
-
-	/**
-	 * Check whether section is active to current Fields API preview.
-	 *
-	 * @since 4.1.0
-	 * @access public
-	 *
-	 * @return bool Whether the section is active to the current preview.
-	 */
-	final public function active() {
-
-		$section = $this;
-		$active = true;
-
-		if ( is_callable( $this->active_callback ) ) {
-			$active = call_user_func( $this->active_callback, $this );
-		}
-
-		/**
-		 * Filter response of {@see WP_Fields_API_Section::active()}.
-		 *
-		 * @param bool                 $active  Whether the Fields API section is active.
-		 * @param WP_Fields_API_Section $section {@see WP_Fields_API_Section} instance.
-		 */
-		$active = apply_filters( 'fields_api_section_active_' . $this->object_type, $active, $section );
-
-		return $active;
-
-	}
-
-	/**
-	 * Default callback used when invoking {@see WP_Fields_API_Section::active()}.
-	 *
-	 * Subclasses can override this with their specific logic, or they may provide
-	 * an 'active_callback' argument to the constructor.
-	 *
-	 * @since 4.1.0
-	 * @access public
-	 *
-	 * @return bool Always true.
-	 */
-	public function active_callback() {
-
-		return true;
-
-	}
-
-	/**
-	 * Gather the parameters passed to client JavaScript via JSON.
-	 *
-	 * @return array The array to be exported to the client as JSON.
-	 */
-	public function json() {
-
-		$array = wp_array_slice_assoc( (array) $this, array( 'id', 'description', 'priority', 'form', 'type' ) );
-		$array['title'] = html_entity_decode( $this->title, ENT_QUOTES, get_bloginfo( 'charset' ) );
-		$array['content'] = $this->get_content();
-		$array['active'] = $this->active();
-		$array['instanceNumber'] = $this->instance_number;
-
-		return $array;
-
-	}
-
-	/**
-	 * Checks required user capabilities and whether the theme has the
-	 * feature support required by the section.
-	 *
-	 * @return bool False if theme doesn't support the section or user can't change section, otherwise true.
-	 */
-	public function check_capabilities() {
-
-		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
-			return false;
-		}
-
-		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
-			return false;
-		}
-
-		$access = true;
-
-		if ( is_callable( $this->capabilities_callback ) ) {
-			$access = call_user_func( $this->capabilities_callback, $this );
-		}
-
-		return $access;
-
-	}
-
-	/**
-	 * Get the section's description.
-	 *
-	 * @return string Description of the section.
-	 */
-	final public function render_description() {
-
-		return wp_kses_post( $this->description );
-
-	}
-
-	/**
-	 * Get the section's content template for insertion into the Fields UI.
-	 *
-	 * @return string Contents of the section.
-	 */
-	final public function get_content() {
-
-		ob_start();
-
-		$this->maybe_render();
-
-		$template = trim( ob_get_contents() );
-
-		ob_end_clean();
-
-		return $template;
-
-	}
-
-	/**
-	 * Check capabilities and render the section.
-	 */
-	final public function maybe_render() {
-
-		if ( ! $this->check_capabilities() ) {
-			return;
-		}
-
-		/**
-		 * Fires before rendering a Fields API section.
-		 *
-		 * The dynamic portion of the hook name, `$this->object_type`, refers to the object
-		 * of the specific Fields API section to be rendered.
-		 *
-		 * @param WP_Fields_API_Section $this WP_Fields API_Section instance.
-		 */
-		do_action( "fields_api_render_section_{$this->object_type}", $this );
-
-		/**
-		 * Fires before rendering a specific Fields API section.
-		 *
-		 * The dynamic portion of the hook name, `$this->object_type`, refers to the ID
-		 * of the specific Fields API section to be rendered.
-		 *
-		 * The dynamic portion of the hook name, `$this->id`, refers to the ID
-		 * of the specific Fields API section to be rendered.
-		 *
-		 */
-		do_action( "fields_api_render_section_{$this->object_type}_{$this->object_name}_{$this->id}" );
-
-		$this->render();
+		return $this->get_parent();
 
 	}
 
@@ -384,40 +41,74 @@ class WP_Fields_API_Section {
 	 * Render the section, and the controls that have been added to it.
 	 */
 	protected function render() {
-		echo esc_html( $this->title );
-	}
 
-	/**
-	 * Render the section's JS template.
-	 *
-	 * This function is only run for section types that have been registered with
-	 * WP_Fields_API::register_section_type().
-	 *
-	 * @since 4.3.0
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Section::render_template()
-	 */
-	public function print_template() {
+		?>
+		<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?>-section section-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-section">
+			<?php
+				if ( $this->label && $this->display_label ) {
+					?>
+					<h3><?php $this->render_label(); ?></h3>
+					<?php
+				}
 
-		// Nothing by default
+				$this->render_controls();
+			?>
+		</div>
+		<?php
 
 	}
 
 	/**
-	 * An Underscore (JS) template for rendering this section.
+	 * Render controls for section
 	 *
-	 * Class variables for this section class are available in the `data` JS object;
-	 * export custom variables by overriding WP_Fields_API_Section::json().
-	 *
-	 * @since 4.3.0
-	 * @access protected
-	 *
-	 * @see WP_Fields_API_Section::print_template()
+	 * @param WP_Fields_API_Control[] $controls    Control objects
 	 */
-	protected function render_template() {
+	protected function render_controls() {
 
-		// Nothing by default
+		$controls = $this->get_controls();
+
+		foreach ( $controls as $control ) {
+			// Pass $object_name into control
+			$control->object_name = $this->object_name;
+
+			if ( ! $control->check_capabilities() ) {
+				continue;
+			}
+
+			$this->render_control( $control );
+		}
+
+	}
+
+	/**
+	 * Render control wrapper, label, description, and control input
+	 *
+	 * @param WP_Fields_API_Control $control Control object
+	 */
+	protected function render_control( $control ) {
+
+		$input_id = 'field-' . $control->id;
+
+		if ( isset( $control->input_attrs['id'] ) ) {
+			$input_id = $control->input_attrs['id'];
+		}
+		?>
+			<div <?php $control->wrap_attrs(); ?>>
+				<?php if ( $control->label ) { ?>
+					<label for="<?php echo esc_attr( $input_id ); ?>">
+						<?php $control->render_label(); ?>
+					</label>
+				<?php } ?>
+
+				<?php $control->maybe_render(); ?>
+
+				<?php if ( $control->description ) { ?>
+					<p class="description">
+						<?php $control->render_description(); ?>
+					</p>
+				<?php } ?>
+			</div>
+		<?php
 
 	}
 

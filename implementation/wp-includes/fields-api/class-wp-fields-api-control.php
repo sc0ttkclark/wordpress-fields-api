@@ -7,33 +7,12 @@
  *
  * @property array $choices Key/Values used by Multiple choice control types
  */
-class WP_Fields_API_Control {
+class WP_Fields_API_Control extends WP_Fields_API_Container {
 
 	/**
-	 * Incremented with each new class instantiation, then stored in $instance_number.
-	 *
-	 * Used when sorting two instances whose priorities are equal.
-	 *
-	 * @access protected
-	 * @var int
+	 * {@inheritdoc}
 	 */
-	protected static $instance_count = 0;
-
-	/**
-	 * Order in which this instance was created in relation to other instances.
-	 *
-	 * @access public
-	 * @var int
-	 */
-	public $instance_number = 0;
-
-	/**
-	 * Unique identifier.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $id = '';
+	protected $container_type = 'control';
 
 	/**
 	 * Override default Input name, defaults to $this->id.
@@ -41,23 +20,7 @@ class WP_Fields_API_Control {
 	 * @access public
 	 * @var string
 	 */
-	public $input_name = '';
-
-	/**
-	 * Object type.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_type = '';
-
-	/**
-	 * Object name (for post types and taxonomies).
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $object_name = '';
+	public $input_name;
 
 	/**
 	 * Item ID of current item passed to WP_Fields_API_Field for value()
@@ -65,65 +28,13 @@ class WP_Fields_API_Control {
 	 * @access public
 	 * @var int|string
 	 */
-	public $item_id;
-
-	/**
-	 * Whether a control is registered from WordPress core
-	 *
-	 * @access public
-	 * @var bool
-	 */
-	public $internal = false;
-
-	/**
-	 * All fields tied to the control.
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $fields = array();
-
-	/**
-	 * The primary field for the control (if there is one).
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Field
-	 */
-	public $field = 'default';
-
-	/**
-	 * The primary form for the control (if there is one).
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Section
-	 */
-	public $section = '';
-
-	/**
-	 * The primary form for the control (if there is one).
-	 *
-	 * @access public
-	 * @var string|WP_Fields_API_Form
-	 */
-	public $form = '';
+	public $item_id = 0;
 
 	/**
 	 * @access public
 	 * @var int
 	 */
 	public $priority = 10;
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $label = '';
-
-	/**
-	 * @access public
-	 * @var string
-	 */
-	public $description = '';
 
 	/**
 	 * @access public
@@ -144,46 +55,6 @@ class WP_Fields_API_Control {
 	public $type = 'text';
 
 	/**
-	 * Callback.
-	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Control::active()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               WP_Fields_API_Control, and returns bool to indicate whether
-	 *               the control is active (such as it relates to the URL
-	 *               currently being previewed).
-	 */
-	public $active_callback = '';
-
-	/**
-	 * Capabilities Callback.
-	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Control::check_capabilities()
-	 *
-	 * @var callable Callback is called with one argument, the instance of
-	 *               WP_Fields_API_Control, and returns bool to indicate whether
-	 *               the control has capabilities to be used.
-	 */
-	public $capabilities_callback = '';
-
-	/**
-	 * Constructor.
-	 *
-	 * Parameters are not set to maintain PHP overloading compatibility (strict standards)
-	 */
-	public function __construct() {
-
-		$args = func_get_args();
-
-		call_user_func_array( array( $this, 'init' ), $args );
-
-	}
-
-	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object_type   Object type.
@@ -197,59 +68,78 @@ class WP_Fields_API_Control {
 		 */
 		global $wp_fields;
 
-		$this->object_type = $object_type;
+		parent::init( $object_type, $id, $args );
 
-		if ( is_array( $id ) ) {
-			$args = $id;
-
-			$id = '';
-		} else {
-			$this->id = $id;
+		// Setup field
+		if ( ! $this->field ) {
+			$this->field = $id;
 		}
 
-		$keys = array_keys( get_object_vars( $this ) );
+		if ( $this->field ) {
+			$field = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
 
-		// Magic property, allowing for override
-		$keys[] = 'choices';
-
-		foreach ( $keys as $key ) {
-			if ( isset( $args[ $key ] ) ) {
-				$this->$key = $args[ $key ];
+			if ( $field ) {
+				$this->add_child( $field );
 			}
 		}
 
-		if ( empty( $this->active_callback ) ) {
-			$this->active_callback = array( $this, 'active_callback' );
+	}
+
+	/**
+	 * Get the form for this control's section.
+	 *
+	 * @return WP_Fields_API_Form|null
+	 */
+	public function get_form() {
+
+		$section = $this->get_section();
+
+		$form = null;
+
+		if ( $section ) {
+			$form = $section->get_form();
 		}
 
-		self::$instance_count += 1;
-		$this->instance_number = self::$instance_count;
+		return $form;
 
-		// Process fields.
-		if ( empty( $this->fields ) ) {
-			$this->fields = $id;
+	}
+
+	/**
+	 * Get the section for this control.
+	 *
+	 * @return WP_Fields_API_Section|null
+	 */
+	public function get_section() {
+
+		return $this->get_parent();
+
+	}
+
+	/**
+	 * Get associated field
+	 *
+	 * @return null|WP_Fields_API_Field
+	 */
+	public function get_field() {
+
+		$fields = $this->get_children( 'field' );
+
+		$field = null;
+
+		if ( $fields ) {
+			$field = current( $fields );
 		}
 
-		$fields = array();
+		return $field;
 
-		if ( is_array( $this->fields ) ) {
-			foreach ( $this->fields as $key => $field ) {
-				$field_obj = $wp_fields->get_field( $this->object_type, $field, $this->object_name );
+	}
 
-				if ( $field_obj ) {
-					$fields[ $key ] = $field_obj;
-				}
-			}
-		} else {
-			$field_obj = $wp_fields->get_field( $this->object_type, $this->fields, $this->object_name );
+	/**
+	 * Get choice values
+	 */
+	public function choices() {
 
-			if ( $field_obj ) {
-				$this->field       = $field_obj;
-				$fields['default'] = $field_obj;
-			}
-		}
-
-		$this->fields = $fields;
+		return array();
 
 	}
 
@@ -267,182 +157,42 @@ class WP_Fields_API_Control {
 	}
 
 	/**
-	 * Enqueue control related scripts/styles.
-	 */
-	public function enqueue() {}
-
-	/**
-	 * Check whether control is active to current Fields API preview.
-	 *
-	 * @access public
-	 *
-	 * @return bool Whether the control is active to the current preview.
-	 */
-	final public function active() {
-
-		$control = $this;
-		$active = true;
-
-		if ( is_callable( $this->active_callback ) ) {
-			$active = call_user_func( $this->active_callback, $this );
-		}
-
-		/**
-		 * Filter response of WP_Fields_API_Control::active().
-		 *
-		 * @param bool                  $active  Whether the Field control is active.
-		 * @param WP_Fields_API_Control $control WP_Fields_API_Control instance.
-		 */
-		$active = apply_filters( 'fields_control_active_' . $this->object_type, $active, $control );
-
-		return $active;
-
-	}
-
-	/**
-	 * Default callback used when invoking WP_Fields_API_Control::active().
-	 *
-	 * Subclasses can override this with their specific logic, or they may
-	 * provide an 'active_callback' argument to the constructor.
-	 *
-	 * @access public
-	 *
-	 * @return bool Always true.
-	 */
-	public function active_callback() {
-
-		return true;
-
-	}
-
-	/**
 	 * Fetch a field's value.
-	 * Grabs the main field by default.
 	 *
-	 * @param string $field_key
 	 * @return mixed The requested field's value, if the field exists.
 	 */
-	final public function value( $field_key = 'default' ) {
+	final public function value() {
 
-		if ( isset( $this->fields[ $field_key ] ) ) {
-			/**
-			 * @var $field WP_Fields_API_Field
-			 */
-			$field = $this->fields[ $field_key ];
+		$field = $this->get_field();
 
-			return $field->value( $this->item_id );
+		$value = null;
+
+		if ( $field ) {
+			$value = $field->value( $this->get_item_id() );
 		}
 
-		return null;
+		return $value;
 
 	}
 
 	/**
-	 * Get the data to export to the client via JSON.
-	 *
-	 * @return array Array of parameters passed to the JavaScript.
+	 * {@inheritdoc}
 	 */
-	public function json() {
+	public function check_capabilities() {
 
-		$array = array();
+		$field = $this->get_field();
 
-		$array['fields'] = wp_list_pluck( $this->fields, 'id' );
-		$array['type'] = $this->type;
-		$array['priority'] = $this->priority;
-		$array['active'] = $this->active();
-		$array['section'] = $this->section;
-		$array['content'] = $this->get_content();
-		$array['label'] = $this->label;
-		$array['description'] = $this->description;
-		$array['instanceNumber'] = $this->instance_number;
-
-		return $array;
-
-	}
-
-	/**
-	 * Check if the theme supports the control and check user capabilities.
-	 *
-	 * @return bool False if theme doesn't support the control or user doesn't have the required permissions, otherwise true.
-	 */
-	final public function check_capabilities() {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		/**
-		 * @var $field WP_Fields_API_Field
-		 */
-		foreach ( $this->fields as $field ) {
-			if ( ! $field || ! $field->check_capabilities() ) {
-				return false;
-			}
+		if ( ! $field || ! $field->check_capabilities() ) {
+			return false;
 		}
 
-		$section = $wp_fields->get_section( $this->object_type, $this->section, $this->object_name );
+		$section = $this->get_section();
 
 		if ( $section && ! $section->check_capabilities() ) {
 			return false;
 		}
 
-		$access = true;
-
-		if ( is_callable( $this->capabilities_callback ) ) {
-			$access = call_user_func( $this->capabilities_callback, $this );
-		}
-
-		return $access;
-
-	}
-
-	/**
-	 * Get the control's content for insertion.
-	 *
-	 * @return string Contents of the control.
-	 */
-	final public function get_content() {
-
-		ob_start();
-
-		$this->maybe_render();
-
-		$template = trim( ob_get_clean() );
-
-		return $template;
-
-	}
-
-	/**
-	 * Check capabilities and render the control.
-	 *
-	 * @uses WP_Fields_API_Control::render()
-	 */
-	final public function maybe_render() {
-
-		if ( ! $this->check_capabilities() ) {
-			return;
-		}
-
-		/**
-		 * Fires just before the current control is rendered.
-		 *
-		 * @param WP_Fields_API_Control $this WP_Fields_API_Control instance.
-		 */
-		do_action( 'fields_render_control_' . $this->object_type, $this );
-
-		/**
-		 * Fires just before a specific control is rendered.
-		 *
-		 * The dynamic portion of the hook name, `$this->id`, refers to
-		 * the control ID.
-		 *
-		 * @param WP_Fields_API_Control $this {@see WP_Fields_API_Control} instance.
-		 */
-		do_action( 'fields_render_control_' . $this->object_type . '_' . $this->object_name . '_' . $this->id, $this );
-
-		$this->render();
+		return parent::check_capabilities();
 
 	}
 
@@ -463,32 +213,46 @@ class WP_Fields_API_Control {
 	}
 
 	/**
+	 * Render the control's content.
+	 *
+	 * Allows the content to be overridden without having to rewrite the wrapper in $this->render().
+	 *
+	 * Supports basic input types `text`, `checkbox`, `textarea`, `radio`, `select` and `dropdown-pages`.
+	 * Additional input types such as `email`, `url`, `number`, `hidden` and `date` are supported implicitly.
+	 *
+	 * Control content can alternately be rendered in JS. See {@see WP_Fields_API_Control::print_template()}.
+	 */
+	protected function render_content() {
+
+		?>
+		<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
+		<?php
+
+	}
+
+	/**
 	 * Get the data link attribute for a field.
 	 *
-	 *
-	 * @param string $field_key
-	 * @return string Data link parameter, if $field_key is a valid field, empty string otherwise.
+	 * @return string Data link parameter, if field exists, empty string otherwise.
 	 */
-	public function get_link( $field_key = 'default' ) {
+	public function get_link() {
 
-		if ( ! isset( $this->fields[ $field_key ] ) ) {
+		$field = $this->get_field();
+
+		if ( ! $field ) {
 			return '';
 		}
 
-		return 'data-fields-field-link="' . esc_attr( $this->fields[ $field_key ]->id ) . '"';
+		return 'data-fields-field-link="' . esc_attr( $field->id ) . '"';
 
 	}
 
 	/**
 	 * Render the data link attribute for the control's input element.
-	 *
-	 * @uses WP_Fields_API_Control::get_link()
-	 *
-	 * @param string $field_key
 	 */
-	public function link( $field_key = 'default' ) {
+	public function link() {
 
-		echo $this->get_link( $field_key );
+		echo $this->get_link();
 
 	}
 
@@ -538,47 +302,6 @@ class WP_Fields_API_Control {
 	}
 
 	/**
-	 * Render HTML attributes safely to the screen.
-	 *
-	 * @access public
-	 *
-	 * @param array $attrs
-	 */
-	public function render_attrs( $attrs = array() ) {
-
-		foreach ( $attrs as $attr => $value ) {
-			echo esc_attr( $attr ) . '="' . esc_attr( $value ) . '" ';
-		}
-
-	}
-
-	/**
-	 * Render the control's content.
-	 *
-	 * Allows the content to be overriden without having to rewrite the wrapper in $this->render().
-	 *
-	 * Supports basic input types `text`, `checkbox`, `textarea`, `radio`, `select` and `dropdown-pages`.
-	 * Additional input types such as `email`, `url`, `number`, `hidden` and `date` are supported implicitly.
-	 *
-	 * Control content can alternately be rendered in JS. See {@see WP_Fields_API_Control::print_template()}.
-	 */
-	public function render_content() {
-
-		?>
-		<label>
-			<?php if ( ! empty( $this->label ) ) : ?>
-				<span class="fields-control-title"><?php echo esc_html( $this->label ); ?></span>
-			<?php endif;
-			if ( ! empty( $this->description ) ) : ?>
-				<span class="description fields-control-description"><?php echo $this->description; ?></span>
-			<?php endif; ?>
-			<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
-		</label>
-		<?php
-
-	}
-
-	/**
 	 * Render the control's JS template.
 	 *
 	 * This function is only run for control types that have been registered with
@@ -624,10 +347,10 @@ class WP_Fields_API_Control {
 		if ( 'choices' == $name ) {
 			$this->setup_choices();
 
-			return $this->choices;
+			return $this->{$name};
 		}
 
-		return null;
+		return null;// $this->{$name}; @todo Change this back when we're done testing
 
 	}
 
