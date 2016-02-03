@@ -158,7 +158,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		$wp_fields->add_field( $this->object_type, 'default_role', null, $field_args );
 
 		// @todo: Custom control for Timezones
-		
+
 		/**
 		 * Date Format
 		 */
