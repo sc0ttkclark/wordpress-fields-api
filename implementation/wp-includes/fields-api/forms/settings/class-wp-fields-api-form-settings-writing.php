@@ -17,13 +17,13 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 	public function register_fields( $wp_fields ) {
 
 		// Sections
-		$wp_fields->add_section( $this->object_type, $this->id . '-options-general', null, array(
+		$wp_fields->add_section( $this->object_type, $this->id . '-options-writing', null, array(
 			'label'         => __( 'Writing Settings' ),
 			'form'          => $this->id,
 			'display_label' => false,
 		) );
 
-		$wp_fields->add_section( $this->object_type, $this->id . '-options-general-post-by-email', null, array(
+		$wp_fields->add_section( $this->object_type, $this->id . '-options-writing-post-by-email', null, array(
 			'label'         => __( 'Post by Email' ),
 			'form'          => $this->id,
 			'description'   => sprintf( __( 'To post to WordPress by email you must set up a secret email account with POP3 access. Any mail received at this address will be posted, so it’s a good idea to keep this address very secret. Here are three random strings you could use: <code>%1$s</code>, <code>%2$s</code>, <code>%3$s</code>.' ),
@@ -34,7 +34,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 			'display_label' => true,
 		) );
 
-		$wp_fields->add_section( $this->object_type, $this->id . '-options-general-update-services', null, array(
+		$wp_fields->add_section( $this->object_type, $this->id . '-options-writing-update-services', null, array(
 			'label'         => __( 'Update Services' ),
 			'form'          => $this->id,
 			'description'   => sprintf( __( 'When you publish a new post, WordPress automatically notifies the following site update services. For more about this, see <a href="%s">Update Services</a> on the Codex. Separate multiple service URLs with line breaks.'),
@@ -50,7 +50,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 			'control' => array(
 				'type'        => 'dropdown-terms',
 				'taxonomy'    => 'category',
-				'section'     => $this->id . '-options-general',
+				'section'     => $this->id . '-options-writing',
 				'label'       => __( 'Default Post Category' ),
 				'input_attrs' => array(
 					'class' => 'postform',
@@ -68,7 +68,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		$field_args = array(
 			'control' => array(
 				'type'        => 'dropdown-post-format',
-				'section'     => $this->id . '-options-general',
+				'section'     => $this->id . '-options-writing',
 				'label'       => __( 'Default Post Format' ),
 				'input_attrs' => array(
 					'id'    => 'default_post_format',
@@ -86,7 +86,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		$field_args = array(
 			'control' => array(
 				'type'        => 'text',
-				'section'     => $this->id . '-options-general-post-by-email',
+				'section'     => $this->id . '-options-writing-post-by-email',
 				'label'       => __( 'Mail Server' ),
 				'input_attrs' => array(
 					'id'    => 'mailserver_url',
@@ -104,7 +104,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		$field_args = array(
 			'control' => array(
 				'type'        => 'text',
-				'section'     => $this->id . '-options-general-post-by-email',
+				'section'     => $this->id . '-options-writing-post-by-email',
 				'label'       => __( 'Login Name' ),
 				'input_attrs' => array(
 					'id'    => 'mailserver_login',
@@ -122,7 +122,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		$field_args = array(
 			'control' => array(
 				'type'        => 'text',
-				'section'     => $this->id . '-options-general-post-by-email',
+				'section'     => $this->id . '-options-writing-post-by-email',
 				'label'       => __( 'Password' ),
 				'input_attrs' => array(
 					'id'    => 'mailserver_pass',
@@ -141,7 +141,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 			'control' => array(
 				'type'        => 'dropdown-terms',
 				'taxonomy'    => 'category',
-				'section'     => $this->id . '-options-general-post-by-email',
+				'section'     => $this->id . '-options-writing-post-by-email',
 				'label'       => __( 'Default Mail Category' ),
 				'input_attrs' => array(
 					'class' => 'postform',
@@ -159,7 +159,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		$field_args = array(
 			'control' => array(
 				'type'        => 'textarea',
-				'section'     => $this->id . '-options-general-update-services',
+				'section'     => $this->id . '-options-writing-update-services',
 				'label'       => __( 'Update Services' ),
 				'input_attrs' => array(
 					'id'    => 'ping_sites',
