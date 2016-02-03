@@ -7,9 +7,16 @@
  */
 
 /**
- * Fields API Meta Box Section class.
+ * Fields API Meta Box Section class. Ultimately renders controls in a table
+ *
+ * @see WP_Fields_API_Table_Section
  */
-class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
+class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public $type = 'meta-box';
 
 	/**
 	 * Meta box context
@@ -17,27 +24,6 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 	 * @var string
 	 */
 	public $mb_context = 'advanced';
-
-	/**
-	 * Meta box priority
-	 *
-	 * @var string
-	 */
-	public $mb_priority = 'default';
-
-	/**
-	 * Meta box callback for rendering fields
-	 *
-	 * @var callable
-	 */
-	public $mb_callback;
-
-	/**
-	 * Meta box callback arguments
-	 *
-	 * @var array
-	 */
-	public $mb_callback_args = array();
 
 	/**
 	 * Add meta boxes for sections
@@ -52,14 +38,17 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 		 */
 		global $wp_fields;
 
+		$item_id     = 0;
 		$object_type = 'post';
 
 		if ( $object ) {
 			if ( ! empty( $object->ID ) ) {
 				// Get Post ID and type
+				$item_id     = $object->ID;
 				$object_type = 'post';
 				$object_name = $object->post_type;
 			} elseif ( ! empty( $object->comment_ID ) ) {
+				$item_id     = $object->comment_ID;
 				$object_type = 'comment';
 				$object_name = $object->comment_type;
 
@@ -67,6 +56,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 					$object_name = 'comment';
 				}
 			} elseif ( 'comment' == $object_name ) {
+				$item_id     = $object->comment_ID;
 				$object_type = 'comment';
 			}
 		}
@@ -86,33 +76,74 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			 * @var $section WP_Fields_API_Meta_Box_Section
 			 */
 
-			// Meta boxes don't display section titles
-			$section->display_title = false;
+			// Pass object name into section
+			$section->object_name = $object_name;
 
-			// Add primary callback arguments
-			$section->mb_callback_args['fields_api'] = true;
+			if ( ! $section->check_capabilities() ) {
+				continue;
+			}
+
+			// Meta boxes don't display section titles
+			$section->display_label = false;
+
+			// Set callback arguments
+			$callback_args = array(
+				'fields_api' => true,
+			);
 
 			// Only normal context can be used
 			if ( 'comment' == $section->object_type ) {
 				$section->mb_context = 'normal';
 			}
 
-			// Set default callback
-			if ( empty( $section->mb_callback ) || ! is_callable( $section->mb_callback ) ) {
-				$section->mb_callback = array( $section, 'render_meta_box' );
-			}
+			// Convert priority
+			$mb_priority = self::get_mb_priority( $section->priority );
 
 			// Add meta box
 			add_meta_box(
 				$section->id,
-				$section->title,
-				$section->mb_callback,
+				$section->label,
+				array( $section, 'render_meta_box' ),
 				null,
 				$section->mb_context,
-				$section->mb_priority,
-				$section->mb_callback_args
+				$mb_priority,
+				$callback_args
 			);
 		}
+
+	}
+
+	/**
+	 * Get Meta Box Priority from Section priority
+	 *
+	 * @param $priority
+	 *
+	 * @return string
+	 */
+	public static function get_mb_priority( $priority ) {
+
+		$priorities = array(
+			'high'    => 0,
+			'core'    => 100,
+			'default' => 200,
+			'low'     => 300,
+		);
+
+		if ( in_array( $priority, $priorities ) ) {
+			if ( 240 <= $priority ) {
+				$priority = 'low';
+			} elseif ( 160 <= $priority ) {
+				$priority = 'default';
+			} elseif ( 80 <= $priority ) {
+				$priority = 'core';
+			} else {
+				$priority = 'high';
+			}
+		} else {
+			$priority = 'default';
+		}
+
+		return $priority;
 
 	}
 
@@ -123,11 +154,6 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 	 * @param array              $box    Meta box options
 	 */
 	public function render_meta_box( $object, $box ) {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
 
 		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) ) {
 			return;
@@ -150,15 +176,16 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			}
 		}
 
-		$form = $this->form;
+		$form = $this->get_form();
 
-		if ( ! is_object( $form ) ) {
-			$form = $wp_fields->get_form( $this->object_type, $form, $object_name );
+		if ( $form ) {
+			$form->item_id     = $item_id;
+			$form->object_name = $object_name;
 		}
 
-		if ( is_a( $form, 'WP_Fields_API_Form' ) ) {
-			$form->render_section( $this, $item_id, $object_name );
-		}
+		$form->object_name = $object_name;
+
+		$this->maybe_render();
 
 	}
 

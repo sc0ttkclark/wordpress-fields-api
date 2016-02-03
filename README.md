@@ -1,4 +1,6 @@
-# WordPress Fields API v0.0.4 Beta
+![WordPress Fields API](https://raw.githubusercontent.com/sc0ttkclark/wordpress-fields-api/assets/banner-github.png)
+
+# WordPress Fields API v0.0.6 Beta
 
 [![Travis](https://secure.travis-ci.org/sc0ttkclark/wordpress-fields-api.png?branch=master)](http://travis-ci.org/sc0ttkclark/wordpress-fields-api)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/?branch=master)
@@ -70,6 +72,18 @@ There are also [GitHub issues](https://github.com/sc0ttkclark/wordpress-fields-a
 ### Pull Requests
 
 To submit a pull request, please base it off of the `develop` branch which we use for ongoing development towards the next release. The `master` branch represents the last stable beta release.
+
+### Testing
+
+There are a few things that can be enabled for testing purposes:
+
+* `define( 'WP_FIELDS_API_EXAMPLES', true );` Enable example section, controls, and fields for each form.
+* `define( 'WP_FIELDS_API_TESTING', true );` Enable Fields API testing, as used by below.
+* `?fields-api-memory-test=1` Enable memory testing of 25 example sections, set to any number greater than 1 to customize how many example sections to add. _Requires WP_FIELDS_API_TESTING on_
+* `?no-fields-api=1` Disable Fields API from loading, useful for memory split testing. _Requires WP_FIELDS_API_TESTING to be turned on_
+* `?no-fields-api-late-init=1` Disable Fields API Late Init, which means when any form, section, control, or field are added, the object will be setup right away instead of only as needed by current page. Useful for memory split testing. _Requires WP_FIELDS_API_TESTING to be turned on_
+
+There's also a [WP Fields API Debug Bar plugin](https://github.com/sc0ttkclark/wordpress-fields-api-debug-bar) you can install to see details on how many forms, sections, controls, fields, and other stats about your current Fields API configuration.
 
 ## LICENSE
 

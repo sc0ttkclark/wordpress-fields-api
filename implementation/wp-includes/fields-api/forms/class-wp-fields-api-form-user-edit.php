@@ -9,7 +9,7 @@
 /**
  * Class WP_Fields_API_Form_User_Edit
  */
-class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
+class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 
 	/**
 	 * {@inheritdoc}
@@ -52,7 +52,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		////////////////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-personal-options', null, array(
-			'title'  => __( 'Personal Options' ),
+			'label'  => __( 'Personal Options' ),
 			'form' => $this->id,
 			// @todo Needs action compatibility for personal_options( $profileuser )
 			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
@@ -120,7 +120,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-name', null, array(
-			'title'  => __( 'Name' ),
+			'label'  => __( 'Name' ),
 			'form' => $this->id,
 		) );
 
@@ -217,7 +217,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		////////////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-contact-info', null, array(
-			'title'  => __( 'Contact Info' ),
+			'label'  => __( 'Contact Info' ),
 			'form' => $this->id,
 		) );
 
@@ -283,7 +283,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		}
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-about', null, array(
-			'title'  => $about_title,
+			'label'  => $about_title,
 			'form' => $this->id,
 		) );
 
@@ -304,7 +304,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		//////////////////////////////
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-account-management', null, array(
-			'title'                 => __( 'Account Management' ),
+			'label'                 => __( 'Account Management' ),
 			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 		) );
@@ -365,7 +365,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		///////////////////////////////////
 
 		$wp_fields->add_section( $this->object_type, 'additional-capabilities', null, array(
-			'title'                 => __( 'Additional Capabilities' ),
+			'label'                 => __( 'Additional Capabilities' ),
 			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 		) );
@@ -533,7 +533,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 	 */
 	public function capability_can_grant_super_admin( $control ) {
 
-		$profileuser = get_userdata( $control->item_id );
+		$profileuser = get_userdata( $control->get_item_id() );
 
 		/**
 		 * @var $super_admins string[]
@@ -559,7 +559,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 	 */
 	public function capability_show_password_fields( $control ) {
 
-		$profileuser = get_userdata( $control->item_id );
+		$profileuser = get_userdata( $control->get_item_id() );
 
 		/** This filter is documented in wp-admin/user-new.php */
 		$show_password_fields = apply_filters( 'show_password_fields', true, $profileuser );
@@ -589,9 +589,9 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 		 */
 		global $wp_fields;
 
-		$form_obj = $wp_fields->get_form( $section->object_type, $section->form, $section->object_name );
+		$item_id = $this->get_item_id();
 
-		$profileuser = get_userdata( $form_obj->item_id );
+		$profileuser = get_userdata( $item_id );
 
 		$total_roles = count( $profileuser->roles );
 		$total_caps  = count( $profileuser->caps );
@@ -646,6 +646,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 	 * @param mixed               $value
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
+	 *
+	 * @return string|WP_Error Sanitized value or error
 	 */
 	public function sanitize_rich_editing( $value, $item_id, $field ) {
 
@@ -665,6 +667,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 	 * @param mixed               $value
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
+	 *
+	 * @return string|WP_Error Sanitized value or error
 	 */
 	public function sanitize_admin_bar_front( $value, $item_id, $field ) {
 
@@ -684,6 +688,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Table_Form {
 	 * @param mixed               $value
 	 * @param int                 $item_id
 	 * @param WP_Fields_API_Field $field
+	 *
+	 * @return string|WP_Error Sanitized value or error
 	 */
 	public function sanitize_comment_shortcuts( $value, $item_id, $field ) {
 

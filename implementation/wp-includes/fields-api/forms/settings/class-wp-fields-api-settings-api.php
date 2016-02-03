@@ -33,28 +33,30 @@ class WP_Fields_API_Settings_API {
 			}
 
 			// Get Form
-			$form_id = $section->form;
-			$section_id = $section->id;
-			$section_title = $section->title;
+			$form = $section->get_form();
 
-			if ( is_object( $form_id ) ) {
-				$form_id = $form_id->id;
+			if ( ! $form ) {
+				continue;
 			}
 
-			if ( ! $section->display_title ) {
+			$form_id = $form->id;
+			$section_id = $section->id;
+			$section_title = $section->label;
+
+			if ( ! $section->display_label ) {
 				$section_title = '';
 			}
 
 			// Get Setting Controls
-			$controls = $wp_fields->get_controls( $section->object_type, null, $section_id );
+			$controls = $section->get_controls();
 
 			if ( $controls ) {
 				$added_section = false;
 
 				foreach ( $controls as $control ) {
-					$field_id = $control->fields;
+					$field = $control->get_field();
 
-					if ( empty( $field_id ) ) {
+					if ( empty( $field ) ) {
 						continue;
 					}
 
@@ -63,7 +65,6 @@ class WP_Fields_API_Settings_API {
 					}
 
 					if ( ! $added_section ) {
-
 						add_settings_section(
 							$section_id,
 							$section_title,
@@ -74,15 +75,9 @@ class WP_Fields_API_Settings_API {
 						$added_section = true;
 					}
 
-					$field_id = current( $field_id );
+					$sanitize_callback = array( $field, 'sanitize' );
 
-					$sanitize_callback = '';
-
-					if ( is_object( $field_id ) ) {
-						$sanitize_callback = array( $field_id, 'sanitize' );
-
-						$field_id = $field_id->id;
-					}
+					$field_id = $field->id;
 
 					$settings_args = array(
 						'fields_api' => true,
@@ -135,11 +130,7 @@ class WP_Fields_API_Settings_API {
 
 		$description = trim( $control->description );
 
-		// Avoid outputting them in render_content()
-		$control->label       = '';
-		$control->description = '';
-
-		$control->render_content();
+		$control->maybe_render();
 
 		if ( 0 < strlen( $description ) ) {
 			?>

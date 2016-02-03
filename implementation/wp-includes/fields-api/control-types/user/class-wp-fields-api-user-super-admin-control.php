@@ -14,9 +14,14 @@ class WP_Fields_API_User_Super_Admin_Control extends WP_Fields_API_Checkbox_Cont
 	/**
 	 * {@inheritdoc}
 	 */
-	public function render_content() {
+	public $type = 'user-super-admin';
 
-		$profileuser = get_userdata( $this->item_id );
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function render_content() {
+
+		$profileuser = get_userdata( $this->get_item_id() );
 
 		if ( $profileuser->user_email == get_site_option( 'admin_email' ) && is_super_admin( $profileuser->ID ) ) {
 			echo '<p>' . __( 'Super admin privileges cannot be removed because this user has the network admin email.' ) . '</p>';
