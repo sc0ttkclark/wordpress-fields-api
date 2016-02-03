@@ -46,6 +46,43 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 		);
 		$wp_fields->add_field( $this->object_type, 'show_on_front', null, $field_args );
 
+		$field_args = array(
+			'control' => array(
+				'type'        => 'number-inline-desc',
+				'section'     => $this->id . '-options-reading',
+				'label'       => __( 'Blog pages show at most' ),
+				'description' => 'posts',
+				'input_attrs' => array(
+					'id'    => 'posts_per_page',
+					'name'  => 'posts_per_page',
+					'min'   => 1,
+					'step'  => 1,
+					'class' => 'small-text',
+				),
+				'internal'    => true,
+			),
+		);
+		$wp_fields->add_field( $this->object_type, 'posts_per_page', null, $field_args );
+
+		$field_args = array(
+			'control' => array(
+				'type'        => 'number-inline-desc',
+				'section'     => $this->id . '-options-reading',
+				'label'       => __( 'Syndication feeds show the most recent' ),
+				'description' => 'items',
+				'input_attrs' => array(
+					'id'    => 'posts_per_rss',
+					'name'  => 'posts_per_rss',
+					'min'   => 1,
+					'step'  => 1,
+					'class' => 'small-text',
+				),
+				'internal'    => true,
+			),
+		);
+		$wp_fields->add_field( $this->object_type, 'posts_per_rss', null, $field_args );
+
+		// text-inline-desc
 		// @todo we need a control for nested dropdowns for show on front and posts page dropdowns connected to Front Page Display
 
 		// @todo we need a control that is a text control with inline description after for posts per page and posts per page in feeds

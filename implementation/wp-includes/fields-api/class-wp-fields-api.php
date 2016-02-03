@@ -110,6 +110,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-color-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-file-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-number-inline-description.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
@@ -1609,6 +1610,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
 		$this->register_control_type( 'media-file', 'WP_Fields_API_Media_File_Control' );
+		$this->register_control_type( 'number-inline-desc', 'WP_Fields_API_Number_Inline_Description_Control' );
 
 		/**
 		 * Fires once WordPress has loaded, allowing control types to be registered.
