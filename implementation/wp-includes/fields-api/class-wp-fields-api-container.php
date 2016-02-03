@@ -269,6 +269,69 @@ class WP_Fields_API_Container {
 	}
 
 	/**
+	 * Add section to container
+	 *
+	 * @param string                      $id
+	 * @param array|WP_Fields_API_Section $args
+	 *
+	 * @return bool|WP_Error True on success or return error
+	 */
+	public function add_section( $id, $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Set parent
+		$args[ $this->container_type ] = $this->id;
+
+		$added = $wp_fields->add_section( $this->object_type, $id, $this->object_name, $args );
+
+		if ( $added && ! is_wp_error( $added ) ) {
+			// Get and setup section
+			$section = $wp_fields->get_section( $this->object_type, $id, $this->object_name );
+
+			if ( $section && ! is_wp_error( $section ) ) {
+				$this->add_child( $section, 'section' );
+
+				return true;
+			} else {
+				return $section;
+			}
+		}
+
+		return $added;
+
+	}
+
+	/**
+	 * Add sections to container
+	 *
+	 * @param array|WP_Fields_API_Section[] $sections
+	 */
+	public function add_sections( $sections ) {
+
+		foreach ( $sections as $section ) {
+			if ( is_a( $section, 'WP_Fields_API_Section' ) ) {
+				$id = $section->id;
+
+				$section = array();
+			} elseif ( is_array( $section ) ) {
+				$id = $section['id'];
+
+				unset( $section['id'] );
+			} else {
+				// Invalid section
+				continue;
+			}
+
+			$this->add_section( $id, $section );
+		}
+
+	}
+
+	/**
 	 * Get the controls for this container.
 	 *
 	 * @return WP_Fields_API_Control[]
@@ -276,6 +339,69 @@ class WP_Fields_API_Container {
 	public function get_controls() {
 
 		return $this->get_children( 'control' );
+
+	}
+
+	/**
+	 * Add control to container
+	 *
+	 * @param string                      $id
+	 * @param array|WP_Fields_API_Control $args
+	 *
+	 * @return bool|WP_Error True on success or return error
+	 */
+	public function add_control( $id, $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Set parent
+		$args[ $this->container_type ] = $this->id;
+
+		$added = $wp_fields->add_control( $this->object_type, $id, $this->object_name, $args );
+
+		if ( $added && ! is_wp_error( $added ) ) {
+			// Get and setup control
+			$control = $wp_fields->get_control( $this->object_type, $id, $this->object_name );
+
+			if ( $control && ! is_wp_error( $control ) ) {
+				$this->add_child( $control, 'control' );
+
+				return true;
+			} else {
+				return $control;
+			}
+		}
+
+		return $added;
+
+	}
+
+	/**
+	 * Add controls to container
+	 *
+	 * @param array|WP_Fields_API_Control[] $controls
+	 */
+	public function add_controls( $controls ) {
+
+		foreach ( $controls as $control ) {
+			if ( is_a( $control, 'WP_Fields_API_Control' ) ) {
+				$id = $control->id;
+
+				$control = array();
+			} elseif ( is_array( $control ) ) {
+				$id = $control['id'];
+
+				unset( $control['id'] );
+			} else {
+				// Invalid control
+				continue;
+			}
+
+			$this->add_control( $id, $control );
+		}
 
 	}
 
