@@ -50,7 +50,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 global $wp_fields;
 
 // Get form
-$form = $wp_fields->get_form( 'settings', 'writing' );
+$form = $wp_fields->get_form( 'settings', 'reading' );
 ?>
 
 <div class="wrap">
