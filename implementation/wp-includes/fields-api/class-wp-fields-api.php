@@ -567,6 +567,8 @@ final class WP_Fields_API {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
+		$controls = array();
+
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
 			$section = $id;
 
@@ -574,6 +576,13 @@ final class WP_Fields_API {
 		} else {
 			// Save for late init
 			$section = $args;
+
+			if ( isset( $section['controls'] ) ) {
+				$controls = $section['controls'];
+
+				// Remove from section args
+				unset( $section['controls'] );
+			}
 		}
 
 		if ( empty( $object_name ) && ! empty( $object_type ) ) {
@@ -614,6 +623,32 @@ final class WP_Fields_API {
 		}
 
 		self::$sections[ $object_type ][ $object_name ][ $id ] = $section;
+
+		// Controls handling
+		if ( ! empty( $controls ) ) {
+			if ( isset( $controls['id'] ) ) {
+				$controls = array( $controls );
+			}
+
+			foreach ( $controls as $control ) {
+				$control_id = null;
+
+				if ( is_a( $control, 'WP_Fields_API_Section' ) ) {
+					$control->section = $id;
+
+					$control_id = $control->id;
+				} elseif ( is_array( $control ) ) {
+					$control['section'] = $id;
+
+					$control_id = $control['id'];
+				}
+
+				if ( $control_id ) {
+					// Add control for section
+					$this->add_control( $object_type, $control_id, $object_name, $control );
+				}
+			}
+		}
 
 		return true;
 
