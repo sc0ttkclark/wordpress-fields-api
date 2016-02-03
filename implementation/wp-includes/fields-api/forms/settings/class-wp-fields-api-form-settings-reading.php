@@ -45,5 +45,45 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 			),
 		);
 		$wp_fields->add_field( $this->object_type, 'show_on_front', null, $field_args );
+
+		// @todo we need a control for nested dropdowns for show on front and posts page dropdowns connected to Front Page Display
+
+		// @todo we need a control that is a text control with inline description after for posts per page and posts per page in feeds
+
+		$field_args = array(
+			'control' => array(
+				'type'        => 'radio',
+				'section'     => $this->id . '-options-reading',
+				'label'       => __( 'For each article in a feed, show' ),
+				'input_attrs' => array(
+					'id'    => 'rss_use_excerpt',
+					'name'  => 'rss_use_excerpt',
+				),
+				'choices'     => array(
+					'0' => __( 'Full text' ),
+					'1' => __( 'Summary' ),
+				),
+				'internal'    => true,
+			),
+		);
+		$wp_fields->add_field( $this->object_type, 'rss_use_excerpt', null, $field_args );
+
+		$field_args = array(
+			'control' => array(
+				'type'        => 'checkbox',
+				'section'     => $this->id . '-options-reading',
+				'label'       => __( 'Search Engine Visibility' ),
+				'description' => __( 'It is up to search engines to honor this request.' ),
+				'input_attrs' => array(
+					'id'    => 'blog_public',
+					'name'  => 'blog_public',
+				),
+				'choices'     => array(
+					'0' => __( 'Discourage search engines from indexing this site' ),
+				),
+				'internal'    => true,
+			),
+		);
+		$wp_fields->add_field( $this->object_type, 'blog_public', null, $field_args );
 	}
 }
