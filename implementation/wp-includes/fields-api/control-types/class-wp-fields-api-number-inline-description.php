@@ -34,8 +34,8 @@ class WP_Fields_API_Number_Inline_Description_Control extends WP_Fields_API_Cont
 		?>
 		<input type="number" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />&nbsp;
 		<?php
-		if( isset( $this->input_attrs['description' ] ) ) {
-			$this->input_attrs[ 'description' ];
+		if( $this->inline_text ) {
+			echo esc_attr( $this->inline_text );
 		}
 		?>
 		<?php

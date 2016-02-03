@@ -51,7 +51,7 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 				'type'        => 'number-inline-desc',
 				'section'     => $this->id . '-options-reading',
 				'label'       => __( 'Blog pages show at most' ),
-				'description' => 'posts',
+				'inline_text' => 'posts',
 				'input_attrs' => array(
 					'id'    => 'posts_per_page',
 					'name'  => 'posts_per_page',
@@ -69,7 +69,7 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 				'type'        => 'number-inline-desc',
 				'section'     => $this->id . '-options-reading',
 				'label'       => __( 'Syndication feeds show the most recent' ),
-				'description' => 'items',
+				'inline_text' => 'items',
 				'input_attrs' => array(
 					'id'    => 'posts_per_rss',
 					'name'  => 'posts_per_rss',
