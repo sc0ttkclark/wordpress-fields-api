@@ -135,6 +135,48 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	}
 
 	/**
+	 * Set the field on this control
+	 *
+	 * @param string                    $id
+	 * @param array|WP_Fields_API_Field $args
+	 *
+	 * @return bool|WP_Error True on success or return error
+	 */
+	public function set_field( $id, $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Remove field on section
+		$this->remove_children( 'field' );
+
+		// If no Field ID set, generate from current control
+		if ( ! $id ) {
+			$id = $this->id;
+		}
+
+		$added = $wp_fields->add_field( $this->object_type, $id, $this->object_name, $args );
+
+		if ( $added && ! is_wp_error( $added ) ) {
+			// Get and setup field
+			$field = $wp_fields->get_field( $this->object_type, $id, $this->object_name );
+
+			if ( $field && ! is_wp_error( $field ) ) {
+				$this->add_child( $field, 'field' );
+
+				return true;
+			} else {
+				return $field;
+			}
+		}
+
+		return $added;
+
+	}
+
+	/**
 	 * Get choice values
 	 */
 	public function choices() {
