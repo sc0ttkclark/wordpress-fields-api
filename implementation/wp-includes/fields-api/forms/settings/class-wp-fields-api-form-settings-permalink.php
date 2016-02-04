@@ -35,6 +35,34 @@ class WP_Fields_API_Form_Settings_Permalink extends WP_Fields_API_Form_Settings 
 		/**
 		 * Permalink Structure
 		 */
+
+		// @todo add support for a callback to add nested text field (custom permalink structure)
+		$choices = array(
+			'Plain' => array(
+				'value'         => '',
+				'example_text'  => '<code>' . site_url( '?p=123' ) . '</code>',
+			),
+			'Day and name' => array(
+				'value'         => '/%year%/%monthnum%/%day%/%postname%/',
+				'example_text'  => '<code>' . site_url( '?p=123' ) . '</code>',
+			),
+			'Month and name' => array(
+				'value'         => '/%year%/%monthnum%/%postname%/',
+				'example_text'  => '<code>' . site_url( date( 'm/d' ) . '/sample-post/' ) . '</code>',
+			),
+			'Numeric' => array(
+				'value'         => '/archives/%post_id%/',
+				'example_text'  => '<code>' . site_url( 'archives/123/' ) . '</code>',
+			),
+			'Post name' => array(
+				'value'         => '/%postname%/',
+				'example_text'  => '<code>' . site_url( 'sample-post/ ' ) . '</code>',
+			),
+			'Custom Structure' => array(
+				'value'         => 'custom',
+				'example_text'  => '<code>' . site_url() . '</code>'
+			)
+		);
 		$field_args = array(
 			'control' => array(
 				'type'        => 'radio-multi-label',
@@ -42,14 +70,7 @@ class WP_Fields_API_Form_Settings_Permalink extends WP_Fields_API_Form_Settings 
 				'input_attrs' => array(
 					'name'  => 'selection',
 				),
-				'choices'     => array(
-					'<code>' . site_url( '?p=123' ) . '</code>',
-					'/%year%/%monthnum%/%day%/%postname%/' => '<code>' . site_url( date( 'Y/m/d' ) . '/sample-post/' ) . '</code>',
-					'/%year%/%monthnum%/%postname%/' => '<code>' . site_url( date( 'm/d' ) . '/sample-post/' ) . '</code>',
-					'/archives/%post_id%' => '<code>' . site_url( 'archives/123' ) . '</code>',
-					'/%postname%/' => '<code>' . site_url( 'sample-post/ ' ) . '</code>',
-					'custom' => '<code>' . site_url() . '</code>'
-				),
+				'choices'     => $choices,
 				'internal'    => true,
 			),
 		);
