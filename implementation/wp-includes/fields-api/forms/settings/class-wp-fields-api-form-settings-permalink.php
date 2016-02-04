@@ -37,7 +37,7 @@ class WP_Fields_API_Form_Settings_Permalink extends WP_Fields_API_Form_Settings 
 		 */
 		$field_args = array(
 			'control' => array(
-				'type'        => 'radio',
+				'type'        => 'radio-multi-label',
 				'section'     => $this->id . '-options-permalink-common',
 				'input_attrs' => array(
 					'name'  => 'selection',

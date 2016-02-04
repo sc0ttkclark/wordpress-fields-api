@@ -103,6 +103,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-multi-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-multi-label-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-select-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-pages-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-terms-control.php' );
@@ -1603,6 +1604,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );
 		$this->register_control_type( 'multi-checkbox', 'WP_Fields_API_Multi_Checkbox_Control' );
 		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
+		$this->register_control_type( 'radio-multi-label', 'WP_Fields_API_Radio_Multi_Label_Control' );
 		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
 		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
 		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
