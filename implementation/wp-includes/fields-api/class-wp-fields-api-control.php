@@ -55,6 +55,18 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public $type = 'text';
 
 	/**
+	 * Choices callback
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Control::setup_choices()
+	 *
+	 * @var callable Callback is called with one argument, the instance of WP_Fields_API_Control.
+	 *               It returns an array of choices for the control to use.
+	 */
+	public $choices_callback = null;
+
+	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object_type   Object type.
@@ -191,7 +203,11 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public function setup_choices() {
 
 		if ( ! isset( $this->choices ) ) {
-			$choices = $this->choices();
+			if ( is_callable( $this->choices_callback ) ) {
+				$choices = call_user_func( $this->choices_callback, $this );
+			} else {
+				$choices = $this->choices();
+			}
 
 			$this->choices = $choices;
 		}
