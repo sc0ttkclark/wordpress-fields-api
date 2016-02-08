@@ -21,18 +21,17 @@ class WP_Fields_API_Dropdown_Post_Format_Control extends WP_Fields_API_Select_Co
 	 */
 	public function choices() {
 
-		$choices = array(
-			'0'         => __( 'Standard' ),
-			'aside'     => __( 'Aside' ),
-			'chat'      => __( 'Chat' ),
-			'gallery'   => __( 'Gallery' ),
-			'link'      => __( 'Link' ),
-			'image'     => __( 'Image' ),
-			'quote'     => __( 'Quote' ),
-			'status'    => __( 'Status' ),
-			'video'     => __( 'Video' ),
-			'audio'     => __( 'Audio' )
+		$choices = get_post_format_strings();
+
+		// Make 'standard' be '0'
+		$choices = array_merge(
+			array(
+				0 => $choices['standard'],
+			),
+			$choices
 		);
+
+		unset( $choices['standard'] );
 
 		return $choices;
 	}
