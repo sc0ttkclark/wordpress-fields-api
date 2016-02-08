@@ -19,22 +19,6 @@ require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
 if ( ! current_user_can( 'manage_options' ) )
 	wp_die( __( 'You do not have sufficient permissions to manage options for this site.' ) );
 
-/**
- * WP Fields API implementation >>>
- */
-
-/**
- * @var $wp_fields WP_Fields_API
- */
-global $wp_fields;
-
-// Get form
-$form = $wp_fields->get_form( 'settings', 'general' );
-
-/**
- * <<< WP Fields API implementation
- */
-
 $title = __('General Settings');
 $parent_file = 'options-general.php';
 /* translators: date and time format for exact current time, mainly about timezones, see http://php.net/date */
@@ -78,7 +62,14 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		 * WP Fields API implementation >>>
 		 */
 
-		// WP_Fields_API Modifications
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Get form
+		$form = $wp_fields->get_form( 'settings', 'general' );
+
 		// Render form controls
 		$form->maybe_render();
 

@@ -138,15 +138,6 @@ flush_rewrite_rules();
 
 require( ABSPATH . 'wp-admin/admin-header.php' );
 
-/**
- * @var $wp_fields WP_Fields_API
- * WP_Fields_API Modifications
- */
-global $wp_fields;
-
-// Get form
-$form = $wp_fields->get_form( 'settings', 'permalink' );
-
 if ( ! empty( $_GET['settings-updated'] ) ) : ?>
 	<div id="message" class="updated notice is-dismissible"><p><?php
 			if ( ! is_multisite() ) {
@@ -183,7 +174,14 @@ if ( ! empty( $_GET['settings-updated'] ) ) : ?>
 		 * WP Fields API implementation >>>
 		 */
 
-		// WP_Fields_API Modifications
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Get form
+		$form = $wp_fields->get_form( 'settings', 'permalink' );
+
 		// Render form controls
 		$form->maybe_render();
 
@@ -192,10 +190,9 @@ if ( ! empty( $_GET['settings-updated'] ) ) : ?>
 		 */
 		?>
 
-		<?php do_settings_sections('permalink'); ?>
-
 		<?php submit_button(); ?>
 	</form>
+
 	<?php if ( !is_multisite() ) { ?>
 		<?php if ( $iis7_permalinks ) :
 			if ( isset($_POST['submit']) && $permalink_structure && ! $usingpi && ! $writable ) :

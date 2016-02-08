@@ -42,15 +42,6 @@ get_current_screen()->set_help_sidebar(
 );
 
 include( ABSPATH . 'wp-admin/admin-header.php' );
-
-/**
- * @var $wp_fields WP_Fields_API
- * WP_Fields_API Modifications
- */
-global $wp_fields;
-
-// Get form
-$form = $wp_fields->get_form( 'settings', 'reading' );
 ?>
 
 <div class="wrap">
@@ -62,7 +53,14 @@ $form = $wp_fields->get_form( 'settings', 'reading' );
 		 * WP Fields API implementation >>>
 		 */
 
-		// WP_Fields_API Modifications
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Get form
+		$form = $wp_fields->get_form( 'settings', 'reading' );
+
 		// Render form controls
 		$form->maybe_render();
 
