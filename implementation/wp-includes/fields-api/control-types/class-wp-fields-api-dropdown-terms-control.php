@@ -37,7 +37,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $exclude_tree_current_item_id = false;
 
 	/**
-	 * @var string Placeholder text for choices
+	 * @var string Placeholder text for choices (default, "- Select -")
 	 */
 	public $placeholder_text = '';
 
@@ -46,19 +46,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	 */
 	public function choices() {
 
-		/**
-		 * @todo let's create something that filters out the --select--. Use case here is that the term dropdowns on Settings > Writing have --Select-- in the post default category control
-		 *       yet not in the mail default category control.
-		 */
-		$placeholder_text = $this->placeholder_text;
-
-		if ( '' === $placeholder_text ) {
-			$placeholder_text = __( '&mdash; Select &mdash;' );
-		}
-
-		$choices = array(
-			'0' => $placeholder_text,
-		);
+		$choices = array();
 
 		// Handle default taxonomy
 		if ( empty( $this->taxonomy ) && 'term' == $this->object_type && ! empty( $this->object_name ) ) {

@@ -22,7 +22,7 @@ class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control 
 	public $get_args = array();
 
 	/**
-	 * @var string Placeholder text for choices
+	 * @var string Placeholder text for choices (default, "- Select -")
 	 */
 	public $placeholder_text = '';
 
@@ -31,15 +31,7 @@ class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control 
 	 */
 	public function choices() {
 
-		$placeholder_text = $this->placeholder_text;
-
-		if ( '' === $placeholder_text ) {
-			$placeholder_text = __( '&mdash; Select &mdash;' );
-		}
-
-		$choices = array(
-			'0' => $placeholder_text,
-		);
+		$choices = array();
 
 		$args = $this->get_args;
 
