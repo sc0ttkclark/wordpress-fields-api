@@ -26,19 +26,14 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		$wp_fields->add_section( $this->object_type, $this->id . '-options-writing-post-by-email', null, array(
 			'label'         => __( 'Post by Email' ),
 			'form'          => $this->id,
-			'description'   => sprintf( __( 'To post to WordPress by email you must set up a secret email account with POP3 access. Any mail received at this address will be posted, so it’s a good idea to keep this address very secret. Here are three random strings you could use: <code>%1$s</code>, <code>%2$s</code>, <code>%3$s</code>.' ),
-				wp_generate_password( 8, false ),
-				wp_generate_password( 8, false ),
-				wp_generate_password( 8, false )
-			),
+			'description'   => sprintf( __( 'To post to WordPress by email you must set up a secret email account with POP3 access. Any mail received at this address will be posted, so it’s a good idea to keep this address very secret. Here are three random strings you could use: <code>%1$s</code>, <code>%2$s</code>, <code>%3$s</code>.' ), wp_generate_password( 8, false ), wp_generate_password( 8, false ), wp_generate_password( 8, false ) ),
 			'display_label' => true,
 		) );
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-options-writing-update-services', null, array(
 			'label'         => __( 'Update Services' ),
 			'form'          => $this->id,
-			'description'   => sprintf( __( 'When you publish a new post, WordPress automatically notifies the following site update services. For more about this, see <a href="%s">Update Services</a> on the Codex. Separate multiple service URLs with line breaks.'),
-				esc_url( 'https://codex.wordpress.org/Update_Services' ) ),
+			'description'   => sprintf( __( 'When you publish a new post, WordPress automatically notifies the following site update services. For more about this, see <a href="%s">Update Services</a> on the Codex. Separate multiple service URLs with line breaks.' ), esc_url( 'https://codex.wordpress.org/Update_Services' ) ),
 			'display_label' => true,
 		) );
 
@@ -71,8 +66,8 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 				'section'     => $this->id . '-options-writing',
 				'label'       => __( 'Default Post Format' ),
 				'input_attrs' => array(
-					'id'    => 'default_post_format',
-					'name'  => 'default_post_format',
+					'id'   => 'default_post_format',
+					'name' => 'default_post_format',
 				),
 				'internal'    => true,
 			),
@@ -172,6 +167,5 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		);
 		$wp_fields->add_field( $this->object_type, 'ping_sites', null, $field_args );
 	}
-
 
 }

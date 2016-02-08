@@ -93,8 +93,8 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 				'section'     => $this->id . '-options-reading',
 				'label'       => __( 'For each article in a feed, show' ),
 				'input_attrs' => array(
-					'id'    => 'rss_use_excerpt',
-					'name'  => 'rss_use_excerpt',
+					'id'   => 'rss_use_excerpt',
+					'name' => 'rss_use_excerpt',
 				),
 				'choices'     => array(
 					'0' => __( 'Full text' ),
@@ -112,8 +112,8 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 				'label'       => __( 'Search Engine Visibility' ),
 				'description' => __( 'It is up to search engines to honor this request.' ),
 				'input_attrs' => array(
-					'id'    => 'blog_public',
-					'name'  => 'blog_public',
+					'id'   => 'blog_public',
+					'name' => 'blog_public',
 				),
 				'choices'     => array(
 					'0' => __( 'Discourage search engines from indexing this site' ),
