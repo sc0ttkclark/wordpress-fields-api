@@ -43,16 +43,17 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		 */
 		$field_args = array(
 			'control' => array(
-				'type'        => 'dropdown-terms',
-				'taxonomy'    => 'category',
-				'section'     => $this->id . '-options-writing',
-				'label'       => __( 'Default Post Category' ),
-				'input_attrs' => array(
+				'type'             => 'dropdown-terms',
+				'taxonomy'         => 'category',
+				'section'          => $this->id . '-options-writing',
+				'label'            => __( 'Default Post Category' ),
+				'input_attrs'      => array(
 					'class' => 'postform',
 					'id'    => 'default_category',
 					'name'  => 'default_category',
 				),
-				'internal'    => true,
+				'placeholder_text' => null, // Don't show placeholder option
+				'internal'         => true,
 			),
 		);
 		$wp_fields->add_field( $this->object_type, 'default_category', null, $field_args );
@@ -134,16 +135,17 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		 */
 		$field_args = array(
 			'control' => array(
-				'type'        => 'dropdown-terms',
-				'taxonomy'    => 'category',
-				'section'     => $this->id . '-options-writing-post-by-email',
-				'label'       => __( 'Default Mail Category' ),
-				'input_attrs' => array(
+				'type'             => 'dropdown-terms',
+				'taxonomy'         => 'category',
+				'section'          => $this->id . '-options-writing-post-by-email',
+				'label'            => __( 'Default Mail Category' ),
+				'input_attrs'      => array(
 					'class' => 'postform',
 					'id'    => 'default_email_category',
 					'name'  => 'default_email_category',
 				),
-				'internal'    => true,
+				'placeholder_text' => null, // Don't show placeholder option
+				'internal'         => true,
 			),
 		);
 		$wp_fields->add_field( $this->object_type, 'default_email_category', null, $field_args );
