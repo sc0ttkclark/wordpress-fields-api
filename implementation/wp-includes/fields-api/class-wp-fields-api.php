@@ -1604,7 +1604,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );
 		$this->register_control_type( 'multi-checkbox', 'WP_Fields_API_Multi_Checkbox_Control' );
 		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
-		$this->register_control_type( 'radio-multi-label', 'WP_Fields_API_Radio_Multi_Label_Control' );
+		$this->register_control_type( 'radio-multi-label', 'WP_Fields_API_Radio_Multi_Label_Control' ); // @todo Revisit
 		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
 		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
 		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
@@ -1612,7 +1612,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
 		$this->register_control_type( 'media-file', 'WP_Fields_API_Media_File_Control' );
-		$this->register_control_type( 'number-inline-desc', 'WP_Fields_API_Number_Inline_Description_Control' );
+		$this->register_control_type( 'number-inline-desc', 'WP_Fields_API_Number_Inline_Description_Control' ); // @todo Revisit
 
 		/**
 		 * Fires once WordPress has loaded, allowing control types to be registered.
