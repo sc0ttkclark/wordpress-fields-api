@@ -22,6 +22,9 @@ class WP_Fields_API_Form_Settings extends WP_Fields_API_Form {
 		// Render Settings API fields
 		do_settings_sections( $this->id );
 
+		// Enqueue footer scripts
+		$this->enqueue_footer_scripts();
+
 	}
 
 }

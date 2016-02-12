@@ -27,4 +27,15 @@ class WP_Fields_API_Textarea_Control extends WP_Fields_API_Control {
 
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function content_template() {
+
+		?>
+		<textarea name="{{ data.input_name }}" id="{{ data.input_id }}">{{{ data.value }}}</textarea>
+		<?php
+
+	}
+
 }
