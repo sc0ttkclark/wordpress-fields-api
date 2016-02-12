@@ -103,7 +103,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-multi-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-control.php' );
-		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-multi-label-control.php' );
+		//require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-multi-label-control.php' ); // @todo Revisit
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-select-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-pages-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-terms-control.php' );
