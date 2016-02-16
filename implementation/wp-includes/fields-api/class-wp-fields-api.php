@@ -1295,23 +1295,13 @@ final class WP_Fields_API {
 			if ( isset( $control['field'] ) && ( is_a( $control['field'], 'WP_Fields_API_Field' ) || is_array( $control['field'] ) ) ) {
 				$field = $control['field'];
 
-				if ( is_a( $control['field'], 'WP_Fields_API_Field' ) ) {
-					$control['field'] = $control['field']->id;
-				} elseif ( is_array( $control['field'] ) ) {
-					if ( ! empty( $control['field']['id'] ) ) {
-						$control['field'] = $control['field']['id'];
-					} else {
-						$field['id'] = $id;
-
-						$control['field'] = $id;
-					}
+				if ( is_a( $field, 'WP_Fields_API_Field' ) ) {
+					$control['field'] = $field->id;
+				} elseif ( ! empty( $field['id'] ) ) {
+					$control['field'] = $field['id'];
 				} else {
-					$field = array(
-						'id' => $id,
-					);
-
-					// Remove from control args
-					unset( $control['field'] );
+					$field['id']      = $id;
+					$control['field'] = $id;
 				}
 			}
 		}
