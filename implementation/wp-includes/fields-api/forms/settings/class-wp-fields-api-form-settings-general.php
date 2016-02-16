@@ -14,6 +14,34 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function init( $object_type, $id, $args = array() ) {
+
+		parent::init( $object_type, $id, $args );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function enqueue() {
+
+		wp_enqueue_script( 'wp-util' );
+		wp_enqueue_script( 'backbone' );
+		wp_enqueue_script(
+			'fields-api-repeatable-control',
+			WP_FIELDS_API_URL . 'implementation/wp-includes/fields-api/js/repeatable-control.js',
+			array( 'wp-util', 'backbone' ),
+			'0.0.1',
+			true
+		);
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function register_fields( $wp_fields ) {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-options-general', null, array(
@@ -179,7 +207,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 					date_i18n( 'Y-m-d', $current_time ),
 					date_i18n( 'm/d/y', $current_time ),
 					date_i18n( 'd/m/y', $current_time ),
-				)
+				),
 			),
 		);
 		$wp_fields->add_field( $this->object_type, 'date_format', null, $field_args );
@@ -204,7 +232,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 					date( 'g:i a', $current_time ),
 					date( 'g:i A', $current_time ),
 					date( 'H:i', $current_time ),
-				)
+				),
 			),
 		);
 		$wp_fields->add_field( $this->object_type, 'time_format', null, $field_args );
@@ -219,10 +247,10 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 				'label'       => __( 'Week Starts On' ),
 				'internal'    => true,
 				'input_attrs' => array(
-					'id'   => 'start_of_week',
-					'name' => 'start_of_week',
+					'id'        => 'start_of_week',
+					'name'      => 'start_of_week',
 				),
-				'choices'     => array()
+				'choices'     => array(),
 			),
 		);
 

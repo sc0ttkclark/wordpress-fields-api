@@ -78,6 +78,18 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		// None by default
 
+		// @todo Remove this when done testing
+
+		if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) || ! WP_FIELDS_API_EXAMPLES ) {
+			return;
+		}
+
+		// Include control type(s)
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/control-types/custom/class-wp-fields-api-repeater-control.php' );
+
+		// Register control type(s)
+		$wp_fields->register_control_type( 'repeater', 'WP_Fields_API_Repeater_Control' );
+
 	}
 
 	/**
@@ -127,6 +139,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 			// Add example for each control type
 			$control_types = array(
+				'repeater',
 				'text',
 				'textarea',
 				'checkbox',
@@ -160,6 +173,10 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 						'description' => 'Example field description',
 					),
 				);
+
+				if ( 'text' === $control_type ) {
+					$field_args['control']['description'] .= '<br /><a class="button button-secondary add-field" href="#">Add Field</a>';
+				}
 
 				if ( in_array( $control_type, $option_types ) ) {
 					$field_args['control']['choices'] = array(
