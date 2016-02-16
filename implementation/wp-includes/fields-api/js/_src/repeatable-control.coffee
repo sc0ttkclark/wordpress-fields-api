@@ -9,18 +9,11 @@ TextControlModel = Backbone.Model.extend
 
 TextControlView = Backbone.View.extend
 
-	tagName: 'input'
-
 	templateID: 'fields-control-text-content'
 
 	template: ( data ) -> wp.template( @templateID )( data )
 
 	render: -> this.template( @model.toJSON() )
-
-	initialize: ->
-		this.listenTo @model, 'destroy', this.remove
-		this.render()
-
 
 
 
@@ -36,10 +29,7 @@ RepeaterView = Backbone.View.extend
 		event.preventDefault()
 
 		newField = new TextControlView( model: new TextControlModel )
-
-		@$el.append( '<br>' )
-		@$el.append( newField.render() )
-
+		@$el.append( "<br/> #{ newField.render() }" )
 
 
 

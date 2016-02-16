@@ -13,17 +13,12 @@
   });
 
   TextControlView = Backbone.View.extend({
-    tagName: 'input',
     templateID: 'fields-control-text-content',
     template: function(data) {
       return wp.template(this.templateID)(data);
     },
     render: function() {
       return this.template(this.model.toJSON());
-    },
-    initialize: function() {
-      this.listenTo(this.model, 'destroy', this.remove);
-      return this.render();
     }
   });
 
@@ -38,8 +33,7 @@
       newField = new TextControlView({
         model: new TextControlModel
       });
-      this.$el.append('<br>');
-      return this.$el.append(newField.render());
+      return this.$el.append("<br/> " + (newField.render()));
     }
   });
 
