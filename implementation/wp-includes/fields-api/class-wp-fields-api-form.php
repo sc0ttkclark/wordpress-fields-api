@@ -174,10 +174,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					),
 				);
 
-				if ( 'text' === $control_type ) {
-					$field_args['control']['description'] .= '<br /><a class="button button-secondary add-field" href="#">Add Field</a>';
-				}
-
 				if ( in_array( $control_type, $option_types ) ) {
 					$field_args['control']['choices'] = array(
 						''         => 'N/A',

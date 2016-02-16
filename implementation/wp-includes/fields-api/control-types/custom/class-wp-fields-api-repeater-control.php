@@ -42,7 +42,7 @@ class WP_Fields_API_Repeater_Control extends WP_Fields_API_Control {
 		?>
 		<button type="button" class="button button-secondary add-field">Add Field</button>
 		<br />
-		<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?>
+		<input type="text" <?php $this->input_attrs(); ?>
 			value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
 		<?php
 
@@ -54,8 +54,8 @@ class WP_Fields_API_Repeater_Control extends WP_Fields_API_Control {
 	public function content_template() {
 
 		?>
-		<input type="<?php echo esc_attr( $this->type ); ?>" class="repeater-field"
-			id="{{ data.input_id }}" name="{{ data.input_name }}" value="{{ data.value }}" />
+		<input type="text" class="repeater-field" id="{{ data.input_id }}"
+			name="{{ data.input_name }}" value="{{ data.value }}" />
 		<?php
 
 	}
