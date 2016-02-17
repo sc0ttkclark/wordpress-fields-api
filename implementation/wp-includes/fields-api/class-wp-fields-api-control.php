@@ -66,6 +66,8 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public $choices_callback = null;
 
+	private static $printed_templates = array();
+
 	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
@@ -364,14 +366,16 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 *
 	 * This function is only run for control types that have been registered with
 	 * {@see WP_Fields_API::register_control_type()}.
-	 *
-	 * In the future, this will also print the template for the control's container
-	 * element and be override-able.
 	 */
 	public function print_template() {
 
+		if ( in_array( $this->type, self::$printed_templates ) ) {
+			return;
+		}
+
+		self::$printed_templates[] = $this->type;
 ?>
-    <script type="text/html" id="tmpl-fields-<?php echo esc_attr( $this->object_type ); ?>-control-<?php echo esc_attr( $this->type ); ?>-content">
+    <script type="text/html" id="tmpl-fields-control-<?php echo esc_attr( $this->type ); ?>-content">
         <?php $this->content_template(); ?>
     </script>
 <?php
@@ -388,7 +392,9 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public function content_template() {
 
-		// Nothing by default
+		?>
+		<input type="{{ data.type }}" name="{{ data.input_name }}" value="{{ data.value }}" id="{{ data.input_id }}" />
+		<?php
 
 	}
 

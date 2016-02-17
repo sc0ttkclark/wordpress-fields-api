@@ -300,6 +300,24 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					?>
 				</div>
 			<?php
+
+			$this->enqueue_footer_scripts();
+		}
+
+	}
+
+	/**
+	 * Add action to print footer scripts for form
+	 */
+	public function enqueue_footer_scripts() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		if ( ! has_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ) ) ) {
+			add_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ), 5 );
 		}
 
 	}

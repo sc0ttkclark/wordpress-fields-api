@@ -118,6 +118,8 @@ final class WP_Fields_API {
 
 		add_action( 'fields_register', array( $this, 'register_defaults' ) );
 
+		add_action( 'fields_print_footer_scripts', array( $this, 'render_control_templates' ), 1 );
+
 	}
 
 	/**
@@ -1507,7 +1509,7 @@ final class WP_Fields_API {
 		foreach ( self::$registered_control_types as $control_type => $control_class ) {
 			$control = $this->setup_control( null, 'temp', null, array( 'type' => $control_type ) );
 
-			//$control->print_template();
+			$control->print_template();
 		}
 
 	}
@@ -1590,6 +1592,9 @@ final class WP_Fields_API {
 
 		/* Control Types */
 		$this->register_control_type( 'text', 'WP_Fields_API_Control' );
+		$this->register_control_type( 'number', 'WP_Fields_API_Control' );
+		$this->register_control_type( 'email', 'WP_Fields_API_Control' );
+		$this->register_control_type( 'password', 'WP_Fields_API_Control' );
 		$this->register_control_type( 'textarea', 'WP_Fields_API_Textarea_Control' );
 		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );
 		$this->register_control_type( 'multi-checkbox', 'WP_Fields_API_Multi_Checkbox_Control' );
