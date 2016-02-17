@@ -22,7 +22,7 @@ class WP_Fields_API_Dropdown_Posts_Control extends WP_Fields_API_Select_Control 
 	public $post_type;
 
 	/**
-	 * @var array Arguments to send to get_terms
+	 * @var array Arguments to send to WP_Query
 	 */
 	public $get_args = array();
 
