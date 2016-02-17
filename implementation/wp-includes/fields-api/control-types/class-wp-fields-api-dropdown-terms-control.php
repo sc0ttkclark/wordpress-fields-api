@@ -5,7 +5,7 @@
  */
 
 /**
- * Fields API Dropdown Pages Control class.
+ * Fields API Dropdown Terms Control class.
  *
  * @see WP_Fields_API_Control
  */
@@ -64,6 +64,9 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 			$args['exclude_tree'] = $item_id;
 		}
 
+		// @todo Revisit limit later
+		$args['number'] = 100;
+
 		$terms = get_terms( $this->taxonomy, $args );
 
 		if ( $terms && ! is_wp_error( $terms ) ) {
@@ -88,8 +91,19 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 
 		$pad = str_repeat( '&nbsp;', $depth * 3 );
 
+		$taxonomy = '';
+
 		foreach ( $terms as $term ) {
-			if ( $parent == $term->parent ) {
+			$is_hierarchical = false;
+
+			if ( $taxonomy !== $term->taxonomy && is_taxonomy_hierarchical( $term->taxonomy ) ) {
+				$is_hierarchical = true;
+			}
+
+			// Avoid multiple calls to is_taxonomy_hierarchical when terms are using the same taxonomy
+			$taxonomy = $term->taxonomy;
+
+			if ( ! $is_hierarchical || $parent == $term->parent ) {
 				$title = $term->name;
 
 				if ( '' === $title ) {
@@ -99,7 +113,9 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 
 				$choices[ $term->term_id ] = $pad . $title;
 
-				$choices = $this->get_term_choices_recurse( $choices, $terms, $depth + 1, $term->term_id );
+				if ( $is_hierarchical ) {
+					$choices = $this->get_term_choices_recurse( $choices, $terms, $depth + 1, $term->term_id );
+				}
 			}
 		}
 
