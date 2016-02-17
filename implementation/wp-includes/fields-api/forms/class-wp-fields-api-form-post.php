@@ -21,8 +21,26 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 	 */
 	public function register_fields( $wp_fields ) {
 
+		add_action( 'save_post', array( $this, 'wp_save_post' ), 10, 2 );
+
 		// Add example fields (maybe)
 		parent::register_fields( $wp_fields );
+
+	}
+
+	/**
+	 * Save fields based on the current post
+	 *
+	 * @param int     $post_id
+	 * @param WP_Post $post
+	 */
+	public function wp_save_post( $post_id, $post ) {
+
+		remove_action( 'save_post', array( $this, 'wp_save_post' ) );
+
+		$this->save_fields( $post->ID, $post->post_type );
+
+		add_action( 'save_post', array( $this, 'wp_save_post' ) );
 
 	}
 
