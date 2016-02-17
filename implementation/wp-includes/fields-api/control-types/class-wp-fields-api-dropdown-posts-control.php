@@ -80,7 +80,7 @@ class WP_Fields_API_Dropdown_Posts_Control extends WP_Fields_API_Select_Control 
 		$posts = get_posts( $args );
 
 		if ( $posts && ! is_wp_error( $posts ) ) {
-			$choices = $this->get_post_choices_recurse( $choices, $posts );
+			$choices = $this->get_choices_recurse( $choices, $posts );
 		}
 
 		return $choices;
@@ -97,7 +97,7 @@ class WP_Fields_API_Dropdown_Posts_Control extends WP_Fields_API_Select_Control 
 	 *
 	 * @return array
 	 */
-	public function get_post_choices_recurse( $choices, $posts, $depth = 0, $parent = 0 ) {
+	public function get_choices_recurse( $choices, $posts, $depth = 0, $parent = 0 ) {
 
 		$pad = str_repeat( '&nbsp;', $depth * 3 );
 
@@ -124,7 +124,7 @@ class WP_Fields_API_Dropdown_Posts_Control extends WP_Fields_API_Select_Control 
 				$choices[ $post->ID ] = $pad . $title;
 
 				if ( $is_hierarchical ) {
-					$choices = $this->get_post_choices_recurse( $choices, $posts, $depth + 1, $post->ID );
+					$choices = $this->get_choices_recurse( $choices, $posts, $depth + 1, $post->ID );
 				}
 			}
 		}

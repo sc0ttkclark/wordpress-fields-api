@@ -70,7 +70,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 		$terms = get_terms( $this->taxonomy, $args );
 
 		if ( $terms && ! is_wp_error( $terms ) ) {
-			$choices = $this->get_term_choices_recurse( $choices, $terms );
+			$choices = $this->get_choices_recurse( $choices, $terms );
 		}
 
 		return $choices;
@@ -87,7 +87,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	 *
 	 * @return array
 	 */
-	public function get_term_choices_recurse( $choices, $terms, $depth = 0, $parent = 0 ) {
+	public function get_choices_recurse( $choices, $terms, $depth = 0, $parent = 0 ) {
 
 		$pad = str_repeat( '&nbsp;', $depth * 3 );
 
@@ -114,7 +114,7 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 				$choices[ $term->term_id ] = $pad . $title;
 
 				if ( $is_hierarchical ) {
-					$choices = $this->get_term_choices_recurse( $choices, $terms, $depth + 1, $term->term_id );
+					$choices = $this->get_choices_recurse( $choices, $terms, $depth + 1, $term->term_id );
 				}
 			}
 		}
