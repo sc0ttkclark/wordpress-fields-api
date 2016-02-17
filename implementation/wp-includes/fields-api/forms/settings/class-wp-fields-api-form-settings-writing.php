@@ -63,14 +63,15 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		 */
 		$field_args = array(
 			'control' => array(
-				'type'        => 'dropdown-post-format',
-				'section'     => $this->id . '-options-writing',
-				'label'       => __( 'Default Post Format' ),
-				'input_attrs' => array(
+				'type'             => 'dropdown-post-format',
+				'section'          => $this->id . '-options-writing',
+				'label'            => __( 'Default Post Format' ),
+				'input_attrs'      => array(
 					'id'   => 'default_post_format',
 					'name' => 'default_post_format',
 				),
-				'internal'    => true,
+				'placeholder_text' => null, // Show no placeholder text
+				'internal'         => true,
 			),
 		);
 		$wp_fields->add_field( $this->object_type, 'default_post_format', null, $field_args );
