@@ -180,7 +180,7 @@ if ( ! empty( $_GET['settings-updated'] ) ) : ?>
 		global $wp_fields;
 
 		// Get form
-		$form = $wp_fields->get_form( 'settings', 'permalink' );
+		$form = $wp_fields->get_form( 'settings', 'settings-permalink' );
 
 		// Render form controls
 		$form->maybe_render();
