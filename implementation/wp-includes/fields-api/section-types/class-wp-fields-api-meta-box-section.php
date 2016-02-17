@@ -63,8 +63,18 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 
 		$form_id = $object_type . '-edit';
 
+		// Get form
+		$form = $wp_fields->get_form( $object_type, $form_id, $object_name );
+
+		if ( ! $form ) {
+			return;
+		}
+
+		$form->item_id     = $item_id;
+		$form->object_name = $object_name;
+
 		// Get registered sections
-		$sections = $wp_fields->get_sections( $object_type, $object_name, $form_id );
+		$sections = $form->get_sections();
 
 		foreach ( $sections as $section ) {
 			// Skip non meta boxes
@@ -178,11 +188,11 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 
 		$form = $this->get_form();
 
-		if ( $form ) {
-			$form->item_id     = $item_id;
-			$form->object_name = $object_name;
+		if ( ! $form ) {
+			return;
 		}
 
+		$form->item_id     = $item_id;
 		$form->object_name = $object_name;
 
 		$this->maybe_render();
