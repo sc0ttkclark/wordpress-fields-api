@@ -21,7 +21,7 @@ function example_my_user_address( $wp_fields ) {
 
 	$section_id   = 'address';
 	$section_args = array(
-		'title' => __( 'Address', 'my-text-domain' ), // @todo Update text domain
+		'label' => __( 'Address', 'my-text-domain' ), // @todo Update text domain
 		'form'  => $form_id,
 	);
 

@@ -106,6 +106,7 @@ final class WP_Fields_API {
 		//require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-multi-label-control.php' ); // @todo Revisit
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-select-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-pages-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-posts-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-terms-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-post-format-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-color-control.php' );
@@ -1284,7 +1285,7 @@ final class WP_Fields_API {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
-		$field = array();
+		$field = false;
 
 		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
 			$control = $id;
@@ -1297,23 +1298,16 @@ final class WP_Fields_API {
 			if ( isset( $control['field'] ) && ( is_a( $control['field'], 'WP_Fields_API_Field' ) || is_array( $control['field'] ) ) ) {
 				$field = $control['field'];
 
-				if ( is_a( $control['field'], 'WP_Fields_API_Field' ) ) {
-					$control['field'] = $control['field']->id;
-				} elseif ( is_array( $control['field'] ) ) {
-					if ( ! empty( $control['field']['id'] ) ) {
-						$control['field'] = $control['field']['id'];
-					} else {
-						$field['id'] = $id;
-
-						$control['field'] = $id;
-					}
+				if ( is_a( $field, 'WP_Fields_API_Field' ) ) {
+					$control['field'] = $field->id;
+				} elseif ( ! empty( $field['id'] ) ) {
+					$control['field'] = $field['id'];
 				} else {
-					$field = array(
-						'id' => $id,
-					);
+					$control['field'] = $id;
 
-					// Remove from control args
-					unset( $control['field'] );
+					if ( ! is_array( $field ) ) {
+						$field = array();
+					}
 				}
 			}
 		}
@@ -1342,17 +1336,16 @@ final class WP_Fields_API {
 		self::$controls[ $object_type ][ $object_name ][ $id ] = $control;
 
 		// Field handling
-		if ( ! empty( $field ) ) {
-			// Generate Field ID if not set
-			if ( empty( $field['id'] ) ) {
-				$field['id'] = $id;
+		if ( is_array( $field ) ) {
+			$field_id = $id;
+
+			if ( ! empty( $field['id'] ) ) {
+				// Get Field ID
+				$field_id = $field['id'];
+
+				// Field ID from field args
+				unset( $field['id'] );
 			}
-
-			// Get Field ID
-			$field_id = $field['id'];
-
-			// Field ID from field args
-			unset( $field['id'] );
 
 			// Add field for control
 			$this->add_field( $object_type, $field_id, $object_name, $field );
@@ -1612,6 +1605,7 @@ final class WP_Fields_API {
 		//$this->register_control_type( 'radio-multi-label', 'WP_Fields_API_Radio_Multi_Label_Control' ); // @todo Revisit
 		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
 		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
+		$this->register_control_type( 'dropdown-posts', 'WP_Fields_API_Dropdown_Posts_Control' );
 		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
 		$this->register_control_type( 'dropdown-post-format', 'WP_Fields_API_Dropdown_Post_Format_Control' );
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
