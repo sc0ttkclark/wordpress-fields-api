@@ -37,12 +37,9 @@ class WP_Fields_API_Select_Control extends WP_Fields_API_Control {
 
 		// If $placeholder_text is not null, add placeholder to choices
 		if ( null !== $placeholder_text ) {
-			$choices = array_merge(
-				array(
-					'0' => $placeholder_text,
-				),
-				$choices
-			);
+			$choices = array_reverse( $choices, true );
+			$choices['0'] = $placeholder_text;
+			$choices = array_reverse( $choices, true );
 		}
 
 		if ( empty( $choices ) ) {
