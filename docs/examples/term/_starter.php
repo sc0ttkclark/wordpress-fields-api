@@ -21,7 +21,7 @@ function example_my_term_starter( $wp_fields ) {
 
 	$section_id   = ''; // @todo Fill in section ID
 	$section_args = array(
-		'title' => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+		'label' => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
 		'form'  => $form_id,
 	);
 

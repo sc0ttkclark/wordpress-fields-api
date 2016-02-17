@@ -22,11 +22,6 @@ class WP_Fields_API_Dropdown_Pages_Control extends WP_Fields_API_Select_Control 
 	public $get_args = array();
 
 	/**
-	 * @var string Placeholder text for choices (default, "- Select -")
-	 */
-	public $placeholder_text = '';
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function choices() {

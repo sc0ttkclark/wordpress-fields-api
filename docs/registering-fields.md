@@ -45,7 +45,7 @@ $object_name = 'xyz';
 // Section ID and options
 $section_id = 'my-section'; // @todo Fill in section ID
 $section_args = array(
-	'title'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+	'label'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
 	'form' => $form_id,
 );
 
@@ -182,7 +182,7 @@ function example_my_term_xyz( $wp_fields ) {
 
 	$section_id = 'my-section'; // @todo Fill in section ID
 	$section_args = array(
-		'title'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+		'label'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
 		'form' => $form_id,
 	);
 

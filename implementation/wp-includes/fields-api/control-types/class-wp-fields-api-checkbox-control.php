@@ -78,6 +78,21 @@ class WP_Fields_API_Checkbox_Control extends WP_Fields_API_Control {
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function content_template() {
+
+		?>
+		<label>
+			<input type="checkbox" name="{{ data.input_name }}" value="{{ data.checkbox_value }}"
+				id="{{ data.input_id }}" {{{ data.checked }}} />
+			{{ data.label }}
+		</label>
+		<?php
+
+	}
+
+	/**
 	 * Fetch a checkbox value and allows overriding for separation from field value and 'default' value.
 	 *
 	 * @return string The requested checkbox value.

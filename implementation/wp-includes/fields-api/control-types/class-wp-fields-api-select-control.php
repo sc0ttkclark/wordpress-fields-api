@@ -17,9 +17,9 @@ class WP_Fields_API_Select_Control extends WP_Fields_API_Control {
 	public $type = 'select';
 
 	/**
-	 * @var string Placeholder text for choices (default, none)
+	 * @var string Placeholder text for choices (default "- Select -", set to null for none)
 	 */
-	public $placeholder_text = null;
+	public $placeholder_text = '';
 
 	/**
 	 * {@inheritdoc}
@@ -37,12 +37,9 @@ class WP_Fields_API_Select_Control extends WP_Fields_API_Control {
 
 		// If $placeholder_text is not null, add placeholder to choices
 		if ( null !== $placeholder_text ) {
-			$choices = array_merge(
-				array(
-					'0' => $placeholder_text,
-				),
-				$choices
-			);
+			$choices = array_reverse( $choices, true );
+			$choices['0'] = $placeholder_text;
+			$choices = array_reverse( $choices, true );
 		}
 
 		if ( empty( $choices ) ) {
@@ -54,6 +51,23 @@ class WP_Fields_API_Select_Control extends WP_Fields_API_Control {
 			foreach ( $choices as $value => $label )
 				echo '<option value="' . esc_attr( $value ) . '"' . selected( $this->value(), $value, false ) . '>' . $label . '</option>';
 			?>
+		</select>
+		<?php
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function content_template() {
+
+		?>
+		<select name="{{ data.input_name }}" <# if ( data.multiple ) { #> multiple="multiple"<# } #>>
+			<# for ( key in data.options ) { var option = data.options[ key ]; #>
+				<option value="{{ option.value }}" {{{ option.selected }}}>
+					{{ option.label }}
+				</option>
+			<# } #>
 		</select>
 		<?php
 
