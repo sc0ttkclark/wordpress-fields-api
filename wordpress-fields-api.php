@@ -3,7 +3,7 @@
  * Plugin Name: Fields API
  * Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
  * Description: WordPress Fields API prototype and proposal for WordPress core
- * Version: 0.0.6 Beta
+ * Version: 0.0.6 Alpha
  * Author: Scott Kingsley Clark
  * Author URI: http://scottkclark.com/
  * License: GPL2+
@@ -106,8 +106,14 @@ function _wp_fields_api_implementations() {
 	// Settings
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-writing.php' );
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-reading.php' );
+	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-permalink.php' );
 
-	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
+	WP_Fields_API_Form_Settings_General::register( 'settings', 'settings-general' );
+	WP_Fields_API_Form_Settings_Writing::register( 'settings', 'settings-writing' );
+	WP_Fields_API_Form_Settings_Reading::register( 'settings', 'settings-reading' );
+	WP_Fields_API_Form_Settings_Permalink::register( 'settings', 'settings-permalink' );
 
 	// Settings API compatibility
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );
@@ -133,6 +139,9 @@ add_action( 'load-comment.php', '_wp_fields_api_load_include', 999 );
 
 // Settings
 add_action( 'load-options-general.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-writing.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-reading.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-permalink.php', '_wp_fields_api_load_include', 999 );
 
 function _wp_fields_api_load_include() {
 

@@ -46,4 +46,21 @@ class WP_Fields_API_Multi_Checkbox_Control extends WP_Fields_API_Control {
 
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function content_template() {
+
+		?>
+		<# for ( key in data.options ) { var option = data.options[ key ]; #>
+			<label>
+				<input type="checkbox" name="{{ data.input_name }}[]" value="{{ option.value }}"
+					id="{{ data.input_id }}-{{ option.id }}" {{{ option.checked }}} />
+				{{ option.label }}
+			</label>
+		<# } #>
+		<?php
+
+	}
+
 }

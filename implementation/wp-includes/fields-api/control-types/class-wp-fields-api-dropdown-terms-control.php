@@ -5,7 +5,7 @@
  */
 
 /**
- * Fields API Dropdown Pages Control class.
+ * Fields API Dropdown Terms Control class.
  *
  * @see WP_Fields_API_Control
  */
@@ -37,24 +37,11 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $exclude_tree_current_item_id = false;
 
 	/**
-	 * @var string Placeholder text for choices
-	 */
-	public $placeholder_text = '';
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function choices() {
 
-		$placeholder_text = $this->placeholder_text;
-
-		if ( '' === $placeholder_text ) {
-			$placeholder_text = __( '&mdash; Select &mdash;' );
-		}
-
-		$choices = array(
-			'0' => $placeholder_text,
-		);
+		$choices = array();
 
 		// Handle default taxonomy
 		if ( empty( $this->taxonomy ) && 'term' == $this->object_type && ! empty( $this->object_name ) ) {
@@ -77,10 +64,13 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 			$args['exclude_tree'] = $item_id;
 		}
 
+		// @todo Revisit limit later
+		$args['number'] = 100;
+
 		$terms = get_terms( $this->taxonomy, $args );
 
 		if ( $terms && ! is_wp_error( $terms ) ) {
-			$choices = $this->get_term_choices_recurse( $choices, $terms );
+			$choices = $this->get_choices_recurse( $choices, $terms );
 		}
 
 		return $choices;
@@ -97,12 +87,23 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	 *
 	 * @return array
 	 */
-	public function get_term_choices_recurse( $choices, $terms, $depth = 0, $parent = 0 ) {
+	public function get_choices_recurse( $choices, $terms, $depth = 0, $parent = 0 ) {
 
 		$pad = str_repeat( '&nbsp;', $depth * 3 );
 
+		$taxonomy = '';
+
 		foreach ( $terms as $term ) {
-			if ( $parent == $term->parent ) {
+			$is_hierarchical = false;
+
+			if ( $taxonomy !== $term->taxonomy && is_taxonomy_hierarchical( $term->taxonomy ) ) {
+				$is_hierarchical = true;
+			}
+
+			// Avoid multiple calls to is_taxonomy_hierarchical when terms are using the same taxonomy
+			$taxonomy = $term->taxonomy;
+
+			if ( ! $is_hierarchical || $parent == $term->parent ) {
 				$title = $term->name;
 
 				if ( '' === $title ) {
@@ -112,7 +113,9 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 
 				$choices[ $term->term_id ] = $pad . $title;
 
-				$choices = $this->get_term_choices_recurse( $choices, $terms, $depth + 1, $term->term_id );
+				if ( $is_hierarchical ) {
+					$choices = $this->get_choices_recurse( $choices, $terms, $depth + 1, $term->term_id );
+				}
 			}
 		}
 

@@ -40,7 +40,7 @@ class WP_Fields_API_Form_My_XYZ extends WP_Fields_API_Form {
 		$section_id = $this->id . '-my-section';
 		
 		$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, array(
-			'title'  => __( 'My Section', 'my-text-domain' ),
+			'label'  => __( 'My Section', 'my-text-domain' ),
 			'form' => $this->id,
 		) );
 

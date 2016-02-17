@@ -209,65 +209,74 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
 
 		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $form_nonce ) ) {
-			/**
-			 * @var $wp_fields WP_Fields_API
-			 */
-			global $wp_fields;
-
-			$controls = $wp_fields->get_controls( $this->object_type, $this->object_name );
-
 			$values = array();
 
-			foreach ( $controls as $control ) {
-				if ( empty( $control->field ) || $control->internal ) {
-					continue;
+			$sections = $this->get_sections();
+
+			foreach ( $sections as $section ) {
+				$controls = $section->get_controls();
+
+				// Get values, handle validation first
+				foreach ( $controls as $control ) {
+					if ( $control->internal ) {
+						continue;
+					}
+
+					$field = $control->get_field();
+
+					if ( ! $field ) {
+						continue;
+					}
+
+					// Pass $object_name into control
+					$control->object_name = $this->object_name;
+
+					// Pass $object_name into field
+					$field->object_name = $this->object_name;
+
+					// Get value from $_POST
+					$value = null;
+
+					$input_name = $control->id;
+
+					if ( ! empty( $control->input_name ) ) {
+						$input_name = $control->input_name;
+					}
+
+					if ( ! empty( $_POST[ $input_name ] ) ) {
+						$value = $_POST[ $input_name ];
+					}
+
+					// Sanitize
+					$value = $field->sanitize( $value );
+
+					if ( is_wp_error( $value ) ) {
+						return $value;
+					}
+
+					$values[ $field->id ] = $value;
 				}
 
-				// Pass $object_name into control
-				$control->object_name = $this->object_name;
+				// Save values once validation completes
+				foreach ( $controls as $control ) {
+					if ( $control->internal ) {
+						continue;
+					}
 
-				$field = $control->field;
+					$field = $control->get_field();
 
-				// Pass $object_name into field
-				$field->object_name = $this->object_name;
+					if ( ! $field ) {
+						continue;
+					}
 
-				// Get value from $_POST
-				$value = null;
+					$value = $values[ $field->id ];
 
-				$input_name = $control->id;
+					// Save value
+					$success = $field->save( $value );
 
-				if ( ! empty( $control->input_name ) ) {
-					$input_name = $control->input_name;
-				}
-
-				if ( ! empty( $_POST[ $input_name ] ) ) {
-					$value = $_POST[ $input_name ];
-				}
-
-				// Sanitize
-				$value = $field->sanitize( $value );
-
-				if ( is_wp_error( $value ) ) {
-					return $value;
-				}
-
-				$values[ $field->id ] = $value;
-			}
-
-			foreach ( $controls as $control ) {
-				if ( empty( $control->field ) || $control->internal ) {
-					continue;
-				}
-
-				$field = $control->field;
-
-				$value = $values[ $field->id ];
-
-				// Save value
-				$success = $field->save( $value );
-
-				if ( is_wp_error( $success ) ) {
-					return $success;
+					if ( is_wp_error( $success ) ) {
+						return $success;
+					}
 				}
 			}
 		}
@@ -300,6 +309,24 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					?>
 				</div>
 			<?php
+
+			$this->enqueue_footer_scripts();
+		}
+
+	}
+
+	/**
+	 * Add action to print footer scripts for form
+	 */
+	public function enqueue_footer_scripts() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		if ( ! has_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ) ) ) {
+			add_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ), 5 );
 		}
 
 	}
