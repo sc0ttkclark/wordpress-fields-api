@@ -59,4 +59,21 @@ class WP_Fields_API_Select_Control extends WP_Fields_API_Control {
 
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function content_template() {
+
+		?>
+		<select name="{{ data.input_name }}" <# if ( data.multiple ) { #> multiple="multiple"<# } #>>
+			<# for ( key in data.options ) { var option = data.options[ key ]; #>
+				<option value="{{ option.value }}" {{{ option.selected }}}>
+					{{ option.label }}
+				</option>
+			<# } #>
+		</select>
+		<?php
+
+	}
+
 }

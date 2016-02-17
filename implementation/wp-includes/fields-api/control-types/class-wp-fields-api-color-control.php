@@ -36,7 +36,21 @@ class WP_Fields_API_Color_Control extends WP_Fields_API_Control {
 		$this->input_attrs['data-default-color'] = $this->value();
 
 		?>
-		<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
+		<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?>
+			value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
+		<?php
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function content_template() {
+
+		?>
+		<input type="<?php echo esc_attr( $this->type ); ?>" name="{{ data.input_name }}"
+			value="{{ data.value }}" id="{{ data.input_id }}" class="color-picker-hex"
+			placeholder="<?php esc_attr_e( 'Hex Value' ); ?>" data-default-color="{{ data.value }}" />
 		<?php
 
 	}
