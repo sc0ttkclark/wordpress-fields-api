@@ -37,11 +37,6 @@ class WP_Fields_API_Dropdown_Terms_Control extends WP_Fields_API_Select_Control 
 	public $exclude_tree_current_item_id = false;
 
 	/**
-	 * @var string Placeholder text for choices (default, "- Select -")
-	 */
-	public $placeholder_text = '';
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function choices() {

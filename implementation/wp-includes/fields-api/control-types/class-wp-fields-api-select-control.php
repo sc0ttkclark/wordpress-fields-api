@@ -17,9 +17,9 @@ class WP_Fields_API_Select_Control extends WP_Fields_API_Control {
 	public $type = 'select';
 
 	/**
-	 * @var string Placeholder text for choices (default, none)
+	 * @var string Placeholder text for choices (default "- Select -", set to null for none)
 	 */
-	public $placeholder_text = null;
+	public $placeholder_text = '';
 
 	/**
 	 * {@inheritdoc}
