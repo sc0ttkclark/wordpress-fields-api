@@ -157,10 +157,11 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		);
 		$wp_fields->add_field( $this->object_type, 'default_role', null, $field_args );
 
+		// @todo: Custom control for Timezones
+
 		/**
 		 * Date Format
 		 */
-		// @todo Caps Check
 		// @todo custom control type because of nested fields
 		$current_time = time();
 		$field_args   = array(
@@ -186,7 +187,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * Time Format
 		 */
-		// @todo Caps Check
 		// @todo custom control type because of nested fields
 		$current_time = time();
 		$field_args   = array(
@@ -212,7 +212,6 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 		/**
 		 * Week Starts On
 		 */
-		// @todo Caps Check
 		$field_args = array(
 			'control' => array(
 				'type'        => 'select',
@@ -223,17 +222,20 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 					'id'   => 'start_of_week',
 					'name' => 'start_of_week',
 				),
-				'choices'     => array(
-					__( 'Sunday' ),
-					__( 'Monday' ),
-					__( 'Tuesday' ),
-					__( 'Wednesday' ),
-					__( 'Thursday' ),
-					__( 'Friday' ),
-					__( 'Saturday' ),
-				)
+				'choices'     => array()
 			),
 		);
+
+		/**
+		 * @global WP_Locale $wp_locale
+		 */
+		global $wp_locale;
+
+		// @todo Maybe move into choices callback
+		for ( $day_index = 0; $day_index <= 6; $day_index++ ) {
+			$field_args['control']['choices'][ (string) $day_index ] = $wp_locale->get_weekday( $day_index );
+		}
+
 		$wp_fields->add_field( $this->object_type, 'start_of_week', null, $field_args );
 
 		// @todo implement languages dropdown
