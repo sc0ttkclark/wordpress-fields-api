@@ -103,12 +103,15 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-multi-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-control.php' );
+		//require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-multi-label-control.php' ); // @todo Revisit
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-select-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-pages-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-terms-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-post-format-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-color-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-file-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-number-inline-description.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
@@ -1292,23 +1295,12 @@ final class WP_Fields_API {
 			if ( isset( $control['field'] ) && ( is_a( $control['field'], 'WP_Fields_API_Field' ) || is_array( $control['field'] ) ) ) {
 				$field = $control['field'];
 
-				if ( is_a( $control['field'], 'WP_Fields_API_Field' ) ) {
-					$control['field'] = $control['field']->id;
-				} elseif ( is_array( $control['field'] ) ) {
-					if ( ! empty( $control['field']['id'] ) ) {
-						$control['field'] = $control['field']['id'];
-					} else {
-						$field['id'] = $id;
-
-						$control['field'] = $id;
-					}
+				if ( is_a( $field, 'WP_Fields_API_Field' ) ) {
+					$control['field'] = $field->id;
+				} elseif ( ! empty( $field['id'] ) ) {
+					$control['field'] = $field['id'];
 				} else {
-					$field = array(
-						'id' => $id,
-					);
-
-					// Remove from control args
-					unset( $control['field'] );
+					$control['field'] = $id;
 				}
 			}
 		}
@@ -1601,12 +1593,15 @@ final class WP_Fields_API {
 		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );
 		$this->register_control_type( 'multi-checkbox', 'WP_Fields_API_Multi_Checkbox_Control' );
 		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
+		//$this->register_control_type( 'radio-multi-label', 'WP_Fields_API_Radio_Multi_Label_Control' ); // @todo Revisit
 		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
 		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
 		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
+		$this->register_control_type( 'dropdown-post-format', 'WP_Fields_API_Dropdown_Post_Format_Control' );
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
 		$this->register_control_type( 'media-file', 'WP_Fields_API_Media_File_Control' );
+		$this->register_control_type( 'number-inline-desc', 'WP_Fields_API_Number_Inline_Description_Control' ); // @todo Revisit
 
 		/**
 		 * Fires once WordPress has loaded, allowing control types to be registered.
