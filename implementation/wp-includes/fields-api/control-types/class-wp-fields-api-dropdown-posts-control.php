@@ -22,7 +22,7 @@ class WP_Fields_API_Dropdown_Posts_Control extends WP_Fields_API_Select_Control 
 	public $post_type;
 
 	/**
-	 * @var array Arguments to send to WP_Query
+	 * @var array Arguments to send to get_posts
 	 */
 	public $get_args = array();
 
@@ -54,6 +54,8 @@ class WP_Fields_API_Dropdown_Posts_Control extends WP_Fields_API_Select_Control 
 
 		$args = $this->get_args;
 
+		$args['post_type'] = $this->post_type;
+
 		$item_id = $this->get_item_id();
 
 		if ( $this->exclude_current_item_id && 0 < $item_id ) {
@@ -75,7 +77,7 @@ class WP_Fields_API_Dropdown_Posts_Control extends WP_Fields_API_Select_Control 
 		// @todo Revisit limit later
 		$args['posts_per_page'] = 100;
 
-		$posts = get_posts( $this->post_type, $args );
+		$posts = get_posts( $args );
 
 		if ( $posts && ! is_wp_error( $posts ) ) {
 			$choices = $this->get_post_choices_recurse( $choices, $posts );
