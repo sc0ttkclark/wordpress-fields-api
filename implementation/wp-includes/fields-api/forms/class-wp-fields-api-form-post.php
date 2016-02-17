@@ -40,7 +40,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 
 		$this->save_fields( $post->ID, $post->post_type );
 
-		add_action( 'save_post', array( $this, 'wp_save_post' ) );
+		add_action( 'save_post', array( $this, 'wp_save_post' ), 10, 2 );
 
 	}
 
