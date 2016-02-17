@@ -75,28 +75,30 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 
 		$value = $this->value();
 
-		if ( is_object( $this->field ) ) {
-			if ( $this->field->default ) {
+		$field = $this->get_field();
+
+		if ( $field ) {
+			if ( $field->default ) {
 				// Fake an attachment model - needs all fields used by template.
 				// Note that the default value must be a URL, NOT an attachment ID.
 				$type = 'document';
 
-				if ( in_array( substr( $this->field->default, - 3 ), array( 'jpg', 'png', 'gif', 'bmp' ) ) ) {
+				if ( in_array( substr( $field->default, - 3 ), array( 'jpg', 'png', 'gif', 'bmp' ) ) ) {
 					$type = 'image';
 				}
 
 				$default_attachment = array(
 					'id'    => 1,
-					'url'   => $this->field->default,
+					'url'   => $field->default,
 					'type'  => $type,
 					'icon'  => wp_mime_type_icon( $type ),
-					'title' => basename( $this->field->default ),
+					'title' => basename( $field->default ),
 				);
 
 				if ( 'image' === $type ) {
 					$default_attachment['sizes'] = array(
 						'full' => array(
-							'url' => $this->field->default,
+							'url' => $field->default,
 						),
 					);
 				}
@@ -104,7 +106,7 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 				$json['defaultAttachment'] = $default_attachment;
 			}
 
-			if ( $value && $this->field->default && $value === $this->field->default ) {
+			if ( $value && $field->default && $value === $field->default ) {
 				// Set the default as the attachment.
 				$json['attachment'] = $json['defaultAttachment'];
 			} elseif ( $value ) {
