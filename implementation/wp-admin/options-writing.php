@@ -66,7 +66,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		global $wp_fields;
 
 		// Get form
-		$form = $wp_fields->get_form( 'settings', 'writing' );
+		$form = $wp_fields->get_form( 'settings', 'settings-writing' );
 
 		// Render form controls
 		$form->maybe_render();

@@ -110,10 +110,10 @@ function _wp_fields_api_implementations() {
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-reading.php' );
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-permalink.php' );
 
-	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
-	WP_Fields_API_Form_Settings_Writing::register( 'settings', 'writing' );
-	WP_Fields_API_Form_Settings_Reading::register( 'settings', 'reading' );
-	WP_Fields_API_Form_Settings_Permalink::register( 'settings', 'permalink' );
+	WP_Fields_API_Form_Settings_General::register( 'settings', 'settings-general' );
+	WP_Fields_API_Form_Settings_Writing::register( 'settings', 'settings-writing' );
+	WP_Fields_API_Form_Settings_Reading::register( 'settings', 'settings-reading' );
+	WP_Fields_API_Form_Settings_Permalink::register( 'settings', 'settings-permalink' );
 
 	// Settings API compatibility
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );
