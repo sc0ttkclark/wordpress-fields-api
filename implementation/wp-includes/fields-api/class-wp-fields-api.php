@@ -100,6 +100,7 @@ final class WP_Fields_API {
 
 		// Include control types
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-textarea-control.php' );
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-wysiwyg-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-multi-checkbox-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-control.php' );
@@ -1599,6 +1600,7 @@ final class WP_Fields_API {
 		$this->register_control_type( 'email', 'WP_Fields_API_Control' );
 		$this->register_control_type( 'password', 'WP_Fields_API_Control' );
 		$this->register_control_type( 'textarea', 'WP_Fields_API_Textarea_Control' );
+		$this->register_control_type( 'wysiwyg', 'WP_Fields_API_WYSIWYG_Control' );
 		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );
 		$this->register_control_type( 'multi-checkbox', 'WP_Fields_API_Multi_Checkbox_Control' );
 		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
