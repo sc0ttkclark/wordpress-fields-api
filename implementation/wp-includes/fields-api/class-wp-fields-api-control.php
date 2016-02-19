@@ -84,17 +84,9 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 
 		parent::init( $object_type, $id, $args );
 
-		// Setup field
+		// Set field based on control id, if not explicitly set
 		if ( ! $this->field ) {
 			$this->field = $id;
-		}
-
-		if ( $this->field ) {
-			$field = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
-
-			if ( $field ) {
-				$this->add_child( $field );
-			}
 		}
 
 	}
@@ -136,11 +128,22 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public function get_field() {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
 		$fields = $this->get_children( 'field' );
 
 		$field = null;
 
-		if ( $fields ) {
+		if ( ! $fields && $this->field ) {
+			$field = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
+
+			if ( $field ) {
+				$this->add_child( $field );
+			}
+		} elseif ( $fields ) {
 			$field = current( $fields );
 		}
 
