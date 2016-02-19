@@ -165,7 +165,7 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 	 */
 	public function print_template() {
         ?>
-		<script type="text/html" id="tmpl-customize-section-<?php echo $this->type; ?>">
+		<script type="text/html" id="tmpl-customize-section-<?php echo esc_attr( $this->type ); ?>">
 			<?php $this->render_template(); ?>
 		</script>
         <?php
