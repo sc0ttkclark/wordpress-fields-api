@@ -218,7 +218,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 				// Get values, handle validation first
 				foreach ( $controls as $control ) {
-					if ( $control->internal ) {
+					if ( $control->internal && 'readonly' !== $control->type ) {
 						continue;
 					}
 
@@ -259,7 +259,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 				// Save values once validation completes
 				foreach ( $controls as $control ) {
-					if ( $control->internal ) {
+					if ( $control->internal && 'readonly' !== $control->type ) {
 						continue;
 					}
 
