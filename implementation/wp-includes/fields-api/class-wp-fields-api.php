@@ -99,6 +99,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-section.php' );
 
 		// Include control types
+		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-readonly-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-textarea-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-wysiwyg-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-checkbox-control.php' );
@@ -1599,6 +1600,8 @@ final class WP_Fields_API {
 		$this->register_control_type( 'number', 'WP_Fields_API_Control' );
 		$this->register_control_type( 'email', 'WP_Fields_API_Control' );
 		$this->register_control_type( 'password', 'WP_Fields_API_Control' );
+		$this->register_control_type( 'hidden', 'WP_Fields_API_Control' );
+		$this->register_control_type( 'readonly', 'WP_Fields_API_Readonly_Control' );
 		$this->register_control_type( 'textarea', 'WP_Fields_API_Textarea_Control' );
 		$this->register_control_type( 'wysiwyg', 'WP_Fields_API_WYSIWYG_Control' );
 		$this->register_control_type( 'checkbox', 'WP_Fields_API_Checkbox_Control' );

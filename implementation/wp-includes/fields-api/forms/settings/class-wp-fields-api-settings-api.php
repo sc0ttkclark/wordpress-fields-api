@@ -88,11 +88,19 @@ class WP_Fields_API_Settings_API {
 						'control'    => $control,
 					);
 
+					$control_label   = $control->label;
+					$render_callback = array( $this, 'render_control' );
+
+					if ( 'hidden' === $control->type ) {
+						$control_label   = null;
+						$render_callback = '__return_null';
+					}
+
 					// Add Settings API field
 					add_settings_field(
 						$field_id,
-						$control->label,
-						array( $this, 'render_control' ),
+						$control_label,
+						$render_callback,
 						$setting_page_id,
 						$section_id,
 						$settings_args
@@ -126,10 +134,6 @@ class WP_Fields_API_Settings_API {
 		 * @var $control WP_Fields_API_Control
 		 */
 		$control = $settings_args['control'];
-
-		if ( ! $control->check_capabilities() ) {
-			return;
-		}
 
 		$description = trim( $control->description );
 
