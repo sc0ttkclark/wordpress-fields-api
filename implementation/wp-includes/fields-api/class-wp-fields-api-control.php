@@ -320,11 +320,12 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	}
 
 	/**
-	 * Render the custom attributes for the control's input element.
+	 * Get the input attributes for the control's input element.
 	 *
 	 * @access public
+	 * @return array
 	 */
-	public function input_attrs() {
+	public function get_input_attrs() {
 
 		// Setup field id / name
 		if ( ! isset( $this->input_attrs['id'] ) ) {
@@ -341,7 +342,40 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			$this->input_attrs['name'] = $input_name;
 		}
 
-		$this->render_attrs( $this->input_attrs );
+		return $this->input_attrs;
+
+	}
+
+	/**
+	 * Render the custom attributes for the control's input element.
+	 *
+	 * @access public
+	 */
+	public function input_attrs() {
+
+		$this->render_attrs( $this->get_input_attrs() );
+
+	}
+
+	/**
+	 * Get the custom attributes for the control's wrapper element.
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function get_wrap_attrs() {
+
+		if ( ! isset( $this->wrap_attrs['class'] ) || false === strpos( $this->wrap_attrs['class'], 'fields-api-control' ) ) {
+			$classes = 'form-field ' . $this->object_type . '-' . $this->id . '-wrap field-' . $this->id . '-wrap fields-api-control';
+
+			if ( isset( $this->wrap_attrs['class'] ) ) {
+				$classes .= ' ' . $this->wrap_attrs['class'];
+			}
+
+			$this->wrap_attrs['class'] = $classes;
+		}
+
+		return $this->wrap_attrs;
 
 	}
 
@@ -352,15 +386,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public function wrap_attrs() {
 
-		$classes = 'form-field ' . $this->object_type . '-' . $this->id . '-wrap field-' . $this->id . '-wrap fields-api-control';
-
-		if ( isset( $this->wrap_attrs['class'] ) ) {
-			$classes .= ' ' . $this->wrap_attrs['class'];
-		}
-
-		$this->wrap_attrs['class'] = $classes;
-
-		$this->render_attrs( $this->wrap_attrs );
+		$this->render_attrs( $this->get_wrap_attrs() );
 
 	}
 
