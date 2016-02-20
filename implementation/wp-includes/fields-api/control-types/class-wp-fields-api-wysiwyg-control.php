@@ -21,21 +21,12 @@ class WP_Fields_API_WYSIWYG_Control extends WP_Fields_API_Control {
 	 */
 	protected function render_content() {
 		
-		$this->input_attrs();
-		wp_editor( esc_html( $this->value() ), $this->input_attrs['id'] );
-
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render_attrs() {
+		$this->input_attrs = $this->get_input_attrs();
+		$settings = array( 'textarea_name' => $this->input_attrs['name'] );
 		
-		/* don't output anything so that render_content()'s call to input_attrs() just 
-		 * sets up the input_attrs[] array without rendering.
-		 */	
-		return;
-		
+		// actually render the tinyMCE box
+		wp_editor( $this->value(), $this->input_attrs['id'], $settings );
+
 	}
 
 	/**
