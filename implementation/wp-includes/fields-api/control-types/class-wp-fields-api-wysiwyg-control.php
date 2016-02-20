@@ -5,7 +5,7 @@
  */
 
 /**
- * Fields API Textarea Control class.
+ * Fields API WYSIWYG Control class.
  *
  * @see WP_Fields_API_Control
  */
@@ -23,8 +23,6 @@ class WP_Fields_API_WYSIWYG_Control extends WP_Fields_API_Control {
 		
 		$this->input_attrs();
 		wp_editor( esc_html( $this->value() ), $this->input_attrs['id'] );
-		echo '<pre>', var_dump( $this->input_attrs ), "\n", $this->id, "\n", $this->value, '</pre>';
-		spew_var($this);
 
 	}
 
