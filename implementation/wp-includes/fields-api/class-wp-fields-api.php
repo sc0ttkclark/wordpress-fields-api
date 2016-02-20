@@ -117,9 +117,6 @@ final class WP_Fields_API {
 		//require_once( $fields_api_dir . 'control-types/class-wp-fields-api-radio-multi-label-control.php' ); // @todo Revisit
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-select-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-pages-control.php' );
-		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-posts-control.php' );
-		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-terms-control.php' );
-		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-dropdown-post-format-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-color-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-file-control.php' );
@@ -1685,10 +1682,6 @@ final class WP_Fields_API {
 		$this->register_control_type( 'radio', 'WP_Fields_API_Radio_Control' );
 		//$this->register_control_type( 'radio-multi-label', 'WP_Fields_API_Radio_Multi_Label_Control' ); // @todo Revisit
 		$this->register_control_type( 'select', 'WP_Fields_API_Select_Control' );
-		$this->register_control_type( 'dropdown-pages', 'WP_Fields_API_Dropdown_Pages_Control' );
-		$this->register_control_type( 'dropdown-posts', 'WP_Fields_API_Dropdown_Posts_Control' );
-		$this->register_control_type( 'dropdown-terms', 'WP_Fields_API_Dropdown_Terms_Control' );
-		$this->register_control_type( 'dropdown-post-format', 'WP_Fields_API_Dropdown_Post_Format_Control' );
 		$this->register_control_type( 'color', 'WP_Fields_API_Color_Control' );
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
 		$this->register_control_type( 'media-file', 'WP_Fields_API_Media_File_Control' );
@@ -1699,6 +1692,8 @@ final class WP_Fields_API {
 		$this->register_datasource( 'post-type', 'WP_Fields_API_Datasource' );
 		$this->register_datasource( 'post-status', 'WP_Fields_API_Datasource' );
 		$this->register_datasource( 'page-status', 'WP_Fields_API_Datasource' );
+		$this->register_datasource( 'user-role', 'WP_Fields_API_Datasource' );
+		$this->register_datasource( 'admin-color-scheme', 'WP_Fields_API_Admin_Color_Scheme_Datasource' );
 		$this->register_datasource( 'comment', 'WP_Fields_API_Comment_Datasource' );
 		$this->register_datasource( 'page', 'WP_Fields_API_Page_Datasource' );
 		$this->register_datasource( 'post', 'WP_Fields_API_Post_Datasource' );

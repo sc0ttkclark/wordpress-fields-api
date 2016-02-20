@@ -336,7 +336,23 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		$class = 'fields-control fields-control-' . $this->type;
 		?>
 			<div id="<?php echo esc_attr( $id ); ?>" class="<?php echo esc_attr( $class ); ?>">
-				<?php $this->render_content(); ?>
+				<?php
+					$render_control = true;
+
+					// Check if datasource will override control rendering
+					if ( $this->datasource ) {
+						$datasource = $this->get_datasource();
+
+						if ( true === $datasource->render_control( $this ) ) {
+							$render_control = false;
+						}
+					}
+
+					// Check if we need to render this control
+					if ( $render_control ) {
+						$this->render_content();
+					}
+				?>
 			</div>
 		<?php
 
@@ -347,8 +363,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 *
 	 * Allows the content to be overridden without having to rewrite the wrapper in $this->render().
 	 *
-	 * Supports basic input types `text`, `checkbox`, `textarea`, `radio`, `select` and `dropdown-pages`.
-	 * Additional input types such as `email`, `url`, `number`, `hidden` and `date` are supported implicitly.
+	 * Supports input types such as `text`, `email`, `url`, `number`, `hidden` and `date` implicitly.
 	 *
 	 * Control content can alternately be rendered in JS. See {@see WP_Fields_API_Control::print_template()}.
 	 */

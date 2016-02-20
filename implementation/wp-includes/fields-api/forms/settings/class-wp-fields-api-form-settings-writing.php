@@ -43,8 +43,13 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		 */
 		$field_args = array(
 			'control' => array(
-				'type'             => 'dropdown-terms',
-				'taxonomy'         => 'category',
+				'type'             => 'select',
+				'datasource'       => array(
+					'type' => 'term',
+					'args' => array(
+						'taxonomy' => 'category',
+					),
+				),
 				'section'          => $this->id . '-options-writing',
 				'label'            => __( 'Default Post Category' ),
 				'input_attrs'      => array(
@@ -63,7 +68,8 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		 */
 		$field_args = array(
 			'control' => array(
-				'type'             => 'dropdown-post-format',
+				'type'             => 'select',
+				'datasource'       => 'post-format', // @todo Post format needs to be filtered to set 'standard' key as '0' key, see below
 				'section'          => $this->id . '-options-writing',
 				'label'            => __( 'Default Post Format' ),
 				'input_attrs'      => array(
@@ -75,6 +81,16 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 			),
 		);
 		$wp_fields->add_field( $this->object_type, 'default_post_format', null, $field_args );
+
+		/**
+			// @todo Post format filter to set 'standard' => '0' key
+			// Make 'standard' be '0' and add to the front
+			$choices = array_reverse( $choices, true );
+			$choices['0'] = $choices['standard'];
+			$choices = array_reverse( $choices, true );
+
+			unset( $choices['standard'] );
+		 */
 
 		/**
 		 * Mail Server
@@ -136,8 +152,13 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		 */
 		$field_args = array(
 			'control' => array(
-				'type'             => 'dropdown-terms',
-				'taxonomy'         => 'category',
+				'type'             => 'select',
+				'datasource'       => array(
+					'type' => 'term',
+					'args' => array(
+						'taxonomy' => 'category',
+					),
+				),
 				'section'          => $this->id . '-options-writing-post-by-email',
 				'label'            => __( 'Default Mail Category' ),
 				'input_attrs'      => array(

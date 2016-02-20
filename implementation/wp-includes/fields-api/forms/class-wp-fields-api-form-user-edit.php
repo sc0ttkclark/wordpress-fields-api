@@ -19,8 +19,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$control_type_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/control-types/user/';
 
 		// Include control types
-		require_once $control_type_dir . 'class-wp-fields-api-user-color-scheme-control.php';
-		require_once $control_type_dir . 'class-wp-fields-api-user-role-control.php';
 		require_once $control_type_dir . 'class-wp-fields-api-user-super-admin-control.php';
 		require_once $control_type_dir . 'class-wp-fields-api-user-display-name-control.php';
 		require_once $control_type_dir . 'class-wp-fields-api-user-email-control.php';
@@ -29,8 +27,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		require_once $control_type_dir . 'class-wp-fields-api-user-capabilities-control.php';
 
 		// Register control types
-		$wp_fields->register_control_type( 'user-color-scheme', 'WP_Fields_API_User_Color_Scheme_Control' );
-		$wp_fields->register_control_type( 'user-role', 'WP_Fields_API_User_Role_Control' );
 		$wp_fields->register_control_type( 'user-super-admin', 'WP_Fields_API_User_Super_Admin_Control' );
 		$wp_fields->register_control_type( 'user-display-name', 'WP_Fields_API_User_Display_Name_Control' );
 		$wp_fields->register_control_type( 'user-email', 'WP_Fields_API_User_Email_Control' );
@@ -75,7 +71,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 
 		$field_args = array(
 			'control' => array(
-				'type'                  => 'user-color-scheme',
+				'type'                  => 'radio',
+				'datasource'            => 'admin-color-scheme',
 				'section'               => $this->id . '-personal-options',
 				'label'                 => __( 'Admin Color Scheme' ),
 				'description'           => __( 'Disable the visual editor when writing' ),
@@ -141,7 +138,9 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 
 		$field_args = array(
 			'control' => array(
-				'type'                  => 'user-role',
+				'type'                  => 'select',
+				'datasource'            => 'user-role',
+				'placeholder_text'      =>__( '&mdash; No role for this site &mdash;' ),
 				'section'               => $this->id . '-name',
 				'label'                 => __( 'Role' ),
 				'capabilities_callback' => array( $this, 'capability_show_roles' ),

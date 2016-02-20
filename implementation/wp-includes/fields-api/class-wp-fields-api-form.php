@@ -133,8 +133,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				'multi-checkbox',
 				'radio',
 				'select',
-				'dropdown-pages',
-				'dropdown-terms',
 				'color',
 				'media',
 				'media-file',
@@ -176,10 +174,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					}
 				} elseif ( 'checkbox' == $control_type ) {
 					$field_args['control']['checkbox_label'] = 'Example checkbox label';
-				}
-
-				if ( 'dropdown-terms' == $control_type ) {
-					$field_args['control']['taxonomy'] = 'category';
 				}
 
 				$wp_fields->add_field( $this->object_type, $field_id, $this->object_name, $field_args );

@@ -103,23 +103,51 @@ class WP_Fields_API_Datasource {
 
 			case 'post-format':
 				$data = get_post_format_strings();
+
 				break;
 
 			case 'post-type':
 				$data = get_post_types();
+
 				break;
 
 			case 'post-status':
 				$data = get_post_statuses();
+
 				break;
 
 			case 'page-status':
 				$data = get_page_statuses();
+
+				break;
+
+			case 'user-role':
+				$editable_roles = array_reverse( get_editable_roles() );
+
+				foreach ( $editable_roles as $role => $details ) {
+					$name = translate_user_role( $details['name'] );
+
+					$data[ $role ] = $name;
+				}
+
 				break;
 
 		}
 
 		return $data;
+
+	}
+
+	/**
+	 * Allow a datasource to override rendering of a control
+	 *
+	 * @param WP_Fields_API_Control $control
+	 *
+	 * @return bool Whether rendering of control has been overridden
+	 */
+	public function render_control( $control ) {
+
+		return false;
 
 	}
 
