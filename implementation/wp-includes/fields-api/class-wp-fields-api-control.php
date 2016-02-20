@@ -55,6 +55,14 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public $type = 'text';
 
 	/**
+	 * Datasource type for control
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $datasource;
+
+	/**
 	 * Choices callback
 	 *
 	 * @access public
@@ -94,6 +102,59 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		if ( ! $this->field ) {
 			$this->field = $id;
 		}
+
+		// Setup datasource
+		if ( $this->datasource ) {
+			$datasource_type = null;
+			$datasource_args = null;
+
+			if ( is_string( $this->datasource ) ) {
+				$datasource_type = $this->datasource;
+			} else {
+				$datasource_args = $this->datasource;
+			}
+
+			$this->datasource = $wp_fields->setup_datasource( $datasource_type, $datasource_args );
+		}
+
+	}
+
+	/**
+	 * Get associated datasource
+	 *
+	 * @return null|WP_Fields_API_Datasource
+	 */
+	public function get_datasource() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$datasources = $this->get_children( 'datasource' );
+
+		$datasource = null;
+
+		if ( ! $datasources && $this->datasource ) {
+			$datasource_type = null;
+			$datasource_args = null;
+
+			if ( is_string( $this->datasource ) ) {
+				$datasource_type = $this->datasource;
+			} else {
+				$datasource_args = $this->datasource;
+			}
+
+			$datasource = $wp_fields->setup_datasource( $datasource_type, $datasource_args );
+
+			if ( $datasource ) {
+				$this->add_child( $datasource, 'datasource' );
+			}
+		} elseif ( $datasources ) {
+			$datasource = current( $datasources );
+		}
+
+		return $datasource;
 
 	}
 

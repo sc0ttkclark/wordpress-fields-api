@@ -78,6 +78,14 @@ final class WP_Fields_API {
 	protected static $registered_control_types = array();
 
 	/**
+	 * Datasources that may be used.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected static $registered_datasources = array();
+
+	/**
 	 * Include the library and bootstrap.
 	 *
 	 * @constructor
@@ -91,8 +99,9 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'class-wp-fields-api-container.php' );
 		require_once( $fields_api_dir . 'class-wp-fields-api-form.php' );
 		require_once( $fields_api_dir . 'class-wp-fields-api-section.php' );
-		require_once( $fields_api_dir . 'class-wp-fields-api-control.php' );
 		require_once( $fields_api_dir . 'class-wp-fields-api-field.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-control.php' );
+		require_once( $fields_api_dir . 'class-wp-fields-api-datasource.php' );
 
 		// Include section types
 		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-table-section.php' );
@@ -115,6 +124,13 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-media-file-control.php' );
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-number-inline-description.php' );
+
+		// Include datasources
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-comment-datasource.php' );
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-page-datasource.php' );
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-post-datasource.php' );
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-term-datasource.php' );
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-user-datasource.php' );
 
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
@@ -1432,7 +1448,6 @@ final class WP_Fields_API {
 			 * @var $control WP_Fields_API_Control
 			 */
 			$control = new $control_class( $object_type, $id, $args );
-
 		}
 
 		if ( $control ) {
@@ -1516,6 +1531,67 @@ final class WP_Fields_API {
 
 			$control->print_template();
 		}
+
+	}
+
+	/**
+	 * Setup the datasource.
+	 *
+	 * @access public
+	 *
+	 * @param string $type Datasource type.
+	 * @param array  $args Datasource arguments.
+	 *
+	 * @return WP_Fields_API_Control|null $control The control object.
+	 */
+	public function setup_datasource( $type, $args = null ) {
+
+		$datasource = null;
+
+		$datasource_class = 'WP_Fields_API_Datasource';
+
+		if ( is_a( $args, $datasource_class ) ) {
+			$datasource = $args;
+		} else {
+			if ( is_array( $args ) && ! empty( $args['type'] ) ) {
+				$type = $args['type'];
+
+				unset( $args['type'] );
+			}
+
+			if ( ! empty( self::$registered_datasources[ $type ] ) ) {
+				$datasource_class = self::$registered_datasources[ $type ];
+			} elseif ( in_array( $type, self::$registered_datasources ) ) {
+				$datasource_class = $type;
+			}
+
+			/**
+			 * @var $datasource WP_Fields_API_Datasource
+			 */
+			$datasource = new $datasource_class( $type, $args );
+		}
+
+		return $datasource;
+
+	}
+
+	/**
+	 * Register a datasource type.
+	 *
+	 * @access public
+	 *
+	 * @see    WP_Fields_API_Datasource
+	 *
+	 * @param string $type             Datasource type ID.
+	 * @param string $datasource_class Name of a custom datasource which is a subclass of WP_Fields_API_Datasource.
+	 */
+	public function register_datasource( $type, $datasource_class = null ) {
+
+		if ( null === $datasource_class ) {
+			$datasource_class = $type;
+		}
+
+		self::$registered_datasources[ $type ] = $datasource_class;
 
 	}
 
@@ -1617,6 +1693,17 @@ final class WP_Fields_API {
 		$this->register_control_type( 'media', 'WP_Fields_API_Media_Control' );
 		$this->register_control_type( 'media-file', 'WP_Fields_API_Media_File_Control' );
 		$this->register_control_type( 'number-inline-desc', 'WP_Fields_API_Number_Inline_Description_Control' ); // @todo Revisit
+
+		/* Datasources */
+		$this->register_datasource( 'post-format', 'WP_Fields_API_Datasource' );
+		$this->register_datasource( 'post-type', 'WP_Fields_API_Datasource' );
+		$this->register_datasource( 'post-status', 'WP_Fields_API_Datasource' );
+		$this->register_datasource( 'page-status', 'WP_Fields_API_Datasource' );
+		$this->register_datasource( 'comment', 'WP_Fields_API_Comment_Datasource' );
+		$this->register_datasource( 'page', 'WP_Fields_API_Page_Datasource' );
+		$this->register_datasource( 'post', 'WP_Fields_API_Post_Datasource' );
+		$this->register_datasource( 'term', 'WP_Fields_API_Term_Datasource' );
+		$this->register_datasource( 'user', 'WP_Fields_API_User_Datasource' );
 
 		/**
 		 * Fires once WordPress has loaded, allowing control types to be registered.
