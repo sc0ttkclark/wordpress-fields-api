@@ -18,9 +18,32 @@ class WP_Fields_API_Datasource {
 	/**
 	 * Arguments to send to the datasource or callback
 	 *
+	 * @access public
 	 * @var array
 	 */
-	public $args = array();
+	public $get_args = array();
+
+	/**
+	 * Display in hierarchical context (if datasource supports it)
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public $hierarchical = false;
+
+	/**
+	 * Hierarchical fields for datasource
+	 *
+	 * @access public
+	 * @var array
+	 */
+	public $hierarchical_fields = array(
+		'id'            => 'id',
+		'parent'        => 'parent',
+		'title'         => 'title',
+		'default_title' => '',
+	);
+
 
 	/**
 	 * Choices callback
@@ -48,12 +71,13 @@ class WP_Fields_API_Datasource {
 		}
 
 		if ( $args ) {
-			// If source has default args, merge them
-			if ( $this->args ) {
-				$args = array_merge( $this->args, $args );
+			foreach ( $args as $property => $value ) {
+				if ( $this->{$property} && is_array( $this->{$property} ) ) {
+					$this->{$property} = array_merge( $this->{$property}, $value );
+				} else {
+					$this->{$property} = $value;
+				}
 			}
-
-			$this->args = $args;
 		}
 
 	}
@@ -67,8 +91,8 @@ class WP_Fields_API_Datasource {
 	 */
 	public function get_data( $args = array() ) {
 
-		// Allow overriding of $this->args values on-the-fly
-		$args = array_merge( $this->args, $args );
+		// Allow overriding of $this->get_args values on-the-fly
+		$args = array_merge( $this->get_args, $args );
 
 		// Handle callback
 		if ( $this->data_callback && is_callable( $this->data_callback ) ) {
@@ -148,6 +172,94 @@ class WP_Fields_API_Datasource {
 	public function render_control( $control ) {
 
 		return false;
+
+	}
+
+	/**
+	 * Recursively build data array the full depth
+	 *
+	 * @param array $data   List of data.
+	 * @param array $items  List of items.
+	 * @param int   $depth  Current depth.
+	 * @param int   $parent Current parent item ID.
+	 *
+	 * @return array|WP_Error
+	 */
+	public function setup_data_recurse( $data, $items, $depth = 0, $parent = 0 ) {
+
+		if ( is_wp_error( $items ) ) {
+			return $items;
+		}
+
+		$pad = str_repeat( '&nbsp;', $depth * 3 );
+
+		// Get hierarchical fields for datasource
+		$data_id_field = $this->hierarchical_fields['id'];
+		$data_parent_field = $this->hierarchical_fields['parent'];
+		$data_title_field = $this->hierarchical_fields['title'];
+		$data_default_title = $this->hierarchical_fields['default_title'];
+
+		$data_type = '';
+
+		if ( '' === $data_default_title ) {
+			/* translators: %d: ID of an item */
+			$data_default_title = __( '#%d (no title)' );
+		}
+
+		/**
+		 * @var $item array|object
+		 */
+		foreach ( $items as $item ) {
+			$item_title = '';
+			$is_hierarchical = $this->hierarchical;
+
+			// Disable hierarchical data if current post type / taxonomy is not hierarchical
+			if ( $is_hierarchical ) {
+				if ( is_a( $item, 'WP_Term' ) ) {
+					if ( $data_type !== $item->taxonomy && ! is_taxonomy_hierarchical( $item->taxonomy ) ) {
+						$is_hierarchical = false;
+					}
+				} elseif ( is_a( $item, 'WP_Post' ) ) {
+					if ( $data_type !== $item->post_type && ! is_post_type_hierarchical( $item->post_type ) ) {
+						$is_hierarchical = false;
+					}
+				}
+			}
+
+			if ( is_object( $item ) && isset( $item->{$data_id_field} ) && isset( $item->{$data_parent_field} ) ) {
+				if ( isset( $item->{$data_title_field} ) ) {
+					$item_title = $item->{$data_title_field};
+				}
+
+				$item_id = $item->{$data_id_field};
+				$item_parent = $item->{$data_parent_field};
+			} elseif ( is_array( $item ) && isset( $item[ $data_id_field ] ) && isset( $item[ $data_parent_field ] ) ) {
+				if ( isset( $item[ $data_title_field ] ) ) {
+					$item_title = $item[ $data_title_field ];
+				}
+
+				$item_id = $item[ $data_id_field ];
+				$item_parent = $item[ $data_parent_field ];
+			} else {
+				continue;
+			}
+
+			if ( $is_hierarchical && $parent != $item_parent ) {
+				continue;
+			}
+
+			if ( '' === $item_title ) {
+				$item_title = sprintf( $data_default_title, $item_id );
+			}
+
+			$data[ $item_id ] = $pad . $item_title;
+
+			if ( $is_hierarchical ) {
+				$data = $this->setup_data_recurse( $data, $items, $depth + 1, $item_id );
+			}
+		}
+
+		return $data;
 
 	}
 

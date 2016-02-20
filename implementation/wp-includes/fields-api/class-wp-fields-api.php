@@ -124,8 +124,8 @@ final class WP_Fields_API {
 
 		// Include datasources
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-comment-datasource.php' );
-		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-page-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-post-datasource.php' );
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-page-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-term-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-user-datasource.php' );
 
@@ -1695,8 +1695,8 @@ final class WP_Fields_API {
 		$this->register_datasource( 'user-role', 'WP_Fields_API_Datasource' );
 		$this->register_datasource( 'admin-color-scheme', 'WP_Fields_API_Admin_Color_Scheme_Datasource' );
 		$this->register_datasource( 'comment', 'WP_Fields_API_Comment_Datasource' );
-		$this->register_datasource( 'page', 'WP_Fields_API_Page_Datasource' );
 		$this->register_datasource( 'post', 'WP_Fields_API_Post_Datasource' );
+		$this->register_datasource( 'page', 'WP_Fields_API_Page_Datasource' );
 		$this->register_datasource( 'term', 'WP_Fields_API_Term_Datasource' );
 		$this->register_datasource( 'user', 'WP_Fields_API_User_Datasource' );
 

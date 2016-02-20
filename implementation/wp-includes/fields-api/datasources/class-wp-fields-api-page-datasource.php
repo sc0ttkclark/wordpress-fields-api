@@ -9,7 +9,7 @@
  *
  * @see WP_Fields_API_Datasource
  */
-class WP_Fields_API_Page_Datasource extends WP_Fields_API_Datasource {
+class WP_Fields_API_Page_Datasource extends WP_Fields_API_Post_Datasource {
 
 	/**
 	 * {@inheritdoc}
@@ -21,10 +21,9 @@ class WP_Fields_API_Page_Datasource extends WP_Fields_API_Datasource {
 	 */
 	public function setup_data( $args ) {
 
-		$data = array();
+		$items = get_pages( $args );
 
-		// get_pages with $args
-		// format key=>value
+		$data = $this->setup_data_recurse( array(), $items );
 
 		return $data;
 

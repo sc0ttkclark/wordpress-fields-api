@@ -19,6 +19,21 @@ class WP_Fields_API_Term_Datasource extends WP_Fields_API_Datasource {
 	/**
 	 * {@inheritdoc}
 	 */
+	public $hierarchical = true;
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public $hierarchical_fields = array(
+		'id'            => 'term_id',
+		'parent'        => 'parent',
+		'title'         => 'name',
+		'default_title' => '',
+	);
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function setup_data( $args ) {
 
 		$data = array();
