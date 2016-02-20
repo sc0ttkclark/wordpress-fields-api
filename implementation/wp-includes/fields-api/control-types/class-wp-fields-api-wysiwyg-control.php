@@ -21,9 +21,23 @@ class WP_Fields_API_WYSIWYG_Control extends WP_Fields_API_Control {
 	 */
 	protected function render_content() {
 		
+		$this->input_attrs();
 		wp_editor( esc_html( $this->value() ), $this->input_attrs['id'] );
+		echo '<pre>', var_dump( $this->input_attrs ), "\n", $this->id, "\n", $this->value, '</pre>';
+		spew_var($this);
 
+	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function render_attrs() {
+		
+		/* don't output anything so that render_content()'s call to input_attrs() just 
+		 * sets up the input_attrs[] array without rendering.
+		 */	
+		return;
+		
 	}
 
 	/**
