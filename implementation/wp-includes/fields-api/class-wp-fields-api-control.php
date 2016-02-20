@@ -66,6 +66,12 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public $choices_callback = null;
 
+	/**
+	 * List of control types that have had their templates printed to screen
+	 *
+	 * @access private
+	 * @var array
+	 */
 	private static $printed_templates = array();
 
 	/**
@@ -141,7 +147,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			$field = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
 
 			if ( $field ) {
-				$this->add_child( $field );
+				$this->add_child( $field, 'field' );
 			}
 		} elseif ( $fields ) {
 			$field = current( $fields );
