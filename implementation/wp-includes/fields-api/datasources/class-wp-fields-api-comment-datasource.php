@@ -19,7 +19,7 @@ class WP_Fields_API_Comment_Datasource extends WP_Fields_API_Datasource {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setup_data( $args ) {
+	protected function setup_data( $args, $control ) {
 
 		$data = array();
 

@@ -19,7 +19,7 @@ class WP_Fields_API_Page_Datasource extends WP_Fields_API_Post_Datasource {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setup_data( $args ) {
+	protected function setup_data( $args, $control ) {
 
 		$items = get_pages( $args );
 

@@ -19,7 +19,7 @@ class WP_Fields_API_Admin_Color_Scheme_Datasource extends WP_Fields_API_Datasour
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setup_data( $args ) {
+	protected function setup_data( $args, $control ) {
 
 		$data = array();
 

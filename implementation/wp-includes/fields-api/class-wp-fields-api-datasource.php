@@ -85,27 +85,28 @@ class WP_Fields_API_Datasource {
 	/**
 	 * Setup and return data from the datasource
 	 *
-	 * @param array $args (optional) Override datasource args values on-the-fly
+	 * @param array                 $args    Override datasource args values on-the-fly
+	 * @param WP_Fields_API_Control $control Control object
 	 *
 	 * @return array|WP_Error An array of data, or a WP_Error if there was a problem
 	 */
-	public function get_data( $args = array() ) {
+	public function get_data( $args = array(), $control = null ) {
 
 		// Allow overriding of $this->get_args values on-the-fly
 		$args = array_merge( $this->get_args, $args );
 
 		// Handle callback
 		if ( $this->data_callback && is_callable( $this->data_callback ) ) {
-			$data = call_user_func( $this->data_callback, $args, $this );
+			$data = call_user_func( $this->data_callback, $args, $control, $this );
 		} else {
-			$data = $this->setup_data( $args );
+			$data = $this->setup_data( $args, $control );
 		}
 
 		// @todo Needs hook doc
-		$data = apply_filters( 'fields_api_datasource_data', $data, $this->type, $args, $this );
+		$data = apply_filters( 'fields_api_datasource_data', $data, $this->type, $args, $control, $this );
 
 		// @todo Needs hook doc
-		$data = apply_filters( "fields_api_datasource_data_{$this->type}", $data, $this->type, $args, $this );
+		$data = apply_filters( "fields_api_datasource_data_{$this->type}", $data, $this->type, $args, $control, $this );
 
 		return $data;
 
@@ -114,11 +115,12 @@ class WP_Fields_API_Datasource {
 	/**
 	 * Get data from the datasource
 	 *
-	 * @param array $args Datasource args
+	 * @param array                 $args    Datasource args
+	 * @param WP_Fields_API_Control $control Control object
 	 *
 	 * @return array|WP_Error An array of data, or a WP_Error if there was a problem
 	 */
-	public function setup_data( $args ) {
+	protected function setup_data( $args, $control ) {
 
 		$data = array();
 

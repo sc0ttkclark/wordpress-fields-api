@@ -32,6 +32,11 @@ class WP_Fields_API_Post_Datasource extends WP_Fields_API_Datasource {
 	);
 
 	/**
+	 * @var string Post type name
+	 */
+	public $post_type;
+
+	/**
 	 * @var bool Whether to exclude current item ID from list
 	 */
 	public $exclude_current_item_id = false;
@@ -44,32 +49,50 @@ class WP_Fields_API_Post_Datasource extends WP_Fields_API_Datasource {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setup_data( $args ) {
+	protected function setup_data( $args, $control ) {
 
-		/*$item_id = $this->get_item_id();
+		$data = array();
 
-		if ( $this->exclude_current_item_id && 0 < $item_id ) {
-			if ( ! isset( $args['post__not_in'] ) ) {
-				$args['post__not_in'] = array();
+		if ( $control ) {
+			// Handle default taxonomy
+			if ( empty( $this->post_type ) && 'term' == $control->object_type && ! empty( $control->object_name ) ) {
+				$this->post_type = $control->object_name;
 			}
 
-			$args['post__not_in'][] = $item_id;
+			// Handle exclusion
+			$item_id = $control->get_item_id();
+
+			if ( $this->exclude_current_item_id && 0 < $item_id ) {
+				if ( ! isset( $args['post__not_in'] ) ) {
+					$args['post__not_in'] = array();
+				}
+
+				$args['post__not_in'][] = $item_id;
+			}
+
+			if ( $this->exclude_tree_current_item_id && 0 < $item_id ) {
+				if ( ! isset( $args['post__not_in'] ) ) {
+					$args['post_parent__not_in'] = array();
+				}
+
+				$args['post_parent__not_in'][] = $item_id;
+			}
 		}
 
-		if ( $this->exclude_tree_current_item_id && 0 < $item_id ) {
-			if ( ! isset( $args['post__not_in'] ) ) {
-				$args['post_parent__not_in'] = array();
-			}
-
-			$args['post_parent__not_in'][] = $item_id;
-		}*/
+		if ( $this->post_type ) {
+			// Set post type
+			$args['post_type'] = $this->post_type;
+		} elseif ( empty( $args['post_type'] ) ) {
+			// Return empty data if no post type set
+			return $data;
+		}
 
 		// @todo Revisit limit later
 		$args['posts_per_page'] = 100;
 
 		$items = get_posts( $args );
 
-		$data = $this->setup_data_recurse( array(), $items );
+		$data = $this->setup_data_recurse( $data, $items );
 
 		return $data;
 

@@ -265,7 +265,18 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public function choices() {
 
-		return array();
+		$data = array();
+
+		// If control has a datasource, use it for getting the data
+		if ( $this->datasource ) {
+			// Get datasource
+			$datasource = $this->get_datasource();
+
+			// Get data from datasource
+			$data = $datasource->get_data( array(), $this );
+		}
+
+		return $data;
 
 	}
 
