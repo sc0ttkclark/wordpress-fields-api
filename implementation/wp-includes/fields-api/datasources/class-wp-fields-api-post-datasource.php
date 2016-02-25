@@ -54,8 +54,8 @@ class WP_Fields_API_Post_Datasource extends WP_Fields_API_Datasource {
 		$data = array();
 
 		if ( $control ) {
-			// Handle default taxonomy
-			if ( empty( $this->post_type ) && 'term' == $control->object_type && ! empty( $control->object_name ) ) {
+			// Handle default post type
+			if ( empty( $this->post_type ) && 'post' == $control->object_type && ! empty( $control->object_name ) ) {
 				$this->post_type = $control->object_name;
 			}
 
