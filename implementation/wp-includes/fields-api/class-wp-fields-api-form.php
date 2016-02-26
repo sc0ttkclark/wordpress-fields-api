@@ -132,6 +132,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			$section_args = array(
 				'label'    => __( 'Fields API Example - My Fields', 'fields-api' ),
 				'form'     => $this->id,
+				'controls' => array(),
 			);
 
 			if ( 1 < $total_examples ) {
@@ -141,8 +142,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			if ( in_array( $this->object_type, array( 'post', 'comment' ) ) ) {
 				$section_args['type'] = 'meta-box';
 			}
-
-			$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
 
 			// Add example for each control type
 			$control_types = array(
@@ -166,22 +165,18 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			);
 
 			foreach ( $control_types as $control_type ) {
-				$field_id = 'example_my_' . $x . '_' . $control_type . '_field';
-				$label    = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
-
-				$field_args = array(
+				$control_id = $this->id . '-example_my_' . $x . '_' . $control_type . '_field';
+				$control_args = array(
 					// Add a control to the field at the same time
 					'control' => array(
 						'type'        => $control_type,
-						'id'          => $this->id . '-' . $field_id,
-						'section'     => $section_id,
-						'label'       => $label,
+						'label'       => sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) ),
 						'description' => 'Example field description',
 					),
 				);
 
 				if ( in_array( $control_type, $option_types ) ) {
-					$field_args['control']['choices'] = array(
+					$control_args['choices'] = array(
 						''         => 'N/A',
 						'option-1' => 'Option 1',
 						'option-2' => 'Option 2',
@@ -191,18 +186,20 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					);
 
 					if ( 'multi-checkbox' == $control_type ) {
-						unset( $field_args['control']['choices'][''] );
+						unset( $control_args['choices'][''] );
 					}
 				} elseif ( 'checkbox' == $control_type ) {
-					$field_args['control']['checkbox_label'] = 'Example checkbox label';
+					$control_args['checkbox_label'] = 'Example checkbox label';
 				}
 
 				if ( 'dropdown-terms' == $control_type ) {
-					$field_args['control']['taxonomy'] = 'category';
+					$control_args['taxonomy'] = 'category';
 				}
 
-				$wp_fields->add_field( $this->object_type, $field_id, $this->object_name, $field_args );
+				$section_args['controls'][ $control_id ] = $control_args;
 			}
+
+			$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
 		}
 
 	}
