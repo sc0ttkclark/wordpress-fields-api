@@ -8,9 +8,9 @@ You should be familiar with the normal [Fields API Registration](https://github.
 
 Sections are groupings of controls that give context to what they are for.
 
-### Registering sections
+### Registering sections and controls
 
-Sections can be registered through the `fields_register` action, using code like this:
+Sections and controls can be registered together through the `fields_register` action, using code like this:
 
 ```php
 // Object type and Form ID
