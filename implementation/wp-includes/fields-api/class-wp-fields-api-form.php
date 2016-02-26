@@ -29,6 +29,25 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	public $default_section_type = 'table';
 
 	/**
+	 * Get all controls for sections in this container.
+	 *
+	 * @return WP_Fields_API_Control[]
+	 */
+	public function get_controls() {
+
+		$sections = $this->get_sections();
+
+		$form_controls = array();
+
+		foreach ( $sections as $section ) {
+			$form_controls = array_merge( $form_controls, $section->get_controls() );
+		}
+
+		return $form_controls;
+
+	}
+
+	/**
 	 * Register forms, sections, controls, and fields
 	 *
 	 * @param string      $object_type
