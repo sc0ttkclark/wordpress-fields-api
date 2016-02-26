@@ -28,13 +28,10 @@ $section_args = array(
 	'form' => $form_id,
 	'controls' => array(
 		// List of controls for this section
-		array(
-			'id'          => 'my-control',
+		'my-control' => array(
 			'type'        => 'text', // @todo Change control type if needed
-			'section'     => $section_id,
 			'label'       => __( 'My Field', 'my-text-domain' ), // @todo Fill in label, update text domain
 			'description' => __( 'Description of My Field', 'my-text-domain' ), // @todo Fill in description, update text domain
-			'field'       => 'my-field', // @todo Fill in field ID
 		),
 	),
 );
