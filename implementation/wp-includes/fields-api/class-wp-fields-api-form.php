@@ -224,10 +224,18 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			$sections = $this->get_sections();
 
 			foreach ( $sections as $section ) {
+				if ( ! $section->check_capabilities() ) {
+					continue;
+				}
+
 				$controls = $section->get_controls();
 
 				// Get values, handle validation first
 				foreach ( $controls as $control ) {
+					if ( ! $control->check_capabilities() ) {
+						continue;
+					}
+
 					if ( $control->internal && 'readonly' !== $control->type ) {
 						continue;
 					}
@@ -275,7 +283,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 					$field = $control->get_field();
 
-					if ( ! $field ) {
+					if ( ! $field || ! isset( $values[ $field->id ] ) ) {
 						continue;
 					}
 
