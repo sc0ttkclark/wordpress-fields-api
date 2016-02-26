@@ -638,9 +638,7 @@ final class WP_Fields_API {
 				$controls = array( $controls );
 			}
 
-			foreach ( $controls as $control ) {
-				$control_id = null;
-
+			foreach ( $controls as $control_id => $control ) {
 				if ( is_a( $control, 'WP_Fields_API_Section' ) ) {
 					$control->section = $id;
 
@@ -648,7 +646,12 @@ final class WP_Fields_API {
 				} elseif ( is_array( $control ) ) {
 					$control['section'] = $id;
 
-					$control_id = $control['id'];
+					if ( ! empty( $control['id'] ) ) {
+						$control_id = $control['id'];
+					}
+				} else {
+					// Invalid control
+					$control_id = null;
 				}
 
 				if ( $control_id ) {
@@ -1297,10 +1300,18 @@ final class WP_Fields_API {
 			// Save for late init
 			$control = $args;
 
-			if ( isset( $control['field'] ) && ( is_a( $control['field'], 'WP_Fields_API_Field' ) || is_array( $control['field'] ) ) ) {
-				$field = $control['field'];
+			// Add a field automatically for every control unless it's referencing another field already
+			if ( ! isset( $control['field'] ) || ( is_a( $control['field'], 'WP_Fields_API_Field' ) || is_array( $control['field'] ) ) ) {
+				$field = null;
+
+				if ( isset( $control['field'] ) ) {
+					$field = $control['field'];
+				}
 
 				if ( is_a( $field, 'WP_Fields_API_Field' ) ) {
+					/**
+					 * @var $field WP_Fields_API_Field
+					 */
 					$control['field'] = $field->id;
 				} elseif ( ! empty( $field['id'] ) ) {
 					$control['field'] = $field['id'];
