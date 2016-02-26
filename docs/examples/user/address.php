@@ -21,90 +21,59 @@ function example_my_user_address( $wp_fields ) {
 
 	$section_id   = 'address';
 	$section_args = array(
-		'label' => __( 'Address', 'my-text-domain' ), // @todo Update text domain
-		'form'  => $form_id,
+		'label'    => __( 'Address', 'my-text-domain' ), // @todo Update text domain
+		'form'     => $form_id,
+		'controls' => array(), // We will add our controls below
 	);
-
-	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
 
 	// Address Line 1
-	$field_id   = 'address_1';
-	$field_args = array(
-		'control' => array(
-			'type'    => 'text',
-			'section' => $section_id,
-			'label'   => __( 'Address 1', 'my-text-domain' ), // @todo Update text domain
-		),
+	$section_args['controls']['address_1'] = array(
+		'type'    => 'text',
+		'label'   => __( 'Address 1', 'my-text-domain' ), // @todo Update text domain
 	);
-
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
 
 	// Address Line 2
-	$field_id   = 'address_2';
-	$field_args = array(
-		'control' => array(
-			'type'    => 'text',
-			'section' => $section_id,
-			'label'   => __( 'Address 2', 'my-text-domain' ), // @todo Update text domain
-		),
+	$section_args['controls']['address_2'] = array(
+		'type'    => 'text',
+		'label'   => __( 'Address 2', 'my-text-domain' ), // @todo Update text domain
 	);
-
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
 
 	// City
-	$field_id   = 'address_city';
-	$field_args = array(
-		'control' => array(
-			'type'    => 'text',
-			'section' => $section_id,
-			'label'   => __( 'City', 'my-text-domain' ), // @todo Update text domain
-		),
+	$section_args['controls']['address_city'] = array(
+		'type'    => 'text',
+		'label'   => __( 'City', 'my-text-domain' ), // @todo Update text domain
 	);
-
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
 
 	// State / Region
-	$field_id   = 'address_state';
-	$field_args = array(
-		'control' => array(
-			'type'    => 'text',
-			'section' => $section_id,
-			'label'   => __( 'State / Region', 'my-text-domain' ), // @todo Update text domain
-			// You could use 'select' type instead and then
-			// pass in all states in 'choices' option with array( 'TX' => 'Texas' )
-		),
+	$section_args['controls']['address_state'] = array(
+		'type'    => 'text',
+		'label'   => __( 'State / Region', 'my-text-domain' ), // @todo Update text domain
+		// You could also use 'select' type and set the 'datasource' or 'choices' option
 	);
 
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
-
 	// Zip / Postal Code
-	$field_id   = 'address_zip';
-	$field_args = array(
-		'control' => array(
-			'type'    => 'text',
-			'section' => $section_id,
-			'label'   => __( 'Zip / Postal Code', 'my-text-domain' ), // @todo Update text domain
-		),
+	$section_args['controls']['address_zip'] = array(
+		'type'    => 'text',
+		'label'   => __( 'Zip / Postal Code', 'my-text-domain' ), // @todo Update text domain
 	);
 
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
-
 	// Zip / Postal Code
-	$field_id   = 'address_country';
-	$field_args = array(
-		'control' => array(
-			'type'    => 'select',
-			'section' => $section_id,
-			'label'   => __( 'Country', 'my-text-domain' ), // @todo Update text domain
-			'choices' => array(
-				'US' => 'United States',
-				'CA' => 'Canada',
-				// Add more here as needed, or use 'text' type instead for freeform
+	$section_args['controls']['address_country'] = array(
+		'type'       => 'select',
+		'label'      => __( 'Country', 'my-text-domain' ), // @todo Update text domain
+		'datasource' => array(
+			// Get list of Countries from taxonomy datasource
+			'type'     => 'term',
+			'get_args' => array(
+				'taxonomy' => 'country'
 			),
 		),
+		// You could also pass in all countries in 'choices' option
+		// with array( 'US' => 'United States' )
 	);
 
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+	// Add the section
+	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
 
 }
 
