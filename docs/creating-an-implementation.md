@@ -31,30 +31,37 @@ class WP_Fields_API_Form_My_XYZ extends WP_Fields_API_Form {
 	 * {@inheritdoc}
 	 */
 	public function register_fields( $wp_fields ) {
+
+		// Set Object type to this one
+		$object_type = $this->object_type;
 	
-		////////////////
-		// My Section //
-		////////////////
-
-		// May be useful to reference $this->id (Form ID) if using across multiple object names
-		$section_id = $this->id . '-my-section';
-		
-		$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, array(
-			'label'  => __( 'My Section', 'my-text-domain' ),
-			'form' => $this->id,
-		) );
-
-		$field_id = 'my-field';
-		$field_args = array(
-			'control' => array(
-				'type'        => 'text',
-				'section'     => $section_id,
-				'label'       => __( 'My Field', 'my-text-domain' ),
-				'description' => __( 'This is a description for My Field.', 'my-text-domain' ),
-			),
+		// Set Object name to this one
+		$object_name = $this->object_name;
+	
+		// Set Form ID to this one
+		$form_id = $this->id;
+	
+		/////////////////////////
+		// Section: My Section //
+		/////////////////////////
+	
+		$section_id   = 'my-section'; // @todo Update section ID
+		$section_args = array(
+			'label'    => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+			'form'     => $form_id,
+			'controls' => array(), // We will add our controls below
 		);
-
-		$wp_fields->add_field( $this->object_type, $field_id, $this->object_name, $field_args );
+	
+		// My Field
+		// @todo Update control ID
+		$section_args['controls']['my-field'] = array(
+			'type'        => 'text', // @todo Change control type if needed
+			'label'       => __( '', 'my-text-domain' ), // @todo Fill in label, update text domain
+			'description' => __( '', 'my-text-domain' ), // @todo Fill in description, update text domain
+		);
+	
+		// Add the section
+		$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
 
 	}
 
