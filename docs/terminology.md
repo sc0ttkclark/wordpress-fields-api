@@ -36,6 +36,10 @@ Control types are the types of controls that are registered and available for ge
 
 See [Registering Fields](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md) for more details and examples.
 
+### Datasources
+
+Datasources are used by multiple option Control types to provide data in an abstract way. Some are included with the Fields API, but custom datasources can also be registered for advanced usage.
+
 ## Fields
 
 Fields handle getting and saving of values and should be namespaced properly (`{my_}field_name`) for your project. They should be unique for the object type and object name you use it on, otherwise it will be overwritten each time a duplicate one is added.
