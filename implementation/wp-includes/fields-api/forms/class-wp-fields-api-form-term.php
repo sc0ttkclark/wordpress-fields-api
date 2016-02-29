@@ -68,8 +68,8 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'input_name'                   => 'parent',
 			'type'                         => 'select',
 			'datasource'                   => array(
-				'type' => 'term',
-				'args' => array(
+				'type'     => 'term',
+				'get_args' => array(
 					'taxonomy' => 'category',
 				),
 			),

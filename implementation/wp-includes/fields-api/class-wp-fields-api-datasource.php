@@ -72,7 +72,7 @@ class WP_Fields_API_Datasource {
 
 		if ( $args ) {
 			foreach ( $args as $property => $value ) {
-				if ( $this->{$property} && is_array( $this->{$property} ) ) {
+				if ( isset( $this->{$property} ) && is_array( $this->{$property} ) ) {
 					$this->{$property} = array_merge( $this->{$property}, $value );
 				} else {
 					$this->{$property} = $value;
