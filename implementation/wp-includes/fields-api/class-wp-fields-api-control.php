@@ -343,10 +343,17 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	protected function render() {
 
-		$id    = 'fields-control-' . str_replace( '[', '-', str_replace( ']', '', $this->id ) );
-		$class = 'fields-control fields-control-' . $this->type;
+		$attrs = array(
+			'id'    => 'fields-control-' . str_replace( '[', '-', str_replace( ']', '', $this->id ) ),
+			'class' => 'fields-control fields-control-' . $this->type,
+		);
+
+		$input_attrs = $this->get_input_attrs();
+
+		$attrs['data-fields-type']       = $this->type;
+		$attrs['data-fields-input-name'] = $input_attrs['name'];
 		?>
-			<div id="<?php echo esc_attr( $id ); ?>" class="<?php echo esc_attr( $class ); ?>">
+			<div <?php $this->render_attrs( $attrs ); ?>>
 				<?php
 					$render_control = true;
 
@@ -480,6 +487,16 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public function wrap_attrs() {
 
 		$this->render_attrs( $this->get_wrap_attrs() );
+
+	}
+
+	/**
+	 * Enqueue scripts/styles as needed.
+	 *
+	 * @access public
+	 */
+	public function enqueue() {
+
 
 	}
 
