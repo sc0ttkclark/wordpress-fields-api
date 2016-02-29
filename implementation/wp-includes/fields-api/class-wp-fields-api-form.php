@@ -281,6 +281,11 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 						$value = $_POST[ $input_name ];
 					}
 
+					// Handle saving repeatable fields, they are always arrays of values
+					if ( $control->repeatable && null !== $value ) {
+						$value = (array) $value;
+					}
+
 					// Sanitize
 					$value = $field->sanitize( $value );
 
