@@ -14,6 +14,34 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function init( $object_type, $id, $args = array() ) {
+
+		parent::init( $object_type, $id, $args );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function enqueue() {
+
+		wp_enqueue_script( 'wp-util' );
+		wp_enqueue_script( 'backbone' );
+		wp_enqueue_script(
+			'fields-api-repeatable-control',
+			WP_FIELDS_API_URL . 'implementation/wp-includes/fields-api/js/repeatable-control.js',
+			array( 'wp-util', 'backbone' ),
+			'0.0.1',
+			true
+		);
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function register_fields( $wp_fields ) {
 
 		$wp_fields->add_section( $this->object_type, $this->id . '-options-general', null, array(
