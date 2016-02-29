@@ -288,7 +288,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					$value = $values[ $field->id ];
 
 					// Save value
-					$success = $field->save( $value );
+					$success = $field->save( $value, $item_id );
 
 					if ( is_wp_error( $success ) ) {
 						return $success;
