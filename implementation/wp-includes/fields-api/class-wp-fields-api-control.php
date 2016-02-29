@@ -556,6 +556,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 * @access public
 	 */
 	public function enqueue() {
+
 		if ( $this->repeatable ) {
 			wp_enqueue_script( 'wp-util' );
 			wp_enqueue_script( 'backbone' );
