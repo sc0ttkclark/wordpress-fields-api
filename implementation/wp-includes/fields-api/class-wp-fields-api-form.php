@@ -97,18 +97,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		// None by default
 
-		// @todo Remove this when done testing
-
-		if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) || ! WP_FIELDS_API_EXAMPLES ) {
-			return;
-		}
-
-		// Include control type(s)
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/control-types/custom/class-wp-fields-api-repeater-control.php' );
-
-		// Register control type(s)
-		$wp_fields->register_control_type( 'repeater', 'WP_Fields_API_Repeater_Control' );
-
 	}
 
 	/**
