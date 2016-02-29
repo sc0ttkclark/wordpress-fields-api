@@ -304,12 +304,16 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	final public function value() {
 
-		$field = $this->get_field();
-
 		$value = null;
 
-		if ( $field ) {
-			$value = $field->value( $this->get_item_id() );
+		if ( null !== $this->value_override ) {
+			$value = $this->value_override;
+		} else {
+			$field = $this->get_field();
+
+			if ( $field ) {
+				$value = $field->value( $this->get_item_id() );
+			}
 		}
 
 		return $value;
