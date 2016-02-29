@@ -165,6 +165,11 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 	 */
 	public function render_meta_box( $object, $box ) {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
 		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) ) {
 			return;
 		}
@@ -204,6 +209,11 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 
 		$this->maybe_render();
+
+		// Render control templates
+		if ( ! has_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ) ) ) {
+			add_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ), 5 );
+		}
 
 	}
 
