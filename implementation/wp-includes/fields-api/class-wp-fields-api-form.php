@@ -163,14 +163,12 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			);
 
 			foreach ( $control_types as $control_type ) {
-				$control_id = $this->id . '-example_my_' . $x . '_' . $control_type . '_field';
+				$control_id   = $this->id . '-example_my_' . $x . '_' . $control_type . '_field';
 				$control_args = array(
 					// Add a control to the field at the same time
-					'control' => array(
-						'type'        => $control_type,
-						'label'       => sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) ),
-						'description' => 'Example field description',
-					),
+					'type'        => $control_type,
+					'label'       => sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) ),
+					'description' => 'Example field description',
 				);
 
 				if ( in_array( $control_type, $option_types ) ) {
@@ -321,16 +319,16 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		if ( ! empty( $sections ) ) {
 			?>
-				<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?> form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
-					<?php
-						foreach ( $sections as $section ) {
-							// Pass $object_name into section
-							$section->object_name = $this->object_name;
+			<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?> form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
+				<?php
+				foreach ( $sections as $section ) {
+					// Pass $object_name into section
+					$section->object_name = $this->object_name;
 
-							$section->maybe_render();
-						}
-					?>
-				</div>
+					$section->maybe_render();
+				}
+				?>
+			</div>
 			<?php
 
 			// Render control templates
