@@ -131,10 +131,6 @@ final class WP_Fields_API {
 		// Register our wp_loaded() first before WP_Customize_Manage::wp_loaded()
 		add_action( 'wp_loaded', array( $this, 'wp_loaded' ), 9 );
 
-		add_action( 'fields_register', array( $this, 'register_defaults' ) );
-
-		add_action( 'fields_print_footer_scripts', array( $this, 'render_control_templates' ), 1 );
-
 	}
 
 	/**
@@ -160,6 +156,9 @@ final class WP_Fields_API {
 	 * @access public
 	 */
 	public function wp_loaded() {
+
+		// Register default controls
+		$this->register_defaults();
 
 		/**
 		 * Fires when the Fields API is available, and components can be registered.
@@ -1530,6 +1529,13 @@ final class WP_Fields_API {
 	 */
 	public function render_control_templates() {
 
+		static $rendered;
+
+		// Only render once
+		if ( ! empty( $rendered ) ) {
+			return;
+		}
+
 		/**
 		 * @var $control WP_Fields_API_Control
 		 */
@@ -1538,6 +1544,8 @@ final class WP_Fields_API {
 
 			$control->print_template();
 		}
+
+		$rendered = true;
 
 	}
 
