@@ -829,15 +829,6 @@ class WP_Fields_API_Container {
 	}
 
 	/**
-	 * Enqueue scripts/styles as needed.
-	 */
-	public function enqueue() {
-
-		// Default is to do nothing
-
-	}
-
-	/**
 	 * Get the container contents.
 	 *
 	 * @return string Contents of the container.
@@ -873,6 +864,11 @@ class WP_Fields_API_Container {
 
 		if ( ! $this->check_capabilities() ) {
 			return;
+		}
+
+		// Enqueue assets
+		if ( method_exists( $this, 'enqueue' ) ) {
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 		}
 
 		/**
