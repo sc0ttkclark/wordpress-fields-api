@@ -53,7 +53,7 @@
 			jQuery( event.srcElement ).closest( '.fields-repeatable-input' ).remove();
 
 		}
-										 } );
+	} );
 
 	new RepeaterView;
 
