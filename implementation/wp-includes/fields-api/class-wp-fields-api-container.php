@@ -249,7 +249,7 @@ class WP_Fields_API_Container {
 		}
 
 		foreach ( $args as $property => $value ) {
-			if ( $this->{$property} && is_array( $this->{$property} ) ) {
+			if ( isset( $this->{$property} ) && is_array( $this->{$property} ) ) {
 				$this->{$property} = array_merge( $this->{$property}, $value );
 			} else {
 				$this->{$property} = $value;
@@ -867,8 +867,8 @@ class WP_Fields_API_Container {
 		}
 
 		// Enqueue assets
-		if ( method_exists( $this, 'enqueue' ) ) {
-			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+		if ( method_exists( $this, 'enqueue' ) && ! has_action( 'admin_footer', array( $this, 'enqueue' ) ) ) {
+			add_action( 'admin_footer', array( $this, 'enqueue' ) );
 		}
 
 		/**
