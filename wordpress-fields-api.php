@@ -28,6 +28,7 @@ if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_G
  * The absolute server path to the fields API directory.
  */
 define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WP_FIELDS_API_URL', plugin_dir_url( __FILE__ ) );
 
 /**
  * On `plugins_loaded`, create an instance of the Fields API manager class.
