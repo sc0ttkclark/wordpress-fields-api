@@ -63,6 +63,14 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public $datasource;
 
 	/**
+	 * Whether this control is repeatable
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public $repeatable = false;
+
+	/**
 	 * Choices callback
 	 *
 	 * @access public
@@ -348,6 +356,10 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			'class' => 'fields-control fields-control-' . $this->type,
 		);
 
+		if ( $this->repeatable ) {
+			$attrs['class'] .= ' fields-repeatable-control';
+		}
+
 		$input_attrs = $this->get_input_attrs();
 
 		$attrs['data-fields-type']       = $this->type;
@@ -368,7 +380,26 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 
 					// Check if we need to render this control
 					if ( $render_control ) {
+						if ( $this->repeatable ) {
+							?>
+							<div class="fields-repeatable-input">
+							<?php
+						}
+
 						$this->render_content();
+
+						if ( $this->repeatable ) {
+							?>
+								<button type="button" class="button button-secondary fields-repeatable-control-remove">
+									<?php esc_html_e( 'Remove' ); ?>
+								</button>
+							</div>
+
+							<button type="button" class="button button-secondary fields-repeatable-control-add-new">
+								<?php esc_html_e( 'Add Another' ); ?>
+							</button>
+							<?php
+						}
 					}
 				?>
 			</div>
@@ -442,6 +473,10 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			$this->input_attrs['name'] = $input_name;
 		}
 
+		if ( $this->repeatable && false === strpos( $this->input_attrs['name'], '[' ) ) {
+			$this->input_attrs['name'] .= '[]';
+		}
+
 		return $this->input_attrs;
 
 	}
@@ -497,6 +532,13 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public function enqueue() {
 
+		if ( $this->repeatable ) {
+			wp_enqueue_script( 'wp-util' );
+			wp_enqueue_script( 'backbone' );
+
+			// @todo Fix this URL later
+			wp_enqueue_script( 'fields-api-repeatable-control', WP_FIELDS_API_URL . 'implementation/wp-includes/fields-api/js/repeatable-control.js', array( 'wp-util', 'backbone' ), '0.0.1', true );
+		}
 
 	}
 
@@ -533,6 +575,12 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 
 		?>
 		<input type="{{ data.type }}" name="{{ data.input_name }}" value="{{ data.value }}" id="{{ data.input_id }}" />
+
+		<# if ( data.repeatable ) { #>
+			<button type="button" class="button button-secondary fields-repeatable-control-remove">
+				<?php esc_html_e( 'Remove' ); ?>
+			</button>
+		<# } #>
 		<?php
 
 	}

@@ -1,9 +1,10 @@
-TextControlModel = Backbone.Model.extend
+ControlModel = Backbone.Model.extend
 	defaults: ->
-		type:       'text'
-		value:      ''
-		input_id:   "field-general-example_my_1_repeater_field_#{@cid}"
-		input_name: "general-example_my_1_repeater_field_#{@cid}"
+		type:       'text',
+		value:      '',
+		input_id:   '',
+		input_name: '',
+		repeatable: true
 
 
 

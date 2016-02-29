@@ -184,6 +184,11 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					'description' => 'Example field description',
 				);
 
+				if ( 'repeater' == $control_type ) {
+					$control_args['type']       = 'text';
+					$control_args['repeatable'] = true;
+				}
+
 				if ( in_array( $control_type, $option_types ) ) {
 					$control_args['choices'] = array(
 						''         => 'N/A',

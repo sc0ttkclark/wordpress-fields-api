@@ -1,39 +1,50 @@
 (function() {
-  var RepeaterView, TextControlModel, TextControlView;
+  var RepeaterView, ControlModel;
 
-  TextControlModel = Backbone.Model.extend({
+  ControlModel = Backbone.Model.extend({
     defaults: function() {
       return {
         type: 'text',
         value: '',
-        input_id: "field-general-example_my_1_repeater_field_" + this.cid,
-        input_name: "general-example_my_1_repeater_field_" + this.cid
+        input_id: '',
+        input_name: '',
+        repeatable: true
       };
     }
   });
 
-  TextControlView = Backbone.View.extend({
-    templateID: 'fields-control-text-content',
-    template: function(data) {
-      return wp.template(this.templateID)(data);
-    },
-    render: function() {
-      return this.template(this.model.toJSON());
-    }
-  });
-
   RepeaterView = Backbone.View.extend({
-    el: '.fields-control-repeater',
+    el: '.fields-control',
     events: {
-      'click .add-field': 'addField'
+      'click .fields-repeatable-control-add-new': 'addControl',
+      'click .fields-repeatable-control-remove': 'removeControl'
     },
-    addField: function(event) {
-      var newField;
+    addControl: function(event) {
+      var newControl, ControlView, data = {
+        type: this.$el.data( 'fields-type' ),
+        value: '',
+        input_id: this.$el.attr( 'id' ),
+        input_name: this.$el.data( 'fields-input-name' ),
+        repeatable: true
+      };
       event.preventDefault();
-      newField = new TextControlView({
-        model: new TextControlModel
+      ControlView = Backbone.View.extend({
+        templateID: 'fields-control-' + data.type + '-content',
+        template: function(data) {
+          return wp.template(this.templateID)(data);
+        },
+        render: function() {
+          return this.template(this.model.toJSON());
+        }
       });
-      return this.$el.append("<br/> " + (newField.render()));
+      newControl = new ControlView({
+        model: new ControlModel
+      });
+      newControl.model.set( data );
+      return jQuery( event.srcElement ).before('<div class="fields-repeatable-input">' + (newControl.render()) + '</div>');
+    },
+    removeControl: function(event) {
+      jQuery( event.srcElement ).closest('.fields-repeatable-input').remove();
     }
   });
 
