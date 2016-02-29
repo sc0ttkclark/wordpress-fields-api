@@ -393,24 +393,37 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 					// Check if we need to render this control
 					if ( $render_control ) {
 						if ( $this->repeatable ) {
+							$values = $this->value();
+
+							if ( ! is_array( $values ) ) {
+								if ( null === $values ) {
+									$values = array( '' );
+								}
+
+								$values = (array) $values;
+							}
+
+							foreach ( $values as $value ) {
+								$this->value_override = $value;
+								?>
+								<div class="fields-repeatable-input">
+									<?php
+									$this->render_content();
+									?>
+									<button type="button" class="button button-secondary fields-repeatable-control-remove">
+										<?php esc_html_e( 'Remove' ); ?>
+									</button>
+								</div>
+								<?php
+							}
+							$this->value_override = null;
 							?>
-							<div class="fields-repeatable-input">
-							<?php
-						}
-
-						$this->render_content();
-
-						if ( $this->repeatable ) {
-							?>
-								<button type="button" class="button button-secondary fields-repeatable-control-remove">
-									<?php esc_html_e( 'Remove' ); ?>
-								</button>
-							</div>
-
 							<button type="button" class="button button-secondary fields-repeatable-control-add-new">
 								<?php esc_html_e( 'Add Another' ); ?>
 							</button>
 							<?php
+						} else {
+							$this->render_content();
 						}
 					}
 				?>
