@@ -71,6 +71,14 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public $repeatable = false;
 
 	/**
+	 * Handle value override for repeatable field control loop
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $value_override = null;
+
+	/**
 	 * Choices callback
 	 *
 	 * @access public
@@ -312,12 +320,16 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	final public function value() {
 
-		$field = $this->get_field();
-
 		$value = null;
 
-		if ( $field ) {
-			$value = $field->value( $this->get_item_id() );
+		if ( null !== $this->value_override ) {
+			$value = $this->value_override;
+		} else {
+			$field = $this->get_field();
+
+			if ( $field ) {
+				$value = $field->value( $this->get_item_id() );
+			}
 		}
 
 		return $value;
@@ -531,7 +543,6 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 * @access public
 	 */
 	public function enqueue() {
-
 		if ( $this->repeatable ) {
 			wp_enqueue_script( 'wp-util' );
 			wp_enqueue_script( 'backbone' );
