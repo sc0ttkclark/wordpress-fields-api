@@ -29,6 +29,25 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	public $default_section_type = 'table';
 
 	/**
+	 * Get all controls for sections in this container.
+	 *
+	 * @return WP_Fields_API_Control[]
+	 */
+	public function get_controls() {
+
+		$sections = $this->get_sections();
+
+		$form_controls = array();
+
+		foreach ( $sections as $section ) {
+			$form_controls = array_merge( $form_controls, $section->get_controls() );
+		}
+
+		return $form_controls;
+
+	}
+
+	/**
 	 * Register forms, sections, controls, and fields
 	 *
 	 * @param string      $object_type
@@ -113,6 +132,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			$section_args = array(
 				'label'    => __( 'Fields API Example - My Fields', 'fields-api' ),
 				'form'     => $this->id,
+				'controls' => array(),
 			);
 
 			if ( 1 < $total_examples ) {
@@ -123,8 +143,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				$section_args['type'] = 'meta-box';
 			}
 
-			$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
-
 			// Add example for each control type
 			$control_types = array(
 				'text',
@@ -133,8 +151,6 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				'multi-checkbox',
 				'radio',
 				'select',
-				'dropdown-pages',
-				'dropdown-terms',
 				'color',
 				'media',
 				'media-file',
@@ -147,22 +163,18 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			);
 
 			foreach ( $control_types as $control_type ) {
-				$field_id = 'example_my_' . $x . '_' . $control_type . '_field';
-				$label    = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
-
-				$field_args = array(
+				$control_id = $this->id . '-example_my_' . $x . '_' . $control_type . '_field';
+				$control_args = array(
 					// Add a control to the field at the same time
 					'control' => array(
 						'type'        => $control_type,
-						'id'          => $this->id . '-' . $field_id,
-						'section'     => $section_id,
-						'label'       => $label,
+						'label'       => sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) ),
 						'description' => 'Example field description',
 					),
 				);
 
 				if ( in_array( $control_type, $option_types ) ) {
-					$field_args['control']['choices'] = array(
+					$control_args['choices'] = array(
 						''         => 'N/A',
 						'option-1' => 'Option 1',
 						'option-2' => 'Option 2',
@@ -172,18 +184,16 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					);
 
 					if ( 'multi-checkbox' == $control_type ) {
-						unset( $field_args['control']['choices'][''] );
+						unset( $control_args['choices'][''] );
 					}
 				} elseif ( 'checkbox' == $control_type ) {
-					$field_args['control']['checkbox_label'] = 'Example checkbox label';
+					$control_args['checkbox_label'] = 'Example checkbox label';
 				}
 
-				if ( 'dropdown-terms' == $control_type ) {
-					$field_args['control']['taxonomy'] = 'category';
-				}
-
-				$wp_fields->add_field( $this->object_type, $field_id, $this->object_name, $field_args );
+				$section_args['controls'][ $control_id ] = $control_args;
 			}
+
+			$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
 		}
 
 	}
@@ -214,11 +224,19 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			$sections = $this->get_sections();
 
 			foreach ( $sections as $section ) {
+				if ( ! $section->check_capabilities() ) {
+					continue;
+				}
+
 				$controls = $section->get_controls();
 
 				// Get values, handle validation first
 				foreach ( $controls as $control ) {
-					if ( $control->internal ) {
+					if ( ! $control->check_capabilities() ) {
+						continue;
+					}
+
+					if ( $control->internal && 'readonly' !== $control->type ) {
 						continue;
 					}
 
@@ -259,13 +277,13 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 				// Save values once validation completes
 				foreach ( $controls as $control ) {
-					if ( $control->internal ) {
+					if ( $control->internal && 'readonly' !== $control->type ) {
 						continue;
 					}
 
 					$field = $control->get_field();
 
-					if ( ! $field ) {
+					if ( ! $field || ! isset( $values[ $field->id ] ) ) {
 						continue;
 					}
 

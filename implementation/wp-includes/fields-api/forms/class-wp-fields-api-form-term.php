@@ -66,7 +66,13 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 		$control_args = array(
 			'input_name'                   => 'parent',
-			'type'                         => 'dropdown-terms',
+			'type'                         => 'select',
+			'datasource'                   => array(
+				'type' => 'term',
+				'args' => array(
+					'taxonomy' => 'category',
+				),
+			),
 			'section'                      => $this->id . '-main',
 			'label'                        => __( 'Parent' ),
 			// @todo This description is only shown for 'category' == $object_name

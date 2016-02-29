@@ -249,7 +249,11 @@ class WP_Fields_API_Container {
 		}
 
 		foreach ( $args as $property => $value ) {
-			$this->{$property} = $value;
+			if ( $this->{$property} && is_array( $this->{$property} ) ) {
+				$this->{$property} = array_merge( $this->{$property}, $value );
+			} else {
+				$this->{$property} = $value;
+			}
 		}
 
 		self::$instance_count += 1;

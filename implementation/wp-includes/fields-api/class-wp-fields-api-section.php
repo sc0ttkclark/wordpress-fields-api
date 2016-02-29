@@ -27,6 +27,14 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	public $type = 'default';
 
 	/**
+	 * Hidden controls
+	 *
+	 * @access public
+	 * @var WP_Fields_API_Control[]
+	 */
+	public $hidden_controls = array();
+
+	/**
 	 * Get the form for this section.
 	 *
 	 * @return WP_Fields_API_Form|null
@@ -52,6 +60,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 				}
 
 				$this->render_controls();
+				$this->render_hidden_controls();
 			?>
 		</div>
 		<?php
@@ -61,7 +70,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	/**
 	 * Render controls for section
 	 *
-	 * @param WP_Fields_API_Control[] $controls    Control objects
+	 * @param WP_Fields_API_Control[] $controls Control objects
 	 */
 	protected function render_controls() {
 
@@ -75,8 +84,31 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 				continue;
 			}
 
+			if ( 'hidden' === $control->type ) {
+				$this->hidden_controls[] = $control;
+
+				continue;
+			}
+
 			$this->render_control( $control );
 		}
+
+	}
+
+	/**
+	 * Render hidden controls for section
+	 *
+	 * @param WP_Fields_API_Control[] $controls Control objects
+	 */
+	protected function render_hidden_controls() {
+
+		$controls = $this->hidden_controls;
+
+		foreach ( $controls as $control ) {
+			$control->maybe_render();
+		}
+
+		$this->hidden_controls = array();
 
 	}
 
@@ -94,7 +126,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 		}
 		?>
 			<div <?php $control->wrap_attrs(); ?>>
-				<?php if ( $control->label ) { ?>
+				<?php if ( $control->label && $control->display_label ) { ?>
 					<label for="<?php echo esc_attr( $input_id ); ?>">
 						<?php $control->render_label(); ?>
 					</label>

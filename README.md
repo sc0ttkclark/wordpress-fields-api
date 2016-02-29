@@ -83,7 +83,12 @@ There are a few things that can be enabled for testing purposes:
 * `?no-fields-api=1` Disable Fields API from loading, useful for memory split testing. _Requires WP_FIELDS_API_TESTING to be turned on_
 * `?no-fields-api-late-init=1` Disable Fields API Late Init, which means when any form, section, control, or field are added, the object will be setup right away instead of only as needed by current page. Useful for memory split testing. _Requires WP_FIELDS_API_TESTING to be turned on_
 
-There's also a [WP Fields API Debug Bar plugin](https://github.com/sc0ttkclark/wordpress-fields-api-debug-bar) you can install to see details on how many forms, sections, controls, fields, and other stats about your current Fields API configuration.
+### Related Plugins
+
+There are also a few other related plugins that may come in handy:
+
+* [WP Fields Admin UI plugin](https://github.com/sc0ttkclark/wordpress-fields-admin-ui): Build and demo how the Fields API works with an easy to use administration interface that actually lets you create new Fields API configurations.
+* [WP Fields API Debug Bar plugin](https://github.com/sc0ttkclark/wordpress-fields-api-debug-bar): See details on how many forms, sections, controls, fields, and other stats about your current Fields API configuration.
 
 ## LICENSE
 

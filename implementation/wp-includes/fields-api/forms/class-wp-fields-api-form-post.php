@@ -23,6 +23,9 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 
 		add_action( 'save_post', array( $this, 'wp_save_post' ), 10, 2 );
 
+		// Sections
+		// controls + fields
+
 		// Add example fields (maybe)
 		parent::register_fields( $wp_fields );
 
