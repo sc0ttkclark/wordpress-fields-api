@@ -558,11 +558,8 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public function enqueue() {
 
 		if ( $this->repeatable ) {
-			wp_enqueue_script( 'wp-util' );
-			wp_enqueue_script( 'backbone' );
-
-			// @todo Fix this URL later
-			wp_enqueue_script( 'fields-api-repeatable-control', WP_FIELDS_API_URL . 'implementation/wp-includes/fields-api/js/repeatable-control.js', array( 'wp-util', 'backbone' ), '0.0.1', true );
+			// @todo Fix this URL later, register once, enqueue as needed
+			wp_enqueue_script( 'fields-api-repeatable-control', WP_FIELDS_API_URL . 'implementation/wp-includes/fields-api/js/repeatable-control.js', array( 'wp-util', 'backbone', 'jquery-ui-sortable' ), '0.0.1', true );
 		}
 
 	}
