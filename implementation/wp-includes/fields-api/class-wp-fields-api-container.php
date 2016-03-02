@@ -290,11 +290,14 @@ class WP_Fields_API_Container {
 		// Set parent
 		$args[ $this->container_type ] = $this->id;
 
-		$added = $wp_fields->add_section( $this->object_type, $id, $this->object_name, $args );
+		$object_type = $this->get_object_type();
+		$object_name = $this->get_object_name();
+
+		$added = $wp_fields->add_section( $object_type, $id, $object_name, $args );
 
 		if ( $added && ! is_wp_error( $added ) ) {
 			// Get and setup section
-			$section = $wp_fields->get_section( $this->object_type, $id, $this->object_name );
+			$section = $wp_fields->get_section( $object_type, $id, $object_name );
 
 			if ( $section && ! is_wp_error( $section ) ) {
 				$this->add_child( $section, 'section' );
@@ -672,7 +675,7 @@ class WP_Fields_API_Container {
 	}
 
 	/**
-	 * Get parent object of container
+	 * Get item id of container
 	 *
 	 * @return int|null
 	 */
@@ -712,6 +715,9 @@ class WP_Fields_API_Container {
 		$json['description'] = wp_kses_post( $this->description );
 		$json['content'] = $this->get_content();
 		$json['instanceNumber'] = $this->instance_number;
+
+		$json['objectType'] = $this->get_object_type();
+		$json['objectName'] = $this->get_object_name();
 
 		// Get parent
 		$json['parent'] = '';
