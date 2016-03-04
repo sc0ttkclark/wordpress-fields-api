@@ -16,6 +16,11 @@ class WP_Fields_API_Form_Settings extends WP_Fields_API_Form {
 	 */
 	public function render() {
 
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
 		// Get Settings Page ID
 		$setting_page_id = $this->id;
 
@@ -28,8 +33,8 @@ class WP_Fields_API_Form_Settings extends WP_Fields_API_Form {
 		// Render Settings API fields
 		do_settings_sections( $setting_page_id );
 
-		// Enqueue footer scripts
-		$this->enqueue_footer_scripts();
+		// Render control templates
+		add_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ), 5 );
 
 	}
 

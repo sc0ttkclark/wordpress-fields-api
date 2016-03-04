@@ -550,6 +550,8 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	public function &__get( $name ) {
 
+		$null = null;
+
 		// Map $this->choices to $this->choices() for dynamic choice handling
 		if ( 'choices' == $name ) {
 			$this->setup_choices();
@@ -557,7 +559,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			return $this->{$name};
 		}
 
-		return null;// $this->{$name}; @todo Change this back when we're done testing
+		return $null;
 
 	}
 

@@ -257,7 +257,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 	 */
 	public function capability_is_taxonomy_hierarchical( $control ) {
 
-		return is_taxonomy_hierarchical( $this->object_name );
+		return is_taxonomy_hierarchical( $this->get_object_name() );
 
 	}
 

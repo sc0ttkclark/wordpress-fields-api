@@ -5,7 +5,12 @@
  * @package WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Datasource {
+class WP_Fields_API_Datasource extends WP_Fields_API_Container {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected $container_type = 'datasource';
 
 	/**
 	 * Datasource type
@@ -58,27 +63,19 @@ class WP_Fields_API_Datasource {
 	public $data_callback = null;
 
 	/**
-	 * Setup datasource properties
-	 *
-	 * @param string $type Datasource type.
-	 * @param array  $args Datasource arguments.
+	 * {@inheritdoc}
 	 */
-	public function __construct( $type = null, $args = array() ) {
+	public function init( $object_type, $id, $args = array() ) {
 
 		// If source has a type, don't override it
-		if ( $type && ! $this->type ) {
-			$this->type = $type;
+		if ( $object_type && ! $this->type ) {
+			$this->type = $object_type;
 		}
 
-		if ( $args ) {
-			foreach ( $args as $property => $value ) {
-				if ( isset( $this->{$property} ) && is_array( $this->{$property} ) ) {
-					$this->{$property} = array_merge( $this->{$property}, $value );
-				} else {
-					$this->{$property} = $value;
-				}
-			}
-		}
+		// We aren't using object types here
+		$object_type = null;
+
+		parent::init( $object_type, $id, $args );
 
 	}
 
