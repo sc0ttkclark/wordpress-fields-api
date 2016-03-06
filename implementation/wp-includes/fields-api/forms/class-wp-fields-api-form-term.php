@@ -25,7 +25,6 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 		// Core: Term //
 		////////////////
 
-		// Section info
 		$section_id   = $this->id . '-main';
 		$section_args = array(
 			'label'         => __( 'Term' ),
@@ -36,10 +35,10 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 		// Control: Name
 		$section_args['controls'][ $this->id . '-name' ] = array(
-			'input_name'  => 'name',
 			'type'        => 'text',
 			'label'       => __( 'Name' ),
 			'description' => __( 'The name is how it appears on your site.' ),
+			'input_name'  => 'name',
 			'field'       => 'name',
 			'internal'    => true,
 			'wrap_attr'   => array(
@@ -54,11 +53,11 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 		// Control: Slug
 		$section_args['controls'][ $this->id . '-slug' ] = array(
-			'input_name'            => 'slug',
 			'type'                  => 'text',
 			'label'                 => __( 'Slug' ),
 			'description'           => __( 'The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.' ),
 			'capabilities_callback' => array( $this, 'capability_is_global_terms_disabled' ),
+			'input_name'            => 'slug',
 			'field'                 => 'slug',
 			'internal'              => true,
 		);
@@ -66,15 +65,14 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 		// Control: Parent
 		$control_id_parent                              = $this->id . '-parent';
 		$section_args['controls'][ $control_id_parent ] = array(
-			'input_name'                   => 'parent',
 			'type'                         => 'select',
+			'label'                        => __( 'Parent' ),
 			'datasource'                   => array(
 				'type'     => 'term',
 				'get_args' => array(
 					'taxonomy' => 'category',
 				),
 			),
-			'label'                        => __( 'Parent' ),
 			// @todo This description is only shown for 'category' == $object_name
 			// @todo Generic description for taxonomies or new label for register_taxonomy?
 			'description'                  => __( 'Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.' ),
@@ -82,6 +80,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'capabilities_callback'        => array( $this, 'capability_is_taxonomy_hierarchical' ),
 			'exclude_tree_current_item_id' => true,
 			'placeholder_text'             => __( 'None' ),
+			'input_name'                   => 'parent',
 			'field'                        => 'parent',
 			'get_args'                     => array(
 				'hide_empty' => false,
@@ -91,7 +90,6 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 		// Control: Slug
 		$section_args['controls'][ $this->id . '-description' ] = array(
-			'input_name'  => 'description',
 			'type'        => 'textarea',
 			'label'       => __( 'Description' ),
 			'description' => __( 'The description is not prominent by default; however, some themes may show it.' ),
@@ -99,6 +97,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 				'rows' => '5',
 				'cols' => '40',
 			),
+			'input_name'  => 'description',
 			'field'       => 'description',
 			'internal'    => true,
 		);
