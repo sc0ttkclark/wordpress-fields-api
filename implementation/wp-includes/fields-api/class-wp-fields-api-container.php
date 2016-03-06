@@ -882,7 +882,7 @@ class WP_Fields_API_Container {
 		 *
 		 * @param WP_Fields_API_Container $this WP_Fields_API_Container instance.
 		 */
-		do_action( "fields_api_render_{$this->container_type}_{$this->object_type}", $this );
+		do_action( "fields_render_{$this->container_type}_{$this->object_type}", $this );
 
 		/**
 		 * Fires before rendering a specific Fields API container.
@@ -892,7 +892,7 @@ class WP_Fields_API_Container {
 		 *
 		 * @param WP_Fields_API_Container $this WP_Fields_API_Container instance.
 		 */
-		do_action( "fields_api_render_{$this->container_type}_{$this->object_type}_{$this->object_name}_{$this->id}", $this );
+		do_action( "fields_render_{$this->container_type}_{$this->object_type}_{$this->object_name}_{$this->id}", $this );
 
 		if ( is_callable( $this->render_callback ) ) {
 			call_user_func( $this->render_callback, $this );
