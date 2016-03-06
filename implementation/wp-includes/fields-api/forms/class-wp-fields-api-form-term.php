@@ -188,15 +188,11 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 	 *
 	 * @param WP_Fields_API_Section $section
 	 */
-	function _compat_section_table_hooks( $section ) {
+	public function _compat_section_table_hooks( $section ) {
 
-		if ( in_array( $this->id, array( 'term-add', 'term-edit' ) ) ) {
+		if ( 'term-edit' == $this->id ) {
 			$taxonomy = $this->object_name;
-			$tag      = get_term( $this->item_id, $taxonomy );
-
-			if ( ! $tag || is_wp_error( $tag ) ) {
-				return;
-			}
+			$tag      = $this->get_item();
 
 			if ( 'category' == $taxonomy ) {
 				/**
