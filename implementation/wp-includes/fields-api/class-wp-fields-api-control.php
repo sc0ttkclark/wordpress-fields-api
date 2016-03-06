@@ -272,8 +272,16 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			// Get datasource
 			$datasource = $this->get_datasource();
 
+			$args = array();
+
+			// @todo Needs hook docs
+			$args = apply_filters( "fields_control_datasource_get_args_{$datasource->type}", $args, $datasource, $this );
+
+			// @todo Needs hook docs
+			$args = apply_filters( "fields_control_datasource_get_args_{$datasource->type}_{$this->id}", $args, $datasource, $this );
+
 			// Get data from datasource
-			$data = $datasource->get_data( array(), $this );
+			$data = $datasource->get_data( $args, $this );
 		}
 
 		return $data;
