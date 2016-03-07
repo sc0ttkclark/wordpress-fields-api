@@ -26,13 +26,30 @@ class WP_Fields_API_Multi_Checkbox_Control extends WP_Fields_API_Control {
 		}
 
 		$input_attrs = $this->get_input_attrs();
-		$input_name  = $input_attrs['name'];
+
+		$choice_attrs = array(
+			'type' => 'checkbox',
+			'name' => $input_attrs['name'] . '[]',
+		);
+
+		$current_value = $this->value();
 
 		foreach ( $this->choices as $value => $label ) :
+			$option_attrs = $choice_attrs;
+
+			$option_attrs['value'] = $value;
+
+			if ( $value == $current_value || ( is_array( $current_value ) && in_array( $value, $current_value ) ) ) {
+				$option_attrs['checked'] = 'checked';
+			}
 			?>
 			<label>
-				<input type="checkbox" value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $input_name ); ?>[]" <?php $this->link(); checked( $this->value(), $value ); ?> />
-				<?php echo esc_html( $label ); ?><br/>
+				<input <?php $this->render_attrs( $choice_attrs ); $this->link(); ?> />
+				<?php echo wp_kses( $label, array(
+					'a'     => array(
+						'href'  => true,
+					),
+				) ); ?><br/>
 			</label>
 			<?php
 		endforeach;
