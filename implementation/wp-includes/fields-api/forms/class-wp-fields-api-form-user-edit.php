@@ -170,7 +170,11 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			'type'        => 'text',
 			'label'       => __( 'Nickname' ),
 			'description' => __( '(required)' ),
-			'id'          => 'nickname', // Input ID override for back-compat
+			// Overrides for back-compat
+			'input_attrs' => array(
+				'name' => 'nickname',
+				'id'   => 'nickname',
+			),
 			'internal'    => true,
 		);
 
@@ -199,7 +203,11 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			'type'        => 'user-email',
 			'label'       => __( 'E-mail' ),
 			'description' => __( '(required)' ),
-			'id'          => 'email', // Input ID override for back-compat
+			// Overrides for back-compat
+			'input_attrs' => array(
+				'name' => 'email',
+				'id'   => 'email',
+			),
 			'internal'    => true,
 		);
 
