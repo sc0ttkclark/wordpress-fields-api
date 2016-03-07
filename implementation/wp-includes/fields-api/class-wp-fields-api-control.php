@@ -203,7 +203,11 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 				$this->add_child( $field, 'field' );
 			}
 		} elseif ( $fields ) {
-			$field = current( $fields );
+			$fields = $this->setup_children( $fields, 'field' );
+
+			if ( $fields ) {
+				$field = current( $fields );
+			}
 		}
 
 		return $field;
@@ -236,15 +240,12 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		$added = $wp_fields->add_field( $this->object_type, $id, $this->object_name, $args );
 
 		if ( $added && ! is_wp_error( $added ) ) {
-			// Get and setup field
-			$field = $wp_fields->get_field( $this->object_type, $id, $this->object_name );
-
-			if ( $field && ! is_wp_error( $field ) ) {
-				$this->add_child( $field, 'field' );
+			if ( $id && ! is_wp_error( $id ) ) {
+				$this->add_child( $id, 'field' );
 
 				return true;
 			} else {
-				return $field;
+				return $id;
 			}
 		}
 
@@ -410,7 +411,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			return '';
 		}
 
-		return 'data-fields-field-link="' . esc_attr( $field->id ) . '"';
+		return ' data-fields-field-link="' . esc_attr( $field->id ) . '"';
 
 	}
 
