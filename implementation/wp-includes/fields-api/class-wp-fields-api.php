@@ -106,6 +106,7 @@ final class WP_Fields_API {
 		// Include section types
 		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-table-section.php' );
 		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-section.php' );
+		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-table-section.php' );
 
 		// Include control types
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-readonly-control.php' );
@@ -122,6 +123,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-number-inline-description.php' );
 
 		// Include datasources
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-admin-color-scheme-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-comment-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-post-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-page-datasource.php' );
@@ -1684,6 +1686,7 @@ final class WP_Fields_API {
 
 		/* Section Types */
 		$this->register_section_type( 'meta-box', 'WP_Fields_API_Meta_Box_Section' );
+		$this->register_section_type( 'meta-box-table', 'WP_Fields_API_Meta_Box_Table_Section' );
 		$this->register_section_type( 'table', 'WP_Fields_API_Table_Section' );
 
 		/* Control Types */

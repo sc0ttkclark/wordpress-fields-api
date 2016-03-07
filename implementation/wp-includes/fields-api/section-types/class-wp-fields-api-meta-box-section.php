@@ -7,11 +7,11 @@
  */
 
 /**
- * Fields API Meta Box Section class. Ultimately renders controls in a table
+ * Fields API Meta Box Section class. Ultimately renders controls in a div
  *
- * @see WP_Fields_API_Table_Section
+ * @see WP_Fields_API_Section
  */
-class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
+class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 
 	/**
 	 * {@inheritdoc}
@@ -78,7 +78,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 
 		foreach ( $sections as $section ) {
 			// Skip non meta boxes
-			if ( ! is_a( $section, 'WP_Fields_API_Meta_Box_Section' ) ) {
+			if ( ! is_a( $section, 'WP_Fields_API_Meta_Box_Section' ) && ! is_a( $section, 'WP_Fields_API_Meta_Box_Table_Section' ) ) {
 				continue;
 			}
 
@@ -99,6 +99,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 			// Set callback arguments
 			$callback_args = array(
 				'fields_api' => true,
+				'section'    => $section,
 			);
 
 			// Only normal context can be used
@@ -113,7 +114,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 			add_meta_box(
 				$section->id,
 				$section->label,
-				array( $section, 'render_meta_box' ),
+				array( 'WP_Fields_API_Meta_Box_Section', 'render_meta_box' ),
 				null,
 				$section->mb_context,
 				$mb_priority,
@@ -163,16 +164,21 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 	 * @param WP_Post|WP_Comment $object Current Object
 	 * @param array              $box    Meta box options
 	 */
-	public function render_meta_box( $object, $box ) {
+	public static function render_meta_box( $object, $box ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) ) {
+		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) || empty( $box['args']['section'] ) ) {
 			return;
 		}
+
+		/**
+		 * @var WP_Fields_API_Section $section
+		 */
+		$section = $box['args']['section'];
 
 		$item_id     = 0;
 		$object_type = 'post';
@@ -195,12 +201,13 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 			}
 		}
 
-		$form = $this->get_form();
+		$form = $section->get_form();
 
 		if ( ! $form ) {
 			return;
 		}
 
+		$form->item        = $object;
 		$form->item_id     = $item_id;
 		$form->object_name = $object_name;
 
@@ -208,7 +215,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Table_Section {
 
 		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 
-		$this->maybe_render();
+		$section->maybe_render();
 
 		// Render control templates
 		if ( ! has_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ) ) ) {
