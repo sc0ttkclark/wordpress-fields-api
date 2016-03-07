@@ -15,14 +15,6 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	protected $container_type = 'control';
 
 	/**
-	 * Override default Input name, defaults to $this->id.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $input_name;
-
-	/**
 	 * Item ID of current item passed to WP_Fields_API_Field for value()
 	 *
 	 * @access public
@@ -445,13 +437,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		}
 
 		if ( ! isset( $this->input_attrs['name'] ) ) {
-			$input_name = $this->id;
-
-			if ( ! empty( $this->input_name ) ) {
-				$input_name = $this->input_name;
-			}
-
-			$this->input_attrs['name'] = $input_name;
+			$this->input_attrs['name'] = $this->id;
 		}
 
 		return $this->input_attrs;

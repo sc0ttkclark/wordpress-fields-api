@@ -38,7 +38,9 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'type'        => 'text',
 			'label'       => __( 'Name' ),
 			'description' => __( 'The name is how it appears on your site.' ),
-			'input_name'  => 'name',
+			'input_attrs'  => array(
+				'name' => 'name',
+			),
 			'field'       => 'name',
 			'internal'    => true,
 			'wrap_attr'   => array(
@@ -48,7 +50,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 		if ( 'term-add' == $this->id ) {
 			// Term Add New form has a different input name
-			$section_args['controls'][ $this->id . '-name' ]['input_name'] = 'tag-name';
+			$section_args['controls'][ $this->id . '-name' ]['input_attrs']['name'] = 'tag-name';
 		}
 
 		// Control: Slug
@@ -57,7 +59,9 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'label'                 => __( 'Slug' ),
 			'description'           => __( 'The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.' ),
 			'capabilities_callback' => array( $this, 'capability_is_global_terms_disabled' ),
-			'input_name'            => 'slug',
+			'input_attrs'  => array(
+				'name' => 'slug',
+			),
 			'field'                 => 'slug',
 			'internal'              => true,
 		);
@@ -80,7 +84,9 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'capabilities_callback'        => array( $this, 'capability_is_taxonomy_hierarchical' ),
 			'exclude_tree_current_item_id' => true,
 			'placeholder_text'             => __( 'None' ),
-			'input_name'                   => 'parent',
+			'input_attrs' => array(
+				'name' => 'parent',
+			),
 			'field'                        => 'parent',
 			'get_args'                     => array(
 				'hide_empty' => false,
@@ -94,10 +100,10 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			'label'       => __( 'Description' ),
 			'description' => __( 'The description is not prominent by default; however, some themes may show it.' ),
 			'input_attrs' => array(
+				'name' => 'description',
 				'rows' => '5',
 				'cols' => '40',
 			),
-			'input_name'  => 'description',
 			'field'       => 'description',
 			'internal'    => true,
 		);
