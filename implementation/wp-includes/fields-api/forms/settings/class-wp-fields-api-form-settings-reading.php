@@ -23,7 +23,6 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 		$section_id   = $this->id . '-options-reading';
 		$section_args = array(
 			'label'         => __( 'Reading Settings' ),
-			'form'          => $this->id,
 			'display_label' => false,
 			'controls'      => array(),
 		);

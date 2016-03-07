@@ -89,7 +89,7 @@ class WP_Fields_API_Container {
 	 * Children objects
 	 *
 	 * @access public
-	 * @var array
+	 * @var WP_Fields_API_Container[]|string[]
 	 */
 	protected $children = array(
 		'section' => array(), // For forms
@@ -296,7 +296,16 @@ class WP_Fields_API_Container {
 		global $wp_fields;
 
 		// Set parent
-		$args[ $this->container_type ] = $this->id;
+		if ( is_a( $args, 'WP_Fields_API_Section' ) ) {
+			$args->{$this->container_type} = $this->id;
+		} else {
+			$args[ $this->container_type ] = $this->id;
+
+			// Set default section type
+			if ( ! empty( $this->default_section_type ) && empty( $args['type'] ) ) {
+				$args['type'] = $this->default_section_type;
+			}
+		}
 
 		$object_type = $this->get_object_type();
 		$object_name = $this->get_object_name();
@@ -304,15 +313,13 @@ class WP_Fields_API_Container {
 		$added = $wp_fields->add_section( $object_type, $id, $object_name, $args );
 
 		if ( $added && ! is_wp_error( $added ) ) {
-			// Get and setup section
-			$section = $wp_fields->get_section( $object_type, $id, $object_name );
-
-			if ( $section && ! is_wp_error( $section ) ) {
-				$this->add_child( $section, 'section' );
+			if ( $id && ! is_wp_error( $id ) ) {
+				// Add child
+				$this->add_child( $id, 'section' );
 
 				return true;
 			} else {
-				return $section;
+				return $id;
 			}
 		}
 
@@ -372,21 +379,26 @@ class WP_Fields_API_Container {
 		 */
 		global $wp_fields;
 
-		// Set parent
-		$args[ $this->container_type ] = $this->id;
+		$object_type = $this->get_object_type();
+		$object_name = $this->get_object_name();
 
-		$added = $wp_fields->add_control( $this->object_type, $id, $this->object_name, $args );
+		// Set parent
+		if ( is_a( $args, 'WP_Fields_API_Control' ) ) {
+			$args->{$this->container_type} = $this->id;
+		} else {
+			$args[ $this->container_type ] = $this->id;
+		}
+
+		$added = $wp_fields->add_control( $object_type, $id, $object_name, $args );
 
 		if ( $added && ! is_wp_error( $added ) ) {
-			// Get and setup control
-			$control = $wp_fields->get_control( $this->object_type, $id, $this->object_name );
-
-			if ( $control && ! is_wp_error( $control ) ) {
-				$this->add_child( $control, 'control' );
+			if ( $id && ! is_wp_error( $id ) ) {
+				// Add child
+				$this->add_child( $id, 'control' );
 
 				return true;
 			} else {
-				return $control;
+				return $id;
 			}
 		}
 
@@ -436,23 +448,24 @@ class WP_Fields_API_Container {
 
 		$children = array();
 
+		$setup = true;
+
 		// Get children from Fields API configuration
 		if ( empty( $this->children[ $child_type ] ) ) {
+			$object_type = $this->get_object_type();
+			$object_name = $this->get_object_name();
+
 			$object_children = array();
 
 			if ( 'section' === $child_type ) {
 				// Get sections for container
-				$object_children = $wp_fields->get_sections( $this->object_type, $this->object_name, $this );
+				$object_children = $wp_fields->get_sections( $object_type, $object_name, $this );
 			} elseif ( 'control' === $child_type ) {
 				// Get controls for container
-				$object_children = $wp_fields->get_controls( $this->object_type, $this->object_name, $this );
+				$object_children = $wp_fields->get_controls( $object_type, $object_name, $this );
 			} elseif ( 'field' === $child_type && 'control' === $this->container_type && ! empty( $this->field ) ) {
 				// Get field for container
-				if ( is_a( $this->field, 'WP_Fields_API_Field' ) ) {
-					$object_children = $this->field;
-				} else {
-					$object_children = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
-				}
+				$object_children = $wp_fields->get_field( $object_type, $this->field, $object_name );
 			}
 
 			if ( ! empty( $object_children ) ) {
@@ -462,9 +475,15 @@ class WP_Fields_API_Container {
 
 				$this->children[ $child_type ] = $object_children;
 
-				if ( isset( $this->sorted[ $child_type ] ) ) {
-					unset( $this->sorted[ $child_type ] );
+				if ( 1 == count( $this->children ) ) {
+					// No sorting necessary
+					$this->sorted[ $child_type ] = true;
+				} else {
+					// Needs sorting
+					$this->sorted[ $child_type ] = false;
 				}
+
+				$setup = false;
 			}
 		}
 
@@ -472,8 +491,13 @@ class WP_Fields_API_Container {
 			// Get children of a specific type
 			$children = $this->children[ $child_type ];
 
+			if ( $setup ) {
+				// Setup of children is needed
+				$children = $this->setup_children( $children, $child_type );
+			}
+
 			// Handle sorting
-			if ( ! isset( $this->sorted[ $child_type ] ) ) {
+			if ( empty( $this->sorted[ $child_type ] ) ) {
 				uasort( $children, array( 'WP_Fields_API', '_cmp_priority' ) );
 
 				$this->children[ $child_type ] = $children;
@@ -486,7 +510,7 @@ class WP_Fields_API_Container {
 
 			// Handle sorting
 			foreach ( $children as $child_type => $child_type_children ) {
-				if ( ! isset( $this->sorted[ $child_type ] ) ) {
+				if ( empty( $this->sorted[ $child_type ] ) ) {
 					uasort( $child_type_children, array( 'WP_Fields_API', '_cmp_priority' ) );
 
 					$this->children[ $child_type ] = $child_type_children;
@@ -501,10 +525,52 @@ class WP_Fields_API_Container {
 	}
 
 	/**
+	 * Setup children objects
+	 *
+	 * @param WP_Fields_API_Container[]|string $children
+	 * @param string|true                      $child_type
+	 *
+	 * @return WP_Fields_API_Container[]
+	 */
+	protected function setup_children( $children, $child_type ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$object_type = $this->get_object_type();
+		$object_name = $this->get_object_name();
+
+		foreach ( $children as $k => $child ) {
+			if ( is_string( $child ) ) {
+				if ( 'section' === $child_type ) {
+					// Get sections for container
+					$child = $wp_fields->get_section( $object_type, $child, $object_name );
+				} elseif ( 'control' === $child_type ) {
+					// Get controls for container
+					$child = $wp_fields->get_control( $object_type, $child, $object_name );
+				} elseif ( 'field' === $child_type ) {
+					$child = $wp_fields->get_field( $object_type, $child, $object_name );
+				}
+			}
+
+			if ( $child ) {
+				$children[ $k ] = $child;
+			} else {
+				unset( $children[ $k ] );
+			}
+		}
+
+		return $children;
+
+	}
+
+	/**
 	 * Add child object to container
 	 *
-	 * @param WP_Fields_API_Container $child
-	 * @param string                  $child_type
+	 * @param WP_Fields_API_Container|string $child
+	 * @param string                         $child_type
 	 */
 	public function add_child( $child, $child_type = 'control' ) {
 
@@ -512,16 +578,18 @@ class WP_Fields_API_Container {
 			$this->children[ $child_type ] = array();
 		}
 
-		if ( isset( $this->sorted[ $child_type ] ) ) {
-			unset( $this->sorted[ $child_type ] );
-		}
+		$this->sorted[ $child_type ] = false;
 
-		// Set parent
-		if ( 'field' !== $child->container_type ) {
-			$child->set_parent( $this );
-		}
+		if ( is_a( $child, 'WP_Fields_API_Container' ) ) {
+			// Set parent
+			if ( 'field' !== $child->container_type ) {
+				$child->set_parent( $this );
+			}
 
-		$this->children[ $child_type ][ $child->id ] =& $child;
+			$this->children[ $child_type ][ $child->id ] =& $child;
+		} else {
+			$this->children[ $child_type ][ $child ] = $child;
+		}
 
 	}
 
@@ -535,11 +603,13 @@ class WP_Fields_API_Container {
 
 		if ( isset( $this->children[ $child_type ][ $child_id ] ) ) {
 			/**
-			 * @var $child WP_Fields_API_Container
+			 * @var $child WP_Fields_API_Container|string
 			 */
 			$child = $this->children[ $child_type ][ $child_id ];
 
-			$child->set_parent( null );
+			if ( is_a( $child, 'WP_Fields_API_Container' ) ) {
+				$child->set_parent( null );
+			}
 
 			unset( $this->children[ $child_type ][ $child_id ] );
 		}
@@ -556,16 +626,12 @@ class WP_Fields_API_Container {
 		if ( true !== $child_type ) {
 			$this->children[ $child_type ] = array();
 
-			if ( isset( $this->sorted[ $child_type ] ) ) {
-				unset( $this->sorted[ $child_type ] );
-			}
+			$this->sorted[ $child_type ] = false;
 		} else {
 			foreach ( $this->children as $child_type => $child_type_children ) {
 				$this->children[ $child_type ] = array();
 
-				if ( isset( $this->sorted[ $child_type ] ) ) {
-					unset( $this->sorted[ $child_type ] );
-				}
+				$this->sorted[ $child_type ] = false;
 			}
 		}
 
@@ -585,6 +651,9 @@ class WP_Fields_API_Container {
 
 		// Get children from Fields API configuration
 		if ( empty( $this->parent ) && 'form' !== $this->container_type ) {
+			$object_type = $this->get_object_type();
+			$object_name = $this->get_object_name();
+
 			$parent = null;
 
 			if ( ! empty( $this->form ) ) {
@@ -592,21 +661,21 @@ class WP_Fields_API_Container {
 				if ( is_a( $this->form, 'WP_Fields_API_Form' ) ) {
 					$parent = $this->form;
 				} else {
-					$parent = $wp_fields->get_form( $this->object_type, $this->form, $this->object_name );
+					$parent = $wp_fields->get_form( $object_type, $this->form, $object_name );
 				}
 			} elseif ( ! empty( $this->section ) ) {
 				// Get section
 				if ( is_a( $this->section, 'WP_Fields_API_Section' ) ) {
 					$parent = $this->section;
 				} else {
-					$parent = $wp_fields->get_section( $this->object_type, $this->section, $this->object_name );
+					$parent = $wp_fields->get_section( $object_type, $this->section, $object_name );
 				}
 			} elseif ( ! empty( $this->control ) ) {
 				// Get control
 				if ( is_a( $this->control, 'WP_Fields_API_Control' ) ) {
 					$parent = $this->control;
 				} else {
-					$parent = $wp_fields->get_section( $this->object_type, $this->control, $this->object_name );
+					$parent = $wp_fields->get_section( $object_type, $this->control, $object_name );
 				}
 			}
 
@@ -807,13 +876,16 @@ class WP_Fields_API_Container {
 			$access = call_user_func( $this->capabilities_callback, $this );
 		}
 
+		$object_type = $this->get_object_type();
+		$object_name = $this->get_object_name();
+
 		/**
 		 * Filters to check required user capabilities and whether to render a Fields API container.
 		 *
 		 * @param bool                    $access Whether to give access to container.
 		 * @param WP_Fields_API_Container $this   WP_Fields_API_Container instance.
 		 */
-		$access = apply_filters( "fields_api_check_capabilities_{$this->container_type}_{$this->object_type}", $access, $this );
+		$access = apply_filters( "fields_api_check_capabilities_{$this->container_type}_{$object_type}", $access, $this );
 
 		/**
 		 * Filters to check required user capabilities and whether to render a Fields API container.
@@ -824,7 +896,7 @@ class WP_Fields_API_Container {
 		 * @param bool                    $access Whether to give access to container.
 		 * @param WP_Fields_API_Container $this   WP_Fields_API_Container instance.
 		 */
-		$access = apply_filters( "fields_api_check_capabilities_{$this->container_type}_{$this->object_type}_{$this->object_name}_{$this->id}", $access, $this );
+		$access = apply_filters( "fields_api_check_capabilities_{$this->container_type}_{$object_type}_{$object_name}_{$this->id}", $access, $this );
 
 		return $access;
 
@@ -895,16 +967,6 @@ class WP_Fields_API_Container {
 	 */
 	final public function maybe_render() {
 
-		$args = func_get_args();
-
-		if ( ! empty( $args[0] ) && isset( $this->item_id ) ) {
-			$this->item_id = $args[0];
-		}
-
-		if ( ! empty( $args[1] ) ) {
-			$this->object_name = $args[1];
-		}
-
 		if ( ! $this->check_capabilities() ) {
 			return;
 		}
@@ -914,12 +976,15 @@ class WP_Fields_API_Container {
 			add_action( 'admin_footer', array( $this, 'enqueue' ) );
 		}
 
+		$object_type = $this->get_object_type();
+		$object_name = $this->get_object_name();
+
 		/**
 		 * Fires before rendering a Fields API container.
 		 *
 		 * @param WP_Fields_API_Container $this WP_Fields_API_Container instance.
 		 */
-		do_action( "fields_render_{$this->container_type}_{$this->object_type}", $this );
+		do_action( "fields_render_{$this->container_type}_{$object_type}", $this );
 
 		/**
 		 * Fires before rendering a specific Fields API container.
@@ -929,7 +994,7 @@ class WP_Fields_API_Container {
 		 *
 		 * @param WP_Fields_API_Container $this WP_Fields_API_Container instance.
 		 */
-		do_action( "fields_render_{$this->container_type}_{$this->object_type}_{$this->object_name}_{$this->id}", $this );
+		do_action( "fields_render_{$this->container_type}_{$object_type}_{$object_name}_{$this->id}", $this );
 
 		if ( is_callable( $this->render_callback ) ) {
 			call_user_func( $this->render_callback, $this );

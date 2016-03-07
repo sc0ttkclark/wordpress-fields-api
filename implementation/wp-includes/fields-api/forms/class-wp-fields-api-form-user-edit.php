@@ -48,7 +48,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$section_id   = $this->id . '-personal-options';
 		$section_args = array(
 			'label'    => __( 'Personal Options' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -113,7 +112,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$section_id   = $this->id . '-name';
 		$section_args = array(
 			'label'    => __( 'Name' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -194,7 +192,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$section_id   = $this->id . '-contact-info';
 		$section_args = array(
 			'label'    => __( 'Contact Info' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -250,7 +247,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$section_id   = $this->id . '-about';
 		$section_args = array(
 			'label'    => __( 'About the user' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -275,7 +271,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$section_id   = $this->id . '-account-management';
 		$section_args = array(
 			'label'                 => __( 'Account Management' ),
-			'form'                  => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
 			'controls'              => array(),
 		);
@@ -310,7 +305,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$section_id   = $this->id . '-additional-capabilities';
 		$section_args = array(
 			'label'                 => __( 'Additional Capabilities' ),
-			'form'                  => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
 			'controls'              => array(),
 		);
