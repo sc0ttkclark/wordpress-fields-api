@@ -25,15 +25,8 @@ class WP_Fields_API_Radio_Control extends WP_Fields_API_Control {
 			return;
 		}
 
-		if ( isset( $this->input_attrs['name'] ) ) {
-			$input_name = $this->input_attrs['name'];
-		} else {
-			$input_name = $this->id;
-
-			if ( ! empty( $this->input_name ) ) {
-				$input_name = $this->input_name;
-			}
-		}
+		$input_attrs = $this->get_input_attrs();
+		$input_name  = $input_attrs['name'];
 
 		foreach ( $this->choices as $value => $label ) :
 			?>

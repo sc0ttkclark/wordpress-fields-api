@@ -61,6 +61,23 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 				$this->render_controls();
 				$this->render_hidden_controls();
+
+				/**
+				 * Fires after rendering Fields API section.
+				 *
+				 * @param WP_Fields_API_Section $this WP_Fields_API_Section instance.
+				 */
+				do_action( "fields_after_render_section_{$this->object_type}", $this );
+
+				/**
+				 * Fires after rendering Fields API controls for a section.
+				 *
+				 * The dynamic portion of the hook name, `$this->id`, refers to
+				 * the ID of the specific Fields API section rendered.
+				 *
+				 * @param WP_Fields_API_Section $this WP_Fields_API_Section instance.
+				 */
+				do_action( "fields_after_render_section_{$this->object_type}_{$this->id}", $this );
 			?>
 		</div>
 		<?php
@@ -92,6 +109,23 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 			$this->render_control( $control );
 		}
+
+		/**
+		 * Fires after rendering Fields API controls for a section.
+		 *
+		 * @param WP_Fields_API_Section $this WP_Fields_API_Section instance.
+		 */
+		do_action( "fields_after_render_section_controls_{$this->object_type}", $this );
+
+		/**
+		 * Fires after rendering Fields API controls for a section.
+		 *
+		 * The dynamic portion of the hook name, `$this->id`, refers to
+		 * the ID of the specific Fields API section to have controls rendered.
+		 *
+		 * @param WP_Fields_API_Section $this WP_Fields_API_Section instance.
+		 */
+		do_action( "fields_after_render_section_controls_{$this->object_type}_{$this->id}", $this );
 
 	}
 

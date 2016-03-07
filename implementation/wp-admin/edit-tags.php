@@ -230,6 +230,7 @@ switch ( $wp_list_table->current_action() ) {
 		$form_edit = $wp_fields->get_form( 'term', 'term-edit' );
 
 		// Set taxonomy object name
+		$form_edit->item        = $tag;
 		$form_edit->item_id     = $tag_ID;
 		$form_edit->object_name = $taxonomy;
 

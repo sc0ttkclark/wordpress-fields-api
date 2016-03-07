@@ -70,6 +70,14 @@ class WP_Fields_API_Container {
 	public $item_id = 0;
 
 	/**
+	 * Item data of current item
+	 *
+	 * @access public
+	 * @var mixed
+	 */
+	public $item;
+
+	/**
 	 * Priority of the container which informs load order of container, shown in order of lowest to highest.
 	 *
 	 * @access public
@@ -688,8 +696,8 @@ class WP_Fields_API_Container {
 		if ( ! empty( $this->item_id ) ) {
 			// Get Item ID from container
 			$item_id = $this->item_id;
-		} elseif ( empty( $this->item_id ) && $parent ) {
-			// Get Item ID from any parent that has it
+		} elseif ( $parent ) {
+			// Get Item ID from a parent container that has it
 			while ( $parent && $parent = $parent->get_parent() ) {
 				if ( ! empty( $parent->item_id ) ) {
 					$item_id = $parent->item_id;
@@ -700,6 +708,35 @@ class WP_Fields_API_Container {
 		}
 
 		return $item_id;
+
+	}
+
+	/**
+	 * Get item of container
+	 *
+	 * @return mixed|null
+	 */
+	public function get_item() {
+
+		$parent = $this->parent;
+
+		$item = null;
+
+		if ( ! empty( $this->item ) ) {
+			// Get Item from container
+			$item = $this->item;
+		} elseif ( $parent ) {
+			// Get Item from a parent container that has it
+			while ( $parent && $parent = $parent->get_parent() ) {
+				if ( ! empty( $parent->item ) ) {
+					$item = $parent->item;
+
+					break;
+				}
+			}
+		}
+
+		return $item;
 
 	}
 
@@ -882,7 +919,7 @@ class WP_Fields_API_Container {
 		 *
 		 * @param WP_Fields_API_Container $this WP_Fields_API_Container instance.
 		 */
-		do_action( "fields_api_render_{$this->container_type}_{$this->object_type}", $this );
+		do_action( "fields_render_{$this->container_type}_{$this->object_type}", $this );
 
 		/**
 		 * Fires before rendering a specific Fields API container.
@@ -892,7 +929,7 @@ class WP_Fields_API_Container {
 		 *
 		 * @param WP_Fields_API_Container $this WP_Fields_API_Container instance.
 		 */
-		do_action( "fields_api_render_{$this->container_type}_{$this->object_type}_{$this->object_name}_{$this->id}", $this );
+		do_action( "fields_render_{$this->container_type}_{$this->object_type}_{$this->object_name}_{$this->id}", $this );
 
 		if ( is_callable( $this->render_callback ) ) {
 			call_user_func( $this->render_callback, $this );

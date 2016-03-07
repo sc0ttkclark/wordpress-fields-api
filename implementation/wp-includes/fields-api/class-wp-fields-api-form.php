@@ -253,11 +253,8 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					// Get value from $_POST
 					$value = null;
 
-					$input_name = $control->id;
-
-					if ( ! empty( $control->input_name ) ) {
-						$input_name = $control->input_name;
-					}
+					$input_attrs = $control->get_input_attrs();
+					$input_name  = $input_attrs['name'];
 
 					if ( ! empty( $_POST[ $input_name ] ) ) {
 						$value = $_POST[ $input_name ];

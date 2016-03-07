@@ -34,10 +34,13 @@ elseif ( ! get_userdata( $user_id ) )
 /**
  * @var $wp_fields WP_Fields_API
  */
+$profileuser = get_user_to_edit($user_id);
+
 global $wp_fields;
 
 $form = $wp_fields->get_form( 'user', 'user-edit' );
 
+$form->item    = $profileuser;
 $form->item_id = $user_id;
 
 /**
@@ -166,8 +169,6 @@ if ( !is_wp_error( $errors ) ) {
 }
 
 default:
-$profileuser = get_user_to_edit($user_id);
-
 if ( !current_user_can('edit_user', $user_id) )
 	wp_die(__('You do not have permission to edit this user.'));
 
@@ -228,8 +229,6 @@ if ( ! IS_PROFILE_PAGE ) {
 /**
  * WP Fields API implementation >>>
  */
-
-$profile_user = get_userdata( $user_id );
 
 $form->maybe_render();
 
