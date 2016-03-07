@@ -30,7 +30,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = 'post_title';
 		$section_args = array(
 			'label'         => __( 'Title' ),
-			'form'          => $this->id,
 			'display_label' => false,
 			'controls'      => array(),
 		);
@@ -52,7 +51,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_post_content';
 		$section_args = array(
 			'label'         => __( 'Post Content' ),
-			'form'          => $this->id,
 			'display_label' => false,
 			'controls'      => array(),
 		);
@@ -73,7 +71,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_post_excerpt';
 		$section_args = array(
 			'label'    => __( 'Excerpt' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -94,7 +91,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_trackback_url';
 		$section_args = array(
 			'label'         => __( 'Send Trackbacks' ),
-			'form'          => $this->id,
 			'display_label' => false,
 			'controls'      => array(),
 		);
@@ -117,7 +113,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_custom_meta';
 		$section_args = array(
 			'label'    => __( 'Custom Fields' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -138,7 +133,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_discussion';
 		$section_args = array(
 			'label'         => __( 'Discussion' ),
-			'form'          => $this->id,
 			'display_label' => false,
 			'controls'      => array(),
 		);
@@ -146,9 +140,9 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		// Control: Comment Status
 		$section_args['controls']['comment_status'] = array(
 			'type'                  => 'checkbox',
+			'checkbox_label'        => __( 'Allow comments.' ),
 			'checkbox_value'        => 'open',
 			'capabilities_callback' => array(), // @todo Add capabilities
-			'description'           => __( 'Allow comments.' ),
 			'internal'              => true,
 			// @todo Default should be based on site settings
 		);
@@ -156,9 +150,9 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		// Control: Ping Status
 		$section_args['controls']['ping_status'] = array(
 			'type'                  => 'checkbox',
+			'checkbox_label'        => sprintf( '%s <a href="https://codex.wordpress.org/Excerpt" target="_blank">%s</a> %s', __( 'Allow' ), __( 'trackbacks and pingbacks' ), __( 'on this page.' ) ),
 			'checkbox_value'        => 'open',
 			'capabilities_callback' => array(), // @todo Add capabilities
-			'description'           => sprintf( '%s <a href="https://codex.wordpress.org/Excerpt" target="_blank">%s</a> %s', __( 'Allow' ), __( 'trackbacks and pingbacks' ), __( 'on this page.' ) ),
 			'internal'              => true,
 			// @todo Default should be based on site settings
 		);
@@ -172,7 +166,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_post_name';
 		$section_args = array(
 			'label'    => __( 'Slug' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -192,7 +185,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_post_author';
 		$section_args = array(
 			'label'    => __( 'Author' ),
-			'form'     => $this->id,
 			'controls' => array(),
 		);
 
@@ -202,11 +194,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'datasource'            => array(
 				'type'     => 'user',
 				'get_args' => array(
-					'role' => array(
-						'Author',
-						'Editor',
-						'Administrator'
-					),
+					'who' => 'authors',
 				),
 			),
 			'capabilities_callback' => array(), // @todo Add capabilities
@@ -222,7 +210,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		$section_id   = $this->id . '_post_format';
 		$section_args = array(
 			'label'    => __( 'Format' ),
-			'form'     => $this->id,
 			'context'  => 'side',
 			'controls' => array(),
 		);
@@ -230,7 +217,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		// Control: Format
 		$section_args['controls']['post_format'] = array(
 			'type'                  => 'radio',
-			'datasource'            => 'post_format',
+			'datasource'            => 'post-format',
 			'capabilities_callback' => array(), // @todo Add capabilities
 			'internal'              => true,
 		);
