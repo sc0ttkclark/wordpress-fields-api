@@ -23,8 +23,31 @@ class WP_Fields_API_User_Datasource extends WP_Fields_API_Datasource {
 
 		$data = array();
 
-		// get_users with $args
-		// format key=>value
+		$fields = array(
+			'ID',
+			'user_login'
+		);
+
+		if ( ! empty( $args['fields'] ) ) {
+			$args['fields'] = array_merge( $fields, (array) $args['fields'] );
+		} else {
+			$args['fields'] = $fields;
+			$args['fields'][] = 'display_name';
+		}
+
+		$last_field = end( $args['fields'] );
+
+		$items = get_users( $args );
+
+		foreach ( $items as $item ) {
+			$display = $item->user_login;
+
+			if ( ! empty( $item->{$last_field} ) ) {
+				$display = $item->{$last_field};
+			}
+
+			$data[ $item->ID ] = $display;
+		}
 
 		return $data;
 
