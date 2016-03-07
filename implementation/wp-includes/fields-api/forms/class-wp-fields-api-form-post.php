@@ -220,6 +220,9 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'datasource'            => 'post-format',
 			'capabilities_callback' => array(), // @todo Add capabilities
 			'internal'              => true,
+			// @todo Label needs to be after the input
+			// @todo Inputs need classes / ids
+			// @todo Labels need classes / ids
 		);
 
 		$this->add_section( $section_id, $section_args );
