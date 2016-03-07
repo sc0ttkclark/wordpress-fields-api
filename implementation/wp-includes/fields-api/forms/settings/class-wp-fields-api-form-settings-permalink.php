@@ -23,7 +23,6 @@ class WP_Fields_API_Form_Settings_Permalink extends WP_Fields_API_Form_Settings 
 		$section_id   = $this->id . '-options-permalink';
 		$section_args = array(
 			'label'       => __( 'Common Settings' ),
-			'form'        => $this->id,
 			'description' => sprintf( __( 'WordPress offers you the ability to create a custom URL structure for your permalinks and archives. Custom URL structures can improve the aesthetics, usability, and forward-compatibility of your links. A <a href="%s">number of tags are available</a>, and here are some examples to get you started.' ), 'https://codex.wordpress.org/Using_Permalinks' ),
 			'controls'    => array(),
 		);
@@ -69,7 +68,6 @@ class WP_Fields_API_Form_Settings_Permalink extends WP_Fields_API_Form_Settings 
 		$section_id   = $this->id . '-options-permalink-optional';
 		$section_args = array(
 			'label'       => __( 'Optional' ),
-			'form'        => $this->id,
 			'description' => sprintf( __( 'If you like, you may enter custom structures for your category and tag URLs here. For example, using <code>topics</code> as your category base would make your category links like <code>%s</code>. If you leave these blank the defaults will be used.' ), site_url( 'topics/uncategorized' ) ),
 			'controls'    => array(),
 		);

@@ -28,7 +28,6 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 		$section_id   = $this->id . '-main';
 		$section_args = array(
 			'label'         => __( 'Term' ),
-			'form'          => $this->id,
 			'display_label' => false,
 			'controls'      => array(),
 		);
