@@ -1,4 +1,4 @@
-# The difference between Object Types and Object Names
+# The difference between Object Types and Object Subtypes
 
 ## Object Types
 
@@ -14,11 +14,11 @@ There are a few object types baked into the Fields API:
 * `customizer` (Customizer API)
 * Support for custom object types is baked in through hooks
 
-## Object Names
+## Object Subtypes
 
-Object Names are names of subsets of data, like Post Types, Taxonomies, or Comment Types. 
+Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. 
 
-There are only a few Object Types that Object Names apply to:
+There are only a few Object Types that Object Subtypes apply to:
 
 * `post` (Post Types: `post`, `page`, `your_cpt`)
 * `term` (Taxonomies: `category`, `post_tag`, `your_ct`)
@@ -32,7 +32,7 @@ Object types that do not need an object name include:
 
 Use of object names can be used by custom object types at their discretion.
 
-### Default Object Names and Handling
+### Default Object Subtypes and Handling
 
 The default object name is based on the object type, it adds an underscore to the object type -- `_{$object_type}`
 

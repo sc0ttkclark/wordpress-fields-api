@@ -17,10 +17,10 @@ $form_id = 'my-form';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = null;
+$object_subtype = null;
 
 // Register form
-$wp_fields->add_form( $object_type, $form_id, $object_name );
+$wp_fields->add_form( $object_type, $form_id, $object_subtype );
 ```
 
 **Please note:** Registering forms are not normally required for working within the existing WordPress Admin area unless you need custom admin forms. They can also be used on the front-end as well.
@@ -40,7 +40,7 @@ $form_id = 'term-edit';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = 'xyz';
+$object_subtype = 'xyz';
 
 // Section ID and options
 $section_id = 'my-section'; // @todo Fill in section ID
@@ -50,7 +50,7 @@ $section_args = array(
 );
 
 // Register section
-$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
+$wp_fields->add_section( $object_type, $section_id, $object_subtype, $section_args );
 ```
 
 ## Controls
@@ -85,7 +85,7 @@ $form_id = 'term-edit';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = 'xyz';
+$object_subtype = 'xyz';
 
 // Control ID and options
 $control_id = 'my-control'; // @todo Fill in control ID
@@ -98,7 +98,7 @@ $control_args = array(
 );
 
 // Register control
-$wp_fields->add_control( $object_type, $control_id, $object_name, $control_args );
+$wp_fields->add_control( $object_type, $control_id, $object_subtype, $control_args );
 ```
 
 ## Fields
@@ -115,7 +115,7 @@ $object_type = 'term';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = 'xyz';
+$object_subtype = 'xyz';
 
 // Section ID
 $section_id = 'my-section'; // @todo Fill in section ID
@@ -134,7 +134,7 @@ $field_args = array(
 );
 
 // Register field (and control)
-$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+$wp_fields->add_field( $object_type, $field_id, $object_subtype, $field_args );
 ```
 
 ### Registering fields (standalone)
@@ -147,14 +147,14 @@ $object_type = 'term';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = 'xyz';
+$object_subtype = 'xyz';
 
 // Field ID and options
 $field_id = 'my-field'; // @todo Fill in field ID
 $field_args = array();
 
 // Register field
-$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+$wp_fields->add_field( $object_type, $field_id, $object_subtype, $field_args );
 ```
 
 ## Bringing it all together to register your configuration
@@ -170,8 +170,8 @@ function example_my_term_xyz( $wp_fields ) {
 	// Object type: Term
 	$object_type = 'term';
 
-	// Object name: XYZ
-	$object_name = 'xyz'; // @todo Change to any taxonomy name
+	// Object subtype: XYZ
+	$object_subtype = 'xyz'; // @todo Change to any taxonomy name
 
 	// Form: Term Edit
 	$form_id = 'term-edit'; // @todo Also available is term-add
@@ -186,7 +186,7 @@ function example_my_term_xyz( $wp_fields ) {
 		'form' => $form_id,
 	);
 
-	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
+	$wp_fields->add_section( $object_type, $section_id, $object_subtype, $section_args );
 
 	// My Field
 	$field_id = 'my-field';
@@ -200,7 +200,7 @@ function example_my_term_xyz( $wp_fields ) {
 		),
 	);
 
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+	$wp_fields->add_field( $object_type, $field_id, $object_subtype, $field_args );
 
 
 }

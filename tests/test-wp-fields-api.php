@@ -8,7 +8,7 @@
 class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 	public $object_type = 'post';
-	public $object_name = 'my_custom_post_type';
+	public $object_subtype = 'my_custom_post_type';
 
 	public function tearDown() {
 
@@ -48,16 +48,16 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	 * Test WP_Fields_API::add_form()
 	 *
 	 * @param string $object_type
-	 * @param string $object_name
+	 * @param string $object_subtype
 	 */
-	public function test_add_form( $object_type = 'post', $object_name = null ) {
+	public function test_add_form( $object_type = 'post', $object_subtype = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		$wp_fields->add_form( $object_type, 'my_test_form', $object_name );
+		$wp_fields->add_form( $object_type, 'my_test_form', $object_subtype );
 
 	}
 
@@ -65,7 +65,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	 * Test WP_Fields_API::add_form()
 	 *
 	 * @param string $object_type
-	 * @param string $object_name
+	 * @param string $object_subtype
 	 */
 	public function test_add_form_invalid( $object_type = 'post' ) {
 
@@ -89,10 +89,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_form( $this->object_type, $this->object_name );
+		$this->test_add_form( $this->object_type, $this->object_subtype );
 
 		// Get forms for object type / name
-		$forms = $wp_fields->get_forms( $this->object_type, $this->object_name );
+		$forms = $wp_fields->get_forms( $this->object_type, $this->object_subtype );
 
 		$this->assertEquals( 1, count( $forms ) );
 
@@ -126,7 +126,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	/**
 	 * Test WP_Fields_API::get_forms()
 	 */
-	public function test_get_forms_no_object_name() {
+	public function test_get_forms_no_object_subtype() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -156,10 +156,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_form( $this->object_type, $this->object_name );
+		$this->test_add_form( $this->object_type, $this->object_subtype );
 
 		// Form exists for this object type / name
-		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_name );
+		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_subtype );
 
 		$this->assertNotEmpty( $form );
 
@@ -171,7 +171,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEmpty( $form );
 
 		// Form doesn't exist for this object type / name
-		$form = $wp_fields->get_form( $this->object_type, 'my_test_form2', $this->object_name );
+		$form = $wp_fields->get_form( $this->object_type, 'my_test_form2', $this->object_subtype );
 
 		$this->assertEmpty( $form );
 
@@ -188,20 +188,20 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_form( $this->object_type, $this->object_name );
+		$this->test_add_form( $this->object_type, $this->object_subtype );
 
 		// Form exists for this object type / name
-		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_name );
+		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_subtype );
 
 		$this->assertNotEmpty( $form );
 
 		$this->assertEquals( 'my_test_form', $form->id );
 
 		// Remove form
-		$wp_fields->remove_form( $this->object_type, 'my_test_form', $this->object_name );
+		$wp_fields->remove_form( $this->object_type, 'my_test_form', $this->object_subtype );
 
 		// Form no longer exists for this object type / name
-		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_name );
+		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_subtype );
 
 		$this->assertEmpty( $form );
 
@@ -218,13 +218,13 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_form( $this->object_type, $this->object_name );
+		$this->test_add_form( $this->object_type, $this->object_subtype );
 
 		// Remove form
 		$wp_fields->remove_form( $this->object_type, null, true );
 
 		// Form no longer exists for this object type / name
-		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_name );
+		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_subtype );
 
 		$this->assertEmpty( $form );
 
@@ -256,7 +256,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	/**
 	 * Test WP_Fields_API::remove_form()
 	 */
-	public function test_remove_form_by_object_name() {
+	public function test_remove_form_by_object_subtype() {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -264,13 +264,13 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_form( $this->object_type, $this->object_name );
+		$this->test_add_form( $this->object_type, $this->object_subtype );
 
 		// Remove form
-		$wp_fields->remove_form( $this->object_type, true, $this->object_name );
+		$wp_fields->remove_form( $this->object_type, true, $this->object_subtype );
 
 		// Form no longer exists for this object type / name
-		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_name );
+		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_subtype );
 
 		$this->assertEmpty( $form );
 
@@ -280,9 +280,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	 * Test WP_Fields_API::add_section()
 	 *
 	 * @param string $object_type
-	 * @param string $object_name
+	 * @param string $object_subtype
 	 */
-	public function test_add_section( $object_type = 'post', $object_name = null ) {
+	public function test_add_section( $object_type = 'post', $object_subtype = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -290,9 +290,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_form( $object_type, $object_name );
+		$this->test_add_form( $object_type, $object_subtype );
 
-		$wp_fields->add_section( $object_type, 'my_test_section', $object_name, array(
+		$wp_fields->add_section( $object_type, 'my_test_section', $object_subtype, array(
 			'form' => 'my_test_form',
 		) );
 
@@ -309,10 +309,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_section( $this->object_type, $this->object_name );
+		$this->test_add_section( $this->object_type, $this->object_subtype );
 
 		// Get sections for object type / name
-		$sections = $wp_fields->get_sections( $this->object_type, $this->object_name );
+		$sections = $wp_fields->get_sections( $this->object_type, $this->object_subtype );
 
 		$this->assertEquals( 1, count( $sections ) );
 
@@ -324,7 +324,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 0, count( $sections ) );
 
 		// Get sections by form
-		$sections = $wp_fields->get_sections( $this->object_type, $this->object_name, 'my_test_form' );
+		$sections = $wp_fields->get_sections( $this->object_type, $this->object_subtype, 'my_test_form' );
 
 		$this->assertEquals( 1, count( $sections ) );
 
@@ -333,7 +333,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_form', $sections['my_test_section']->get_form()->id );
 
 		// Get sections *from* form
-		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_name );
+		$form = $wp_fields->get_form( $this->object_type, 'my_test_form', $this->object_subtype );
 
 		$sections = $form->get_children( 'section' );
 
@@ -373,10 +373,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_section( $this->object_type, $this->object_name );
+		$this->test_add_section( $this->object_type, $this->object_subtype );
 
 		// Section exists for this object type / name
-		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_name );
+		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_subtype );
 
 		$this->assertNotEmpty( $section );
 
@@ -389,7 +389,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEmpty( $section );
 
 		// Section doesn't exist for this object type / name
-		$section = $wp_fields->get_section( $this->object_type, 'my_test_section2', $this->object_name );
+		$section = $wp_fields->get_section( $this->object_type, 'my_test_section2', $this->object_subtype );
 
 		$this->assertEmpty( $section );
 
@@ -406,20 +406,20 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$this->test_add_section( $this->object_type, $this->object_name );
+		$this->test_add_section( $this->object_type, $this->object_subtype );
 
 		// Section exists for this object type / name
-		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_name );
+		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_subtype );
 
 		$this->assertNotEmpty( $section );
 
 		$this->assertEquals( 'my_test_section', $section->id );
 
 		// Remove section
-		$wp_fields->remove_section( $this->object_type, 'my_test_section', $this->object_name );
+		$wp_fields->remove_section( $this->object_type, 'my_test_section', $this->object_subtype );
 
 		// Section no longer exists for this object type / name
-		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_name );
+		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_subtype );
 
 		$this->assertEmpty( $section );
 
@@ -429,9 +429,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	 * Test WP_Fields_API::add_field()
 	 *
 	 * @param string $object_type
-	 * @param string $object_name
+	 * @param string $object_subtype
 	 */
-	public function test_add_field( $object_type = 'post', $object_name = null ) {
+	public function test_add_field( $object_type = 'post', $object_subtype = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -439,9 +439,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a section for the control
-		$this->test_add_section( $object_type, $object_name );
+		$this->test_add_section( $object_type, $object_subtype );
 
-		$wp_fields->add_field( $object_type, 'my_test_field', $object_name, array(
+		$wp_fields->add_field( $object_type, 'my_test_field', $object_subtype, array(
 			'control' => array(
 				'id'      => 'my_test_field_control',
 				'label'   => 'My Test Field',
@@ -463,10 +463,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a field
-		$this->test_add_field( $this->object_type, $this->object_name );
+		$this->test_add_field( $this->object_type, $this->object_subtype );
 
 		// Get fields for object type / name
-		$fields = $wp_fields->get_fields( $this->object_type, $this->object_name );
+		$fields = $wp_fields->get_fields( $this->object_type, $this->object_subtype );
 
 		$this->assertEquals( 1, count( $fields ) );
 
@@ -490,10 +490,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a field
-		$this->test_add_field( $this->object_type, $this->object_name );
+		$this->test_add_field( $this->object_type, $this->object_subtype );
 
 		// Field exists for this object type / name
-		$field = $wp_fields->get_field( $this->object_type, 'my_test_field', $this->object_name );
+		$field = $wp_fields->get_field( $this->object_type, 'my_test_field', $this->object_subtype );
 
 		$this->assertNotEmpty( $field );
 
@@ -505,7 +505,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEmpty( $field );
 
 		// Field doesn't exist for this object type / name
-		$field = $wp_fields->get_field( $this->object_type, 'my_test_field2', $this->object_name );
+		$field = $wp_fields->get_field( $this->object_type, 'my_test_field2', $this->object_subtype );
 
 		$this->assertEmpty( $field );
 
@@ -522,20 +522,20 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a field
-		$this->test_add_field( $this->object_type, $this->object_name );
+		$this->test_add_field( $this->object_type, $this->object_subtype );
 
 		// Field exists for this object type / name
-		$field = $wp_fields->get_field( $this->object_type, 'my_test_field', $this->object_name );
+		$field = $wp_fields->get_field( $this->object_type, 'my_test_field', $this->object_subtype );
 
 		$this->assertNotEmpty( $field );
 
 		$this->assertEquals( 'my_test_field', $field->id );
 
 		// Remove field
-		$wp_fields->remove_field( $this->object_type, 'my_test_field', $this->object_name );
+		$wp_fields->remove_field( $this->object_type, 'my_test_field', $this->object_subtype );
 
 		// Field no longer exists for this object type / name
-		$field = $wp_fields->get_field( $this->object_type, 'my_test_field', $this->object_name );
+		$field = $wp_fields->get_field( $this->object_type, 'my_test_field', $this->object_subtype );
 
 		$this->assertEmpty( $field );
 
@@ -545,9 +545,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 	 * Test WP_Fields_API::add_control()
 	 *
 	 * @param string $object_type
-	 * @param string $object_name
+	 * @param string $object_subtype
 	 */
-	public function test_add_control( $object_type = 'post', $object_name = null ) {
+	public function test_add_control( $object_type = 'post', $object_subtype = null ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -555,9 +555,9 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a field for the control
-		$this->test_add_field( $object_type, $object_name );
+		$this->test_add_field( $object_type, $object_subtype );
 
-		$wp_fields->add_control( $object_type, 'my_test_control', $object_name, array(
+		$wp_fields->add_control( $object_type, 'my_test_control', $object_subtype, array(
 			'section' => 'my_test_section',
 			'field'   => 'my_test_field',
 			'label'   => 'My Test Control Field',
@@ -577,10 +577,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a control / field / section
-		$this->test_add_control( $this->object_type, $this->object_name );
+		$this->test_add_control( $this->object_type, $this->object_subtype );
 
 		// Get controls for object type / name
-		$controls = $wp_fields->get_controls( $this->object_type, $this->object_name );
+		$controls = $wp_fields->get_controls( $this->object_type, $this->object_subtype );
 
 		// There are two controls, the default one with the main field and this control
 		$this->assertEquals( 2, count( $controls ) );
@@ -596,7 +596,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 0, count( $controls ) );
 
 		// Get controls by section
-		$controls = $wp_fields->get_controls( $this->object_type, $this->object_name, 'my_test_section' );
+		$controls = $wp_fields->get_controls( $this->object_type, $this->object_subtype, 'my_test_section' );
 
 		$this->assertEquals( 2, count( $controls ) );
 
@@ -606,7 +606,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_section', $controls['my_test_control']->get_section()->id );
 
 		// Get sections *from* form
-		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_name );
+		$section = $wp_fields->get_section( $this->object_type, 'my_test_section', $this->object_subtype );
 
 		$controls = $section->get_children( 'control' );
 
@@ -630,10 +630,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a control / field / section
-		$this->test_add_control( $this->object_type, $this->object_name );
+		$this->test_add_control( $this->object_type, $this->object_subtype );
 
 		// Control exists for this object type / name
-		$control = $wp_fields->get_control( $this->object_type, 'my_test_field_control', $this->object_name );
+		$control = $wp_fields->get_control( $this->object_type, 'my_test_field_control', $this->object_subtype );
 
 		$this->assertNotEmpty( $control );
 
@@ -643,7 +643,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_section', $control->get_section()->id );
 
 		// Control exists for this object type / name
-		$control = $wp_fields->get_control( $this->object_type, 'my_test_control', $this->object_name );
+		$control = $wp_fields->get_control( $this->object_type, 'my_test_control', $this->object_subtype );
 
 		$this->assertNotEmpty( $control );
 
@@ -658,7 +658,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEmpty( $control );
 
 		// Control doesn't exist for this object type / name
-		$control = $wp_fields->get_control( $this->object_type, 'my_test_control2', $this->object_name );
+		$control = $wp_fields->get_control( $this->object_type, 'my_test_control2', $this->object_subtype );
 
 		$this->assertEmpty( $control );
 
@@ -675,10 +675,10 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a control / field / section
-		$this->test_add_control( $this->object_type, $this->object_name );
+		$this->test_add_control( $this->object_type, $this->object_subtype );
 
 		// Control exists for this object type / name
-		$control = $wp_fields->get_control( $this->object_type, 'my_test_control', $this->object_name );
+		$control = $wp_fields->get_control( $this->object_type, 'my_test_control', $this->object_subtype );
 
 		$this->assertNotEmpty( $control );
 
@@ -687,18 +687,18 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_section', $control->get_section()->id );
 
 		// Remove control
-		$wp_fields->remove_control( $this->object_type, 'my_test_control', $this->object_name );
+		$wp_fields->remove_control( $this->object_type, 'my_test_control', $this->object_subtype );
 
 		// Control no longer exists for this object type / name
-		$control = $wp_fields->get_control( $this->object_type, 'my_test_control', $this->object_name );
+		$control = $wp_fields->get_control( $this->object_type, 'my_test_control', $this->object_subtype );
 
 		$this->assertEmpty( $control );
 
 		// Remove field's control
-		$wp_fields->remove_control( $this->object_type, 'my_test_field_control', $this->object_name );
+		$wp_fields->remove_control( $this->object_type, 'my_test_field_control', $this->object_subtype );
 
 		// Control no longer exists for this object type / name
-		$control = $wp_fields->get_control( $this->object_type, 'my_test_field_control', $this->object_name );
+		$control = $wp_fields->get_control( $this->object_type, 'my_test_field_control', $this->object_subtype );
 
 		$this->assertEmpty( $control );
 

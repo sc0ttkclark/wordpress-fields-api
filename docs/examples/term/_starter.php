@@ -9,8 +9,8 @@ function example_my_term_starter( $wp_fields ) {
 	// Object type: Term
 	$object_type = 'term';
 
-	// Object name: Category
-	$object_name = 'category'; // @todo Change to any taxonomy name
+	// Object subtype: Category
+	$object_subtype = 'category'; // @todo Change to any taxonomy name
 
 	// Form: Term Edit
 	$form_id = 'term-edit'; // @todo Also available is term-add
@@ -35,7 +35,7 @@ function example_my_term_starter( $wp_fields ) {
 	);
 
 	// Add the section
-	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
+	$wp_fields->add_section( $object_type, $section_id, $object_subtype, $section_args );
 
 }
 

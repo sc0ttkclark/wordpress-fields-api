@@ -122,7 +122,7 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			// Set taxonomy object name
 			$form_edit->item        = $tag;
 			$form_edit->item_id     = $tag_ID;
-			$form_edit->object_name = $taxonomy;
+			$form_edit->object_subtype = $taxonomy;
 
 			// Render form controls
 			$form_edit->maybe_render();

@@ -50,8 +50,8 @@ class WP_Fields_API_Comment_Datasource extends WP_Fields_API_Datasource {
 
 		if ( $control ) {
 			// Handle default comment type
-			if ( empty( $this->comment_type ) && 'comment' == $control->object_type && ! empty( $control->object_name ) ) {
-				$this->comment_type = $control->object_name;
+			if ( empty( $this->comment_type ) && 'comment' == $control->object_type && ! empty( $control->object_subtype ) ) {
+				$this->comment_type = $control->object_subtype;
 			}
 
 			// Handle exclusion

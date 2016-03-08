@@ -327,7 +327,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		/**
 		 * @var $wpdb wpdb
@@ -391,7 +391,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		}
 
 		// Save additional fields
-		return parent::save_fields( $item_id, $object_name );
+		return parent::save_fields( $item_id, $object_subtype );
 
 	}
 

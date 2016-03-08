@@ -54,12 +54,12 @@ class WP_Fields_API_Container {
 	public $object_type;
 
 	/**
-	 * Object name (for post types and taxonomies).
+	 * Object subtype (for post types and taxonomies).
 	 *
 	 * @access public
 	 * @var string
 	 */
-	public $object_name;
+	public $object_subtype;
 
 	/**
 	 * Item ID of current item
@@ -308,9 +308,9 @@ class WP_Fields_API_Container {
 		}
 
 		$object_type = $this->get_object_type();
-		$object_name = $this->get_object_name();
+		$object_subtype = $this->get_object_subtype();
 
-		$added = $wp_fields->add_section( $object_type, $id, $object_name, $args );
+		$added = $wp_fields->add_section( $object_type, $id, $object_subtype, $args );
 
 		if ( $added && ! is_wp_error( $added ) ) {
 			if ( $id && ! is_wp_error( $id ) ) {
@@ -380,7 +380,7 @@ class WP_Fields_API_Container {
 		global $wp_fields;
 
 		$object_type = $this->get_object_type();
-		$object_name = $this->get_object_name();
+		$object_subtype = $this->get_object_subtype();
 
 		// Set parent
 		if ( is_a( $args, 'WP_Fields_API_Control' ) ) {
@@ -389,7 +389,7 @@ class WP_Fields_API_Container {
 			$args[ $this->container_type ] = $this->id;
 		}
 
-		$added = $wp_fields->add_control( $object_type, $id, $object_name, $args );
+		$added = $wp_fields->add_control( $object_type, $id, $object_subtype, $args );
 
 		if ( $added && ! is_wp_error( $added ) ) {
 			if ( $id && ! is_wp_error( $id ) ) {
@@ -453,19 +453,19 @@ class WP_Fields_API_Container {
 		// Get children from Fields API configuration
 		if ( empty( $this->children[ $child_type ] ) ) {
 			$object_type = $this->get_object_type();
-			$object_name = $this->get_object_name();
+			$object_subtype = $this->get_object_subtype();
 
 			$object_children = array();
 
 			if ( 'section' === $child_type ) {
 				// Get sections for container
-				$object_children = $wp_fields->get_sections( $object_type, $object_name, $this );
+				$object_children = $wp_fields->get_sections( $object_type, $object_subtype, $this );
 			} elseif ( 'control' === $child_type ) {
 				// Get controls for container
-				$object_children = $wp_fields->get_controls( $object_type, $object_name, $this );
+				$object_children = $wp_fields->get_controls( $object_type, $object_subtype, $this );
 			} elseif ( 'field' === $child_type && 'control' === $this->container_type && ! empty( $this->field ) ) {
 				// Get field for container
-				$object_children = $wp_fields->get_field( $object_type, $this->field, $object_name );
+				$object_children = $wp_fields->get_field( $object_type, $this->field, $object_subtype );
 			}
 
 			if ( ! empty( $object_children ) ) {
@@ -540,18 +540,18 @@ class WP_Fields_API_Container {
 		global $wp_fields;
 
 		$object_type = $this->get_object_type();
-		$object_name = $this->get_object_name();
+		$object_subtype = $this->get_object_subtype();
 
 		foreach ( $children as $k => $child ) {
 			if ( is_string( $child ) ) {
 				if ( 'section' === $child_type ) {
 					// Get sections for container
-					$child = $wp_fields->get_section( $object_type, $child, $object_name );
+					$child = $wp_fields->get_section( $object_type, $child, $object_subtype );
 				} elseif ( 'control' === $child_type ) {
 					// Get controls for container
-					$child = $wp_fields->get_control( $object_type, $child, $object_name );
+					$child = $wp_fields->get_control( $object_type, $child, $object_subtype );
 				} elseif ( 'field' === $child_type ) {
-					$child = $wp_fields->get_field( $object_type, $child, $object_name );
+					$child = $wp_fields->get_field( $object_type, $child, $object_subtype );
 				}
 			}
 
@@ -652,7 +652,7 @@ class WP_Fields_API_Container {
 		// Get children from Fields API configuration
 		if ( empty( $this->parent ) && 'form' !== $this->container_type ) {
 			$object_type = $this->get_object_type();
-			$object_name = $this->get_object_name();
+			$object_subtype = $this->get_object_subtype();
 
 			$parent = null;
 
@@ -661,21 +661,21 @@ class WP_Fields_API_Container {
 				if ( is_a( $this->form, 'WP_Fields_API_Form' ) ) {
 					$parent = $this->form;
 				} else {
-					$parent = $wp_fields->get_form( $object_type, $this->form, $object_name );
+					$parent = $wp_fields->get_form( $object_type, $this->form, $object_subtype );
 				}
 			} elseif ( ! empty( $this->section ) ) {
 				// Get section
 				if ( is_a( $this->section, 'WP_Fields_API_Section' ) ) {
 					$parent = $this->section;
 				} else {
-					$parent = $wp_fields->get_section( $object_type, $this->section, $object_name );
+					$parent = $wp_fields->get_section( $object_type, $this->section, $object_subtype );
 				}
 			} elseif ( ! empty( $this->control ) ) {
 				// Get control
 				if ( is_a( $this->control, 'WP_Fields_API_Control' ) ) {
 					$parent = $this->control;
 				} else {
-					$parent = $wp_fields->get_section( $object_type, $this->control, $object_name );
+					$parent = $wp_fields->get_section( $object_type, $this->control, $object_subtype );
 				}
 			}
 
@@ -726,28 +726,28 @@ class WP_Fields_API_Container {
 	/**
 	 * Get object name from container or parent
 	 *
-	 * @return string|null Object name
+	 * @return string|null Object subtype
 	 */
-	public function get_object_name() {
+	public function get_object_subtype() {
 
 		$parent = $this->parent;
 
-		if ( ! $this->object_name && $parent ) {
+		if ( ! $this->object_subtype && $parent ) {
 			$object_type = $this->get_object_type();
 
-			$default_object_name = '_' . $object_type;
+			$default_object_subtype = '_' . $object_type;
 
 			// Get object type from any parent that has it
 			while ( $parent && $parent = $parent->get_parent() ) {
-				if ( $parent->object_name && $default_object_name !== $parent->object_name ) {
-					$this->object_name = $parent->object_name;
+				if ( $parent->object_subtype && $default_object_subtype !== $parent->object_subtype ) {
+					$this->object_subtype = $parent->object_subtype;
 
 					break;
 				}
 			}
 		}
 
-		return $this->object_name;
+		return $this->object_subtype;
 
 	}
 
@@ -823,7 +823,7 @@ class WP_Fields_API_Container {
 		$json['instanceNumber'] = $this->instance_number;
 
 		$json['objectType'] = $this->get_object_type();
-		$json['objectName'] = $this->get_object_name();
+		$json['objectName'] = $this->get_object_subtype();
 
 		// Get parent
 		$json['parent'] = '';
@@ -877,7 +877,7 @@ class WP_Fields_API_Container {
 		}
 
 		$object_type = $this->get_object_type();
-		$object_name = $this->get_object_name();
+		$object_subtype = $this->get_object_subtype();
 
 		/**
 		 * Filters to check required user capabilities and whether to render a Fields API container.
@@ -896,7 +896,7 @@ class WP_Fields_API_Container {
 		 * @param bool                    $access Whether to give access to container.
 		 * @param WP_Fields_API_Container $this   WP_Fields_API_Container instance.
 		 */
-		$access = apply_filters( "fields_api_check_capabilities_{$this->container_type}_{$object_type}_{$object_name}_{$this->id}", $access, $this );
+		$access = apply_filters( "fields_api_check_capabilities_{$this->container_type}_{$object_type}_{$object_subtype}_{$this->id}", $access, $this );
 
 		return $access;
 
@@ -977,7 +977,7 @@ class WP_Fields_API_Container {
 		}
 
 		$object_type = $this->get_object_type();
-		$object_name = $this->get_object_name();
+		$object_subtype = $this->get_object_subtype();
 
 		/**
 		 * Fires before rendering a Fields API container.
@@ -994,7 +994,7 @@ class WP_Fields_API_Container {
 		 *
 		 * @param WP_Fields_API_Container $this WP_Fields_API_Container instance.
 		 */
-		do_action( "fields_render_{$this->container_type}_{$object_type}_{$object_name}_{$this->id}", $this );
+		do_action( "fields_render_{$this->container_type}_{$object_type}_{$object_subtype}_{$this->id}", $this );
 
 		if ( is_callable( $this->render_callback ) ) {
 			call_user_func( $this->render_callback, $this );

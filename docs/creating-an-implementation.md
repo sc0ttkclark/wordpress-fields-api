@@ -35,8 +35,8 @@ class WP_Fields_API_Form_My_XYZ extends WP_Fields_API_Form {
 		// Set Object type to this one
 		$object_type = $this->object_type;
 	
-		// Set Object name to this one
-		$object_name = $this->object_name;
+		// Set Object subtype to this one
+		$object_subtype = $this->object_subtype;
 	
 		// Set Form ID to this one
 		$form_id = $this->id;
@@ -61,21 +61,21 @@ class WP_Fields_API_Form_My_XYZ extends WP_Fields_API_Form {
 		);
 	
 		// Add the section
-		$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
+		$wp_fields->add_section( $this->object_type, $section_id, $this->object_subtype, $section_args );
 
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		// Do any custom saving you want to do here, or just run parent::save_fields()
 		
 		// You can return a WP_Error with your error(s) too
 		
 		// Run default save
-		return parent::save_fields( $item_id, $object_name );
+		return parent::save_fields( $item_id, $object_subtype );
 
 	}
 	
@@ -99,17 +99,17 @@ $form_id = 'my-form';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = null;
+$object_subtype = null;
 
 // Get the form object
-$form = $wp_fields->get_form( $object_type, $form_id, $object_name );
+$form = $wp_fields->get_form( $object_type, $form_id, $object_subtype );
 
 // This is the current item ID, like a Post ID, Term ID
 // Should be empty when adding new items
 $item_id = 0;
 
 // Render form controls
-$form->maybe_render( $item_id, $object_name );
+$form->maybe_render( $item_id, $object_subtype );
 ```
 
 ## Saving data for your form
@@ -126,17 +126,17 @@ $form_id = 'my-form';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = null;
+$object_subtype = null;
 
 // Get the form object
-$form = $wp_fields->get_form( $object_type, $form_id, $object_name );
+$form = $wp_fields->get_form( $object_type, $form_id, $object_subtype );
 
 // This is the current item ID, like a Post ID, Term ID
 // Should be empty when adding new items
 $item_id = 0;
 
 // Save form fields
-$form->save_fields( $item_id, $object_name );
+$form->save_fields( $item_id, $object_subtype );
 ```
 
 ## Including your Implementation
@@ -162,10 +162,10 @@ function my_xyz_include_implementation() {
 	
 	// Set this to a specific post type, taxonomy,
 	// or comment type you want to register for
-	$object_name = null;
+	$object_subtype = null;
 	
 	// Run the registration of the encapsulated configuration
-	WP_Fields_API_Form_My_XYZ::register( $object_type, $form_id, $object_name );
+	WP_Fields_API_Form_My_XYZ::register( $object_type, $form_id, $object_subtype );
 
 }
 add_action( 'fields_register', 'my_xyz_include_implementation' );
