@@ -49,7 +49,7 @@ class WP_Customize_Panel extends WP_Fields_API_Form {
 
 		$this->manager = $manager;
 
-		$this->object_name = $this->manager->get_customizer_object_name();
+		$this->object_subtype = $this->manager->get_customizer_object_subtype();
 
 		parent::__construct( $this->object_type, $id, $args );
 
@@ -62,7 +62,7 @@ class WP_Customize_Panel extends WP_Fields_API_Form {
 		}
 
 		if ( '' !== $this->id ) {
-			add_action( "fields_api_render_form_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
+			add_action( "fields_api_render_form_{$this->object_type}_{$this->object_subtype}_{$this->id}", array( $this, 'customize_render_panel_id' ) );
 		}
 
 	}

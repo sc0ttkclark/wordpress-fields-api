@@ -59,7 +59,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 	public function __construct( $manager, $id, $args = array() ) {
 		$this->manager = $manager;
 
-		$this->object_name = $this->manager->get_customizer_object_name();
+		$this->object_subtype = $this->manager->get_customizer_object_subtype();
 
 		// Backwards compatibility for old property names
 		foreach ( $this->property_map as $backcompat_arg => $actual_arg ) {
@@ -85,7 +85,7 @@ class WP_Customize_Control extends WP_Fields_API_Control {
 		}
 
 		if ( '' !== $this->id ) {
-			add_action( 'fields_render_control_' . $this->object_type . '_' . $this->object_name . '_' . $this->id, array( 'WP_Customize_Control', 'customize_render_control_id' ) );
+			add_action( 'fields_render_control_' . $this->object_type . '_' . $this->object_subtype . '_' . $this->id, array( 'WP_Customize_Control', 'customize_render_control_id' ) );
 		}
 	}
 

@@ -9,8 +9,8 @@ function example_my_user_address( $wp_fields ) {
 	// Object type: User
 	$object_type = 'user';
 
-	// Object name: n/a
-	$object_name = null;
+	// Object subtype: n/a
+	$object_subtype = null;
 
 	// Form: User Edit Profile
 	$form_id = 'user-edit';
@@ -73,7 +73,7 @@ function example_my_user_address( $wp_fields ) {
 	);
 
 	// Add the section
-	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
+	$wp_fields->add_section( $object_type, $section_id, $object_subtype, $section_args );
 
 }
 

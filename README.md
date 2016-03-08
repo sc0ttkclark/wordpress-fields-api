@@ -19,7 +19,7 @@ Please note: This plugin is still in the early stages of development and should 
 ## Documentation
 
 * [Terminology](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/terminology.md)
-* [Object Types and Object Names](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md)
+* [Object Types and Object Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md)
 * [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md)
 * [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)
 
@@ -37,7 +37,7 @@ Please note: This plugin is still in the early stages of development and should 
 ## Requirements
 
 * WordPress 4.4 - No previous or more recent major version can be 100% supported and confirmed as working.
-* Fields API installed as a [plugin](https://wordpress.org/plugin/fields-api/)
+* Fields API installed as a [plugin](https://github.com/sc0ttkclark/wordpress-fields-api/archive/develop.zip)
 
 Every Fields API release has to be based off of the latest WordPress stable release. This means that over time, we can only support the last stable release of WordPress.
 

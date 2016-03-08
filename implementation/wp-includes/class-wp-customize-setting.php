@@ -115,7 +115,7 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 
 		$this->manager = $manager;
 
-		$this->object_name = $this->manager->get_customizer_object_name();
+		$this->object_subtype = $this->manager->get_customizer_object_subtype();
 
 		// Backwards compatibility for callbacks on old filters,
 		// Remove from args so they don't get handled by WP Fields API
@@ -152,8 +152,8 @@ class WP_Customize_Setting extends WP_Fields_API_Field {
 		// @todo Add methods that hook into $this->object_type hooks instead, and run $this->type logic for backwards compat
 
 		// Add compatibility hooks
-		add_filter( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize' ) );
-		add_filter( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_sanitize_js_value' ) );
+		add_filter( "fields_sanitize_{$this->object_type}_{$this->object_subtype}_{$this->id}", array( $this, 'customize_sanitize' ) );
+		add_filter( "fields_sanitize_js_{$this->object_type}_{$this->object_subtype}_{$this->id}", array( $this, 'customize_sanitize_js_value' ) );
 
 	}
 

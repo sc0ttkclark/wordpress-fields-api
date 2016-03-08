@@ -221,7 +221,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 		 * @param mixed               $value Value of the field.
 		 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 		 */
-		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", $value, $this );
+		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->object_subtype}_{$this->id}", $value, $this );
 
 	}
 
@@ -410,7 +410,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 				 * @param mixed $default The field default value. Default empty.
 				 * @param int   $item_id (optional) The Item ID.
 				 */
-				$value = apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default, $item_id );
+				$value = apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_subtype . '_' . $this->id_data['base'], $this->default, $item_id );
 				break;
 		}
 
@@ -521,7 +521,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 		 * @param mixed                $value The field value.
 		 * @param WP_Fields_API_Field $this  {@see WP_Fields_API_Field} instance.
 		 */
-		$value = apply_filters( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", $value, $this );
+		$value = apply_filters( "fields_sanitize_js_{$this->object_type}_{$this->object_subtype}_{$this->id}", $value, $this );
 
 		if ( is_string( $value ) ) {
 			return html_entity_decode( $value, ENT_QUOTES, 'UTF-8' );
