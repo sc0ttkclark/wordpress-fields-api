@@ -23,6 +23,9 @@ class WP_Fields_API_Form_Comment extends WP_Fields_API_Form {
 
 		add_action( 'edit_comment', array( $this, 'wp_edit_comment' ), 10, 2 );
 
+		// Sections
+		// controls + fields
+
 		// Add example fields (maybe)
 		parent::register_fields( $wp_fields );
 
@@ -50,10 +53,10 @@ class WP_Fields_API_Form_Comment extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		// Save additional fields
-		return parent::save_fields( $item_id, $object_name );
+		return parent::save_fields( $item_id, $object_subtype );
 
 	}
 

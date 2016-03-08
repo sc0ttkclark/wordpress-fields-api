@@ -25,20 +25,26 @@ class WP_Fields_API_Radio_Control extends WP_Fields_API_Control {
 			return;
 		}
 
-		if ( isset( $this->input_attrs['name'] ) ) {
-			$input_name = $this->input_attrs['name'];
-		} else {
-			$input_name = $this->id;
+		$input_attrs = $this->get_input_attrs();
 
-			if ( ! empty( $this->input_name ) ) {
-				$input_name = $this->input_name;
-			}
-		}
+		$choice_attrs = array(
+			'type' => 'radio',
+			'name' => $input_attrs['name'],
+		);
+
+		$current_value = $this->value();
 
 		foreach ( $this->choices as $value => $label ) :
+			$option_attrs = $choice_attrs;
+
+			$option_attrs['value'] = $value;
+
+			if ( $value == $current_value ) {
+				$option_attrs['checked'] = 'checked';
+			}
 			?>
 			<label>
-				<input type="radio" value="<?php echo esc_attr( $value ); ?>" name="<?php echo esc_attr( $input_name ); ?>" <?php $this->link(); checked( $this->value(), $value ); ?> />
+				<input <?php $this->render_attrs( $option_attrs ); $this->link(); ?> />
 				<?php echo wp_kses( $label, array(
 					'a'     => array(
 						'href'  => true,

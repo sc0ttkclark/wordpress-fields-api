@@ -54,7 +54,7 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 
 		$this->manager = $manager;
 
-		$this->object_name = $manager->get_customizer_object_name();
+		$this->object_subtype = $manager->get_customizer_object_subtype();
 
 		// Backwards compatibility for old property names
 		foreach ( $this->property_map as $backcompat_arg => $actual_arg ) {
@@ -76,7 +76,7 @@ class WP_Customize_Section extends WP_Fields_API_Section {
 		}
 
 		if ( '' !== $this->id ) {
-			add_action( "fields_api_render_section_{$this->object_type}_{$this->object_name}_{$this->id}", array( $this, 'customize_render_section_id' ) );
+			add_action( "fields_api_render_section_{$this->object_type}_{$this->object_subtype}_{$this->id}", array( $this, 'customize_render_section_id' ) );
 		}
 
 	}

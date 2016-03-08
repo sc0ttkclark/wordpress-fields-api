@@ -55,8 +55,8 @@ class WP_Fields_API_Term_Datasource extends WP_Fields_API_Datasource {
 
 		if ( $control ) {
 			// Handle default taxonomy
-			if ( empty( $this->taxonomy ) && 'term' == $control->object_type && ! empty( $control->object_name ) ) {
-				$this->taxonomy = $control->object_name;
+			if ( empty( $this->taxonomy ) && 'term' == $control->object_type && ! empty( $control->object_subtype ) ) {
+				$this->taxonomy = $control->object_subtype;
 			}
 
 			// Handle exclusion

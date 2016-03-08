@@ -55,8 +55,8 @@ class WP_Fields_API_Post_Datasource extends WP_Fields_API_Datasource {
 
 		if ( $control ) {
 			// Handle default post type
-			if ( empty( $this->post_type ) && 'post' == $control->object_type && ! empty( $control->object_name ) ) {
-				$this->post_type = $control->object_name;
+			if ( empty( $this->post_type ) && 'post' == $control->object_type && ! empty( $control->object_subtype ) ) {
+				$this->post_type = $control->object_subtype;
 			}
 
 			// Handle exclusion

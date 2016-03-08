@@ -45,9 +45,9 @@ global $wp_fields;
 // Get form
 $form_add = $wp_fields->get_form( 'term', 'term-add' );
 
-// Set taxonomy object name
+// Set taxonomy Object subtype
 $form_add->item_id     = 0;
-$form_add->object_name = $taxnow;
+$form_add->object_subtype = $taxnow;
 
 /**
  * <<< WP Fields API implementation
@@ -229,9 +229,10 @@ switch ( $wp_list_table->current_action() ) {
 		// Get form
 		$form_edit = $wp_fields->get_form( 'term', 'term-edit' );
 
-		// Set taxonomy object name
+		// Set taxonomy Object subtype
+		$form_edit->item        = $tag;
 		$form_edit->item_id     = $tag_ID;
-		$form_edit->object_name = $taxonomy;
+		$form_edit->object_subtype = $taxonomy;
 
 		$ret = $form_edit->save_fields();
 

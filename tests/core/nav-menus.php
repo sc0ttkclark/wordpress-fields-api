@@ -59,7 +59,7 @@ class Test_WP_Customize_Nav_Menus extends WP_UnitTestCase {
 	 *
 	 * @param array  $items  The menu items.
 	 * @param string $type   The object type (e.g. taxonomy).
-	 * @param string $object The object name (e.g. category).
+	 * @param string $object The Object subtype (e.g. category).
 	 * @return array Menu items.
 	 */
 	function filter_items( $items, $type, $object ) {

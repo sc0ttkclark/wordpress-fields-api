@@ -106,6 +106,7 @@ final class WP_Fields_API {
 		// Include section types
 		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-table-section.php' );
 		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-section.php' );
+		require_once( $fields_api_dir . 'section-types/class-wp-fields-api-meta-box-table-section.php' );
 
 		// Include control types
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-readonly-control.php' );
@@ -122,6 +123,7 @@ final class WP_Fields_API {
 		require_once( $fields_api_dir . 'control-types/class-wp-fields-api-number-inline-description.php' );
 
 		// Include datasources
+		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-admin-color-scheme-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-comment-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-post-datasource.php' );
 		require_once( $fields_api_dir . 'datasources/class-wp-fields-api-page-datasource.php' );
@@ -175,52 +177,52 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $object_type Object type.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Form[]
 	 */
-	public function get_forms( $object_type = null, $object_name = null ) {
+	public function get_forms( $object_type = null, $object_subtype = null ) {
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$forms = array();
 
 		if ( null === $object_type ) {
 			// Late init.
-			foreach ( self::$forms as $object_type => $object_names ) {
-				foreach ( $object_names as $object_name => $forms ) {
-					$this->get_forms( $object_type, $object_name );
+			foreach ( self::$forms as $object_type => $object_subtypes ) {
+				foreach ( $object_subtypes as $object_subtype => $forms ) {
+					$this->get_forms( $object_type, $object_subtype );
 				}
 			}
 
 			$forms = self::$forms;
-		} elseif ( isset( self::$forms[ $object_type ][ $object_name ] ) ) {
+		} elseif ( isset( self::$forms[ $object_type ][ $object_subtype ] ) ) {
 			// Late init.
-			foreach ( self::$forms[ $object_type ][ $object_name ] as $id => $form ) {
+			foreach ( self::$forms[ $object_type ][ $object_subtype ] as $id => $form ) {
 				// Late init
-				self::$forms[ $object_type ][ $object_name ][ $id ] = $this->setup_form( $object_type, $id, $object_name, $form );
+				self::$forms[ $object_type ][ $object_subtype ][ $id ] = $this->setup_form( $object_type, $id, $object_subtype, $form );
 			}
 
-			$forms = self::$forms[ $object_type ][ $object_name ];
+			$forms = self::$forms[ $object_type ][ $object_subtype ];
 
-			// Object name inheritance for getting data that covers all object names
-			if ( $primary_object_name !== $object_name ) {
-				$forms = array_merge( $this->get_forms( $object_type, $primary_object_name ), $forms );
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			if ( $primary_object_subtype !== $object_subtype ) {
+				$forms = array_merge( $this->get_forms( $object_type, $primary_object_subtype ), $forms );
 			}
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Get all forms.
 			// Late init.
-			foreach ( self::$forms[ $object_type ] as $object_name => $object_forms ) {
-				$forms = array_merge( $forms, array_values( $this->get_forms( $object_type, $object_name ) ) );
+			foreach ( self::$forms[ $object_type ] as $object_subtype => $object_forms ) {
+				$forms = array_merge( $forms, array_values( $this->get_forms( $object_type, $object_subtype ) ) );
 			}
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$forms = $this->get_forms( $object_type, $primary_object_name );
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$forms = $this->get_forms( $object_type, $primary_object_subtype );
 		}
 
 		return $forms;
@@ -234,12 +236,12 @@ final class WP_Fields_API {
 	 *
 	 * @param string                      $object_type Object type.
 	 * @param WP_Fields_API_Form|string $id          Field Form object, or Form ID.
-	 * @param string                      $object_name Object name (for post types and taxonomies).
+	 * @param string                      $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array                       $args        Optional. Form arguments. Default empty array.
 	 *
 	 * @return bool|WP_Error True on success, or error
 	 */
-	public function add_form( $object_type, $id, $object_name = null, $args = array() ) {
+	public function add_form( $object_type, $id, $object_subtype = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
@@ -254,29 +256,29 @@ final class WP_Fields_API {
 			$form = $args;
 		}
 
-		// $object_name defaults to '_{$object_type}' for internal handling.
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type;
+		// $object_subtype defaults to '_{$object_type}' for internal handling.
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = '_' . $object_type;
 		}
 
 		if ( ! isset( self::$forms[ $object_type ] ) ) {
 			self::$forms[ $object_type ] = array();
 		}
 
-		if ( ! isset( self::$forms[ $object_type ][ $object_name ] ) ) {
-			self::$forms[ $object_type ][ $object_name ] = array();
+		if ( ! isset( self::$forms[ $object_type ][ $object_subtype ] ) ) {
+			self::$forms[ $object_type ][ $object_subtype ] = array();
 		}
 
 		// @todo Remove this when done testing
 		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
-			$form = $this->setup_form( $object_type, $id, $object_name, $form );
+			$form = $this->setup_form( $object_type, $id, $object_subtype, $form );
 		}
 
-		if ( isset( self::$forms[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$forms[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			return new WP_Error( '', __( 'Form already exists.', 'fields-api' ) );
 		}
 
-		self::$forms[ $object_type ][ $object_name ][ $id ] = $form;
+		self::$forms[ $object_type ][ $object_subtype ][ $id ] = $form;
 
 		return true;
 
@@ -289,33 +291,33 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          Form ID to get.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Form|null Requested form instance.
 	 */
-	public function get_form( $object_type, $id, $object_name = null ) {
+	public function get_form( $object_type, $id, $object_subtype = null ) {
 
 		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
 			return $id;
 		}
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$form = null;
 
-		if ( isset( self::$forms[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$forms[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			// Late init
-			self::$forms[ $object_type ][ $object_name ][ $id ] = $this->setup_form( $object_type, $id, $object_name, self::$forms[ $object_type ][ $object_name ][ $id ] );
+			self::$forms[ $object_type ][ $object_subtype ][ $id ] = $this->setup_form( $object_type, $id, $object_subtype, self::$forms[ $object_type ][ $object_subtype ][ $id ] );
 
-			$form = self::$forms[ $object_type ][ $object_name ][ $id ];
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$form = $this->get_form( $object_type, $id, $primary_object_name );
+			$form = self::$forms[ $object_type ][ $object_subtype ][ $id ];
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$form = $this->get_form( $object_type, $id, $primary_object_subtype );
 		}
 
 		return $form;
@@ -329,12 +331,12 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          ID of the form.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array  $args        Form arguments.
 	 *
 	 * @return WP_Fields_API_Form|null $form The form object.
 	 */
-	public function setup_form( $object_type, $id, $object_name = null, $args = null ) {
+	public function setup_form( $object_type, $id, $object_subtype = null, $args = null ) {
 
 		$form = null;
 
@@ -343,7 +345,7 @@ final class WP_Fields_API {
 		if ( is_a( $args, $form_class ) ) {
 			$form = $args;
 		} elseif ( is_array( $args ) ) {
-			$args['object_name'] = $object_name;
+			$args['object_subtype'] = $object_subtype;
 
 			if ( ! empty( $args['type'] ) ) {
 				if ( ! empty( self::$registered_form_types[ $args['type'] ] ) ) {
@@ -370,31 +372,31 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type, set true to remove all forms.
 	 * @param string $id          Form ID to remove, set true to remove all forms from an object.
-	 * @param string $object_name Object name (for post types and taxonomies), set true to remove to all objects from an object type.
+	 * @param string $object_subtype Object subtype (for post types and taxonomies), set true to remove to all objects from an object type.
 	 */
-	public function remove_form( $object_type, $id, $object_name = null ) {
+	public function remove_form( $object_type, $id, $object_subtype = null ) {
 
 		if ( true === $object_type ) {
 			// Remove all forms
 			self::$forms = array();
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Remove all forms for an object type
 			if ( isset( self::$forms[ $object_type ] ) ) {
 				unset( self::$forms[ $object_type ] );
 			}
 		} else {
-			if ( empty( $object_name ) && ! empty( $object_type ) ) {
-				$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+				$object_subtype = '_' . $object_type; // Default to _object_type for internal handling
 			}
 
-			if ( true === $id && null !== $object_name ) {
+			if ( true === $id && null !== $object_subtype ) {
 				// Remove all forms for an object type
-				if ( isset( self::$forms[ $object_type ][ $object_name ] ) ) {
-					unset( self::$forms[ $object_type ][ $object_name ] );
+				if ( isset( self::$forms[ $object_type ][ $object_subtype ] ) ) {
+					unset( self::$forms[ $object_type ][ $object_subtype ] );
 				}
-			} elseif ( isset( self::$forms[ $object_type ][ $object_name ][ $id ] ) ) {
+			} elseif ( isset( self::$forms[ $object_type ][ $object_subtype ][ $id ] ) ) {
 				// Remove form from object type and name
-				unset( self::$forms[ $object_type ][ $object_name ][ $id ] );
+				unset( self::$forms[ $object_type ][ $object_subtype ][ $id ] );
 			}
 		}
 
@@ -444,18 +446,18 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string                    $object_type Object type.
-	 * @param string                    $object_name Object name (for post types and taxonomies).
+	 * @param string                    $object_subtype Object subtype (for post types and taxonomies).
 	 * @param string|WP_Fields_API_Form $form        Form ID or object.
 	 *
 	 * @return WP_Fields_API_Section[]
 	 */
-	public function get_sections( $object_type = null, $object_name = null, $form = null ) {
+	public function get_sections( $object_type = null, $object_subtype = null, $form = null ) {
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$sections = array();
@@ -472,9 +474,9 @@ final class WP_Fields_API {
 
 		if ( null === $object_type ) {
 			// Late init
-			foreach ( self::$sections as $object_type => $object_names ) {
-				foreach ( $object_names as $object_name => $sections ) {
-					$this->get_sections( $object_type, $object_name );
+			foreach ( self::$sections as $object_type => $object_subtypes ) {
+				foreach ( $object_subtypes as $object_subtype => $sections ) {
+					$this->get_sections( $object_type, $object_subtype );
 				}
 			}
 
@@ -487,8 +489,8 @@ final class WP_Fields_API {
 				/**
 				 * @var $section WP_Fields_API_Section
 				 */
-				foreach ( $sections as $object_type => $object_names ) {
-					foreach ( $object_names as $object_name => $object_sections ) {
+				foreach ( $sections as $object_type => $object_subtypes ) {
+					foreach ( $object_subtypes as $object_subtype => $object_sections ) {
 						foreach ( $object_sections as $id => $section ) {
 							$section_form = $section->get_form();
 
@@ -497,11 +499,11 @@ final class WP_Fields_API {
 									$form_sections[ $object_type ] = array();
 								}
 
-								if ( ! isset( $form_sections[ $object_type ][ $object_name ] ) ) {
-									$form_sections[ $object_type ][ $object_name ] = array();
+								if ( ! isset( $form_sections[ $object_type ][ $object_subtype ] ) ) {
+									$form_sections[ $object_type ][ $object_subtype ] = array();
 								}
 
-								$form_sections[ $object_type ][ $object_name ][ $id ] = $section;
+								$form_sections[ $object_type ][ $object_subtype ][ $id ] = $section;
 							}
 						}
 					}
@@ -509,22 +511,22 @@ final class WP_Fields_API {
 
 				$sections = $form_sections;
 			}
-		} elseif ( isset( self::$sections[ $object_type ][ $object_name ] ) ) {
+		} elseif ( isset( self::$sections[ $object_type ][ $object_subtype ] ) ) {
 			// Late init
-			foreach ( self::$sections[ $object_type ][ $object_name ] as $id => $section ) {
+			foreach ( self::$sections[ $object_type ][ $object_subtype ] as $id => $section ) {
 				if ( is_array( $section ) && empty( $section['type'] ) && is_a( $form, 'WP_Fields_API_Form' ) && $form->default_section_type ) {
 					$section['type'] = $form->default_section_type;
 				}
 
 				// Late init
-				self::$sections[ $object_type ][ $object_name ][ $id ] = $this->setup_section( $object_type, $id, $object_name, $section );
+				self::$sections[ $object_type ][ $object_subtype ][ $id ] = $this->setup_section( $object_type, $id, $object_subtype, $section );
 			}
 
-			$sections = self::$sections[ $object_type ][ $object_name ];
+			$sections = self::$sections[ $object_type ][ $object_subtype ];
 
-			// Object name inheritance for getting data that covers all object names
-			if ( $primary_object_name !== $object_name ) {
-				$object_sections = $this->get_sections( $object_type, $primary_object_name );
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			if ( $primary_object_subtype !== $object_subtype ) {
+				$object_sections = $this->get_sections( $object_type, $primary_object_subtype );
 
 				if ( $object_sections ) {
 					$sections = array_merge( $sections, $object_sections );
@@ -548,20 +550,20 @@ final class WP_Fields_API {
 
 				$sections = $form_sections;
 			}
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Get all sections
 
 			// Late init
-			foreach ( self::$sections[ $object_type ] as $object_name => $object_sections ) {
-				$object_sections = $this->get_sections( $object_type, $object_name, $form );
+			foreach ( self::$sections[ $object_type ] as $object_subtype => $object_sections ) {
+				$object_sections = $this->get_sections( $object_type, $object_subtype, $form );
 
 				if ( $object_sections ) {
 					$sections = array_merge( $sections, array_values( $object_sections ) );
 				}
 			}
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$sections = $this->get_sections( $object_type, $primary_object_name, $form );
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$sections = $this->get_sections( $object_type, $primary_object_subtype, $form );
 		}
 
 		return $sections;
@@ -575,12 +577,12 @@ final class WP_Fields_API {
 	 *
 	 * @param string                       $object_type Object type.
 	 * @param WP_Fields_API_Section|string $id          Field Section object, or Section ID.
-	 * @param string                       $object_name Object name (for post types and taxonomies).
+	 * @param string                       $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array                        $args        Section arguments.
 	 *
 	 * @return bool|WP_Error True on success, or error
 	 */
-	public function add_section( $object_type, $id, $object_name = null, $args = array() ) {
+	public function add_section( $object_type, $id, $object_subtype = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
@@ -604,16 +606,16 @@ final class WP_Fields_API {
 			}
 		}
 
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = '_' . $object_type; // Default to _object_type for internal handling
 		}
 
 		if ( ! isset( self::$sections[ $object_type ] ) ) {
 			self::$sections[ $object_type ] = array();
 		}
 
-		if ( ! isset( self::$sections[ $object_type ][ $object_name ] ) ) {
-			self::$sections[ $object_type ][ $object_name ] = array();
+		if ( ! isset( self::$sections[ $object_type ][ $object_subtype ] ) ) {
+			self::$sections[ $object_type ][ $object_subtype ] = array();
 		}
 
 		// @todo Remove this when done testing
@@ -626,7 +628,7 @@ final class WP_Fields_API {
 				}
 
 				if ( ! is_a( $form, 'WP_Fields_API_Form' ) ) {
-					$form = $this->get_form( $object_type, $form, $object_name );
+					$form = $this->get_form( $object_type, $form, $object_subtype );
 				}
 
 				if ( $form && $form->default_section_type ) {
@@ -634,14 +636,14 @@ final class WP_Fields_API {
 				}
 			}
 
-			$section = $this->setup_section( $object_type, $id, $object_name, $section );
+			$section = $this->setup_section( $object_type, $id, $object_subtype, $section );
 		}
 
-		if ( isset( self::$sections[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$sections[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			return new WP_Error( '', __( 'Section already exists.', 'fields-api' ) );
 		}
 
-		self::$sections[ $object_type ][ $object_name ][ $id ] = $section;
+		self::$sections[ $object_type ][ $object_subtype ][ $id ] = $section;
 
 		// Controls handling
 		if ( ! empty( $controls ) ) {
@@ -667,7 +669,7 @@ final class WP_Fields_API {
 
 				if ( $control_id ) {
 					// Add control for section
-					$this->add_control( $object_type, $control_id, $object_name, $control );
+					$this->add_control( $object_type, $control_id, $object_subtype, $control );
 				}
 			}
 		}
@@ -683,33 +685,33 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          Section ID to get.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Section|null Requested section instance.
 	 */
-	public function get_section( $object_type, $id, $object_name = null ) {
+	public function get_section( $object_type, $id, $object_subtype = null ) {
 
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
 			return $id;
 		}
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$section = null;
 
-		if ( isset( self::$sections[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$sections[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			// Late init
-			self::$sections[ $object_type ][ $object_name ][ $id ] = $this->setup_section( $object_type, $id, $object_name, self::$sections[ $object_type ][ $object_name ][ $id ] );
+			self::$sections[ $object_type ][ $object_subtype ][ $id ] = $this->setup_section( $object_type, $id, $object_subtype, self::$sections[ $object_type ][ $object_subtype ][ $id ] );
 
-			$section = self::$sections[ $object_type ][ $object_name ][ $id ];
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$section = $this->get_section( $object_type, $id, $primary_object_name );
+			$section = self::$sections[ $object_type ][ $object_subtype ][ $id ];
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$section = $this->get_section( $object_type, $id, $primary_object_subtype );
 		}
 
 		return $section;
@@ -723,12 +725,12 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          ID of the section.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array  $args        Section arguments.
 	 *
 	 * @return WP_Fields_API_Section|null $section The section object.
 	 */
-	public function setup_section( $object_type, $id, $object_name = null, $args = null ) {
+	public function setup_section( $object_type, $id, $object_subtype = null, $args = null ) {
 
 		$section = null;
 
@@ -737,7 +739,7 @@ final class WP_Fields_API {
 		if ( is_a( $args, $section_class ) ) {
 			$section = $args;
 		} elseif ( is_array( $args ) ) {
-			$args['object_name'] = $object_name;
+			$args['object_subtype'] = $object_subtype;
 
 			if ( ! empty( $args['type'] ) ) {
 				if ( ! empty( self::$registered_section_types[ $args['type'] ] ) ) {
@@ -764,31 +766,31 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type, set true to remove all sections.
 	 * @param string $id          Section ID to remove, set true to remove all sections from an object.
-	 * @param string $object_name Object name (for post types and taxonomies), set true to remove to all objects from an object type.
+	 * @param string $object_subtype Object subtype (for post types and taxonomies), set true to remove to all objects from an object type.
 	 */
-	public function remove_section( $object_type, $id, $object_name = null ) {
+	public function remove_section( $object_type, $id, $object_subtype = null ) {
 
 		if ( true === $object_type ) {
 			// Remove all sections
 			self::$sections = array();
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Remove all sections for an object type
 			if ( isset( self::$sections[ $object_type ] ) ) {
 				unset( self::$sections[ $object_type ] );
 			}
 		} else {
-			if ( empty( $object_name ) && ! empty( $object_type ) ) {
-				$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+				$object_subtype = '_' . $object_type; // Default to _object_type for internal handling
 			}
 
-			if ( true === $id && null !== $object_name ) {
+			if ( true === $id && null !== $object_subtype ) {
 				// Remove all sections for an object type
-				if ( isset( self::$sections[ $object_type ][ $object_name ] ) ) {
-					unset( self::$sections[ $object_type ][ $object_name ] );
+				if ( isset( self::$sections[ $object_type ][ $object_subtype ] ) ) {
+					unset( self::$sections[ $object_type ][ $object_subtype ] );
 				}
-			} elseif ( isset( self::$sections[ $object_type ][ $object_name ][ $id ] ) ) {
+			} elseif ( isset( self::$sections[ $object_type ][ $object_subtype ][ $id ] ) ) {
 				// Remove section from object type and name
-				unset( self::$sections[ $object_type ][ $object_name ][ $id ] );
+				unset( self::$sections[ $object_type ][ $object_subtype ][ $id ] );
 			}
 		}
 
@@ -838,61 +840,61 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $object_type Object type.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Field[]
 	 */
-	public function get_fields( $object_type = null, $object_name = null ) {
+	public function get_fields( $object_type = null, $object_subtype = null ) {
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$fields = array();
 
 		if ( null === $object_type ) {
 			// Late init
-			foreach ( self::$fields as $object_type => $object_names ) {
-				foreach ( $object_names as $object_name => $fields ) {
-					$this->get_fields( $object_type, $object_name );
+			foreach ( self::$fields as $object_type => $object_subtypes ) {
+				foreach ( $object_subtypes as $object_subtype => $fields ) {
+					$this->get_fields( $object_type, $object_subtype );
 				}
 			}
 
 			$fields = self::$fields;
-		} elseif ( isset( self::$fields[ $object_type ][ $object_name ] ) ) {
+		} elseif ( isset( self::$fields[ $object_type ][ $object_subtype ] ) ) {
 			// Late init
-			foreach ( self::$fields[ $object_type ][ $object_name ] as $id => $field ) {
+			foreach ( self::$fields[ $object_type ][ $object_subtype ] as $id => $field ) {
 				// Late init
-				self::$fields[ $object_type ][ $object_name ][ $id ] = $this->setup_field( $object_type, $id, $object_name, $field );
+				self::$fields[ $object_type ][ $object_subtype ][ $id ] = $this->setup_field( $object_type, $id, $object_subtype, $field );
 			}
 
-			$fields = self::$fields[ $object_type ][ $object_name ];
+			$fields = self::$fields[ $object_type ][ $object_subtype ];
 
-			// Object name inheritance for getting data that covers all object names
-			if ( $primary_object_name !== $object_name ) {
-				$object_fields = $this->get_fields( $object_type, $primary_object_name );
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			if ( $primary_object_subtype !== $object_subtype ) {
+				$object_fields = $this->get_fields( $object_type, $primary_object_subtype );
 
 				if ( $object_fields ) {
 					$fields = array_merge( $fields, $object_fields );
 				}
 			}
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Get all fields
 
 			// Late init
-			foreach ( self::$fields[ $object_type ] as $object_name => $object_fields ) {
-				$object_fields = $this->get_fields( $object_type, $object_name );
+			foreach ( self::$fields[ $object_type ] as $object_subtype => $object_fields ) {
+				$object_fields = $this->get_fields( $object_type, $object_subtype );
 
 				if ( $object_fields ) {
 					$fields = array_merge( $fields, array_values( $object_fields ) );
 				}
 			}
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$fields = $this->get_fields( $object_type, $primary_object_name );
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$fields = $this->get_fields( $object_type, $primary_object_subtype );
 		}
 
 		return $fields;
@@ -906,13 +908,13 @@ final class WP_Fields_API {
 	 *
 	 * @param string                     $object_type Object type.
 	 * @param WP_Fields_API_Field|string $id          Fields API Field object, or ID.
-	 * @param string                     $object_name Object name (for post types and taxonomies).
+	 * @param string                     $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array                      $args        Field arguments; passed to WP_Fields_API_Field
 	 *                                                constructor.
 	 *
 	 * @return bool|WP_Error True on success, or error
 	 */
-	public function add_field( $object_type, $id, $object_name = null, $args = array() ) {
+	public function add_field( $object_type, $id, $object_subtype = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
@@ -936,28 +938,28 @@ final class WP_Fields_API {
 			}
 		}
 
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = '_' . $object_type; // Default to _object_type for internal handling
 		}
 
 		if ( ! isset( self::$fields[ $object_type ] ) ) {
 			self::$fields[ $object_type ] = array();
 		}
 
-		if ( ! isset( self::$fields[ $object_type ][ $object_name ] ) ) {
-			self::$fields[ $object_type ][ $object_name ] = array();
+		if ( ! isset( self::$fields[ $object_type ][ $object_subtype ] ) ) {
+			self::$fields[ $object_type ][ $object_subtype ] = array();
 		}
 
 		// @todo Remove this when done testing
 		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
-			$field = $this->setup_field( $object_type, $id, $object_name, $field );
+			$field = $this->setup_field( $object_type, $id, $object_subtype, $field );
 		}
 
-		if ( isset( self::$fields[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$fields[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			return new WP_Error( '', __( 'Field already exists.', 'fields-api' ) );
 		}
 
-		self::$fields[ $object_type ][ $object_name ][ $id ] = $field;
+		self::$fields[ $object_type ][ $object_subtype ][ $id ] = $field;
 
 		// Control handling
 		if ( ! empty( $control ) ) {
@@ -976,10 +978,10 @@ final class WP_Fields_API {
 			$control['field'] = $id;
 
 			// Add control for field
-			$this->add_control( $object_type, $control_id, $object_name, $control );
+			$this->add_control( $object_type, $control_id, $object_subtype, $control );
 		}
 
-		$this->register_meta_integration( $object_type, $id, $field, $object_name );
+		$this->register_meta_integration( $object_type, $id, $field, $object_subtype );
 
 		return true;
 
@@ -991,9 +993,9 @@ final class WP_Fields_API {
 	 * @param string                    $object_type Object type
 	 * @param string                    $id          Field ID
 	 * @param array|WP_Fields_API_Field $field       Field object or options array
-	 * @param string|null               $object_name Object name
+	 * @param string|null               $object_subtype Object subtype
 	 */
-	public function register_meta_integration( $object_type, $id, $field, $object_name = null ) {
+	public function register_meta_integration( $object_type, $id, $field, $object_subtype = null ) {
 
 		// Meta types call register_meta() and register_rest_field() for their fields
 		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ! $this->get_field_arg( $field, 'internal' ) ) {
@@ -1025,33 +1027,33 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          Field ID.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Field|null
 	 */
-	public function get_field( $object_type, $id, $object_name = null ) {
+	public function get_field( $object_type, $id, $object_subtype = null ) {
 
 		if ( is_a( $id, 'WP_Fields_API_Field' ) ) {
 			return $id;
 		}
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$field = null;
 
-		if ( isset( self::$fields[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$fields[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			// Late init
-			self::$fields[ $object_type ][ $object_name ][ $id ] = $this->setup_field( $object_type, $id, $object_name, self::$fields[ $object_type ][ $object_name ][ $id ] );
+			self::$fields[ $object_type ][ $object_subtype ][ $id ] = $this->setup_field( $object_type, $id, $object_subtype, self::$fields[ $object_type ][ $object_subtype ][ $id ] );
 
-			$field = self::$fields[ $object_type ][ $object_name ][ $id ];
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$field = $this->get_field( $object_type, $id, $primary_object_name );
+			$field = self::$fields[ $object_type ][ $object_subtype ][ $id ];
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$field = $this->get_field( $object_type, $id, $primary_object_subtype );
 		}
 
 		return $field;
@@ -1065,12 +1067,12 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          ID of the field.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array  $args        Field arguments.
 	 *
 	 * @return WP_Fields_API_Field|null $field The field object.
 	 */
-	public function setup_field( $object_type, $id, $object_name = null, $args = null ) {
+	public function setup_field( $object_type, $id, $object_subtype = null, $args = null ) {
 
 		$field = null;
 
@@ -1079,7 +1081,7 @@ final class WP_Fields_API {
 		if ( is_a( $args, $field_class ) ) {
 			$field = $args;
 		} elseif ( is_array( $args ) ) {
-			$args['object_name'] = $object_name;
+			$args['object_subtype'] = $object_subtype;
 
 			if ( ! empty( $args['type'] ) ) {
 				if ( ! empty( self::$registered_field_types[ $args['type'] ] ) ) {
@@ -1106,31 +1108,31 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type, set true to remove all fields.
 	 * @param string $id          Field ID to remove, set true to remove all fields from an object.
-	 * @param string $object_name Object name (for post types and taxonomies), set true to remove to all objects from an object type.
+	 * @param string $object_subtype Object subtype (for post types and taxonomies), set true to remove to all objects from an object type.
 	 */
-	public function remove_field( $object_type, $id, $object_name = null ) {
+	public function remove_field( $object_type, $id, $object_subtype = null ) {
 
 		if ( true === $object_type ) {
 			// Remove all fields
 			self::$fields = array();
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Remove all fields for an object type
 			if ( isset( self::$fields[ $object_type ] ) ) {
 				unset( self::$fields[ $object_type ] );
 			}
 		} else {
-			if ( empty( $object_name ) && ! empty( $object_type ) ) {
-				$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+				$object_subtype = '_' . $object_type; // Default to _object_type for internal handling
 			}
 
-			if ( true === $id && null !== $object_name ) {
+			if ( true === $id && null !== $object_subtype ) {
 				// Remove all fields for an object type
-				if ( isset( self::$fields[ $object_type ][ $object_name ] ) ) {
-					unset( self::$fields[ $object_type ][ $object_name ] );
+				if ( isset( self::$fields[ $object_type ][ $object_subtype ] ) ) {
+					unset( self::$fields[ $object_type ][ $object_subtype ] );
 				}
-			} elseif ( isset( self::$fields[ $object_type ][ $object_name ][ $id ] ) ) {
+			} elseif ( isset( self::$fields[ $object_type ][ $object_subtype ][ $id ] ) ) {
 				// Remove field from object type and name
-				unset( self::$fields[ $object_type ][ $object_name ][ $id ] );
+				unset( self::$fields[ $object_type ][ $object_subtype ][ $id ] );
 			}
 		}
 
@@ -1162,18 +1164,18 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string                       $object_type Object type.
-	 * @param string                       $object_name Object name (for post types and taxonomies).
+	 * @param string                       $object_subtype Object subtype (for post types and taxonomies).
 	 * @param string|WP_Fields_API_Section $section     Section ID.
 	 *
 	 * @return WP_Fields_API_Control[]
 	 */
-	public function get_controls( $object_type = null, $object_name = null, $section = null ) {
+	public function get_controls( $object_type = null, $object_subtype = null, $section = null ) {
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$controls = array();
@@ -1190,9 +1192,9 @@ final class WP_Fields_API {
 
 		if ( null === $object_type ) {
 			// Late init
-			foreach ( self::$controls as $object_type => $object_names ) {
-				foreach ( $object_names as $object_name => $controls ) {
-					$this->get_controls( $object_type, $object_name );
+			foreach ( self::$controls as $object_type => $object_subtypes ) {
+				foreach ( $object_subtypes as $object_subtype => $controls ) {
+					$this->get_controls( $object_type, $object_subtype );
 				}
 			}
 
@@ -1205,8 +1207,8 @@ final class WP_Fields_API {
 				/**
 				 * @var $control WP_Fields_API_Control
 				 */
-				foreach ( $controls as $object_type => $object_names ) {
-					foreach ( $object_names as $object_name => $object_controls ) {
+				foreach ( $controls as $object_type => $object_subtypes ) {
+					foreach ( $object_subtypes as $object_subtype => $object_controls ) {
 						foreach ( $object_controls as $id => $control ) {
 							$control_section = $control->get_section();
 
@@ -1215,11 +1217,11 @@ final class WP_Fields_API {
 									$section_controls[ $object_type ] = array();
 								}
 
-								if ( ! isset( $section_controls[ $object_type ][ $object_name ] ) ) {
-									$section_controls[ $object_type ][ $object_name ] = array();
+								if ( ! isset( $section_controls[ $object_type ][ $object_subtype ] ) ) {
+									$section_controls[ $object_type ][ $object_subtype ] = array();
 								}
 
-								$section_controls[ $object_type ][ $object_name ][ $id ] = $control;
+								$section_controls[ $object_type ][ $object_subtype ][ $id ] = $control;
 							}
 						}
 					}
@@ -1227,18 +1229,18 @@ final class WP_Fields_API {
 
 				$controls = $section_controls;
 			}
-		} elseif ( isset( self::$controls[ $object_type ][ $object_name ] ) ) {
+		} elseif ( isset( self::$controls[ $object_type ][ $object_subtype ] ) ) {
 			// Late init
-			foreach ( self::$controls[ $object_type ][ $object_name ] as $id => $control ) {
+			foreach ( self::$controls[ $object_type ][ $object_subtype ] as $id => $control ) {
 				// Late init
-				self::$controls[ $object_type ][ $object_name ][ $id ] = $this->setup_control( $object_type, $id, $object_name, $control );
+				self::$controls[ $object_type ][ $object_subtype ][ $id ] = $this->setup_control( $object_type, $id, $object_subtype, $control );
 			}
 
-			$controls = self::$controls[ $object_type ][ $object_name ];
+			$controls = self::$controls[ $object_type ][ $object_subtype ];
 
-			// Object name inheritance for getting data that covers all object names
-			if ( $primary_object_name !== $object_name ) {
-				$object_controls = $this->get_controls( $object_type, $primary_object_name );
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			if ( $primary_object_subtype !== $object_subtype ) {
+				$object_controls = $this->get_controls( $object_type, $primary_object_subtype );
 
 				if ( $object_controls ) {
 					$controls = array_merge( $controls, $object_controls );
@@ -1262,20 +1264,20 @@ final class WP_Fields_API {
 
 				$controls = $section_controls;
 			}
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Get all fields
 
 			// Late init
-			foreach ( self::$controls[ $object_type ] as $object_name => $object_controls ) {
-				$object_controls = $this->get_controls( $object_type, $object_name, $section );
+			foreach ( self::$controls[ $object_type ] as $object_subtype => $object_controls ) {
+				$object_controls = $this->get_controls( $object_type, $object_subtype, $section );
 
 				if ( $object_controls ) {
 					$controls = array_merge( $controls, array_values( $object_controls ) );
 				}
 			}
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$controls = $this->get_controls( $object_type, $primary_object_name, $section );
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$controls = $this->get_controls( $object_type, $primary_object_subtype, $section );
 		}
 
 		return $controls;
@@ -1289,13 +1291,13 @@ final class WP_Fields_API {
 	 *
 	 * @param string                       $object_type Object type.
 	 * @param WP_Fields_API_Control|string $id          Field Control object, or ID.
-	 * @param string                       $object_name Object name (for post types and taxonomies).
+	 * @param string                       $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array                        $args        Control arguments; passed to WP_Fields_API_Control
 	 *                                                  constructor.
 	 *
 	 * @return bool|WP_Error True on success, or error
 	 */
-	public function add_control( $object_type, $id, $object_name = null, $args = array() ) {
+	public function add_control( $object_type, $id, $object_subtype = null, $args = array() ) {
 
 		if ( empty( $id ) && empty( $args ) ) {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
@@ -1336,28 +1338,28 @@ final class WP_Fields_API {
 			}
 		}
 
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = '_' . $object_type; // Default to _object_type for internal handling
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = '_' . $object_type; // Default to _object_type for internal handling
 		}
 
 		if ( ! isset( self::$controls[ $object_type ] ) ) {
 			self::$controls[ $object_type ] = array();
 		}
 
-		if ( ! isset( self::$controls[ $object_type ][ $object_name ] ) ) {
-			self::$controls[ $object_type ][ $object_name ] = array();
+		if ( ! isset( self::$controls[ $object_type ][ $object_subtype ] ) ) {
+			self::$controls[ $object_type ][ $object_subtype ] = array();
 		}
 
 		// @todo Remove this when done testing
 		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['no-fields-api-late-init'] ) ) {
-			$control = $this->setup_control( $object_type, $id, $object_name, $control );
+			$control = $this->setup_control( $object_type, $id, $object_subtype, $control );
 		}
 
-		if ( isset( self::$controls[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$controls[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			return new WP_Error( '', __( 'Control already exists.', 'fields-api' ) );
 		}
 
-		self::$controls[ $object_type ][ $object_name ][ $id ] = $control;
+		self::$controls[ $object_type ][ $object_subtype ][ $id ] = $control;
 
 		// Field handling
 		if ( is_array( $field ) ) {
@@ -1372,7 +1374,7 @@ final class WP_Fields_API {
 			}
 
 			// Add field for control
-			$this->add_field( $object_type, $field_id, $object_name, $field );
+			$this->add_field( $object_type, $field_id, $object_subtype, $field );
 		}
 
 		return true;
@@ -1386,33 +1388,33 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          ID of the control.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 *
 	 * @return WP_Fields_API_Control|null $control The control object.
 	 */
-	public function get_control( $object_type, $id, $object_name = null ) {
+	public function get_control( $object_type, $id, $object_subtype = null ) {
 
 		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
 			return $id;
 		}
 
-		$primary_object_name = '_' . $object_type;
+		$primary_object_subtype = '_' . $object_type;
 
 		// Default to _object_type for internal handling
-		if ( empty( $object_name ) && ! empty( $object_type ) ) {
-			$object_name = $primary_object_name;
+		if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+			$object_subtype = $primary_object_subtype;
 		}
 
 		$control = null;
 
-		if ( isset( self::$controls[ $object_type ][ $object_name ][ $id ] ) ) {
+		if ( isset( self::$controls[ $object_type ][ $object_subtype ][ $id ] ) ) {
 			// Late init
-			self::$controls[ $object_type ][ $object_name ][ $id ] = $this->setup_control( $object_type, $id, $object_name, self::$controls[ $object_type ][ $object_name ][ $id ] );
+			self::$controls[ $object_type ][ $object_subtype ][ $id ] = $this->setup_control( $object_type, $id, $object_subtype, self::$controls[ $object_type ][ $object_subtype ][ $id ] );
 
-			$control = self::$controls[ $object_type ][ $object_name ][ $id ];
-		} elseif ( $primary_object_name !== $object_name ) {
-			// Object name inheritance for getting data that covers all object names
-			$control = $this->get_control( $object_type, $id, $primary_object_name );
+			$control = self::$controls[ $object_type ][ $object_subtype ][ $id ];
+		} elseif ( $primary_object_subtype !== $object_subtype ) {
+			// Object subtype inheritance for getting data that covers all Object subtypes
+			$control = $this->get_control( $object_type, $id, $primary_object_subtype );
 		}
 
 		return $control;
@@ -1426,12 +1428,12 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type.
 	 * @param string $id          ID of the control.
-	 * @param string $object_name Object name (for post types and taxonomies).
+	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 * @param array  $args        Control arguments.
 	 *
 	 * @return WP_Fields_API_Control|null $control The control object.
 	 */
-	public function setup_control( $object_type, $id, $object_name = null, $args = null ) {
+	public function setup_control( $object_type, $id, $object_subtype = null, $args = null ) {
 
 		$control = null;
 
@@ -1440,7 +1442,7 @@ final class WP_Fields_API {
 		if ( is_a( $args, $control_class ) ) {
 			$control = $args;
 		} elseif ( is_array( $args ) ) {
-			$args['object_name'] = $object_name;
+			$args['object_subtype'] = $object_subtype;
 
 			if ( ! empty( $args['type'] ) ) {
 				if ( ! empty( self::$registered_control_types[ $args['type'] ] ) ) {
@@ -1472,31 +1474,31 @@ final class WP_Fields_API {
 	 *
 	 * @param string $object_type Object type, set true to remove all controls.
 	 * @param string $id          Control ID to remove, set true to remove all controls from an object.
-	 * @param string $object_name Object name (for post types and taxonomies), set true to remove to all objects from an object type.
+	 * @param string $object_subtype Object subtype (for post types and taxonomies), set true to remove to all objects from an object type.
 	 */
-	public function remove_control( $object_type, $id, $object_name = null ) {
+	public function remove_control( $object_type, $id, $object_subtype = null ) {
 
 		if ( true === $object_type ) {
 			// Remove all controls
 			self::$controls = array();
-		} elseif ( true === $object_name ) {
+		} elseif ( true === $object_subtype ) {
 			// Remove all controls for an object type
 			if ( isset( self::$controls[ $object_type ] ) ) {
 				unset( self::$controls[ $object_type ] );
 			}
 		} else {
-			if ( empty( $object_name ) && ! empty( $object_type ) ) {
-				$object_name = '_' . $object_type; // Default to _object_type for internal handling
+			if ( empty( $object_subtype ) && ! empty( $object_type ) ) {
+				$object_subtype = '_' . $object_type; // Default to _object_type for internal handling
 			}
 
-			if ( true === $id && null !== $object_name ) {
+			if ( true === $id && null !== $object_subtype ) {
 				// Remove all controls for an object type
-				if ( isset( self::$controls[ $object_type ][ $object_name ] ) ) {
-					unset( self::$controls[ $object_type ][ $object_name ] );
+				if ( isset( self::$controls[ $object_type ][ $object_subtype ] ) ) {
+					unset( self::$controls[ $object_type ][ $object_subtype ] );
 				}
-			} elseif ( isset( self::$controls[ $object_type ][ $object_name ][ $id ] ) ) {
+			} elseif ( isset( self::$controls[ $object_type ][ $object_subtype ][ $id ] ) ) {
 				// Remove control from object type and name
-				unset( self::$controls[ $object_type ][ $object_name ][ $id ] );
+				unset( self::$controls[ $object_type ][ $object_subtype ][ $id ] );
 			}
 		}
 
@@ -1684,6 +1686,7 @@ final class WP_Fields_API {
 
 		/* Section Types */
 		$this->register_section_type( 'meta-box', 'WP_Fields_API_Meta_Box_Section' );
+		$this->register_section_type( 'meta-box-table', 'WP_Fields_API_Meta_Box_Table_Section' );
 		$this->register_section_type( 'table', 'WP_Fields_API_Table_Section' );
 
 		/* Control Types */
@@ -1752,11 +1755,11 @@ final class WP_Fields_API {
 	 * Get Fields API stats
 	 *
 	 * @param null|string $object_type Object type
-	 * @param null|string $object_name Object name
+	 * @param null|string $object_subtype Object subtype
 	 *
 	 * @return array
 	 */
-	public function get_stats( $object_type = null, $object_name = null ) {
+	public function get_stats( $object_type = null, $object_subtype = null ) {
 
 		$stats = array(
 			'forms'      => 0,
@@ -1783,147 +1786,147 @@ final class WP_Fields_API {
 		$stats['field-types'] = count( self::$registered_field_types );
 
 		$object_types = array();
-		$object_names = array();
+		$object_subtypes = array();
 
 		if ( empty( $object_type ) ) {
-			foreach ( self::$forms as $object_type => $object_name_forms ) {
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+			foreach ( self::$forms as $object_type => $object_subtype_forms ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $object_name;
+					$object_subtypes[] = $object_subtype;
 
 					$stats['forms'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 
-			foreach ( self::$sections as $object_type => $object_name_forms ) {
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+			foreach ( self::$sections as $object_type => $object_subtype_forms ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $object_name;
+					$object_subtypes[] = $object_subtype;
 
 					$stats['sections'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 
-			foreach ( self::$controls as $object_type => $object_name_forms ) {
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+			foreach ( self::$controls as $object_type => $object_subtype_forms ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $form_object_name;
+					$object_subtypes[] = $form_object_subtype;
 
 					$stats['controls'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 
-			foreach ( self::$fields as $object_type => $object_name_forms ) {
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+			foreach ( self::$fields as $object_type => $object_subtype_forms ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $form_object_name;
+					$object_subtypes[] = $form_object_subtype;
 
 					$stats['fields'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 		} else {
 			if ( ! empty( self::$forms[ $object_type ] ) ) {
-				$object_name_forms = self::$forms[ $object_type ];
+				$object_subtype_forms = self::$forms[ $object_type ];
 
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $form_object_name;
+					$object_subtypes[] = $form_object_subtype;
 
 					$stats['forms'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 
 			if ( ! empty( self::$sections[ $object_type ] ) ) {
-				$object_name_forms = self::$sections[ $object_type ];
+				$object_subtype_forms = self::$sections[ $object_type ];
 
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $form_object_name;
+					$object_subtypes[] = $form_object_subtype;
 
 					$stats['sections'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 
 			if ( ! empty( self::$controls[ $object_type ] ) ) {
-				$object_name_forms = self::$controls[ $object_type ];
+				$object_subtype_forms = self::$controls[ $object_type ];
 
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $form_object_name;
+					$object_subtypes[] = $form_object_subtype;
 
 					$stats['controls'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 
 			if ( ! empty( self::$fields[ $object_type ] ) ) {
-				$object_name_forms = self::$fields[ $object_type ];
+				$object_subtype_forms = self::$fields[ $object_type ];
 
-				foreach ( $object_name_forms as $form_object_name => $objects ) {
-					if ( $object_name && $object_name !== $form_object_name ) {
+				foreach ( $object_subtype_forms as $form_object_subtype => $objects ) {
+					if ( $object_subtype && $object_subtype !== $form_object_subtype ) {
 						continue;
 					}
 
-					$object_names[] = $form_object_name;
+					$object_subtypes[] = $form_object_subtype;
 
 					$stats['fields'] += count( $objects );
 
-					if ( $object_name ) {
+					if ( $object_subtype ) {
 						$object_types[] = $object_type;
 					}
 				}
 			}
 		}
 
-		if ( ! $object_name ) {
+		if ( ! $object_subtype ) {
 			$object_types = array_merge( $object_types, array_keys( self::$forms ), array_keys( self::$sections ), array_keys( self::$controls ), array_keys( self::$fields ) );
 		}
 
@@ -1931,9 +1934,9 @@ final class WP_Fields_API {
 		$object_types = array_filter( $object_types );
 		$stats['object-types'] = count( $object_types );
 
-		$object_names = array_unique( $object_names );
-		$object_names = array_filter( $object_names );
-		$stats['object-names'] = count( $object_names );
+		$object_subtypes = array_unique( $object_subtypes );
+		$object_subtypes = array_filter( $object_subtypes );
+		$stats['object-names'] = count( $object_subtypes );
 
 		$stats['all-objects'] += $stats['forms'];
 		$stats['all-objects'] += $stats['sections'];

@@ -41,209 +41,181 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 */
 	public function register_fields( $wp_fields ) {
 
-		$this->register_control_types( $wp_fields );
-
 		////////////////////////////
 		// Core: Personal Options //
 		////////////////////////////
 
-		$wp_fields->add_section( $this->object_type, $this->id . '-personal-options', null, array(
-			'label'  => __( 'Personal Options' ),
-			'form' => $this->id,
-			// @todo Needs action compatibility for personal_options( $profileuser )
-			// @todo Needs action compatibility for profile_personal_options( $profileuser ) if IS_PROFILE_PAGE
-		) );
-
-		$field_args = array(
-			'sanitize_callback' => array( $this, 'sanitize_rich_editing' ),
-			'control'           => array(
-				'type'                  => 'checkbox',
-				'section'               => $this->id . '-personal-options',
-				'label'                 => __( 'Visual Editor' ),
-				'description'           => __( 'Disable the visual editor when writing' ),
-				'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
-				'checkbox_value'        => 'false',
-				'internal'              => true,
-			),
+		$section_id   = $this->id . '-personal-options';
+		$section_args = array(
+			'label'    => __( 'Personal Options' ),
+			'controls' => array(),
 		);
 
-		$wp_fields->add_field( $this->object_type, 'rich_editing', null, $field_args );
-
-		$field_args = array(
-			'control' => array(
-				'type'                  => 'radio',
-				'datasource'            => 'admin-color-scheme',
-				'section'               => $this->id . '-personal-options',
-				'label'                 => __( 'Admin Color Scheme' ),
-				'description'           => __( 'Disable the visual editor when writing' ),
-				'capabilities_callback' => array( $this, 'capability_has_color_scheme_control' ),
-				'internal'              => true,
+		// Control: Visual Editor
+		$section_args['controls']['rich_editing'] = array(
+			'type'                  => 'checkbox',
+			'label'                 => __( 'Visual Editor' ),
+			'description'           => __( 'Disable the visual editor when writing' ),
+			'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
+			'checkbox_value'        => 'false',
+			'field'                 => array(
+				'sanitize_callback' => array( $this, 'sanitize_rich_editing' ),
 			),
+			'internal'              => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'admin_color', null, $field_args );
-
-		$field_args = array(
-			'sanitize_callback' => array( $this, 'sanitize_comment_shortcuts' ),
-			'control'           => array(
-				'type'                  => 'checkbox',
-				'section'               => $this->id . '-personal-options',
-				'label'                 => __( 'Keyboard Shortcuts' ),
-				'description'           => __( 'Enable keyboard shortcuts for comment moderation.' ) . ' ' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">More information</a>' ),
-				'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
-				'checkbox_value'        => 'true',
-				'internal'              => true,
-			),
+		// Control: Admin Color Scheme
+		$section_args['controls']['admin_color'] = array(
+			'type'                  => 'radio',
+			'datasource'            => 'admin-color-scheme',
+			'label'                 => __( 'Admin Color Scheme' ),
+			'description'           => __( 'Disable the visual editor when writing' ),
+			'capabilities_callback' => array( $this, 'capability_has_color_scheme_control' ),
+			'internal'              => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'comment_shortcuts', null, $field_args );
-
-		$field_args = array(
-			'sanitize_callback' => array( $this, 'sanitize_admin_bar_front' ),
-			'control'           => array(
-				'type'           => 'checkbox',
-				'section'        => $this->id . '-personal-options',
-				'label'          => __( 'Toolbar' ),
-				'description'    => __( 'Show Toolbar when viewing site' ),
-				'checkbox_value' => 'true',
-				'internal'       => true,
+		// Control: Keyboard Shortcuts
+		$section_args['controls']['comment_shortcuts'] = array(
+			'type'                  => 'checkbox',
+			'label'                 => __( 'Keyboard Shortcuts' ),
+			'description'           => __( 'Enable keyboard shortcuts for comment moderation.' ) . ' ' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">More information</a>' ),
+			'capabilities_callback' => array( $this, 'capability_is_subscriber_editing_profile' ),
+			'checkbox_value'        => 'true',
+			'field'                 => array(
+				'sanitize_callback' => array( $this, 'sanitize_comment_shortcuts' ),
 			),
+			'internal'              => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'admin_bar_front', null, $field_args );
+		// Control: Toolbar
+		$section_args['controls']['admin_bar_front'] = array(
+			'type'           => 'checkbox',
+			'label'          => __( 'Toolbar' ),
+			'description'    => __( 'Show Toolbar when viewing site' ),
+			'checkbox_value' => 'true',
+			'field'          => array(
+				'sanitize_callback' => array( $this, 'sanitize_admin_bar_front' ),
+			),
+			'internal'       => true,
+		);
+
+		$this->add_section( $section_id, $section_args );
+
+		// Back-compat
+		add_action( "fields_after_render_section_controls_term_{$section_id}", array( $this, '_compat_section_controls_personal_options_hooks' ) );
+		add_action( "fields_after_render_section_term_{$section_id}", array( $this, '_compat_section_personal_options_hooks' ) );
 
 		////////////////
 		// Core: Name //
 		////////////////
 
-		$wp_fields->add_section( $this->object_type, $this->id . '-name', null, array(
-			'label'  => __( 'Name' ),
-			'form' => $this->id,
-		) );
-
-		$field_args = array(
-			'control' => array(
-				'type'        => 'text',
-				'section'     => $this->id . '-name',
-				'label'       => __( 'Username' ),
-				'description' => __( 'Usernames cannot be changed.' ),
-				'input_attrs' => array(
-					'disabled' => 'disabled',
-				),
-				'internal'    => true,
-			),
+		$section_id   = $this->id . '-name';
+		$section_args = array(
+			'label'    => __( 'Name' ),
+			'controls' => array(),
 		);
 
-		$wp_fields->add_field( $this->object_type, 'user_login', null, $field_args );
-
-		$field_args = array(
-			'control' => array(
-				'type'                  => 'select',
-				'datasource'            => 'user-role',
-				'placeholder_text'      =>__( '&mdash; No role for this site &mdash;' ),
-				'section'               => $this->id . '-name',
-				'label'                 => __( 'Role' ),
-				'capabilities_callback' => array( $this, 'capability_show_roles' ),
-				'internal'              => true,
+		// Control: Username
+		$section_args['controls']['user_login'] = array(
+			'type'        => 'text',
+			'label'       => __( 'Username' ),
+			'description' => __( 'Usernames cannot be changed.' ),
+			'input_attrs' => array(
+				'disabled' => 'disabled',
 			),
+			'internal'    => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'role', null, $field_args );
-
-		$field_args = array(
-			'value_callback' => array( $this, 'value_is_super_admin' ),
-			//'update_value_callback' => array( $this, 'update_value_is_super_admin' ),
-			'control'        => array(
-				'type'                  => 'user-super-admin',
-				'section'               => $this->id . '-name',
-				'label'                 => __( 'Super Admin' ),
-				'description'           => __( 'Grant this user super admin privileges for the Network.' ),
-				'capabilities_callback' => array( $this, 'capability_can_grant_super_admin' ),
-				'internal'              => true,
-			),
+		// Control: Role
+		$section_args['controls']['role'] = array(
+			'type'                  => 'select',
+			'label'                 => __( 'Role' ),
+			'datasource'            => 'user-role',
+			'placeholder_text'      => __( '&mdash; No role for this site &mdash;' ),
+			'capabilities_callback' => array( $this, 'capability_show_roles' ),
+			'internal'              => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'super_admin', null, $field_args );
-
-		$field_args = array(
-			'control' => array(
-				'type'     => 'text',
-				'section'  => $this->id . '-name',
-				'label'    => __( 'First Name' ),
-				'internal' => true,
+		// Control: Super Admin
+		$section_args['controls']['super_admin'] = array(
+			'type'                  => 'user-super-admin',
+			'label'                 => __( 'Super Admin' ),
+			'description'           => __( 'Grant this user super admin privileges for the Network.' ),
+			'capabilities_callback' => array( $this, 'capability_can_grant_super_admin' ),
+			'field'                 => array(
+				'value_callback' => array( $this, 'value_is_super_admin' ),
+				//'update_value_callback' => array( $this, 'update_value_is_super_admin' ), // Handled by admin page
 			),
+			'internal'              => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'first_name', null, $field_args );
-
-		$field_args = array(
-			'control' => array(
-				'type'     => 'text',
-				'section'  => $this->id . '-name',
-				'label'    => __( 'Last Name' ),
-				'internal' => true,
-			),
+		// Control: First Name
+		$section_args['controls']['first_name'] = array(
+			'type'     => 'text',
+			'label'    => __( 'First Name' ),
+			'internal' => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'last_name', null, $field_args );
-
-		$field_args = array(
-			'control' => array(
-				'id'          => 'nickname',
-				'type'        => 'text',
-				'section'     => $this->id . '-name',
-				'label'       => __( 'Nickname' ),
-				'description' => __( '(required)' ),
-				'internal'    => true,
-			),
+		// Control: Last Name
+		$section_args['controls']['last_name'] = array(
+			'type'     => 'text',
+			'label'    => __( 'Last Name' ),
+			'internal' => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'user_nickname', null, $field_args );
-
-		$field_args = array(
-			'control' => array(
-				'type'     => 'user-display-name',
-				'section'  => $this->id . '-name',
-				'label'    => __( 'Display name publicly as' ),
-				'internal' => true,
+		// Control: Nickname
+		$section_args['controls']['user_nickname'] = array(
+			'type'        => 'text',
+			'label'       => __( 'Nickname' ),
+			'description' => __( '(required)' ),
+			// Overrides for back-compat
+			'input_attrs' => array(
+				'name' => 'nickname',
+				'id'   => 'nickname',
 			),
+			'internal'    => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'display_name', null, $field_args );
+		// Control: Display name
+		$section_args['controls']['display_name'] = array(
+			'type'     => 'user-display-name',
+			'label'    => __( 'Display name publicly as' ),
+			'internal' => true,
+		);
+
+		$this->add_section( $section_id, $section_args );
 
 		////////////////////////
 		// Core: Contact Info //
 		////////////////////////
 
-		$wp_fields->add_section( $this->object_type, $this->id . '-contact-info', null, array(
-			'label'  => __( 'Contact Info' ),
-			'form' => $this->id,
-		) );
-
-		$field_args = array(
-			'control' => array(
-				'id'          => 'email',
-				'type'        => 'user-email',
-				'section'     => $this->id . '-contact-info',
-				'label'       => __( 'E-mail' ),
-				'description' => __( '(required)' ),
-				'internal'    => true,
-			),
+		$section_id   = $this->id . '-contact-info';
+		$section_args = array(
+			'label'    => __( 'Contact Info' ),
+			'controls' => array(),
 		);
 
-		$wp_fields->add_field( $this->object_type, 'user_email', null, $field_args );
-
-		$field_args = array(
-			'control' => array(
-				'type'     => 'text',
-				'section'  => $this->id . '-contact-info',
-				'label'    => __( 'Website' ),
-				'internal' => true,
+		// Control: E-mail
+		$section_args['controls']['user_email'] = array(
+			'type'        => 'user-email',
+			'label'       => __( 'E-mail' ),
+			'description' => __( '(required)' ),
+			// Overrides for back-compat
+			'input_attrs' => array(
+				'name' => 'email',
+				'id'   => 'email',
 			),
+			'internal'    => true,
 		);
 
-		$wp_fields->add_field( $this->object_type, 'user_url', null, $field_args );
+		// Control: Website
+		$section_args['controls']['user_url'] = array(
+			'type'     => 'text',
+			'label'    => __( 'Website' ),
+			'internal' => true,
+		);
 
+		// Controls: Contact Info for back-compat
 		$contact_methods = wp_get_user_contact_methods();
 
 		foreach ( $contact_methods as $method => $label ) {
@@ -259,126 +231,93 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			 */
 			$label = apply_filters( "user_{$method}_label", $label );
 
-			$field_args = array(
-				'control' => array(
-					'type'     => 'text',
-					'section'  => $this->id . '-contact-info',
-					'label'    => $label,
-					'internal' => true,
-				),
+			$section_args['controls'][ $method ] = array(
+				'type'     => 'text',
+				'label'    => $label,
+				'internal' => true,
 			);
-
-			$wp_fields->add_field( $this->object_type, $method, null, $field_args );
 		}
+
+		$this->add_section( $section_id, $section_args );
 
 		/////////////////
 		// Core: About //
 		/////////////////
 
-		$about_title = __( 'About the user' );
-
-		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
-			$about_title = __( 'About Yourself' );
-		}
-
-		$wp_fields->add_section( $this->object_type, $this->id . '-about', null, array(
-			'label'  => $about_title,
-			'form' => $this->id,
-		) );
-
-		$field_args = array(
-			'control' => array(
-				'type'        => 'textarea',
-				'section'     => $this->id . '-about',
-				'label'       => __( 'Biographical Info' ),
-				'description' => __( 'Share a little biographical information to fill out your profile. This may be shown publicly.' ),
-				'internal'    => true,
-			),
+		$section_id   = $this->id . '-about';
+		$section_args = array(
+			'label'    => __( 'About the user' ),
+			'controls' => array(),
 		);
 
-		$wp_fields->add_field( $this->object_type, 'description', null, $field_args );
+		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
+			$section_args['label'] = __( 'About Yourself' );
+		}
+
+		// Control: Biographical Info
+		$section_args['controls']['description'] = array(
+			'type'        => 'textarea',
+			'label'       => __( 'Biographical Info' ),
+			'description' => __( 'Share a little biographical information to fill out your profile. This may be shown publicly.' ),
+			'internal'    => true,
+		);
+
+		$this->add_section( $section_id, $section_args );
 
 		//////////////////////////////
 		// Core: Account Management //
 		//////////////////////////////
 
-		$wp_fields->add_section( $this->object_type, $this->id . '-account-management', null, array(
+		$section_id   = $this->id . '-account-management';
+		$section_args = array(
 			'label'                 => __( 'Account Management' ),
-			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_password_fields' ),
-		) );
-
-		$field_args = array(
-			'control' => array(
-				'type'     => 'user-password',
-				'section'  => $this->id . '-account-management',
-				'label'    => __( 'Password' ),
-				'internal' => true,
-			),
+			'controls'              => array(),
 		);
 
-		$wp_fields->add_field( $this->object_type, 'user_pass', null, $field_args );
+		// Control: Password
+		$section_args['controls']['user_pass'] = array(
+			'type'     => 'user-password',
+			'label'    => __( 'Password' ),
+			'internal' => true,
+		);
 
-		$field_args = array(
-			'control' => array(
-				'type'     => 'user-sessions',
-				'section'  => $this->id . '-account-management',
-				'label'    => __( 'Sessions' ),
-				'internal' => true,
-			),
+		// Control: Sessions
+		$section_args['controls']['user_pass'] = array(
+			'type'     => 'user-sessions',
+			'label'    => __( 'Sessions' ),
+			'internal' => true,
 		);
 
 		// If password fields not shown, show Sessions under About
 		// @todo Change which section this control is in if password fields not shown
-		/*if ( ! $show_password_fields ) {
-			$field_args['control']['section'] = $this->id . '-about';
-		}*/
+		/*if ( ! $show_password_fields ) { }*/
 
-		$wp_fields->add_field( $this->object_type, 'sessions', null, $field_args );
+		// Back-compat
+		add_action( "fields_after_render_section_term_{$section_id}", array( $this, '_compat_section_account_management_hooks' ) );
 
-		// @todo Figure out how best to run actions after section
-		//if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
-		/**
-		 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing form.
-		 *
-		 * The action only fires if the current user is editing their own profile.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param WP_User $profileuser The current WP_User object.
-		 */
-		//do_action( 'show_user_profile', $profileuser );
-		//} else {
-		/**
-		 * Fires after the 'About the User' settings table on the 'Edit User' form.
-		 *
-		 * @since 2.0.0
-		 *
-		 * @param WP_User $profileuser The current WP_User object.
-		 */
-		//do_action( 'edit_user_profile', $profileuser );
-		//}
+		$this->add_section( $section_id, $section_args );
 
 		///////////////////////////////////
 		// Core: Additional Capabilities //
 		///////////////////////////////////
 
-		$wp_fields->add_section( $this->object_type, 'additional-capabilities', null, array(
+		$section_id   = $this->id . '-additional-capabilities';
+		$section_args = array(
 			'label'                 => __( 'Additional Capabilities' ),
-			'form'                => $this->id,
 			'capabilities_callback' => array( $this, 'capability_show_capabilities' ),
-		) );
-
-		$field_args = array(
-			'control' => array(
-				'type'     => 'user-capabilities',
-				'section'  => 'additional-capabilities',
-				'label'    => __( 'Capabilities' ),
-				'internal' => true,
-			),
+			'controls'              => array(),
 		);
 
-		$wp_fields->add_field( $this->object_type, 'capabilities', null, $field_args );
+		// Control: Capabilities
+		$section_args['controls']['capabilities'] = array(
+			'type'     => 'user-capabilities',
+			'section'  => 'additional-capabilities',
+			'label'    => __( 'Capabilities' ),
+			'internal' => true,
+		);
+
+		$this->add_section( $section_id, $section_args );
 
 		// Add example fields (maybe)
 		parent::register_fields( $wp_fields );
@@ -388,7 +327,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		/**
 		 * @var $wpdb wpdb
@@ -452,7 +391,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		}
 
 		// Save additional fields
-		return parent::save_fields( $item_id, $object_name );
+		return parent::save_fields( $item_id, $object_subtype );
 
 	}
 
@@ -532,7 +471,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 */
 	public function capability_can_grant_super_admin( $control ) {
 
-		$profileuser = get_userdata( $control->get_item_id() );
+		$profileuser = $this->get_item();
 
 		/**
 		 * @var $super_admins string[]
@@ -558,7 +497,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 */
 	public function capability_show_password_fields( $control ) {
 
-		$profileuser = get_userdata( $control->get_item_id() );
+		$profileuser = get_userdata( $this->get_item_id() );
 
 		/** This filter is documented in wp-admin/user-new.php */
 		$show_password_fields = apply_filters( 'show_password_fields', true, $profileuser );
@@ -583,14 +522,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 */
 	public function capability_show_capabilities( $section ) {
 
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		$item_id = $this->get_item_id();
-
-		$profileuser = get_userdata( $item_id );
+		$profileuser = get_userdata( $this->get_item_id() );
 
 		$total_roles = count( $profileuser->roles );
 		$total_caps  = count( $profileuser->caps );
@@ -719,6 +651,83 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		} elseif ( $is_super_admin ) {
 			// Revoke super admin if currently a super admin
 			revoke_super_admin( $item_id );
+		}
+
+	}
+
+	/**
+	 * Personal Options compatibility hooks needed for just after <table> markup of section.
+	 *
+	 * @param WP_Fields_API_Section $section
+	 */
+	public function _compat_section_personal_options_hooks( $section ) {
+
+		$profileuser = get_userdata( $this->get_item_id() );
+
+		/**
+		 * Fires at the end of the 'Personal Options' settings table on the user editing screen.
+		 *
+		 * @since 2.7.0
+		 *
+		 * @param WP_User $profileuser The current WP_User object.
+		 */
+		do_action( 'personal_options', $profileuser );
+
+	}
+
+	/**
+	 * Personal Options compatibility hooks needed for within <table> markup of section.
+	 *
+	 * @param WP_Fields_API_Section $section
+	 */
+	public function _compat_section_controls_personal_options_hooks( $section ) {
+
+		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
+			$profileuser = get_userdata( $this->get_item_id() );
+
+			/**
+			 * Fires after the 'Personal Options' settings table on the 'Your Profile' editing screen.
+			 *
+			 * The action only fires if the current user is editing their own profile.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param WP_User $profileuser The current WP_User object.
+			 */
+			do_action( 'profile_personal_options', $profileuser );
+		}
+
+	}
+
+	/**
+	 * Account Management compatibility hooks needed for just after <table> markup of section.
+	 *
+	 * @param WP_Fields_API_Section $section
+	 */
+	public function _compat_section_account_management_hooks( $section ) {
+
+		$profileuser = get_userdata( $this->get_item_id() );
+
+		if ( defined( 'IS_PROFILE_PAGE' ) && IS_PROFILE_PAGE ) {
+			/**
+			 * Fires after the 'About Yourself' settings table on the 'Your Profile' editing form.
+			 *
+			 * The action only fires if the current user is editing their own profile.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param WP_User $profileuser The current WP_User object.
+			 */
+			do_action( 'show_user_profile', $profileuser );
+		} else {
+			/**
+			 * Fires after the 'About the User' settings table on the 'Edit User' form.
+			 *
+			 * @since 2.0.0
+			 *
+			 * @param WP_User $profileuser The current WP_User object.
+			 */
+			do_action( 'edit_user_profile', $profileuser );
 		}
 
 	}

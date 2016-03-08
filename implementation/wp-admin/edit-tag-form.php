@@ -117,14 +117,15 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			global $wp_fields;
 
 			// Get form
-			$form = $wp_fields->get_form( 'term', 'term-edit' );
+			$form_edit = $wp_fields->get_form( 'term', 'term-edit' );
 
-			// Set taxonomy object name
-			$form->item_id     = $tag_ID;
-			$form->object_name = $taxonomy;
+			// Set taxonomy Object subtype
+			$form_edit->item        = $tag;
+			$form_edit->item_id     = $tag_ID;
+			$form_edit->object_subtype = $taxonomy;
 
 			// Render form controls
-			$form->maybe_render();
+			$form_edit->maybe_render();
 
 			/**
 			 * <<< WP Fields API implementation

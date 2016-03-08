@@ -52,12 +52,12 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 *
 	 * @param string      $object_type
 	 * @param string      $form_id
-	 * @param null|string $object_name
+	 * @param null|string $object_subtype
 	 * @param array       $args
 	 *
 	 * @return WP_Fields_API_Form
 	 */
-	public static function register( $object_type = null, $form_id = null, $object_name = null, $args = array() ) {
+	public static function register( $object_type = null, $form_id = null, $object_subtype = null, $args = array() ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
@@ -65,9 +65,9 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		 */
 		global $wp_fields;
 
-		// Set object_name if not overridden
-		if ( ! isset( $args['object_name'] ) ) {
-			$args['object_name'] = $object_name;
+		// Set object_subtype if not overridden
+		if ( ! isset( $args['object_subtype'] ) ) {
+			$args['object_subtype'] = $object_subtype;
 		}
 
 		$class_name = get_called_class();
@@ -76,7 +76,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		$form = new $class_name( $object_type, $form_id, $args );
 
 		// Add form to Fields API
-		$wp_fields->add_form( $form->object_type, $form, $form->object_name );
+		$wp_fields->add_form( $form->object_type, $form, $form->object_subtype );
 
 		// Register control types for this form
 		$form->register_control_types( $wp_fields );
@@ -197,7 +197,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 				$section_args['controls'][ $control_id ] = $control_args;
 			}
 
-			$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
+			$wp_fields->add_section( $this->object_type, $section_id, $this->object_subtype, $section_args );
 		}
 
 	}
@@ -206,18 +206,18 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 * Handle saving of fields
 	 *
 	 * @param int|null    $item_id     Item ID
-	 * @param string|null $object_name Object name
+	 * @param string|null $object_subtype Object subtype
 	 *
 	 * @return int|WP_Error|null New item ID, WP_Error if there was a problem, null if no $item_id used
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		if ( ! empty( $item_id ) ) {
 			$this->item_id = $item_id;
 		}
 
-		if ( ! empty( $object_name ) ) {
-			$this->object_name = $object_name;
+		if ( ! empty( $object_subtype ) ) {
+			$this->object_subtype = $object_subtype;
 		}
 
 		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
@@ -250,20 +250,17 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 						continue;
 					}
 
-					// Pass $object_name into control
-					$control->object_name = $this->object_name;
+					// Pass $object_subtype into control
+					$control->object_subtype = $this->object_subtype;
 
-					// Pass $object_name into field
-					$field->object_name = $this->object_name;
+					// Pass $object_subtype into field
+					$field->object_subtype = $this->object_subtype;
 
 					// Get value from $_POST
 					$value = null;
 
-					$input_name = $control->id;
-
-					if ( ! empty( $control->input_name ) ) {
-						$input_name = $control->input_name;
-					}
+					$input_attrs = $control->get_input_attrs();
+					$input_name  = $input_attrs['name'];
 
 					if ( ! empty( $_POST[ $input_name ] ) ) {
 						$value = $_POST[ $input_name ];
@@ -333,8 +330,8 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?> form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
 				<?php
 				foreach ( $sections as $section ) {
-					// Pass $object_name into section
-					$section->object_name = $this->object_name;
+					// Pass $object_subtype into section
+					$section->object_subtype = $this->object_subtype;
 
 					$section->maybe_render();
 				}
