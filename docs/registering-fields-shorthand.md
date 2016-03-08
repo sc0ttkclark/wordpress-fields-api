@@ -19,7 +19,7 @@ $form_id = 'term-edit';
 	
 // Set this to a specific post type, taxonomy,
 // or comment type you want to register for
-$object_name = 'xyz';
+$object_subtype = 'xyz';
 
 // Section ID and options
 $section_id = 'my-section'; // @todo Fill in section ID
@@ -37,5 +37,5 @@ $section_args = array(
 );
 
 // Register section
-$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
+$wp_fields->add_section( $object_type, $section_id, $object_subtype, $section_args );
 ```

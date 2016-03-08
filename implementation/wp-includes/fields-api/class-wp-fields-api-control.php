@@ -197,7 +197,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		$field = null;
 
 		if ( ! $fields && $this->field ) {
-			$field = $wp_fields->get_field( $this->object_type, $this->field, $this->object_name );
+			$field = $wp_fields->get_field( $this->object_type, $this->field, $this->object_subtype );
 
 			if ( $field ) {
 				$this->add_child( $field, 'field' );
@@ -237,7 +237,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			$id = $this->id;
 		}
 
-		$added = $wp_fields->add_field( $this->object_type, $id, $this->object_name, $args );
+		$added = $wp_fields->add_field( $this->object_type, $id, $this->object_subtype, $args );
 
 		if ( $added && ! is_wp_error( $added ) ) {
 			if ( $id && ! is_wp_error( $id ) ) {

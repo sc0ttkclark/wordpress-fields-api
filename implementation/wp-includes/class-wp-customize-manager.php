@@ -410,7 +410,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_fields( 'customizer', $this->get_customizer_object_name() );
+		return $wp_fields->get_fields( 'customizer', $this->get_customizer_object_subtype() );
 
 	}
 
@@ -430,7 +430,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_controls( 'customizer', $this->get_customizer_object_name() );
+		return $wp_fields->get_controls( 'customizer', $this->get_customizer_object_subtype() );
 
 	}
 
@@ -450,7 +450,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_containers( 'customizer', $this->get_customizer_object_name() );
+		return $wp_fields->get_containers( 'customizer', $this->get_customizer_object_subtype() );
 
 	}
 
@@ -470,7 +470,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_sections( 'customizer', $this->get_customizer_object_name() );
+		return $wp_fields->get_sections( 'customizer', $this->get_customizer_object_subtype() );
 
 	}
 
@@ -491,7 +491,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		return $wp_fields->get_forms( 'customizer', $this->get_customizer_object_name() );
+		return $wp_fields->get_forms( 'customizer', $this->get_customizer_object_subtype() );
 
 	}
 
@@ -731,7 +731,7 @@ final class WP_Customize_Manager {
 		$settings = $this->settings();
 
 		foreach ( $settings as $id => $setting ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'field', $id, $this->get_customizer_object_name() ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'field', $id, $this->get_customizer_object_subtype() ) ) {
 				continue;
 			}
 
@@ -743,7 +743,7 @@ final class WP_Customize_Manager {
 		$panels = $this->panels();
 
 		foreach ( $panels as $panel_id => $panel ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'form', $id, $this->get_customizer_object_name() ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'form', $id, $this->get_customizer_object_subtype() ) ) {
 				continue;
 			}
 
@@ -751,7 +751,7 @@ final class WP_Customize_Manager {
 				$settings['activePanels'][ $panel_id ] = $panel->active();
 
 				foreach ( $panel->sections as $section_id => $section ) {
-					if ( ! $wp_fields->is_prepared( 'customizer', 'section', $section_id, $this->get_customizer_object_name() ) ) {
+					if ( ! $wp_fields->is_prepared( 'customizer', 'section', $section_id, $this->get_customizer_object_subtype() ) ) {
 						continue;
 					}
 
@@ -765,7 +765,7 @@ final class WP_Customize_Manager {
 		$sections = $this->sections();
 
 		foreach ( $sections as $id => $section ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'section', $id, $this->get_customizer_object_name() ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'section', $id, $this->get_customizer_object_subtype() ) ) {
 				continue;
 			}
 
@@ -777,7 +777,7 @@ final class WP_Customize_Manager {
 		$controls = $this->controls();
 
 		foreach ( $controls as $id => $control ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $id, $this->get_customizer_object_name() ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $id, $this->get_customizer_object_subtype() ) ) {
 				continue;
 			}
 
@@ -1000,7 +1000,7 @@ final class WP_Customize_Manager {
 			$args = array();
 		}
 
-		$wp_fields->add_field( 'customizer', $id, $this->get_customizer_object_name(), $args );
+		$wp_fields->add_field( 'customizer', $id, $this->get_customizer_object_subtype(), $args );
 
 	}
 
@@ -1084,7 +1084,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$field = $wp_fields->get_field( 'customizer', $id, $this->get_customizer_object_name() );
+		$field = $wp_fields->get_field( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 		if ( $field && is_a( $field, 'WP_Customize_Setting' ) ) {
 			return $field;
@@ -1108,7 +1108,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_field( 'customizer', $id, $this->get_customizer_object_name() );
+		$wp_fields->remove_field( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 	}
 
@@ -1137,7 +1137,7 @@ final class WP_Customize_Manager {
 			$args = array();
 		}
 
-		$wp_fields->add_form( 'customizer', $id, $this->get_customizer_object_name(), $args );
+		$wp_fields->add_form( 'customizer', $id, $this->get_customizer_object_subtype(), $args );
 
 	}
 
@@ -1159,7 +1159,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$panel = $wp_fields->get_form( 'customizer', $id, $this->get_customizer_object_name() );
+		$panel = $wp_fields->get_form( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 		if ( $panel && is_a( $panel, 'WP_Customize_Panel' ) ) {
 			return $panel;
@@ -1184,7 +1184,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_form( 'customizer', $id, $this->get_customizer_object_name() );
+		$wp_fields->remove_form( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 	}
 
@@ -1266,7 +1266,7 @@ final class WP_Customize_Manager {
 			$args = array();
 		}
 
-		$wp_fields->add_section( 'customizer', $id, $this->get_customizer_object_name(), $args );
+		$wp_fields->add_section( 'customizer', $id, $this->get_customizer_object_subtype(), $args );
 
 	}
 
@@ -1287,7 +1287,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$section = $wp_fields->get_section( 'customizer', $id, $this->get_customizer_object_name() );
+		$section = $wp_fields->get_section( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 		if ( $section && is_a( $section, 'WP_Customize_Section' ) ) {
 			return $section;
@@ -1311,7 +1311,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_section( 'customizer', $id, $this->get_customizer_object_name() );
+		$wp_fields->remove_section( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 	}
 
@@ -1394,7 +1394,7 @@ final class WP_Customize_Manager {
 			$args = array();
 		}
 
-		$wp_fields->add_control( 'customizer', $id, $this->get_customizer_object_name(), $args );
+		$wp_fields->add_control( 'customizer', $id, $this->get_customizer_object_subtype(), $args );
 
 	}
 
@@ -1415,7 +1415,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$control = $wp_fields->get_control( 'customizer', $id, $this->get_customizer_object_name() );
+		$control = $wp_fields->get_control( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 		if ( $control && is_a( $control, 'WP_Customize_Control' ) ) {
 			return $control;
@@ -1439,7 +1439,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->remove_control( 'customizer', $id, $this->get_customizer_object_name() );
+		$wp_fields->remove_control( 'customizer', $id, $this->get_customizer_object_subtype() );
 
 	}
 
@@ -1531,7 +1531,7 @@ final class WP_Customize_Manager {
 		 */
 		global $wp_fields;
 
-		$wp_fields->prepare_controls( 'customizer', $this->get_customizer_object_name() );
+		$wp_fields->prepare_controls( 'customizer', $this->get_customizer_object_subtype() );
 
 	}
 
@@ -1550,7 +1550,7 @@ final class WP_Customize_Manager {
 		$controls = $this->controls();
 
 		foreach ( $controls as $control ) {
-			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $control->id, $this->get_customizer_object_name() ) ) {
+			if ( ! $wp_fields->is_prepared( 'customizer', 'control', $control->id, $this->get_customizer_object_subtype() ) ) {
 				continue;
 			}
 
@@ -1901,19 +1901,19 @@ final class WP_Customize_Manager {
 	}
 
 	/**
-	 * Get Customizer object name for Fields API usage
+	 * Get Customizer Object subtype for Fields API usage
 	 *
 	 * @return null|string
 	 */
-	public function get_customizer_object_name() {
+	public function get_customizer_object_subtype() {
 
-		$object_name = null;
+		$object_subtype = null;
 
 		if ( 1 < $this->instance_number ) {
-			$object_name = 'customizer_' . $this->instance_number;
+			$object_subtype = 'customizer_' . $this->instance_number;
 		}
 
-		return $object_name;
+		return $object_subtype;
 
 	}
 }

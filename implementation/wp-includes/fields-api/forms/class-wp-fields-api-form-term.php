@@ -76,7 +76,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 					'taxonomy' => 'category',
 				),
 			),
-			// @todo This description is only shown for 'category' == $object_name
+			// @todo This description is only shown for 'category' == $object_subtype
 			// @todo Generic description for taxonomies or new label for register_taxonomy?
 			'description'                  => __( 'Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.' ),
 			//'description'                  => __( 'This term supports hierarchy. You might have a Jazz term, and under that have children terms for Bebop and Big Band. Totally optional.' ),
@@ -125,10 +125,10 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		// Save term
-		$success = wp_update_term( $item_id, $object_name, $_POST );
+		$success = wp_update_term( $item_id, $object_subtype, $_POST );
 
 		// Return if not successful
 		if ( is_wp_error( $success ) ) {
@@ -136,7 +136,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 		}
 
 		// Save additional fields
-		return parent::save_fields( $item_id, $object_name );
+		return parent::save_fields( $item_id, $object_subtype );
 
 	}
 
@@ -184,7 +184,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 	 */
 	public function capability_is_taxonomy_hierarchical( $control ) {
 
-		return is_taxonomy_hierarchical( $this->get_object_name() );
+		return is_taxonomy_hierarchical( $this->get_object_subtype() );
 
 	}
 
@@ -196,7 +196,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 	public function _compat_section_table_hooks( $section ) {
 
 		if ( 'term-edit' == $this->id ) {
-			$taxonomy = $this->object_name;
+			$taxonomy = $this->object_subtype;
 			$tag      = $this->get_item();
 
 			if ( 'category' == $taxonomy ) {
