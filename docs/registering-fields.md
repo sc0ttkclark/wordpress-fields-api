@@ -103,7 +103,7 @@ $wp_fields->add_control( $object_type, $control_id, $object_subtype, $control_ar
 
 ## Fields
 
-Fields handle getting and saving of values and should be namespaced properly (`{my_}field_name`) for your project. They should be unique for the object type and object name you use it on, otherwise it will be overwritten each time a duplicate one is added.
+Fields handle getting and saving of values and should be namespaced properly (`{my_}field_name`) for your project. They should be unique for the object type and Object subtype you use it on, otherwise it will be overwritten each time a duplicate one is added.
 
 ### Registering fields (and control)
 

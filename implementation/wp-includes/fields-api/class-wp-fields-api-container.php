@@ -724,7 +724,7 @@ class WP_Fields_API_Container {
 	}
 
 	/**
-	 * Get object name from container or parent
+	 * Get Object subtype from container or parent
 	 *
 	 * @return string|null Object subtype
 	 */
@@ -823,7 +823,7 @@ class WP_Fields_API_Container {
 		$json['instanceNumber'] = $this->instance_number;
 
 		$json['objectType'] = $this->get_object_type();
-		$json['objectName'] = $this->get_object_subtype();
+		$json['objectSubtype'] = $this->get_object_subtype();
 
 		// Get parent
 		$json['parent'] = '';

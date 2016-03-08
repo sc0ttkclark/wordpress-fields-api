@@ -115,7 +115,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		// Get all forms for all object types
 		$forms = $wp_fields->get_forms();
 
-		// Each array item is an object type with an array of object names
+		// Each array item is an object type with an array of Object subtypes
 		$this->assertEquals( 1, count( $forms ) );
 
 		// Array keys are object types
@@ -355,7 +355,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		// Get all sections for all object types
 		$sections = $wp_fields->get_sections();
 
-		// Each array item is an object type with an array of object names
+		// Each array item is an object type with an array of Object subtypes
 		$this->assertEquals( 1, count( $sections ) );
 
 		$this->assertArrayHasKey( $this->object_type, $sections );

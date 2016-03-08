@@ -119,7 +119,7 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			// Get form
 			$form_edit = $wp_fields->get_form( 'term', 'term-edit' );
 
-			// Set taxonomy object name
+			// Set taxonomy Object subtype
 			$form_edit->item        = $tag;
 			$form_edit->item_id     = $tag_ID;
 			$form_edit->object_subtype = $taxonomy;

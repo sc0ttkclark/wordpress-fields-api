@@ -86,7 +86,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			 * @var $section WP_Fields_API_Meta_Box_Section
 			 */
 
-			// Pass object name into section
+			// Pass Object subtype into section
 			$section->object_subtype = $object_subtype;
 
 			if ( ! $section->check_capabilities() ) {

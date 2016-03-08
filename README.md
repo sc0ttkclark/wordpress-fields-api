@@ -37,7 +37,7 @@ Please note: This plugin is still in the early stages of development and should 
 ## Requirements
 
 * WordPress 4.4 - No previous or more recent major version can be 100% supported and confirmed as working.
-* Fields API installed as a [plugin](https://wordpress.org/plugin/fields-api/)
+* Fields API installed as a [plugin](https://github.com/sc0ttkclark/wordpress-fields-api/archive/develop.zip)
 
 Every Fields API release has to be based off of the latest WordPress stable release. This means that over time, we can only support the last stable release of WordPress.
 

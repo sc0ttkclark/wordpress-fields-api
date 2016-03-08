@@ -210,7 +210,7 @@ final class WP_Fields_API {
 
 			$forms = self::$forms[ $object_type ][ $object_subtype ];
 
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			if ( $primary_object_subtype !== $object_subtype ) {
 				$forms = array_merge( $this->get_forms( $object_type, $primary_object_subtype ), $forms );
 			}
@@ -221,7 +221,7 @@ final class WP_Fields_API {
 				$forms = array_merge( $forms, array_values( $this->get_forms( $object_type, $object_subtype ) ) );
 			}
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$forms = $this->get_forms( $object_type, $primary_object_subtype );
 		}
 
@@ -316,7 +316,7 @@ final class WP_Fields_API {
 
 			$form = self::$forms[ $object_type ][ $object_subtype ][ $id ];
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$form = $this->get_form( $object_type, $id, $primary_object_subtype );
 		}
 
@@ -524,7 +524,7 @@ final class WP_Fields_API {
 
 			$sections = self::$sections[ $object_type ][ $object_subtype ];
 
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			if ( $primary_object_subtype !== $object_subtype ) {
 				$object_sections = $this->get_sections( $object_type, $primary_object_subtype );
 
@@ -562,7 +562,7 @@ final class WP_Fields_API {
 				}
 			}
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$sections = $this->get_sections( $object_type, $primary_object_subtype, $form );
 		}
 
@@ -710,7 +710,7 @@ final class WP_Fields_API {
 
 			$section = self::$sections[ $object_type ][ $object_subtype ][ $id ];
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$section = $this->get_section( $object_type, $id, $primary_object_subtype );
 		}
 
@@ -873,7 +873,7 @@ final class WP_Fields_API {
 
 			$fields = self::$fields[ $object_type ][ $object_subtype ];
 
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			if ( $primary_object_subtype !== $object_subtype ) {
 				$object_fields = $this->get_fields( $object_type, $primary_object_subtype );
 
@@ -893,7 +893,7 @@ final class WP_Fields_API {
 				}
 			}
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$fields = $this->get_fields( $object_type, $primary_object_subtype );
 		}
 
@@ -1052,7 +1052,7 @@ final class WP_Fields_API {
 
 			$field = self::$fields[ $object_type ][ $object_subtype ][ $id ];
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$field = $this->get_field( $object_type, $id, $primary_object_subtype );
 		}
 
@@ -1238,7 +1238,7 @@ final class WP_Fields_API {
 
 			$controls = self::$controls[ $object_type ][ $object_subtype ];
 
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			if ( $primary_object_subtype !== $object_subtype ) {
 				$object_controls = $this->get_controls( $object_type, $primary_object_subtype );
 
@@ -1276,7 +1276,7 @@ final class WP_Fields_API {
 				}
 			}
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$controls = $this->get_controls( $object_type, $primary_object_subtype, $section );
 		}
 
@@ -1413,7 +1413,7 @@ final class WP_Fields_API {
 
 			$control = self::$controls[ $object_type ][ $object_subtype ][ $id ];
 		} elseif ( $primary_object_subtype !== $object_subtype ) {
-			// Object subtype inheritance for getting data that covers all object names
+			// Object subtype inheritance for getting data that covers all Object subtypes
 			$control = $this->get_control( $object_type, $id, $primary_object_subtype );
 		}
 

@@ -1901,7 +1901,7 @@ final class WP_Customize_Manager {
 	}
 
 	/**
-	 * Get Customizer object name for Fields API usage
+	 * Get Customizer Object subtype for Fields API usage
 	 *
 	 * @return null|string
 	 */
