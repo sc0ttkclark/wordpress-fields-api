@@ -86,8 +86,6 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
 	 * Render controls for section
-	 *
-	 * @param WP_Fields_API_Control[] $controls Control objects
 	 */
 	protected function render_controls() {
 
