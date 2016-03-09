@@ -195,6 +195,18 @@ class WP_Fields_API_Container {
 	public $render_callback;
 
 	/**
+	 * Description Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Container::render_description()
+	 *
+	 * @var callable Callback is called with one argument, the instance of
+	 *               WP_Fields_API_Container.
+	 */
+	public $description_callback;
+
+	/**
 	 * The primary form (if there is one).
 	 *
 	 * @access public
@@ -922,8 +934,18 @@ class WP_Fields_API_Container {
 	 */
 	public function render_description() {
 
+		if ( is_callable( $this->description_callback ) ) {
+			call_user_func( $this->description_callback, $this );
+
+			return;
+		}
+
 		if ( $this->description ) {
-			echo wp_kses_post( $this->description );
+		?>
+			<p class="description">
+				<?php echo wp_kses_post( $this->description ); ?>
+			</p>
+		<?php
 		}
 
 	}

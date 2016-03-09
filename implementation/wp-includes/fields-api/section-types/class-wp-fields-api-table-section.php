@@ -54,12 +54,7 @@ class WP_Fields_API_Table_Section extends WP_Fields_API_Section {
 				</th>
 				<td>
 					<?php $control->maybe_render(); ?>
-
-					<?php if ( $control->description ) { ?>
-						<p class="description">
-							<?php $control->render_description(); ?>
-						</p>
-					<?php } ?>
+					<?php $control->render_description(); ?>
 				</td>
 			</tr>
 		<?php
