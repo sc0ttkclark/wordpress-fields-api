@@ -104,6 +104,12 @@ function _wp_fields_api_implementations() {
 
 	WP_Fields_API_Form_Comment::register( 'comment', 'comment-edit' );
 
+	// Nav Menu Item
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-admin/includes/class-wp-fields-api-walker-nav-menu-edit.php' );
+	require_once( $implementation_dir . 'class-wp-fields-api-form-nav-menu-item-edit.php' );
+
+	WP_Fields_API_Form_Nav_Menu_Item_Edit::register( 'post', 'nav-menu-item-edit' );
+
 	// Settings
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
 	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
