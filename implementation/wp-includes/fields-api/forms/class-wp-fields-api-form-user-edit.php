@@ -329,6 +329,10 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 */
 	public function save_fields( $item_id = null, $object_subtype = null ) {
 
+		if ( null === $item_id ) {
+			$item_id = $this->get_item_id();
+		}
+
 		/**
 		 * @var $wpdb wpdb
 		 */
