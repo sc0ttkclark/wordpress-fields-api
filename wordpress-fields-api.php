@@ -8,7 +8,7 @@
  * Author URI: http://scottkclark.com/
  * License: GPL2+
  * GitHub Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
- * GitHub Branch: master
+ * GitHub Branch: develop
  * Requires WP: 4.4
  */
 
