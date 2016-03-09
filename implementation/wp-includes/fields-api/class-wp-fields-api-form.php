@@ -308,9 +308,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		 */
 		global $wp_fields;
 
-		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
-
-		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
+		$this->render_nonce();
 
 		$sections = $this->get_sections();
 
@@ -331,6 +329,17 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			// Render control templates
 			add_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ), 5 );
 		}
+
+	}
+
+	/**
+	 * Render nonce for form
+	 */
+	public function render_nonce() {
+
+		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
+
+		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 
 	}
 
