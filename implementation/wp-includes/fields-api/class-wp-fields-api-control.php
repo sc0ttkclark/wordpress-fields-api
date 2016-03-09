@@ -67,6 +67,18 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	public $choices_callback = null;
 
 	/**
+	 * Render callback
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Control::render_content()
+	 *
+	 * @var callable Callback is called with one argument, the instance of WP_Fields_API_Control.
+	 *               It outputs an input for the control to use.
+	 */
+	public $render_callback = null;
+
+	/**
 	 * List of control types that have had their templates printed to screen
 	 *
 	 * @access private
@@ -392,6 +404,11 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	 */
 	protected function render_content() {
 
+		if ( is_callable( $this->render_callback ) ) {
+			call_user_func( $this->render_callback, $this );
+
+			return;
+		}
 		?>
 		<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
 		<?php

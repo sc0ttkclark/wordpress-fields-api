@@ -195,6 +195,18 @@ class WP_Fields_API_Container {
 	public $render_callback;
 
 	/**
+	 * Description Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Container::render_description()
+	 *
+	 * @var callable Callback is called with one argument, the instance of
+	 *               WP_Fields_API_Container.
+	 */
+	public $description_callback;
+
+	/**
 	 * The primary form (if there is one).
 	 *
 	 * @access public
@@ -451,40 +463,42 @@ class WP_Fields_API_Container {
 		$setup = true;
 
 		// Get children from Fields API configuration
-		if ( empty( $this->children[ $child_type ] ) ) {
-			$object_type = $this->get_object_type();
-			$object_subtype = $this->get_object_subtype();
+		$object_type = $this->get_object_type();
+		$object_subtype = $this->get_object_subtype();
 
-			$object_children = array();
+		$object_children = array();
 
-			if ( 'section' === $child_type ) {
-				// Get sections for container
-				$object_children = $wp_fields->get_sections( $object_type, $object_subtype, $this );
-			} elseif ( 'control' === $child_type ) {
-				// Get controls for container
-				$object_children = $wp_fields->get_controls( $object_type, $object_subtype, $this );
-			} elseif ( 'field' === $child_type && 'control' === $this->container_type && ! empty( $this->field ) ) {
-				// Get field for container
-				$object_children = $wp_fields->get_field( $object_type, $this->field, $object_subtype );
+		if ( 'section' === $child_type ) {
+			// Get sections for container
+			$object_children = $wp_fields->get_sections( $object_type, $object_subtype, $this );
+		} elseif ( 'control' === $child_type ) {
+			// Get controls for container
+			$object_children = $wp_fields->get_controls( $object_type, $object_subtype, $this );
+		} elseif ( 'field' === $child_type && 'control' === $this->container_type && ! empty( $this->field ) ) {
+			// Get field for container
+			$object_children = $wp_fields->get_field( $object_type, $this->field, $object_subtype );
+		}
+
+		if ( ! empty( $object_children ) ) {
+			if ( ! is_array( $object_children ) ) {
+				$object_children = array( $object_children );
 			}
 
-			if ( ! empty( $object_children ) ) {
-				if ( ! is_array( $object_children ) ) {
-					$object_children = array( $object_children );
-				}
-
+			if ( ! empty( $this->children[ $child_type ] ) ) {
+				$this->children[ $child_type ] = array_merge( $this->children[ $child_type ], $object_children );
+			} else {
 				$this->children[ $child_type ] = $object_children;
-
-				if ( 1 == count( $this->children ) ) {
-					// No sorting necessary
-					$this->sorted[ $child_type ] = true;
-				} else {
-					// Needs sorting
-					$this->sorted[ $child_type ] = false;
-				}
-
-				$setup = false;
 			}
+
+			if ( 1 == count( $this->children ) ) {
+				// No sorting necessary
+				$this->sorted[ $child_type ] = true;
+			} else {
+				// Needs sorting
+				$this->sorted[ $child_type ] = false;
+			}
+
+			$setup = false;
 		}
 
 		if ( isset( $this->children[ $child_type ] ) ) {
@@ -922,8 +936,18 @@ class WP_Fields_API_Container {
 	 */
 	public function render_description() {
 
+		if ( is_callable( $this->description_callback ) ) {
+			call_user_func( $this->description_callback, $this );
+
+			return;
+		}
+
 		if ( $this->description ) {
-			echo wp_kses_post( $this->description );
+		?>
+			<p class="description">
+				<?php echo wp_kses_post( $this->description ); ?>
+			</p>
+		<?php
 		}
 
 	}

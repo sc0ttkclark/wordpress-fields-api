@@ -59,6 +59,8 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 					<?php
 				}
 
+				$this->render_description();
+
 				$this->render_controls();
 				$this->render_hidden_controls();
 
@@ -86,8 +88,6 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
 	 * Render controls for section
-	 *
-	 * @param WP_Fields_API_Control[] $controls Control objects
 	 */
 	protected function render_controls() {
 
@@ -167,12 +167,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 				<?php } ?>
 
 				<?php $control->maybe_render(); ?>
-
-				<?php if ( $control->description ) { ?>
-					<p class="description">
-						<?php $control->render_description(); ?>
-					</p>
-				<?php } ?>
+				<?php $control->render_description(); ?>
 			</div>
 		<?php
 
