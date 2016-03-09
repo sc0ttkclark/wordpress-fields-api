@@ -154,7 +154,7 @@ if ( !current_user_can('edit_user', $user_id) )
  * WP Fields API implementation >>>
  */
 
-$errors = $form->save_fields();
+$errors = $form->save_fields( $user_id );
 
 /**
  * <<< WP Fields API implementation

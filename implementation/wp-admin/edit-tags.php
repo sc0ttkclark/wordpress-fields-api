@@ -234,7 +234,7 @@ switch ( $wp_list_table->current_action() ) {
 		$form_edit->item_id     = $tag_ID;
 		$form_edit->object_subtype = $taxonomy;
 
-		$ret = $form_edit->save_fields();
+		$ret = $form_edit->save_fields( $tag_ID, $taxonomy );
 
 		/**
 		 * <<< WP Fields API implementation

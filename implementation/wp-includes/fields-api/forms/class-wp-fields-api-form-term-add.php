@@ -21,6 +21,10 @@ class WP_Fields_API_Form_Term_Add extends WP_Fields_API_Form_Term {
 	 */
 	public function save_fields( $item_id = null, $object_subtype = null ) {
 
+		if ( null === $object_subtype ) {
+			$object_subtype = $this->get_object_subtype();
+		}
+
 		$term_name = '';
 
 		// Get tag name

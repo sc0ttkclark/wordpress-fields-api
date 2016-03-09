@@ -131,6 +131,10 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 			$item_id = $this->get_item_id();
 		}
 
+		if ( null === $object_subtype ) {
+			$object_subtype = $this->get_object_subtype();
+		}
+
 		// Save term
 		$success = wp_update_term( $item_id, $object_subtype, $_POST );
 
