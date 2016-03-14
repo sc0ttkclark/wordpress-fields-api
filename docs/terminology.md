@@ -4,13 +4,13 @@
 
 Object Types are types of objects in WordPress, but can also represent custom objects from plugins or themes.
 
-See [Object Types and Names](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md) for more details.
+See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
 
 ## Object Subtypes
 
 Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. 
 
-See [Object Types and Names](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md) for more details
+See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details
 
 ## Forms
 
