@@ -31,19 +31,6 @@ class WP_Fields_API_Widget_Section extends WP_Fields_API_Section {
     /**
      * {@inheritdoc}
      */
-    protected function render_controls() {
-
-        ?>
-        <table class="form-table">
-            <?php parent::render_controls(); ?>
-        </table>
-        <?php
-
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function render_control( $control ) {
         $form               = $this->get_form();
         $widget_instance    = $form->widget_instance;
