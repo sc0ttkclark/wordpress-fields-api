@@ -49,6 +49,9 @@ function _wp_fields_api_include() {
 	// Init Fields API class
 	$GLOBALS['wp_fields'] = WP_Fields_API::get_instance();
 
+	//Widget Example
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/widget_ex.php' );
+
 }
 
 add_action( 'plugins_loaded', '_wp_fields_api_include', 8 );
