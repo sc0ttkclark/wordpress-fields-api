@@ -50,7 +50,7 @@ function _wp_fields_api_include() {
 	$GLOBALS['wp_fields'] = WP_Fields_API::get_instance();
 
 	//Widget Example
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/widget_ex.php' );
+	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/widgets/class-wp-widget-field-api-example.php' );
 
 }
 

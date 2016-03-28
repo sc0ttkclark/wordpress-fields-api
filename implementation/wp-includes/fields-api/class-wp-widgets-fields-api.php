@@ -1,11 +1,35 @@
 <?php
+/**
+ * WordPress Fields API Widget Integration class
+ *
+ * @package WordPress
+ * @subpackage Fields API
+ */
 
+/**
+ * Fields API Widgets class.
+ *
+ * The Fields API integration with WP_Widget
+ */
 class WP_Widgets_Fields_API extends WP_Widget {
 
+    /**
+     * Holds the widget data
+     *
+     * @var array
+     */
     protected $widget_data = null;
 
+    /**
+     * Holds a reference to the corresponding WP_Fields_API_Form
+     *
+     * @var WP_Fields_API_Form
+     */
     protected $form_instance = null;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct( $id_base, $name, $widget_options = array(), $control_options = array() ) {
         global $wp_fields;
 
@@ -20,6 +44,13 @@ class WP_Widgets_Fields_API extends WP_Widget {
         parent::__construct( $id_base, $name, $widget_options, $control_options );
     }
 
+    /**
+     * Outputs the Fields API Form
+     *
+     * @param $widget   The widget instance, passed by reference.
+     * @param $return   Return null if new fields are added.
+     * @param $instance An array of the widget's settings.
+     */
     public function generate_form( $widget, $return, $instance ) {
         //Only use Fields API if the widget is a instance of WP_Widgets_Fields_API
         if ( ! $widget instanceof WP_Widgets_Fields_API ) {
@@ -31,33 +62,46 @@ class WP_Widgets_Fields_API extends WP_Widget {
         }
     }
 
+    /**
+     * Returns the value of a given field based on the $instance data
+     *
+     * @param $item_id
+     * @param $field
+     * @return mixed
+     */
     public function field_value( $item_id, $field ) {
-        $control = $field->control;
-        
-        if ( ! $control ) {
-            return $field->default;
-        }
         //save this for later
         if ( is_null( $this->widget_data ) ) {
             $this->widget_data = $this->get_settings();
         }
 
         if ( array_key_exists( $this->number, $this->widget_data ) ) {
-            $instance = $this->widget_data[$this->number];
+            $instance = $this->widget_data[ $this->number ];
 
-            if ( isset( $instance[ $control->id ] ) ) {
-                return $instance[ $control->id ];
+            if ( isset( $instance[ $field->id ] ) ) {
+                return $instance[ $field->id ];
             }
 
             return $field->default;
-
         }
+
+        return $field->default;
     }
 
-    final public function form( $instance ) {
+    /**
+     * The old way for outputting the form, defaults to empty
+     *
+     * @param array $instance The Widget $instance data
+     *
+     * @return string The output of the form
+     */
+    public function form( $instance ) {
         return '';
     }
 
+    /**
+     * Call the fields methods where sections, controls and fields are registered
+     */
     public function _fields_register_callback() {
         //Only use Fields API if the widget is a instance of WP_Widgets_Fields_API
         if ( ! $this instanceof WP_Widgets_Fields_API ) {
@@ -69,12 +113,17 @@ class WP_Widgets_Fields_API extends WP_Widget {
         $this->fields( $wp_fields );
     }
 
+    /**
+     * Widgets should override this method to add fields
+     *
+     * @param $wp_fields The WP_Fields_API Object
+     */
     public function fields( $wp_fields ) {
         //do nothing by default
     }
 
     /**
-     * Processing widget options on save
+     * Saving the Widget Fields
      *
      * @param array $new_instance The new options
      * @param array $old_instance The previous options
@@ -91,8 +140,8 @@ class WP_Widgets_Fields_API extends WP_Widget {
             foreach( $controls as $control_id => $control ) {
                 $field = $control->get_field();
 
-                if ( isset( $new_instance[ $control->id ] ) ) {
-                    $instance[ $control->id ] = $field->sanitize( $new_instance[ $control->id ] );
+                if ( isset( $new_instance[ $field->id ] ) ) {
+                    $instance[ $field->id ] = $field->sanitize( $new_instance[ $field->id ] );
                 }
             }
         }

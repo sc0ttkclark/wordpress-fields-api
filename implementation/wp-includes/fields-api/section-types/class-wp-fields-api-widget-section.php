@@ -1,5 +1,16 @@
 <?php
+/**
+ * WordPress Fields API Widget Section class
+ *
+ * @package WordPress
+ * @subpackage Fields API
+ */
 
+/**
+ * Fields API Widget Section class.
+ *
+ * @see WP_Fields_API_Section
+ */
 class WP_Fields_API_Widget_Section extends WP_Fields_API_Section {
 
     /**
@@ -32,20 +43,17 @@ class WP_Fields_API_Widget_Section extends WP_Fields_API_Section {
      * {@inheritdoc}
      */
     protected function render_control( $control ) {
-        $form               = $this->get_form();
-        $widget_instance    = $form->widget_instance;
+        $form                           = $this->get_form();
+        $widget_instance                = $form->widget_instance;
+        $field                          = $control->get_field();
 
-        $control->input_attrs['id'] = $widget_instance->get_field_id( $control->id );
-        $input_id = $control->input_attrs['id'];
+        $control->input_attrs['id']     = $widget_instance->get_field_id( $field->id );
+        $input_id                       = $control->input_attrs['id'];
 
-        $control->input_attrs['name'] = $widget_instance->get_field_name( $control->id );
+        $control->input_attrs['name']   = $widget_instance->get_field_name( $field->id );
 
-        $control->input_attrs['class'] = 'widefat';
+        $control->input_attrs['class']  = 'widefat';
 
-
-        $field = $control->get_field();
-        //@fixme For some reason Fields API is not defining the 'control' property or even the parent property
-        $field->control = $control;
         $field->value_callback = array( $widget_instance, 'field_value' );
 
         ?>
