@@ -9,7 +9,7 @@
 
 This is a core proposal for a new wide-reaching API for WordPress core. It is currently an evolving prototype that can be installed as a plugin or included as a library for easy testing and usage throughout development.
 
-This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark with oversight by WordPress core lead developer Helen Hou-Sandí.
+This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark and Eric Andrew Lewis with oversight by WordPress core lead developer Helen Hou-Sandí.
 
 Please note: This [Feature Project](https://make.wordpress.org/core/features/) is still in the early stages of development and should not be used on production sites. It should be assumed that until the v1.0 release, the Fields API could change significantly due to core scrutiny and the final merge proposal response.
 
