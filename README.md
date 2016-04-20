@@ -7,11 +7,11 @@
 [![codecov.io](http://codecov.io/github/sc0ttkclark/wordpress-fields-api/coverage.svg?branch=master)](http://codecov.io/github/sc0ttkclark/wordpress-fields-api?branch=master)
 [![License](https://img.shields.io/badge/license-GPL--2.0%2B-green.svg)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/LICENSE.txt)
 
-This is a core proposal for a new wide-reaching API for WordPress core. It is currently an evolving prototype that can be installed as a plugin for easy testing and usage throughout development.
+This is a core proposal for a new wide-reaching API for WordPress core. It is currently an evolving prototype that can be installed as a plugin or included as a library for easy testing and usage throughout development.
 
 This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark with oversight by WordPress core lead developer Helen Hou-Sandí.
 
-Please note: This plugin is still in the early stages of development and should not be used on production sites. It should be assumed that until the v1.0 release, the Fields API could change significantly due to core scrutiny and the final merge proposal response.
+Please note: This [Feature Project](https://make.wordpress.org/core/features/) is still in the early stages of development and should not be used on production sites. It should be assumed that until the v1.0 release, the Fields API could change significantly due to core scrutiny and the final merge proposal response.
 
 * [Posts about the WP Fields API on the Official WordPress.org Development blog](https://make.wordpress.org/core/tag/fields-api/)
 * [Architecture Documentation](https://docs.google.com/document/d/17yUTO_vlkC7P4_2c6dIDxa5jQbXvfV9SofC7_GOwFME/edit)
@@ -37,7 +37,7 @@ Please note: This plugin is still in the early stages of development and should 
 ## Requirements
 
 * WordPress 4.4 - No previous or more recent major version can be 100% supported and confirmed as working.
-* Fields API installed as a [plugin](https://github.com/sc0ttkclark/wordpress-fields-api/archive/develop.zip)
+* Fields API installed as a plugin or included as a library
 
 Every Fields API release has to be based off of the latest WordPress stable release. This means that over time, we can only support the last stable release of WordPress.
 
