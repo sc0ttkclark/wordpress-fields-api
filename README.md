@@ -23,6 +23,12 @@ Please note: This [Feature Project](https://make.wordpress.org/core/features/) i
 * [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md)
 * [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)
 
+### Visual Structure for Forms, Sections, and Controls
+
+You can add new sections and controls to different sections of WordPress, but we're also in the process of replacing entire admin screens in WordPress with Fields API powered forms too.
+
+![Structure Example](https://raw.githubusercontent.com/sc0ttkclark/wordpress-fields-api/master/docs/terminology.png)
+
 ### Example Code
 
 **User Profile Form:**
