@@ -87,6 +87,14 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 	private static $printed_templates = array();
 
 	/**
+	 * Store save errors for this control
+	 *
+	 * @access public
+	 * @var WP_Error
+	 */
+	public $error = null;
+
+	/**
 	 * Secondary constructor; Any supplied $args override class property defaults.
 	 *
 	 * @param string $object_type   Object type.
@@ -364,6 +372,9 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 			'id'    => 'fields-control-' . str_replace( '[', '-', str_replace( ']', '', $this->id ) ),
 			'class' => 'fields-control fields-control-' . $this->type,
 		);
+		if ( is_wp_error( $this->error ) ) {
+			$attrs['class'] .= ' fields-error fields-error-code-' . esc_attr( $this->error->get_error_code() );
+		}
 
 		$input_attrs = $this->get_input_attrs();
 
@@ -411,6 +422,11 @@ class WP_Fields_API_Control extends WP_Fields_API_Container {
 		}
 		?>
 		<input type="<?php echo esc_attr( $this->type ); ?>" <?php $this->input_attrs(); ?> value="<?php echo esc_attr( $this->value() ); ?>" <?php $this->link(); ?> />
+
+		<?php if ( is_wp_error( $this->error ) ) : ?>
+			<span class="field-error-text"><?php echo esc_html( $this->error->get_error_message() ); ?></span>
+		<?php endif; ?>
+
 		<?php
 
 	}

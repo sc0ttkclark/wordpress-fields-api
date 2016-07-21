@@ -221,6 +221,8 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 			$sections = $this->get_sections();
 
+			$errors = array();
+
 			foreach ( $sections as $section ) {
 				if ( ! $section->check_capabilities() ) {
 					continue;
@@ -264,10 +266,18 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					$value = $field->sanitize( $value );
 
 					if ( is_wp_error( $value ) ) {
-						return $value;
+						$control->error = $value;
+						$errors[ $field->id ] =  $value;
+					} else {
+						$values[ $field->id ] = $value;
 					}
+				}
 
-					$values[ $field->id ] = $value;
+				/**
+				 * Allow user to short circuit all saving if an error occurs
+				 */
+				if ( apply_filters( 'wp_fields_api_skip_save_on_error', false, $this, $errors, $values ) ) {
+					return $errors;
 				}
 
 				// Save values once validation completes
@@ -288,13 +298,19 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					$success = $field->save( $value, $item_id );
 
 					if ( is_wp_error( $success ) ) {
-						return $success;
+						$errors[ $field->id ] = $success;
 					}
 				}
 			}
+
+			if ( ! empty( $errors ) ) {
+				return $errors;
+			}
+
+			return true;
 		}
 
-		return $this->item_id;
+		return false;
 
 	}
 
