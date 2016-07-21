@@ -202,7 +202,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 * @param int|null    $item_id     Item ID
 	 * @param string|null $object_subtype Object subtype
 	 *
-	 * @return int|WP_Error|null New item ID, WP_Error if there was a problem, null if no $item_id used
+	 * @return bool|array false if saving doesn't occur, true if there are no errors, array if there are error(s)
 	 */
 	public function save_fields( $item_id = null, $object_subtype = null ) {
 
