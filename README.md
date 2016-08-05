@@ -7,7 +7,9 @@
 [![codecov.io](http://codecov.io/github/sc0ttkclark/wordpress-fields-api/coverage.svg?branch=master)](http://codecov.io/github/sc0ttkclark/wordpress-fields-api?branch=develop)
 [![License](https://img.shields.io/badge/license-GPL--2.0%2B-green.svg)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/LICENSE.txt)
 
-This is a core proposal for a new wide-reaching API for WordPress core. It is currently an evolving prototype that can be installed as a plugin or included as a library for easy testing and usage throughout development.
+This is a core proposal for a new wide-reaching API for WordPress core. The goal is to provide an API that can be used to build forms across all areas of WordPress with a common structure. In the end, we'd like to have an API that you can build Settings Pages with that works exactly like building Meta box forms for the Post Editor or adding profile fields to the User Editor.  
+
+It is currently an evolving prototype that can be installed as a plugin or included as a library for easy testing and usage throughout development.
 
 This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark and Eric Andrew Lewis with oversight by WordPress core lead developer Helen Hou-Sandí.
 
@@ -68,7 +70,7 @@ There are still a lot of areas the API is not represented in code or in examples
 
 * Implementations are [in development amongst a few contributors](https://github.com/sc0ttkclark/wordpress-fields-api/labels/implementation)
 * We need [use-cases and examples](https://github.com/sc0ttkclark/wordpress-fields-api/issues/22), to be fleshed out in `/examples/{implementation}/{example}.md` inside this repo
-* [Core Proposal for Merge into WP 4.6](https://github.com/sc0ttkclark/wordpress-fields-api/issues/35) needs to be written up
+* [Core Proposal for Merge into WP 4.7](https://github.com/sc0ttkclark/wordpress-fields-api/issues/35) needs to be written up
 
 ## Contributing
 
