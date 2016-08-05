@@ -45,7 +45,7 @@
 
 ---
 
-## Overview
+## Overall tasks
 
 * There's still work to be done to [Restructure classes and simplify code](https://github.com/sc0ttkclark/wordpress-fields-api/pull/79) with major assistance by @tlovett1.
 * Not all control types are working including Media and Color. We need to put additional effort into the JS side of things.
