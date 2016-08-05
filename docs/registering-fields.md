@@ -1,5 +1,26 @@
 # Fields API Registration
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Forms](#forms)
+  - [Registering forms](#registering-forms)
+- [Sections](#sections)
+  - [Registering sections](#registering-sections)
+- [Controls](#controls)
+  - [Control Types](#control-types)
+  - [Registering controls](#registering-controls)
+- [Fields](#fields)
+  - [Registering fields (and control)](#registering-fields-and-control)
+  - [Registering fields (standalone)](#registering-fields-standalone)
+- [Bringing it all together to register your configuration](#bringing-it-all-together-to-register-your-configuration)
+- [Custom Control Types](#custom-control-types)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Forms
 
 Forms in the Fields API are more commonly linked to what appear in the WordPress Admin area as WP_Screen. A few come with the Fields API itself, but you can register new forms to your heart's content and output them wherever you'd like.

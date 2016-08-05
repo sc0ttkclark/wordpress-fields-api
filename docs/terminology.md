@@ -1,5 +1,23 @@
 # Fields API Terminology
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Object Types](#object-types)
+- [Object Subtypes](#object-subtypes)
+- [Forms](#forms)
+- [Sections](#sections)
+- [Controls](#controls)
+  - [Control Types](#control-types)
+  - [Datasources](#datasources)
+- [Fields](#fields)
+- [Visual Structure for Forms, Sections, and Controls](#visual-structure-for-forms-sections-and-controls)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Object Types
 
 Object Types are types of objects in WordPress, but can also represent custom objects from plugins or themes.

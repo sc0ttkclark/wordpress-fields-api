@@ -1,5 +1,17 @@
 # Fields API Registration (Shorthand)
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Prerequisite](#prerequisite)
+- [Sections](#sections)
+  - [Registering sections and controls](#registering-sections-and-controls)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Prerequisite
 
 You should be familiar with the normal [Fields API Registration](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md).

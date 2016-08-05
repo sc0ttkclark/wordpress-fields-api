@@ -1,5 +1,19 @@
 # Fields API Implementations
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [What is an Implementation?](#what-is-an-implementation)
+- [Creating an Implementation class](#creating-an-implementation-class)
+- [Rendering controls for your form](#rendering-controls-for-your-form)
+- [Saving data for your form](#saving-data-for-your-form)
+- [Including your Implementation](#including-your-implementation)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## What is an Implementation?
 
 Implementations are forms that are encapsulated with configuration. An implementation often contains a combination of registering sections, controls, and fields -- in addition to calling the `$form->maybe_render()` and `$form->save_fields()` methods.

@@ -1,5 +1,17 @@
 # The difference between Object Types and Object Subtypes
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Object Types](#object-types)
+- [Object Subtypes](#object-subtypes)
+  - [Default Object Subtypes and Handling](#default-object-subtypes-and-handling)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Object Types
 
 Object Types are types of objects in WordPress, but can also represent custom objects from plugins or themes.

@@ -2,10 +2,10 @@
 
 # WordPress Fields API v0.0.6 Alpha
 
-[![Travis](https://secure.travis-ci.org/sc0ttkclark/wordpress-fields-api.png?branch=master)](http://travis-ci.org/sc0ttkclark/wordpress-fields-api)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/?branch=master)
-[![codecov.io](http://codecov.io/github/sc0ttkclark/wordpress-fields-api/coverage.svg?branch=master)](http://codecov.io/github/sc0ttkclark/wordpress-fields-api?branch=master)
-[![License](https://img.shields.io/badge/license-GPL--2.0%2B-green.svg)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/LICENSE.txt)
+[![Travis](https://secure.travis-ci.org/sc0ttkclark/wordpress-fields-api.png?branch=develop)](http://travis-ci.org/sc0ttkclark/wordpress-fields-api)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sc0ttkclark/wordpress-fields-api/?branch=develop)
+[![codecov.io](http://codecov.io/github/sc0ttkclark/wordpress-fields-api/coverage.svg?branch=master)](http://codecov.io/github/sc0ttkclark/wordpress-fields-api?branch=develop)
+[![License](https://img.shields.io/badge/license-GPL--2.0%2B-green.svg)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/LICENSE.txt)
 
 This is a core proposal for a new wide-reaching API for WordPress core. It is currently an evolving prototype that can be installed as a plugin or included as a library for easy testing and usage throughout development.
 
@@ -13,32 +13,33 @@ This was initially a project of the [WordPress core Options/Metadata team](http:
 
 Please note: This [Feature Project](https://make.wordpress.org/core/features/) is still in the early stages of development and should not be used on production sites. It should be assumed that until the v1.0 release, the Fields API could change significantly due to core scrutiny and the final merge proposal response.
 
+* [Latest Progress Update](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/progress.md)
 * [Posts about the WP Fields API on the Official WordPress.org Development blog](https://make.wordpress.org/core/tag/fields-api/)
 * [Architecture Documentation](https://docs.google.com/document/d/17yUTO_vlkC7P4_2c6dIDxa5jQbXvfV9SofC7_GOwFME/edit)
 
 ## Documentation
 
-* [Terminology](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/terminology.md)
-* [Object Types and Object Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md)
-* [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md)
-* [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)
+* [Terminology](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/terminology.md)
+* [Object Types and Object Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md)
+* [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/registering-fields.md)
+* [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/creating-an-implementation.md)
 
 ### Visual Structure for Forms, Sections, and Controls
 
 You can add new sections and controls to different sections of WordPress, but we're also in the process of replacing entire admin screens in WordPress with Fields API powered forms too.
 
-![Structure Example](https://raw.githubusercontent.com/sc0ttkclark/wordpress-fields-api/master/docs/terminology.png)
+![Structure Example](https://raw.githubusercontent.com/sc0ttkclark/wordpress-fields-api/develop/docs/terminology.png)
 
 ### Example Code
 
 **User Profile Form:**
 
-* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/_starter.php)
-* [Address section and fields example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/address.php)
+* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/examples/user/_starter.php)
+* [Address section and fields example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/examples/user/address.php)
 
 **Term Add / Edit Form:**
 
-* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/term/_starter.php)
+* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/examples/term/_starter.php)
 
 ## Requirements
 
