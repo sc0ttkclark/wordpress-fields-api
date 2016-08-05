@@ -4,6 +4,54 @@
 
 * There's still work to be done to [Restructure classes and simplify code](https://github.com/sc0ttkclark/wordpress-fields-api/pull/79) with major assistance by @tlovett1.
 
+--- 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Fields API Progress](#fields-api-progress)
+  - [Overview](#overview)
+  - [Users](#users)
+      - [Contributors](#contributors)
+      - [Details](#details)
+      - [Examples](#examples)
+      - [Remaining tasks](#remaining-tasks)
+  - [Post Types](#post-types)
+      - [Contributors](#contributors-1)
+      - [Details](#details-1)
+      - [Remaining tasks](#remaining-tasks-1)
+  - [Taxonomies](#taxonomies)
+      - [Contributors](#contributors-2)
+      - [Details](#details-2)
+      - [Examples](#examples-1)
+      - [Remaining tasks](#remaining-tasks-2)
+  - [Comments](#comments)
+      - [Contributors](#contributors-3)
+      - [Details](#details-3)
+      - [Remaining tasks](#remaining-tasks-3)
+  - [Settings](#settings)
+      - [Contributors](#contributors-4)
+      - [Details](#details-4)
+      - [Remaining tasks](#remaining-tasks-4)
+  - [Widgets](#widgets)
+      - [Contributors](#contributors-5)
+      - [Details](#details-5)
+      - [Remaining tasks](#remaining-tasks-5)
+  - [Nav Menu Items](#nav-menu-items)
+      - [Contributors](#contributors-6)
+      - [Details](#details-6)
+      - [Remaining tasks](#remaining-tasks-6)
+  - [Media](#media)
+      - [Contributors](#contributors-7)
+      - [Remaining tasks](#remaining-tasks-7)
+  - [REST API](#rest-api)
+      - [Contributors](#contributors-8)
+      - [Remaining tasks](#remaining-tasks-8)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Users
 
 #### Contributors
