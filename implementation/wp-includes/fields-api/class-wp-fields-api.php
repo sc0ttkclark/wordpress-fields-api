@@ -532,7 +532,7 @@ final class WP_Fields_API {
 				}
 
 				$this->components['control'][ $id ]->field = new $field_class( $id, $this->components['control'][ $id ], $args['field'] );
-				$this->components['field'][ $id ] = $control->field;
+				$this->components['field'][ $id ] = $this->components['control'][ $id ]->field;
 			} elseif ( is_a( $args['field'], 'WP_Fields_API_Field' ) ) {
 				$this->components['control'][ $id ]->field = $args['field'];
 				$this->components['field'][ $args['field']->id ] = $args['field'];
