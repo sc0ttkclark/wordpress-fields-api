@@ -111,6 +111,14 @@ class WP_Fields_API_Field extends WP_Fields_API_Component {
 	public $rest_schema_callback;
 
 	/**
+	 * Fields are not renderable
+	 *
+	 * @access public
+	 * @var boolean
+	 */
+	public $can_render = false;
+
+	/**
 	 * Value Callback.
 	 *
 	 * @access public

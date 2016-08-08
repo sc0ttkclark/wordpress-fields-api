@@ -74,6 +74,14 @@ class WP_Fields_API_Component {
 	public $priority = 10;
 
 	/**
+	 * True opens up the maybe render method
+	 *
+	 * @access public
+	 * @var boolean
+	 */
+	public $can_render = true;
+
+	/**
 	 * Create new component
 	 * 
 	 * @access public
@@ -197,5 +205,56 @@ class WP_Fields_API_Component {
 
 		return $compare;
 
+	}
+
+	/**
+	 * Check capabilities and render the container.
+	 */
+	public function maybe_render() {
+		if ( ! $this->check_capabilities() ) {
+			return;
+		}
+
+		// Enqueue assets
+		if ( method_exists( $this, 'enqueue' ) && ! has_action( 'admin_footer', array( $this, 'enqueue' ) ) ) {
+			add_action( 'admin_footer', array( $this, 'enqueue' ) );
+		}
+
+		if ( is_callable( $this->render_callback ) ) {
+			call_user_func( $this->render_callback, $this );
+		} else {
+			$this->render();
+		}
+	}
+
+	/**
+	 * Render the container.
+	 */
+	protected function render() {
+		// Default is to do nothing
+	}
+
+	/**
+	 * Checks required user capabilities and whether the theme has the
+	 * feature support required by the container.
+	 *
+	 * @return bool False if theme doesn't support the container or user can't change container, otherwise true.
+	 */
+	public function check_capabilities() {
+		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
+			return false;
+		}
+		
+		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
+			return false;
+		}
+
+		$access = true;
+		if ( is_callable( $this->capabilities_callback ) ) {
+			$access = call_user_func( $this->capabilities_callback, $this );
+		}
+
+		$access = apply_filters( "fields_api_check_capabilities", $access, $this );
+		return $access;
 	}
 }
