@@ -103,6 +103,18 @@ class WP_Fields_API_Component {
 	public $can_render = true;
 
 	/**
+	 * Render Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Container::render()
+	 *
+	 * @var callable Callback is called with one argument, the instance of
+	 *               WP_Fields_API_Container.
+	 */
+	public $render_callback;
+
+	/**
 	 * Create new component
 	 * 
 	 * @access public
