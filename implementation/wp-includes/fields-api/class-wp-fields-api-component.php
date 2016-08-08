@@ -68,6 +68,14 @@ class WP_Fields_API_Component {
 	public $capability;
 
 	/**
+	 * Theme feature support for the container.
+	 *
+	 * @access public
+	 * @var string|array
+	 */
+	public $theme_supports;
+
+	/**
 	 * @access public
 	 * @var int
 	 */
@@ -244,7 +252,7 @@ class WP_Fields_API_Component {
 		if ( $this->capability && ! call_user_func_array( 'current_user_can', (array) $this->capability ) ) {
 			return false;
 		}
-		
+
 		if ( $this->theme_supports && ! call_user_func_array( 'current_theme_supports', (array) $this->theme_supports ) ) {
 			return false;
 		}
