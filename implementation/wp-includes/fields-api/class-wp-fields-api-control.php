@@ -240,6 +240,19 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	}
 
 	/**
+	 * Render HTML attributes safely to the screen.
+	 *
+	 * @access public
+	 *
+	 * @param array $attrs
+	 */
+	public function render_attrs( $attrs = array() ) {
+		foreach ( $attrs as $attr => $value ) {
+			echo esc_attr( $attr ) . '="' . esc_attr( $value ) . '" ';
+		}
+	}
+
+	/**
 	 * Renders the control wrapper and calls $this->render_content() for the internals.
 	 */
 	protected function render() {
