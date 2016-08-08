@@ -42,7 +42,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'internal'              => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		////////////////////////
 		// Core: Post Content //
@@ -62,7 +62,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'internal'              => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		////////////////////////
 		// Core: Post Excerpt //
@@ -82,7 +82,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'internal'              => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		///////////////////////////
 		// Core: Send Trackbacks //
@@ -104,7 +104,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'internal'              => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		/////////////////////////
 		// Core: Custom Fields //
@@ -124,7 +124,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'internal'              => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		//////////////////////
 		// Core: Discussion //
@@ -157,7 +157,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			// @todo Default should be based on site settings
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		/////////////////////
 		// Core: Post Name //
@@ -176,7 +176,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'internal'              => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		//////////////////
 		// Core: Author //
@@ -201,7 +201,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			'internal'              => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		//////////////////
 		// Core: Format //
@@ -225,7 +225,7 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 			// @todo Labels need classes / ids
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 	}
 
 	/**
