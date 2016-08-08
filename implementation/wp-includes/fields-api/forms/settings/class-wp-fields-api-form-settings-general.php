@@ -14,7 +14,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register_fields( $wp_fields ) {
+	public function setup() {
 
 		////////////////////////////
 		// Core: General Settings //
@@ -212,11 +212,7 @@ class WP_Fields_API_Form_Settings_General extends WP_Fields_API_Form_Settings {
 
 		// @todo Implement languages dropdown control
 
-		$this->add_section( $section_id, $section_args );
-
-		// Add example fields (maybe)
-		parent::register_fields( $wp_fields );
-
+		$this->add_child( $section_id, $section_args );
 	}
 
 	/**

@@ -76,6 +76,7 @@ add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
  * Include Implementations
  */
 function _wp_fields_api_implementations() {
+	global $wp_fields;
 
 	$implementation_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/forms/';
 
@@ -85,42 +86,48 @@ function _wp_fields_api_implementations() {
 	// Post
 	require_once( $implementation_dir . 'class-wp-fields-api-form-post.php' );
 
-	WP_Fields_API_Form_Post::register( 'post', 'post-edit' );
+	$wp_fields->register_form_type( 'post-edit', 'WP_Fields_API_Form_Post' );
+	$wp_fields->add_form( 'post', 'post-edit', array(
+		'type' => 'post-edit',
+		'object_subtype' => 'post-edit',
+	) );
 
 	// Term
 	require_once( $implementation_dir . 'class-wp-fields-api-form-term.php' );
 	require_once( $implementation_dir . 'class-wp-fields-api-form-term-add.php' );
 
-	WP_Fields_API_Form_Term::register( 'term', 'term-edit' );
-	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
+	$wp_fields->register_form_type( 'term-edit', 'WP_Fields_API_Form_Term' );
+	$wp_fields->register_form_type( 'term-add', 'WP_Fields_API_Form_Term_Add' );
+
+	$wp_fields->add_form( 'term', 'term-edit', array(
+		'type' => 'term-edit',
+		'object_subtype' => 'term-edit',
+	) );
+
+	$wp_fields->add_form( 'term', 'term-add', array(
+		'type' => 'term-add',
+		'object_subtype' => 'term-add',
+	) );
 
 	// User
 	require_once( $implementation_dir . 'class-wp-fields-api-form-user-edit.php' );
 
-	WP_Fields_API_Form_User_Edit::register( 'user', 'user-edit' );
+	$wp_fields->register_form_type( 'user-edit', 'WP_Fields_API_Form_User_Edit' );
+	$wp_fields->add_form( 'user', 'user-edit', array(
+		'type' => 'user-edit',
+		'object_subtype' => 'user-edit',
+	) );
 
 	// Comment
 	require_once( $implementation_dir . 'class-wp-fields-api-form-comment.php' );
 
-	WP_Fields_API_Form_Comment::register( 'comment', 'comment-edit' );
+	$wp_fields->register_form_type( 'comment-edit', 'WP_Fields_API_Form_Comment' );
+	$wp_fields->add_form( 'comment', 'comment-edit', array(
+		'type' => 'comment-edit',
+		'object_subtype' => 'comment-edit',
+	) );
 
-	// Settings
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-writing.php' );
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-reading.php' );
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-permalink.php' );
 
-	WP_Fields_API_Form_Settings_General::register( 'settings', 'settings-general' );
-	WP_Fields_API_Form_Settings_Writing::register( 'settings', 'settings-writing' );
-	WP_Fields_API_Form_Settings_Reading::register( 'settings', 'settings-reading' );
-	WP_Fields_API_Form_Settings_Permalink::register( 'settings', 'settings-permalink' );
-
-	// Settings API compatibility
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );
-
-	// Run Settings API compatibility (has it's own hooks)
-	new WP_Fields_API_Settings_API;
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );

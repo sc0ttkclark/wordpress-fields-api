@@ -14,7 +14,8 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register_control_types( $wp_fields ) {
+	public function setup() {
+		global $wp_fields;
 
 		$control_type_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/control-types/user/';
 
@@ -33,13 +34,6 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		$wp_fields->register_control_type( 'user-password', 'WP_Fields_API_User_Password_Control' );
 		$wp_fields->register_control_type( 'user-sessions', 'WP_Fields_API_User_Sessions_Control' );
 		$wp_fields->register_control_type( 'user-capabilities', 'WP_Fields_API_User_Capabilities_Control' );
-
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function register_fields( $wp_fields ) {
 
 		////////////////////////////
 		// Core: Personal Options //
@@ -99,7 +93,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			'internal'       => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		// Back-compat
 		add_action( "fields_after_render_section_controls_term_{$section_id}", array( $this, '_compat_section_controls_personal_options_hooks' ) );
@@ -183,7 +177,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			'internal' => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		////////////////////////
 		// Core: Contact Info //
@@ -238,7 +232,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			);
 		}
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		/////////////////
 		// Core: About //
@@ -262,7 +256,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			'internal'    => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		//////////////////////////////
 		// Core: Account Management //
@@ -296,7 +290,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 		// Back-compat
 		add_action( "fields_after_render_section_term_{$section_id}", array( $this, '_compat_section_account_management_hooks' ) );
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		///////////////////////////////////
 		// Core: Additional Capabilities //
@@ -317,10 +311,7 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 			'internal' => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
-
-		// Add example fields (maybe)
-		parent::register_fields( $wp_fields );
+		$this->add_child( $section_id, $section_args );
 
 	}
 

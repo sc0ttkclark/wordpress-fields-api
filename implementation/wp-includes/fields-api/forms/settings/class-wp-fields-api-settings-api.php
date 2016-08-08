@@ -11,7 +11,7 @@
  */
 class WP_Fields_API_Settings_API {
 
-	public function __construct() {
+	public function setup() {
 
 		// Add hook
 		add_action( 'admin_init', array( $this, 'register_settings' ) );

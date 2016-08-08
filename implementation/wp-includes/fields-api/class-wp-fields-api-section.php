@@ -14,36 +14,54 @@
 class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
-	 * {@inheritdoc}
-	 */
-	protected $container_type = 'section';
-
-	/**
-	 * Type of this section.
-	 *
-	 * @access public
+	 * Container type
+	 * 
 	 * @var string
 	 */
-	public $type = 'default';
+	public $container_type = 'section';
+
+	/**
+	 * Container children type
+	 * 
+	 * @var string
+	 */
+	public $child_container_type = 'control';
 
 	/**
 	 * Hidden controls
 	 *
-	 * @access public
+	 * @access protected
 	 * @var WP_Fields_API_Control[]
 	 */
-	public $hidden_controls = array();
+	protected $hidden_controls = array();
 
 	/**
-	 * Get the form for this section.
-	 *
-	 * @return WP_Fields_API_Form|null
+	 * Label to render
+	 * 
+	 * @var string
 	 */
-	public function get_form() {
+	public $label;
 
-		return $this->get_parent();
+	/**
+	 * Show label or not
+	 * 
+	 * @var bool
+	 */
+	public $display_label;
 
-	}
+	/**
+	 * Description to render
+	 *
+	 * @var string
+	 */
+	public $description;
+
+	/**
+	 * Description callback function to execute
+	 * 
+	 * @var callback
+	 */
+	public $description_callback;
 
 	/**
 	 * Render the section, and the controls that have been added to it.
@@ -51,7 +69,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	protected function render() {
 
 		?>
-		<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?>-section section-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-section">
+		<div class="fields-form-<?php echo esc_attr( $this->get_object_type() ); ?>-section section-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-section">
 			<?php
 				if ( $this->label && $this->display_label ) {
 					?>
@@ -91,11 +109,9 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	 */
 	protected function render_controls() {
 
-		$controls = $this->get_controls();
+		$controls = $this->get_children();
 
 		foreach ( $controls as $control ) {
-			// Pass $object_subtype into control
-			$control->object_subtype = $this->object_subtype;
 
 			if ( ! $control->check_capabilities() ) {
 				continue;
@@ -107,7 +123,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 				continue;
 			}
 
-			$this->render_control( $control );
+			$control->maybe_render();
 		}
 
 		/**
@@ -127,6 +143,17 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 		 */
 		do_action( "fields_after_render_section_controls_{$this->object_type}_{$this->id}", $this );
 
+	}
+
+	/**
+	 * Get the container label.
+	 *
+	 * @return string Label of the container.
+	 */
+	public function render_label() {
+		if ( $this->label && $this->display_label ) {
+			echo esc_html( $this->label );
+		}
 	}
 
 	/**
@@ -171,6 +198,25 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 			</div>
 		<?php
 
+	}
+
+	/**
+	 * Get the container description.
+	 *
+	 * @return string Description of the container.
+	 */
+	public function render_description() {
+		if ( is_callable( $this->description_callback ) ) {
+			call_user_func( $this->description_callback, $this );
+			return;
+		}
+		if ( $this->description ) {
+		?>
+			<p class="description">
+				<?php echo wp_kses_post( $this->description ); ?>
+			</p>
+		<?php
+		}
 	}
 
 }

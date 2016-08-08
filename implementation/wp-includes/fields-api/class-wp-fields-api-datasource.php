@@ -5,12 +5,7 @@
  * @package WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Datasource extends WP_Fields_API_Container {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $container_type = 'datasource';
+class WP_Fields_API_Datasource {
 
 	/**
 	 * Datasource type
@@ -18,7 +13,7 @@ class WP_Fields_API_Datasource extends WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $type = '';
+	public $type = 'default';
 
 	/**
 	 * Arguments to send to the datasource or callback
@@ -48,36 +43,6 @@ class WP_Fields_API_Datasource extends WP_Fields_API_Container {
 		'title'         => 'title',
 		'default_title' => '',
 	);
-
-
-	/**
-	 * Choices callback
-	 *
-	 * @access public
-	 *
-	 * @see WP_Fields_API_Datasource::get_data()
-	 *
-	 * @var callable Callback is called with two arguments including the Datasource $args
-	 *               and the instance of WP_Fields_API_Datasource. It returns an array of key=>value data to use.
-	 */
-	public $data_callback = null;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function init( $object_type, $id, $args = array() ) {
-
-		// If source has a type, don't override it
-		if ( $object_type && ! $this->type ) {
-			$this->type = $object_type;
-		}
-
-		// We aren't using object types here
-		$object_type = null;
-
-		parent::init( $object_type, $id, $args );
-
-	}
 
 	/**
 	 * Setup and return data from the datasource

@@ -19,10 +19,10 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register_fields( $wp_fields ) {
+	public function setup() {
 
 		add_action( 'save_post', array( $this, 'wp_save_post' ), 10, 2 );
-
+		
 		//////////////////////
 		// Core: Post Title //
 		//////////////////////
@@ -226,7 +226,6 @@ class WP_Fields_API_Form_Post extends WP_Fields_API_Form {
 		);
 
 		$this->add_section( $section_id, $section_args );
-
 	}
 
 	/**

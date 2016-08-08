@@ -7,7 +7,14 @@
  * @package    WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Field extends WP_Fields_API_Container {
+class WP_Fields_API_Field extends WP_Fields_API_Component {
+
+	/**
+	 * Field type
+	 * 
+	 * @var string
+	 */
+	public $type = 'text';
 
 	/**
 	 * Default value for field
@@ -126,33 +133,6 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 *               WP_Fields_API_Field.
 	 */
 	public $update_value_callback;
-
-	/**
-	 * Secondary constructor; Any supplied $args override class property defaults.
-	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            A specific ID of the field. Can be a
-	 *                              theme mod or option name.
-	 * @param array  $args          Field arguments.
-	 *
-	 * @return WP_Fields_API_Field $field
-	 */
-	public function init( $object_type, $id, $args = array() ) {
-
-		parent::init( $object_type, $id, $args );
-
-		// Parse the ID for array keys.
-		$this->id_data['keys'] = preg_split( '/\[/', str_replace( ']', '', $this->id ) );
-		$this->id_data['base'] = array_shift( $this->id_data['keys'] );
-
-		// Rebuild the ID.
-		$this->id = $this->id_data['base'];
-
-		if ( ! empty( $this->id_data['keys'] ) ) {
-			$this->id .= '[' . implode( '][', $this->id_data['keys'] ) . ']';
-		}
-
-	}
 
 	/**
 	 * Check user capabilities and theme supports, and then save
