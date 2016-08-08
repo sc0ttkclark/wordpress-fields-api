@@ -68,6 +68,19 @@ class WP_Fields_API_Component {
 	public $capability;
 
 	/**
+	 * Capabilities Callback.
+	 *
+	 * @access public
+	 *
+	 * @see WP_Fields_API_Component::check_capabilities()
+	 *
+	 * @var callable Callback is called with one argument, the instance of
+	 *               WP_Fields_API_Container, and returns bool to indicate whether
+	 *               the container has capabilities to be used.
+	 */
+	public $capabilities_callback;
+
+	/**
 	 * Theme feature support for the container.
 	 *
 	 * @access public
