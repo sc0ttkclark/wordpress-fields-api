@@ -326,8 +326,8 @@ final class WP_Fields_API {
 		// Controls handling
 		if ( ! empty( $args['controls'] ) ) {
 			foreach ( $args['controls'] as $control_id => $control ) {
-				$control = $this->components['section'][ $id ]->add_child( $control_id, $control );
-				$this->components['control'][ $control_id ] = $control;
+				//$control = $this->components['section'][ $id ]->add_child( $control_id, $control );
+				//$this->components['control'][ $control_id ] = $control;
 			}
 		}
 

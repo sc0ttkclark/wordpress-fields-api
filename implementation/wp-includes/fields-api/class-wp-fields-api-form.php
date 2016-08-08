@@ -77,7 +77,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 			$this->object_subtype = $object_subtype;
 		}
 
-		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
+		$form_nonce = $this->object_type . '_' . $this->id;
 
 		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $form_nonce ) ) {
 			$values = array();
@@ -186,7 +186,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		 */
 		global $wp_fields;
 
-		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
+		$form_nonce = $this->object_type . '_' . $this->id;
 
 		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 
