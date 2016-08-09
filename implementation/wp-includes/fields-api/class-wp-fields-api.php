@@ -185,9 +185,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $id Unique form id
+	 * @param string|WP_Fields_API_Form $id Unique form id
 	 *
-	 * @return WP_Fields_API_Form
+	 * @return WP_Fields_API_Form|false
 	 */
 	public function get_form( $id ) {
 		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
@@ -347,7 +347,7 @@ final class WP_Fields_API {
 	public function get_section( $id ) {
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
 			return $id;
-		}	
+		}
 
 		return ( ! empty( $this->components['section'][ $id ] ) ) ? $this->components['section'][ $id ] : false;
 
@@ -447,7 +447,7 @@ final class WP_Fields_API {
 
 	/**
 	 * Get a field from a form
-	 * 
+	 *
 	 * @param string $id          Field ID to get.
 	 *
 	 * @return WP_Fields_API_Field|bool Requested section instance.
@@ -455,7 +455,7 @@ final class WP_Fields_API {
 	public function get_field( $id ) {
 		if ( is_a( $id, 'WP_Fields_API_Field' ) ) {
 			return $id;
-		}	
+		}
 
 		return ( ! empty( $this->components['field'][ $id ] ) ) ? $this->components['field'][ $id ] : false;
 	}
@@ -546,7 +546,7 @@ final class WP_Fields_API {
 	 * Get a control
 	 *
 	 * @access public
-	 * 
+	 *
 	 * @param string|WP_Fields_API_Control $id Control ID to get.
 	 *
 	 * @return WP_Fields_API_Control|bool
