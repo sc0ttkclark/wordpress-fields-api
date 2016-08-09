@@ -30,7 +30,7 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 	/**
 	 * Type of container
-	 * 
+	 *
 	 * @var string
 	 */
 	public $container_type;
@@ -43,10 +43,10 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 	/**
 	 * Get a child component by id
-	 * 
+	 *
 	 * @access public
 	 * @param  string $id ID for child component
-	 * @return object
+	 * @return object|false
 	 */
 	public function get_child( $id ) {
 		if ( empty( $this->children[$id] ) ) {
@@ -58,7 +58,7 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 	/**
 	 * Remove a child component by id
-	 * 
+	 *
 	 * @access public
 	 * @param  string $id ID for child component
 	 */
@@ -72,7 +72,7 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 	/**
 	 * Get all child components and optionally filter by subtype
-	 * 
+	 *
 	 * @access public
 	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 * @return array
@@ -93,11 +93,11 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 	/**
 	 * Add a child component to the container
-	 * 
+	 *
 	 * @access public
 	 * @param string $id              ID for this component
 	 * @param array  $args            Additional container args to set
-	 * @return  WP_Fields_API_Container
+	 * @return  WP_Fields_API_Container|WP_Error
 	 */
 	public function add_child( $id, $args = array() ) {
 		global $wp_fields;
