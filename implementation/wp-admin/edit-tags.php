@@ -7,6 +7,7 @@
  */
 
 /** WordPress Administration Bootstrap */
+//require_once( dirname( __FILE__ ) . '/admin.php' ); // @todo Remove WP Fields API modification
 
 // @todo Remove WP Fields API modification
 if ( !defined('ABSPATH') )
@@ -43,7 +44,7 @@ if ( ! current_user_can( $tax->cap->manage_terms ) ) {
 global $wp_fields;
 
 // Get form
-$form_add = $wp_fields->get_form( 'term', 'term-add' );
+$form_add = $wp_fields->get_form( 'term-add' );
 
 // Set taxonomy Object subtype
 $form_add->item_id     = 0;
@@ -183,27 +184,18 @@ switch ( $wp_list_table->current_action() ) {
 		break;
 
 	case 'edit':
-		$title = $tax->labels->edit_item;
+		if ( ! isset( $_REQUEST['tag_ID'] ) ) {
+			break;
+		}
 
-		$tag_ID = (int) $_REQUEST['tag_ID'];
+		$term_id = (int) $_REQUEST['tag_ID'];
+		$term    = get_term( $term_id );
 
-		$tag = get_term( $tag_ID, $taxonomy, OBJECT, 'edit' );
-		if ( ! $tag )
+		if ( ! $term instanceof WP_Term ) {
 			wp_die( __( 'You attempted to edit an item that doesn&#8217;t exist. Perhaps it was deleted?' ) );
-		require_once( ABSPATH . 'wp-admin/admin-header.php' );
+		}
 
-		/**
-		 * WP Fields API implementation >>>
-		 */
-
-		include( WP_FIELDS_API_DIR . 'implementation/wp-admin/edit-tag-form.php' );
-
-		/**
-		 * <<< WP Fields API implementation
-		 */
-
-		include( ABSPATH . 'wp-admin/admin-footer.php' );
-
+		wp_redirect( esc_url_raw( get_edit_term_link( $term_id, $taxonomy, $post_type ) ) );
 		exit;
 
 	case 'editedtag':
@@ -227,7 +219,7 @@ switch ( $wp_list_table->current_action() ) {
 		 */
 
 		// Get form
-		$form_edit = $wp_fields->get_form( 'term', 'term-edit' );
+		$form_edit = $wp_fields->get_form( 'term-edit' );
 
 		// Set taxonomy Object subtype
 		$form_edit->item        = $tag;
@@ -366,8 +358,11 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 
 	<div class="wrap nosubsub">
 		<h1><?php echo esc_html( $title );
-			if ( !empty($_REQUEST['s']) )
-				printf( '<span class="subtitle">' . __('Search results for &#8220;%s&#8221;') . '</span>', esc_html( wp_unslash($_REQUEST['s']) ) ); ?>
+		if ( isset( $_REQUEST['s'] ) && strlen( $_REQUEST['s'] ) ) {
+			/* translators: %s: search keywords */
+			printf( '<span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', esc_html( wp_unslash( $_REQUEST['s'] ) ) );
+		}
+		?>
 		</h1>
 
 		<?php if ( $message ) : ?>
@@ -519,7 +514,6 @@ if ( is_plugin_active( 'wpcat2tag-importer/wpcat2tag-importer.php' ) ) {
 								<input type="hidden" name="screen" value="<?php echo esc_attr($current_screen->id); ?>" />
 								<input type="hidden" name="taxonomy" value="<?php echo esc_attr($taxonomy); ?>" />
 								<input type="hidden" name="post_type" value="<?php echo esc_attr($post_type); ?>" />
-								<input type="hidden" name="wp_http_referer" value="<?php echo esc_url( wp_get_referer() ) ?>" >
 								<?php wp_nonce_field('add-tag', '_wpnonce_add-tag'); ?>
 
 								<?php

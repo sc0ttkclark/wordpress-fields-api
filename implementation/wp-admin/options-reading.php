@@ -7,6 +7,8 @@
  */
 
 /** WordPress Administration Bootstrap */
+//require_once( dirname( __FILE__ ) . '/admin.php' ); // @todo Remove WP Fields API modification
+
 // @todo Remove WP Fields API modification
 if ( !defined('ABSPATH') )
 	die('-1');
@@ -47,7 +49,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 <div class="wrap">
 	<h1><?php echo esc_html( $title ); ?></h1>
 
-	<form method="post" action="options.php" novalidate="novalidate">
+	<form method="post" action="options.php">
 		<?php
 		/**
 		 * WP Fields API implementation >>>
@@ -59,7 +61,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		global $wp_fields;
 
 		// Get form
-		$form = $wp_fields->get_form( 'settings', 'settings-reading' );
+		$form = $wp_fields->get_form( 'settings-reading' );
 
 		// Render form controls
 		$form->maybe_render();

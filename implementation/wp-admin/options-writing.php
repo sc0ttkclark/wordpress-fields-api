@@ -7,6 +7,8 @@
  */
 
 /** WordPress Administration Bootstrap */
+//require_once( dirname( __FILE__ ) . '/admin.php' ); // @todo Remove WP Fields API modification
+
 // @todo Remove WP Fields API modification
 if ( !defined('ABSPATH') )
 	die('-1');
@@ -66,7 +68,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 		global $wp_fields;
 
 		// Get form
-		$form = $wp_fields->get_form( 'settings', 'settings-writing' );
+		$form = $wp_fields->get_form( 'settings-writing' );
 
 		// Render form controls
 		$form->maybe_render();
