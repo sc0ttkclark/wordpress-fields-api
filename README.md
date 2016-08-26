@@ -7,9 +7,9 @@
 [![codecov.io](http://codecov.io/github/sc0ttkclark/wordpress-fields-api/coverage.svg?branch=master)](http://codecov.io/github/sc0ttkclark/wordpress-fields-api?branch=develop)
 [![License](https://img.shields.io/badge/license-GPL--2.0%2B-green.svg)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/LICENSE.txt)
 
-This is a core proposal for a new wide-reaching API for WordPress core. The goal is to provide an API that can be used to build forms across all areas of WordPress with a common structure. In the end, we'd like to have an API that you can build Settings Pages with that works exactly like building Meta box forms for the Post Editor or adding profile fields to the User Editor.  
+The WordPress Fields API can be used by developers to build forms with a common structure. It makes it possible to efficiently build settings pages, meta boxes, profile fields, and other elements in WordPress.
 
-It is currently an evolving prototype that can be installed as a plugin or included as a library for easy testing and usage throughout development.
+This plugin is an evolving prototype as part of a proposal for inclusion in WordPress core.
 
 This was initially a project of the [WordPress core Options/Metadata team](http://make.wordpress.org/core/components/options-meta/) but is currently led by Scott Kingsley Clark and Eric Andrew Lewis with oversight by WordPress core lead developer Helen Hou-Sandí.
 
