@@ -17,6 +17,13 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	public $default = '';
 
 	/**
+	 * Whether to store arrays of meta values separately or as one serialized.
+	 *
+	 * @var bool
+	 */
+	public $store_arrays_separately = false;
+
+	/**
 	 * Server-side sanitization callback for the field's value.
 	 *
 	 * @var callback
@@ -349,17 +356,18 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 			delete_metadata( $meta_type, $item_id, $this->id_data['base'] );
 		}
 
-		// Handle non-array option.
+		// Handle non-array field.
 		if ( empty( $this->id_data['keys'] ) ) {
+			// @todo Handle $this->store_arrays_separately
 			return update_metadata( $meta_type, $item_id, $this->id_data['base'], $value );
 		}
 
-		// Handle array-based keys.
-		$keys = get_metadata( $meta_type, 0, $this->id_data['base'] );
-		$keys = $this->multidimensional_replace( $keys, $this->id_data['keys'], $value );
+		// Handle array-based field.
+		$values = get_metadata( $meta_type, $item_id, $this->id_data['base'] );
+		$values = $this->multidimensional_replace( $values, $this->id_data['keys'], $value );
 
-		if ( isset( $keys ) ) {
-			return update_metadata( $meta_type, $item_id, $this->id_data['base'], $keys );
+		if ( isset( $values ) ) {
+			return update_metadata( $meta_type, $item_id, $this->id_data['base'], $values );
 		}
 
 		return null;

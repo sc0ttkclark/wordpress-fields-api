@@ -145,6 +145,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 			// Add example for each control type
 			$control_types = array(
+				'repeater',
 				'text',
 				'textarea',
 				'checkbox',
@@ -170,6 +171,11 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					'label'       => sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) ),
 					'description' => 'Example field description',
 				);
+
+				if ( 'repeater' == $control_type ) {
+					$control_args['type']       = 'text';
+					$control_args['repeatable'] = true;
+				}
 
 				if ( in_array( $control_type, $option_types ) ) {
 					$control_args['choices'] = array(
@@ -260,6 +266,11 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 					if ( ! empty( $_POST[ $input_name ] ) ) {
 						$value = $_POST[ $input_name ];
+					}
+
+					// Handle saving repeatable fields, they are always arrays of values
+					if ( $control->repeatable && null !== $value ) {
+						$value = (array) $value;
 					}
 
 					// Sanitize
