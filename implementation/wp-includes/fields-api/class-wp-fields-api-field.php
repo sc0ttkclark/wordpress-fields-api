@@ -404,6 +404,18 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 				 * @param int   $item_id (optional) The Item ID.
 				 */
 				$value = apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default, $item_id );
+				
+				/**
+				 * Fires when the {@see WP_Fields_API_Field::value()} method is called for fields
+				 * not handled as theme_mods or options.
+				 *
+				 * The dynamic portion of the hook name, `$this->object_type`, refers to the type of field.
+				 *
+				 * @param mixed               $value   Default value of the field.
+				 * @param int                 $item_id Item ID.
+				 * @param WP_Fields_API_Field $this    WP_Fields_API_Field instance.
+				 */
+				$value = apply_filters( "fields_value_{$this->object_type}", $value, $item_id, $this );
 				break;
 		}
 
