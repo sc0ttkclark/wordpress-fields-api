@@ -166,7 +166,15 @@ final class WP_Fields_API {
 	public function add_form( $object_type, $id, $args = array() ) {
 
 		if ( empty( $id ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
+		}
+
+		$form = null;
+
+		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
+			$form = $id;
+			$id   = $form->id;
 		}
 
 		if ( ! empty( $this->components['form'][ $id ] ) ) {
@@ -179,12 +187,16 @@ final class WP_Fields_API {
 			return new WP_Error( '', __( 'No object type provided.', 'fields-api' ) );
 		}
 
-		$class = $this->registered_types['form']['default'];
-		if ( ! empty( $args['type'] ) ) {
-			$class = $this->registered_types['form'][ $args['type'] ];
+		if ( ! $form ) {
+			$class = $this->registered_types['form']['default'];
+			if ( ! empty( $args['type'] ) ) {
+				$class = $this->registered_types['form'][ $args['type'] ];
+			}
+
+			$form = new $class( $object_type, $id, $args );
 		}
 
-		$this->components['form'][ $id ] = new $class( $object_type, $id, $args );
+		$this->components['form'][ $id ] = $form;
 
 		return $this->components['form'][ $id ];
 
@@ -226,7 +238,10 @@ final class WP_Fields_API {
 			$form = $this->get_form( $form );
 		}
 
-		unset( $this->components['form'][ $form->id ] );
+		if ( $form ) {
+			unset( $this->components['form'][ $form->id ] );
+		}
+
 	}
 
 	/**
@@ -246,55 +261,6 @@ final class WP_Fields_API {
 		/**
 		 * Todo: implement
 		 */
-	}
-
-	/**
-	 * Register a section type for use later
-	 *
-	 * @access public
-	 *
-	 * @param string $type          Type slug
-	 * @param string $control_class Name of a custom esction which is a subclass of WP_Fields_API_Section.
-	 */
-	public function register_section_type( $type, $section_class = 'WP_Fields_API_Section' ) {
-		$this->registered_types['section'][ $type ] = $section_class;
-	}
-
-	/**
-	 * Get all registered types
-	 *
-	 * @access public
-	 *
-	 * @return array
-	 */
-	public function get_registered_types() {
-		return $this->registered_types;
-	}
-
-	/**
-	 * Register a control type for use later
-	 *
-	 * @access public
-	 *
-	 * @param string $type          Type slug
-	 * @param string $control_class Name of a custom form which is a subclass of WP_Fields_API_Control.
-	 */
-	public function register_control_type( $type, $control_class = 'WP_Fields_API_Control' ) {
-		$this->registered_types['control'][ $type ] = $control_class;
-	}
-
-	/**
-	 * Register a form type.
-	 *
-	 * @access public
-	 *
-	 * @see    WP_Fields_API_Form
-	 *
-	 * @param string $type       Form type ID.
-	 * @param string $form_class Name of a custom form which is a subclass of WP_Fields_API_Form.
-	 */
-	public function register_form_type( $type, $form_class = 'WP_Fields_API_Form' ) {
-		$this->registered_types['form'][ $type ] = $form_class;
 	}
 
 	/**
@@ -383,138 +349,13 @@ final class WP_Fields_API {
 			$section = $this->get_section( $section );
 		}
 
-		if ( ! empty( $section->parent ) ) {
-			$section->parent->remove_child( $section );
-		}
-
-		unset( $this->components['section'][ $section->id ] );
-	}
-
-	/**
-	 * Add a field.
-	 *
-	 * @access public
-	 *
-	 * @param string $id   Fields API Field object, or ID.
-	 * @param array  $args Field arguments; passed to WP_Fields_API_Field constructor.
-	 *
-	 * @return WP_Fields_API_Field|WP_Error
-	 */
-	public function add_field( $id, $args = array() ) {
-
-		if ( empty( $id ) ) {
-			return new WP_Error( '', __( 'Field ID is required.', 'fields-api' ) );
-		}
-
-		if ( ! empty( $this->components['field'][ $id ] ) ) {
-			return new WP_Error( '', __( 'Field ID already exists.', 'fields-api' ) );
-		}
-
-		$class = $this->registered_types['field']['default'];
-		if ( ! empty( $args['type'] ) ) {
-			$class = $this->registered_types['field'][ $args['type'] ];
-		}
-
-		$this->components['field'][ $id ] = new $class( $id, $args );
-
-		if ( ! empty( $args['control'] ) ) {
-			if ( ! is_array( $args['control'] ) ) {
-				$control = $this->get_control( $args['control'] );
-			} else {
-				$control = $this->add_control( $args['control']['id'], $args['control'] );
+		if ( $section ) {
+			if ( ! empty( $section->parent ) ) {
+				$section->parent->remove_child( $section );
 			}
 
-			$control->field = $this->components['field'][ $id ];
+			unset( $this->components['section'][ $section->id ] );
 		}
-
-		return $this->components['field'][ $id ];
-	}
-
-	/**
-	 * Register meta integration for register_meta and REST API
-	 *
-
-	 * @param string                    $object_type    Object type
-	 * @param string                    $id             Field ID
-	 * @param array|WP_Fields_API_Field $field          Field object or options array
-	 * @param string|null               $object_subtype Object subtype
-	 */
-	public function register_meta_integration( $object_type, $id, $field, $object_subtype = null ) {
-
-		// Meta types call register_meta() and register_rest_field() for their fields
-		if ( in_array( $object_type, array(
-				'post',
-				'term',
-				'user',
-				'comment'
-			) ) && ! $this->get_field_arg( $field, 'internal' )
-		) {
-			// Set callbacks
-			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
-			$auth_callback     = $this->get_field_arg( $field, 'meta_auth_callback' );
-
-			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
-
-			if ( function_exists( 'register_rest_field' ) && $this->get_field_arg( $field, 'show_in_rest' ) ) {
-				$rest_field_args = array(
-					'get_callback'    => $this->get_field_arg( $field, 'rest_get_callback' ),
-					'update_callback' => $this->get_field_arg( $field, 'rest_update_callback' ),
-					'schema'          => $this->get_field_arg( $field, 'rest_schema_callback' ),
-					'type'            => $this->get_field_arg( $field, 'rest_field_type' ),
-					'description'     => $this->get_field_arg( $field, 'rest_field_description' ),
-				);
-
-				register_rest_field( $object_type, $id, $rest_field_args );
-			}
-		}
-
-	}
-
-	/**
-	 * Get a field from a form
-	 *
-	 * @param string $id Field ID to get.
-	 *
-	 * @return WP_Fields_API_Field|bool Requested section instance.
-	 */
-	public function get_field( $id ) {
-
-		$field = false;
-
-		if ( is_a( $id, 'WP_Fields_API_Field' ) ) {
-			$field = $id;
-		} elseif ( ! empty( $this->components['field'][ $id ] ) ) {
-			$field = $this->components['field'][ $id ];
-		}
-
-		return $field;
-
-	}
-
-	/**
-	 * Register a field type.
-	 *
-	 * @access public
-	 *
-	 * @see    WP_Fields_API_Field
-	 *
-	 * @param string $type        Field type ID.
-	 * @param string $field_class Name of a custom field type which is a subclass of WP_Fields_API_Field.
-	 */
-	public function register_field_type( $type, $field_class = 'WP_Fields_API_Field' ) {
-		$this->registered_types['field'][ $type ] = $field_class;
-	}
-
-	/**
-	 * Register a datasource type for use later
-	 *
-	 * @access public
-	 *
-	 * @param string $type          Type slug
-	 * @param string $control_class Name of a custom datasource which is a subclass of WP_Fields_API_Datasource.
-	 */
-	public function register_datasource_type( $type, $datasource_class = 'WP_Fields_API_Datasource' ) {
-		$this->registered_types['datasource'][ $type ] = $datasource_class;
 	}
 
 	/**
@@ -610,11 +451,76 @@ final class WP_Fields_API {
 			$control = $this->get_control( $control );
 		}
 
-		if ( ! empty( $control->parent ) ) {
-			$control->parent->remove_child( $control );
+		if ( $control ) {
+			if ( ! empty( $control->parent ) ) {
+				$control->parent->remove_child( $control );
+			}
+
+			unset( $this->components['control'][ $control->id ] );
+		}
+	}
+
+	/**
+	 * Add a field.
+	 *
+	 * @access public
+	 *
+	 * @param string $id   Fields API Field object, or ID.
+	 * @param array  $args Field arguments; passed to WP_Fields_API_Field constructor.
+	 *
+	 * @return WP_Fields_API_Field|WP_Error
+	 */
+	public function add_field( $id, $args = array() ) {
+
+		if ( empty( $id ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'Field ID is required.', 'fields-api' ) );
 		}
 
-		unset( $this->components['control'][ $control->id ] );
+		if ( ! empty( $this->components['field'][ $id ] ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'Field ID already exists.', 'fields-api' ) );
+		}
+
+		$class = $this->registered_types['field']['default'];
+		if ( ! empty( $args['type'] ) ) {
+			$class = $this->registered_types['field'][ $args['type'] ];
+		}
+
+		$this->components['field'][ $id ] = new $class( $id, $args );
+
+		if ( ! empty( $args['control'] ) ) {
+			if ( ! is_array( $args['control'] ) ) {
+				$control = $this->get_control( $args['control'] );
+			} else {
+				$control = $this->add_control( $args['control']['id'], $args['control'] );
+			}
+
+			$control->field = $this->components['field'][ $id ];
+		}
+
+		return $this->components['field'][ $id ];
+	}
+
+	/**
+	 * Get a field from a form
+	 *
+	 * @param string|WP_Fields_API_Field $id Field ID to get.
+	 *
+	 * @return WP_Fields_API_Field|bool Requested section instance.
+	 */
+	public function get_field( $id ) {
+
+		$field = false;
+
+		if ( is_a( $id, 'WP_Fields_API_Field' ) ) {
+			$field = $id;
+		} elseif ( ! empty( $this->components['field'][ $id ] ) ) {
+			$field = $this->components['field'][ $id ];
+		}
+
+		return $field;
+
 	}
 
 	/**
@@ -629,11 +535,88 @@ final class WP_Fields_API {
 			$field = $this->get_field( $field );
 		}
 
-		if ( ! empty( $field->parent ) ) {
-			$field->parent->field = null;
-		}
+		if ( $field ) {
+			if ( ! empty( $field->parent ) ) {
+				$field->parent->field = null;
+			}
 
-		unset( $this->components['field'][ $field->id ] );
+			unset( $this->components['field'][ $field->id ] );
+		}
+	}
+
+	/**
+	 * Get all registered types
+	 *
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_registered_types() {
+		return $this->registered_types;
+	}
+
+	/**
+	 * Register a form type.
+	 *
+	 * @access public
+	 *
+	 * @see    WP_Fields_API_Form
+	 *
+	 * @param string $type       Form type ID.
+	 * @param string $form_class Name of a custom form which is a subclass of WP_Fields_API_Form.
+	 */
+	public function register_form_type( $type, $form_class = 'WP_Fields_API_Form' ) {
+		$this->registered_types['form'][ $type ] = $form_class;
+	}
+
+	/**
+	 * Register a section type for use later
+	 *
+	 * @access public
+	 *
+	 * @param string $type          Type slug
+	 * @param string $control_class Name of a custom esction which is a subclass of WP_Fields_API_Section.
+	 */
+	public function register_section_type( $type, $section_class = 'WP_Fields_API_Section' ) {
+		$this->registered_types['section'][ $type ] = $section_class;
+	}
+
+	/**
+	 * Register a control type for use later
+	 *
+	 * @access public
+	 *
+	 * @param string $type          Type slug
+	 * @param string $control_class Name of a custom form which is a subclass of WP_Fields_API_Control.
+	 */
+	public function register_control_type( $type, $control_class = 'WP_Fields_API_Control' ) {
+		$this->registered_types['control'][ $type ] = $control_class;
+	}
+
+	/**
+	 * Register a field type.
+	 *
+	 * @access public
+	 *
+	 * @see    WP_Fields_API_Field
+	 *
+	 * @param string $type        Field type ID.
+	 * @param string $field_class Name of a custom field type which is a subclass of WP_Fields_API_Field.
+	 */
+	public function register_field_type( $type, $field_class = 'WP_Fields_API_Field' ) {
+		$this->registered_types['field'][ $type ] = $field_class;
+	}
+
+	/**
+	 * Register a datasource type for use later
+	 *
+	 * @access public
+	 *
+	 * @param string $type          Type slug
+	 * @param string $control_class Name of a custom datasource which is a subclass of WP_Fields_API_Datasource.
+	 */
+	public function register_datasource_type( $type, $datasource_class = 'WP_Fields_API_Datasource' ) {
+		$this->registered_types['datasource'][ $type ] = $datasource_class;
 	}
 
 	/**
@@ -692,6 +675,45 @@ final class WP_Fields_API {
 		 * @param WP_Fields_API $this WP_Fields_API instance.
 		 */
 		do_action( 'fields_register_controls', $this );
+
+	}
+
+	/**
+	 * Register meta integration for register_meta and REST API
+	 *
+	 * @param string                    $object_type    Object type
+	 * @param string                    $id             Field ID
+	 * @param array|WP_Fields_API_Field $field          Field object or options array
+	 * @param string|null               $object_subtype Object subtype
+	 */
+	public function register_meta_integration( $object_type, $id, $field, $object_subtype = null ) {
+
+		// Meta types call register_meta() and register_rest_field() for their fields
+		if ( in_array( $object_type, array(
+				'post',
+				'term',
+				'user',
+				'comment'
+			) ) && ! $this->get_field_arg( $field, 'internal' )
+		) {
+			// Set callbacks
+			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
+			$auth_callback     = $this->get_field_arg( $field, 'meta_auth_callback' );
+
+			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
+
+			if ( function_exists( 'register_rest_field' ) && $this->get_field_arg( $field, 'show_in_rest' ) ) {
+				$rest_field_args = array(
+					'get_callback'    => $this->get_field_arg( $field, 'rest_get_callback' ),
+					'update_callback' => $this->get_field_arg( $field, 'rest_update_callback' ),
+					'schema'          => $this->get_field_arg( $field, 'rest_schema_callback' ),
+					'type'            => $this->get_field_arg( $field, 'rest_field_type' ),
+					'description'     => $this->get_field_arg( $field, 'rest_field_description' ),
+				);
+
+				register_rest_field( $object_type, $id, $rest_field_args );
+			}
+		}
 
 	}
 
