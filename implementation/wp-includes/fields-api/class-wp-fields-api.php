@@ -9,14 +9,14 @@
 final class WP_Fields_API {
 
 	/**
-	 * Instantiated omponents
+	 * Instantiated components
 	 *
 	 * @access protected
-	 * @var array {
-	 * @type WP_Fields_API_Form[]    form
-	 * @type WP_Fields_API_Section[] section
-	 * @type WP_Fields_API_Control[] control
-	 * @type WP_Fields_API_Field[]   field
+	 * @var array $components {
+	 *      @type WP_Fields_API_Form[]    $form
+	 *      @type WP_Fields_API_Section[] $section
+	 *      @type WP_Fields_API_Control[] $control
+	 *      @type WP_Fields_API_Field[]   $field
 	 * }
 	 */
 	public $components = array(
@@ -157,9 +157,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type Object type.
-	 * @param string $id          Unique form id
-	 * @param array  $args        Additional form arguments
+	 * @param string                    $object_type Object type.
+	 * @param string|WP_Fields_API_Form $id          Unique form id
+	 * @param array                     $args        Additional form arguments
 	 *
 	 * @return WP_Error|WP_Fields_API_Form
 	 */
@@ -170,10 +170,12 @@ final class WP_Fields_API {
 		}
 
 		if ( ! empty( $this->components['form'][ $id ] ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'Form ID already exists.', 'fields-api' ) );
 		}
 
 		if ( empty( $object_type ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'No object type provided.', 'fields-api' ) );
 		}
 
@@ -308,10 +310,12 @@ final class WP_Fields_API {
 	public function add_section( $id, $args = array() ) {
 
 		if ( empty( $id ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'Section ID is required.', 'fields-api' ) );
 		}
 
 		if ( ! empty( $this->components['section'][ $id ] ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'Section ID already exists.', 'fields-api' ) );
 		}
 
@@ -349,7 +353,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $id Section ID to get.
+	 * @param string|WP_Fields_API_Section $id Section ID to get.
 	 *
 	 * @return WP_Fields_API_Section|bool
 	 */
@@ -526,10 +530,12 @@ final class WP_Fields_API {
 	public function add_control( $id, $args = array() ) {
 
 		if ( empty( $id ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'Control ID is required.', 'fields-api' ) );
 		}
 
 		if ( ! empty( $this->components['control'][ $id ] ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'Control ID already exists.', 'fields-api' ) );
 		}
 
@@ -597,7 +603,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $control Control ID or object to remove
+	 * @param string|WP_Fields_API_Control $control Control ID or object to remove
 	 */
 	public function remove_control( $control ) {
 		if ( ! is_a( $control, 'WP_Fields_API_Control' ) ) {
@@ -616,7 +622,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $field Field ID or object to remove
+	 * @param string|WP_Fields_API_Field $field Field ID or object to remove
 	 */
 	public function remove_field( $field ) {
 		if ( ! is_a( $field, 'WP_Fields_API_Field' ) ) {
@@ -700,6 +706,7 @@ final class WP_Fields_API {
 	 */
 	public function register_meta_sanitize_callback( $meta_value, $meta_key, $meta_type ) {
 
+		// @todo Fix
 		$field = $this->get_field( $meta_type, $meta_key );
 
 		if ( $field ) {
