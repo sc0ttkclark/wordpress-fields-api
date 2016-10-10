@@ -11,14 +11,14 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 
 	/**
 	 * Label to render
-	 * 
+	 *
 	 * @var string
 	 */
 	public $label;
 
 	/**
 	 * Show label or not
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $display_label;
@@ -32,7 +32,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 
 	/**
 	 * Description callback function to execute
-	 * 
+	 *
 	 * @var callback
 	 */
 	public $description_callback;
@@ -65,7 +65,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 
 	/**
 	 * Contains field object
-	 * 
+	 *
 	 * @var WP_Fields_API_Field
 	 */
 	public $field = null;
@@ -169,10 +169,10 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 			$args = array();
 
 			// @todo Needs hook docs
-			$args = apply_filters( "fields_control_datasource_get_args_{$datasource->type}", $args, $this->datasource, $this );
+			$args = apply_filters( "fields_control_datasource_get_args_{$this->datasource->type}", $args, $this->datasource, $this );
 
 			// @todo Needs hook docs
-			$args = apply_filters( "fields_control_datasource_get_args_{$datasource->type}_{$this->id}", $args, $this->datasource, $this );
+			$args = apply_filters( "fields_control_datasource_get_args_{$this->datasource->type}_{$this->id}", $args, $this->datasource, $this );
 
 			// Get data from datasource
 			$data = $this->datasource->get_data( $args, $this );
