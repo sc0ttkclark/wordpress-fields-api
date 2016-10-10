@@ -130,7 +130,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 
 		$field = null;
 
-		if ( isset( $args['field'] ) ) {
+		if ( is_array( $args ) && isset( $args['field'] ) ) {
 			if ( ! empty( $args['field'] ) ) {
 				$field = $args['field'];
 			}

@@ -70,7 +70,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 		$controls = array();
 
-		if ( isset( $args['controls'] ) ) {
+		if ( is_array( $args ) && isset( $args['controls'] ) ) {
 			if ( ! empty( $args['controls'] ) && is_array( $args['controls'] ) ) {
 				$controls = $args['controls'];
 			}

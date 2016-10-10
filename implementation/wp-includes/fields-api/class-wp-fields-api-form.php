@@ -52,7 +52,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		$sections = array();
 
-		if ( isset( $args['sections'] ) ) {
+		if ( is_array( $args ) && isset( $args['sections'] ) ) {
 			if ( ! empty( $args['sections'] ) && is_array( $args['sections'] ) ) {
 				$sections = $args['sections'];
 			}
