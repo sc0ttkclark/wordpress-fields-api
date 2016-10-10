@@ -337,6 +337,7 @@ final class WP_Fields_API {
 		$this->components['field'][ $object_type ][ $id ] = new $class( $id, $args );
 
 		return $this->components['field'][ $object_type ][ $id ];
+
 	}
 
 	/**

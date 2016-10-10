@@ -136,7 +136,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 		parent::__construct( $id, $args );
 
 		if ( $field ) {
-			$this->add_field( $field );
+			$this->add_field( '', $field );
 		}
 
 	}

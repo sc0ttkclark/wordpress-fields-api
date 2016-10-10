@@ -283,14 +283,16 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 
 		$this->assertNotEmpty( $control_field );
 
+		$this->assertEquals( 'my_test_control_field', $control_field->id );
+		$this->assertEquals( 'my_test_control', $control_field->parent->id );
+		$this->assertEquals( 'my_test_section', $control_field->parent->parent->id );
+
 		// Field exists
 		$field = $wp_fields->get_field( $this->object_type, 'my_test_field' );
 
 		$this->assertNotEmpty( $field );
 
-		$this->assertEquals( 'my_test_control_field', $control->id );
-		$this->assertEquals( 'my_test_control', $control->parent->id );
-		$this->assertEquals( 'my_test_section', $control->parent->parent->id );
+		$this->assertEquals( 'my_test_field', $field->id );
 	}
 
 	/**

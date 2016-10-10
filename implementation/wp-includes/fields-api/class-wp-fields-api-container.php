@@ -117,6 +117,8 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 			 * @var $child WP_Fields_API_Container
 			 */
 			$child = $args;
+
+			$child->parent = $this;
 		} else {
 			if ( is_object( $args ) ) {
 				// @todo Need WP_Error code
@@ -127,14 +129,10 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 				$class = $wp_fields->get_registered_type( $this->child_container_type, $args['type'] );
 			}
 
-			if ( isset( $args['parent'] ) ) {
-				unset( $args['parent'] );
-			}
+			$args['parent'] = $this;
 
 			$child = new $class( $id, $args );
 		}
-
-		$child->parent = $this;
 
 		$this->children[ $id ] = $child;
 
