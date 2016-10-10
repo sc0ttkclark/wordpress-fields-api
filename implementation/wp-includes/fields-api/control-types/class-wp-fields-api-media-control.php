@@ -75,7 +75,7 @@ class WP_Fields_API_Media_Control extends WP_Fields_API_Control {
 
 		$value = $this->value();
 
-		$field = $this->get_field();
+		$field = $this->field;
 
 		if ( $field ) {
 			if ( $field->default ) {

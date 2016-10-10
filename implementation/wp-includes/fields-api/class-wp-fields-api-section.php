@@ -15,14 +15,14 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
 	 * Container type
-	 * 
+	 *
 	 * @var string
 	 */
 	public $container_type = 'section';
 
 	/**
 	 * Container children type
-	 * 
+	 *
 	 * @var string
 	 */
 	public $child_container_type = 'control';
@@ -37,14 +37,14 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
 	 * Label to render
-	 * 
+	 *
 	 * @var string
 	 */
 	public $label;
 
 	/**
 	 * Show label or not
-	 * 
+	 *
 	 * @var bool
 	 */
 	public $display_label;
@@ -58,10 +58,83 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
 	 * Description callback function to execute
-	 * 
+	 *
 	 * @var callback
 	 */
 	public $description_callback;
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __construct( $id, $args = array() ) {
+
+		$controls = array();
+
+		if ( isset( $args['controls'] ) ) {
+			if ( ! empty( $args['controls'] ) && is_array( $args['controls'] ) ) {
+				$controls = $args['controls'];
+			}
+
+			unset( $args['controls'] );
+		}
+
+		parent::__construct( $id, $args );
+
+		foreach ( $controls as $control ) {
+			$this->add_control( $control );
+		}
+
+	}
+
+	/**
+	 * Add a control
+	 *
+	 * @param array|WP_Fields_API_Control $args Control arguments
+	 *
+	 * @return WP_Error|WP_Fields_API_Control
+	 */
+	public function add_control( $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$control = null;
+		$id      = null;
+
+		if ( is_a( $args, 'WP_Fields_API_Control' ) ) {
+			$control = $args;
+			$id      = $control->id;
+		} elseif ( ! empty( $args['id'] ) ) {
+			$id = $args['id'];
+		}
+
+		if ( empty( $id ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'Control ID is required.', 'fields-api' ) );
+		}
+
+		if ( ! empty( $this->children[ $id ] ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'Control ID already exists.', 'fields-api' ) );
+		}
+
+		if ( ! $control ) {
+			$type = 'default';
+
+			if ( ! empty( $args['type'] ) ) {
+				$type = $args['type'];
+			}
+
+			$class = $wp_fields->get_registered_type( 'control', $type );
+
+			$control = new $class( $id, $args );
+		}
+
+		return $control;
+
+	}
 
 	/**
 	 * Render the section, and the controls that have been added to it.

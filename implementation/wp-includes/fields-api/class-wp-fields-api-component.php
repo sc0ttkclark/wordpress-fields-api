@@ -149,7 +149,6 @@ class WP_Fields_API_Component {
 
 	}
 
-
 	/**
 	 * Get object type for a container. We might have to check the parent container
 	 *

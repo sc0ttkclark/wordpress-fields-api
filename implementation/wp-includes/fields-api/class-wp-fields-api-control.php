@@ -74,7 +74,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	 * Datasource type for control
 	 *
 	 * @access public
-	 * @var string
+	 * @var WP_Fields_API_Datasource
 	 */
 	public $datasource = null;
 
@@ -119,6 +119,94 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	public $error = null;
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function __construct( $id, $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$field = null;
+
+		if ( isset( $args['field'] ) ) {
+			if ( ! empty( $args['field'] ) ) {
+				$field = $args['field'];
+			}
+
+			unset( $args['field'] );
+		}
+
+		parent::__construct( $id, $args );
+
+		if ( $field ) {
+			$this->add_field( $field );
+		}
+
+	}
+
+	/**
+	 * Add field to control
+	 *
+	 * @param array|WP_Fields_API_Field $args Field arguments
+	 *
+	 * @return WP_Error|WP_Fields_API_Field
+	 */
+	public function add_field( $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$field = null;
+		$id    = null;
+
+		if ( is_a( $args, 'WP_Fields_API_Field' ) ) {
+			$field = $args;
+			$id    = $field->id;
+		} elseif ( ! empty( $args['id'] ) ) {
+			$id = $args['id'];
+		}
+
+		if ( empty( $id ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'Field ID is required.', 'fields-api' ) );
+		}
+
+		if ( ! empty( $this->field ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'Field already exists.', 'fields-api' ) );
+		}
+
+		$object_type = $this->get_object_type();
+
+		if ( empty( $object_type ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'Object type is required.', 'fields-api' ) );
+		}
+
+		$field = $wp_fields->add_field( $object_type, $id, $field );
+
+		if ( $field && ! is_wp_error( $field ) ) {
+			$this->field = $field;
+		}
+
+		return $field;
+
+	}
+
+	/**
+	 * Remove field from control
+	 */
+	public function remove_field() {
+
+		$this->field = null;
+
+	}
+
+	/**
 	 * Get the container description.
 	 *
 	 * @return string Description of the container.
@@ -139,15 +227,6 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	}
 
 	/**
-	 * Get associated datasource
-	 *
-	 * @return null|WP_Fields_API_Datasource
-	 */
-	public function get_datasource() {
-		return $this->datasource;
-	}
-
-	/**
 	 * Get associated field
 	 *
 	 * @return null|WP_Fields_API_Field
@@ -165,7 +244,6 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 
 		// If control has a datasource, use it for getting the data
 		if ( $this->datasource ) {
-
 			$args = array();
 
 			// @todo Needs hook docs

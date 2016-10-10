@@ -49,25 +49,13 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 	 * @return object|false
 	 */
 	public function get_child( $id ) {
-		if ( empty( $this->children[$id] ) ) {
+
+		if ( empty( $this->children[ $id ] ) ) {
 			return false;
 		}
 
-		return $this->children[$id];
-	}
+		return $this->children[ $id ];
 
-	/**
-	 * Remove a child component by id
-	 *
-	 * @access public
-	 * @param  string $id ID for child component
-	 */
-	public function remove_child( $id ) {
-		foreach ( $this->children as $key => $child ) {
-			if ( $id === $child->id || ( is_object( $id ) && $id === $child ) ) {
-				unset( $this->children[ $key ] );
-			}
-		}
 	}
 
 	/**
@@ -78,6 +66,7 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 	 * @return array
 	 */
 	public function get_children( $object_subtype = null ) {
+
 		$children = $this->children;
 
 		if ( ! empty( $object_subtype ) ) {
@@ -89,36 +78,94 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 		}
 
 		return $children;
+
 	}
 
 	/**
 	 * Add a child component to the container
 	 *
 	 * @access public
-	 * @param string $id              ID for this component
-	 * @param array  $args            Additional container args to set
-	 * @return  WP_Fields_API_Container|WP_Error
+	 *
+	 * @param  string                        $id   ID for this component
+	 * @param  array|WP_Fields_API_Container $args Additional container args to set
+	 *
+	 * @return WP_Fields_API_Container|WP_Error
 	 */
 	public function add_child( $id, $args = array() ) {
+
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
 		if ( empty( $id ) ) {
+			// @todo Need WP_Error code
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
-		$class = $wp_fields->get_registered_types()[ $this->child_container_type ]['default'];
-		if ( ! empty( $args['type'] ) ) {
-			$class = $wp_fields->get_registered_types()[ $this->child_container_type ][ $args['type'] ];
+		if ( ! empty( $this->children[ $id ] ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( '', __( 'ID already exists.', 'fields-api' ) );
 		}
 
-		$args['parent'] = $this;
-		$child = new $class( $id, $args );
+		$class = $wp_fields->get_registered_type( $this->child_container_type, 'default' );
+
+		if ( is_a( $args, $class ) ) {
+			/**
+			 * @var $child WP_Fields_API_Container
+			 */
+			$child = $args;
+		} else {
+			if ( is_object( $args ) ) {
+				// @todo Need WP_Error code
+				return new WP_Error( '', __( 'Unexpected object type.', 'fields-api' ) );
+			}
+
+			if ( ! empty( $args['type'] ) ) {
+				$class = $wp_fields->get_registered_type( $this->child_container_type, $args['type'] );
+			}
+
+			if ( isset( $args['parent'] ) ) {
+				unset( $args['parent'] );
+			}
+
+			$child = new $class( $id, $args );
+		}
+
+		$child->parent = $this;
+
 		$this->children[ $id ] = $child;
 
 		return $child;
+
+	}
+
+	/**
+	 * Remove a child component by id
+	 *
+	 * @access public
+	 *
+	 * @param string $id ID for child component
+	 */
+	public function remove_child( $id ) {
+
+		foreach ( $this->children as $key => $child ) {
+			if ( $id === $child->id || ( is_object( $id ) && $id === $child ) ) {
+				unset( $this->children[ $key ] );
+			}
+		}
+
+	}
+
+	/**
+	 * Remove child components
+	 *
+	 * @access public
+	 */
+	public function remove_children() {
+
+		$this->children = array();
+
 	}
 
 	/**

@@ -33,30 +33,67 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 	/**
 	 * Container children type
-	 * 
+	 *
 	 * @var string
 	 */
 	public $container_type = 'form';
 
 	/**
 	 * Container children type
-	 * 
+	 *
 	 * @var string
 	 */
 	public $child_container_type = 'section';
 
 	/**
-	 * Create new form
-	 * 
-	 * @access public
-	 * @param string $object_type Object type
-	 * @param string $id          ID for this component
-	 * @param array  $args        Additional container args to set
+	 * {@inheritdoc}
 	 */
-	public function __construct( $object_type, $id, $args = array() ) {
-		$this->object_type = $object_type;
+	public function __construct( $id, $args = array() ) {
+
+		$sections = array();
+
+		if ( isset( $args['sections'] ) ) {
+			if ( ! empty( $args['sections'] ) && is_array( $args['sections'] ) ) {
+				$sections = $args['sections'];
+			}
+
+			unset( $args['sections'] );
+		}
 
 		parent::__construct( $id, $args );
+
+		foreach ( $sections as $section ) {
+			$this->add_section( $section );
+		}
+
+	}
+
+	/**
+	 * Add a section
+	 *
+	 * @param array|WP_Fields_API_Section $args Section arguments
+	 *
+	 * @return WP_Error|WP_Fields_API_Section
+	 */
+	public function add_section( $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$section = null;
+		$id      = null;
+
+		if ( is_a( $args, 'WP_Fields_API_Section' ) ) {
+			$section = $args;
+			$id      = $section->id;
+		} elseif ( ! empty( $args['id'] ) ) {
+			$id = $args['id'];
+		}
+
+		return $this->add_child( $id, $section );
+
 	}
 
 	/**
@@ -82,7 +119,10 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $form_nonce ) ) {
 			$values = array();
 
-			$sections = $this->get_sections();
+			/**
+			 * @var $sections WP_Fields_API_Section[]
+			 */
+			$sections = $this->get_children();
 
 			$errors = array();
 
@@ -91,7 +131,10 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 					continue;
 				}
 
-				$controls = $section->get_controls();
+				/**
+				 * @var $controls WP_Fields_API_Control[]
+				 */
+				$controls = $section->get_children();
 
 				// Get values, handle validation first
 				foreach ( $controls as $control ) {
@@ -103,7 +146,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 						continue;
 					}
 
-					$field = $control->get_field();
+					$field = $control->field;
 
 					if ( ! $field ) {
 						continue;
@@ -149,7 +192,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 						continue;
 					}
 
-					$field = $control->get_field();
+					$field = $control->field;
 
 					if ( ! $field || ! isset( $values[ $field->id ] ) ) {
 						continue;
@@ -172,7 +215,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 			return true;
 		}
-		
+
 		return false;
 	}
 
