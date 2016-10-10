@@ -16,7 +16,7 @@ class WP_Fields_API_Datasource {
 	public $type = 'default';
 
 	/**
-	 * Arguments to send to the datasource or callback
+	 * Arguments to send to the datasource
 	 *
 	 * @access public
 	 * @var array
@@ -24,7 +24,7 @@ class WP_Fields_API_Datasource {
 	public $get_args = array();
 
 	/**
-	 * Display in hierarchical context (if datasource supports it)
+	 * Display in hierarchical context, if the datasource supports it
 	 *
 	 * @access public
 	 * @var bool
@@ -45,6 +45,28 @@ class WP_Fields_API_Datasource {
 	);
 
 	/**
+	 * Create new component
+	 *
+	 * @access public
+	 *
+	 * @param string $type Type of datasource
+	 * @param array  $args Additional datasource args to set
+	 */
+	public function __construct( $type, $args = array() ) {
+
+		$this->type = $type;
+
+		foreach ( $args as $property => $value ) {
+			if ( isset( $this->{$property} ) && is_array( $this->{$property} ) ) {
+				$this->{$property} = array_merge( $this->{$property}, $value );
+			} else {
+				$this->{$property} = $value;
+			}
+		}
+
+	}
+
+	/**
 	 * Setup and return data from the datasource
 	 *
 	 * @param array                 $args    Override datasource args values on-the-fly
@@ -57,12 +79,8 @@ class WP_Fields_API_Datasource {
 		// Allow overriding of $this->get_args values on-the-fly
 		$args = array_merge( $this->get_args, $args );
 
-		// Handle callback
-		if ( $this->data_callback && is_callable( $this->data_callback ) ) {
-			$data = call_user_func( $this->data_callback, $args, $control, $this );
-		} else {
-			$data = $this->setup_data( $args, $control );
-		}
+		// Get data
+		$data = $this->setup_data( $args, $control );
 
 		// @todo Needs hook doc
 		$data = apply_filters( 'fields_api_datasource_data', $data, $this->type, $args, $control, $this );

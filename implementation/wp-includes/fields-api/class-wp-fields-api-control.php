@@ -124,6 +124,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	public function __construct( $id, $args = array() ) {
 
 		$field = null;
+		$datasource = null;
 
 		if ( isset( $args['field'] ) ) {
 			if ( ! empty( $args['field'] ) ) {
@@ -133,10 +134,22 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 			unset( $args['field'] );
 		}
 
+		if ( isset( $args['datasource'] ) ) {
+			if ( ! empty( $args['datasource'] ) ) {
+				$field = $args['datasource'];
+			}
+
+			unset( $args['datasource'] );
+		}
+
 		parent::__construct( $id, $args );
 
 		if ( $field ) {
 			$this->add_field( '', $field );
+		}
+
+		if ( $datasource ) {
+			$this->add_datasource( '', $datasource );
 		}
 
 	}
@@ -181,9 +194,22 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 			return new WP_Error( 'fields-api-object-type-required', __( 'Object type is required.', 'fields-api' ) );
 		}
 
-		$field = $wp_fields->add_field( $object_type, $id, $args );
+		$field = null;
+
+		if ( empty( $args ) ) {
+			$field = $wp_fields->get_field( $object_type, $id );
+		}
+
+		if ( ! $field ) {
+			$field = $wp_fields->add_field( $object_type, $id, $args );
+		}
 
 		if ( $field && ! is_wp_error( $field ) ) {
+			if ( ! empty( $field->parent ) ) {
+				// @todo Need WP_Error code
+				return new WP_Error( 'fields-api-field-associated', __( 'Field already associated to another control.', 'fields-api' ) );
+			}
+
 			$this->field = $field;
 
 			$field->parent = $this;
@@ -214,6 +240,82 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 		}
 
 		$this->field = null;
+
+	}
+
+	/**
+	 * Add datasource to control
+	 *
+	 * @param string                         $type Datasource type
+	 * @param array|WP_Fields_API_Datasource $args Datasource arguments
+	 *
+	 * @return WP_Error|WP_Fields_API_Datasource
+	 */
+	public function add_datasource( $type, $args = array() ) {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$datasource = null;
+
+		if ( is_a( $args, 'WP_Fields_API_Datasource' ) ) {
+			$type = $args->type;
+
+			$datasource = $args;
+		} elseif ( ! empty( $args['type'] ) ) {
+			$type = $args['type'];
+
+			unset( $args['type'] );
+		} elseif ( ! is_array( $args ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-unexpected-arguments', __( 'Unexpected arguments.', 'fields-api' ) );
+		}
+
+		if ( empty( $type ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-datasource-type-required', __( 'Datasource Type is required.', 'fields-api' ) );
+		}
+
+		if ( ! empty( $this->datasource ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-datasource-exists', __( 'Datasource already exists on control.', 'fields-api' ) );
+		}
+
+		if ( ! $datasource ) {
+			$class = $wp_fields->get_registered_type( 'datasource', $type );
+
+			$datasource = new $class( $type, $args );
+		}
+
+		$this->datasource = $datasource;
+
+		return $datasource;
+
+	}
+
+	/**
+	 * Get datasource from control
+	 *
+	 * @return WP_Fields_API_Datasource|null
+	 */
+	public function get_datasource() {
+
+		return $this->datasource;
+
+	}
+
+	/**
+	 * Remove datasource from control
+	 */
+	public function remove_datasource() {
+
+		if ( $this->datasource ) {
+			$this->datasource->parent = null;
+		}
+
+		$this->datasource = null;
 
 	}
 
