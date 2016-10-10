@@ -70,7 +70,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 		$controls = array();
 
-		if ( is_array( $args ) && isset( $args['controls'] ) ) {
+		if ( isset( $args['controls'] ) ) {
 			if ( ! empty( $args['controls'] ) && is_array( $args['controls'] ) ) {
 				$controls = $args['controls'];
 			}
@@ -80,8 +80,8 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 		parent::__construct( $id, $args );
 
-		foreach ( $controls as $control ) {
-			$this->add_control( $control );
+		foreach ( $controls as $control_id => $control ) {
+			$this->add_control( $control_id, $control );
 		}
 
 	}
@@ -89,50 +89,44 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	/**
 	 * Add a control
 	 *
+	 * @param string                      $id   Control ID
 	 * @param array|WP_Fields_API_Control $args Control arguments
 	 *
 	 * @return WP_Error|WP_Fields_API_Control
 	 */
-	public function add_control( $args = array() ) {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		$control = null;
-		$id      = null;
+	public function add_control( $id, $args = array() ) {
 
 		if ( is_a( $args, 'WP_Fields_API_Control' ) ) {
-			$control = $args;
-			$id      = $control->id;
+			$id = $args->id;
 		} elseif ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
 		}
 
-		if ( empty( $id ) ) {
-			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Control ID is required.', 'fields-api' ) );
-		}
+		return $this->add_child( $id, $args );
 
-		if ( ! empty( $this->children[ $id ] ) ) {
-			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Control ID already exists.', 'fields-api' ) );
-		}
+	}
 
-		if ( ! $control ) {
-			$type = 'default';
+	/**
+	 * Get a control
+	 *
+	 * @param string $id Control ID
+	 *
+	 * @return WP_Fields_API_Control|false
+	 */
+	public function get_control( $id ) {
 
-			if ( ! empty( $args['type'] ) ) {
-				$type = $args['type'];
-			}
+		return $this->get_child( $id );
 
-			$class = $wp_fields->get_registered_type( 'control', $type );
+	}
 
-			$control = new $class( $id, $args );
-		}
+	/**
+	 * Remove a control
+	 *
+	 * @param string $id Control ID
+	 */
+	public function remove_control( $id ) {
 
-		return $control;
+		$this->remove_child( $id );
 
 	}
 

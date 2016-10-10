@@ -181,34 +181,39 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string                    $object_type Object type.
-	 * @param string|WP_Fields_API_Form $id          Unique form id
-	 * @param array                     $args        Additional form arguments
+	 * @param string                   $object_type Object type.
+	 * @param string                   $id          Unique form id.
+	 * @param array|WP_Fields_API_Form $args        Additional form arguments.
 	 *
 	 * @return WP_Error|WP_Fields_API_Form
 	 */
 	public function add_form( $object_type, $id, $args = array() ) {
 
+		if ( empty( $object_type ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-object-type-required', __( 'Object type is required.', 'fields-api' ) );
+		}
+
 		if ( empty( $id ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-id-required', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		$form = null;
 
-		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
-			$form = $id;
-			$id   = $form->id;
+		if ( is_a( $args, 'WP_Fields_API_Form' ) ) {
+			$id   = $args->id;
+			$args = array();
+
+			$form->object_type = $object_type;
+		} elseif ( ! is_array( $args ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-unexpected-form-arguments', __( 'Unexpected form arguments.', 'fields-api' ) );
 		}
 
 		if ( ! empty( $this->components['form'][ $id ] ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Form ID already exists.', 'fields-api' ) );
-		}
-
-		if ( empty( $object_type ) ) {
-			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'No object type provided.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-id-exists', __( 'ID already exists.', 'fields-api' ) );
 		}
 
 		if ( ! $form ) {
@@ -218,7 +223,9 @@ final class WP_Fields_API {
 				$class = $this->registered_types['form'][ $args['type'] ];
 			}
 
-			$form = new $class( $object_type, $id, $args );
+			$args['object_type'] = $object_type;
+
+			$form = new $class( $id, $args );
 		}
 
 		$this->components['form'][ $id ] = $form;
@@ -313,12 +320,12 @@ final class WP_Fields_API {
 
 		if ( empty( $id ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Field ID is required.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-id-required', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		if ( ! empty( $this->components['field'][ $object_type ][ $id ] ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Field ID already exists.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-id-exists', __( 'ID already exists.', 'fields-api' ) );
 		}
 
 		$class = $this->registered_types['field']['default'];
@@ -346,10 +353,15 @@ final class WP_Fields_API {
 
 		if ( $field ) {
 			if ( ! empty( $field->parent ) ) {
-				$field->parent->field = null;
+				/**
+				 * @var $parent WP_Fields_API_Control
+				 */
+				$parent = $field->parent;
+
+				$parent->remove_field();
 			}
 
-			if ( ! empty( $this->components['field'][ $object_type ] ) ) {
+			if ( ! empty( $this->components['field'][ $object_type ][ $field->id ] ) ) {
 				unset( $this->components['field'][ $object_type ][ $field->id ] );
 			}
 

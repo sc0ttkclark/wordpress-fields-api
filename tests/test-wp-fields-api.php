@@ -123,14 +123,15 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$form = $wp_fields->add_form( $this->object_type, 'my_test_form' );
+		$wp_fields->add_form( $this->object_type, 'my_test_form' );
 
-		$wp_fields->add_section( 'my_test_section', array(
-			'form' => $form,
-		) );
+		// Form exists
+		$form = $wp_fields->get_form( 'my_test_form' );
+
+		$form->add_section( 'my_test_section' );
 
 		// Section exists
-		$section = $wp_fields->get_section( 'my_test_section' );
+		$section = $form->get_section( 'my_test_section' );
 
 		$this->assertNotEmpty( $section );
 
@@ -138,7 +139,7 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		$this->assertEquals( 'my_test_form', $section->parent->id );
 
 		// Section doesn't exist
-		$section = $wp_fields->get_section( 'my_test_section1'  );
+		$section = $form->get_section( 'my_test_section1'  );
 
 		$this->assertEmpty( $section );
 
@@ -155,101 +156,29 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		global $wp_fields;
 
 		// Add a form
-		$form = $wp_fields->add_form( $this->object_type, 'my_test_form' );
+		$wp_fields->add_form( $this->object_type, 'my_test_form' );
 
-		$wp_fields->add_section( 'my_test_section', $this->object_subtype, array(
-			'form' => $form,
+		// Form exists
+		$form = $wp_fields->get_form( 'my_test_form' );
+
+		$form->add_section( 'my_test_section', array(
+			'object_subtype' => $this->object_subtype,
 		) );
 
 		// Section exists
-		$section = $wp_fields->get_section( 'my_test_section' );
+		$section = $form->get_section( 'my_test_section' );
 
 		$this->assertNotEmpty( $section );
 
 		$this->assertEquals( 'my_test_section', $section->id );
 
 		// Remove section
-		$wp_fields->remove_section( 'my_test_section' );
+		$form->remove_section( 'my_test_section' );
 
 		// Section no longer exists
-		$section = $wp_fields->get_section( 'my_test_section' );
+		$section = $form->get_section( 'my_test_section' );
 
 		$this->assertEmpty( $section );
-
-	}
-
-	/**
-	 * Test WP_Fields_API::get_field()
-	 */
-	public function test_get_field() {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		// Add a field
-		$form = $wp_fields->add_form( $this->object_type, 'my_test_form' );
-
-		$section = $wp_fields->add_section( 'my_test_section', array(
-			'form' => $form,
-		) );
-
-		$wp_fields->add_field( 'my_test_field', array(
-			'control' => array(
-				'id'      => 'my_test_field_control',
-				'label'   => 'My Test Field',
-				'type'    => 'text',
-				'section' => $section,
-			),
-		) );
-
-		// Field exists
-		$field = $wp_fields->get_field( 'my_test_field' );
-
-		$this->assertNotEmpty( $field );
-	}
-
-	/**
-	 * Test WP_Fields_API::remove_field()
-	 */
-	public function test_remove_field() {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		// Add a field
-		$form = $wp_fields->add_form( $this->object_type, 'my_test_form' );
-
-		$section = $wp_fields->add_section( 'my_test_section', array(
-			'form' => $form,
-		) );
-
-		$wp_fields->add_field( 'my_test_field', array(
-			'control' => array(
-				'id'      => 'my_test_field_control',
-				'label'   => 'My Test Field',
-				'type'    => 'text',
-				'section' => $section,
-			),
-		) );
-
-		// Field exists for this object type / name
-		$field = $wp_fields->get_field( 'my_test_field' );
-
-		$this->assertNotEmpty( $field );
-
-		$this->assertEquals( 'my_test_field', $field->id );
-
-		// Remove field
-		$wp_fields->remove_field( 'my_test_field' );
-
-		// Field no longer exists
-		$field = $wp_fields->get_field( 'my_test_field' );
-
-		$this->assertEmpty( $field );
 
 	}
 
@@ -263,37 +192,25 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a control / field / section
-		$form = $wp_fields->add_form( $this->object_type, 'my_test_form' );
+		// Add a field
+		$wp_fields->add_form( $this->object_type, 'my_test_form' );
 
-		$section = $wp_fields->add_section( 'my_test_section', array(
-			'form' => $form,
-		) );
+		// Form exists
+		$form = $wp_fields->get_form( 'my_test_form' );
 
-		$field = $wp_fields->add_field( 'my_test_field', array(
-			'control' => array(
-				'id'      => 'my_test_field_control',
-				'label'   => 'My Test Field',
-				'type'    => 'text',
-				'section' => $section,
-			),
-		) );
+		$section = $form->add_section( 'my_test_section' );
 
-		$wp_fields->add_control( 'my_test_control', array(
-			'section' => 'my_test_section',
-			'field'   => $field,
-			'label'   => 'My Test Control Field',
-			'type'    => 'text',
+		$section->add_control( 'my_test_control', array(
+			'label' => 'My Test Control Field',
+			'type'  => 'text',
 		) );
 
 		// Control exists
-		$control = $wp_fields->get_control( 'my_test_field_control' );
+		$control = $section->get_control( 'my_test_control' );
 
 		$this->assertNotEmpty( $control );
 
-		$this->assertEquals( 'my_test_field_control', $control->id );
-		$this->assertNotEmpty( $control->get_field() );
-		$this->assertEquals( 'my_test_field', $control->get_field()->id );
+		$this->assertEquals( 'my_test_control', $control->id );
 		$this->assertEquals( 'my_test_section', $control->parent->id );
 
 	}
@@ -308,45 +225,121 @@ class WP_Test_Fields_API_Testcase extends WP_UnitTestCase {
 		 */
 		global $wp_fields;
 
-		// Add a control / field / section
-		$form = $wp_fields->add_form( $this->object_type, 'my_test_form' );
+		// Add a field
+		$wp_fields->add_form( $this->object_type, 'my_test_form' );
 
-		$section = $wp_fields->add_section( 'my_test_section', array(
-			'form' => $form,
+		// Form exists
+		$form = $wp_fields->get_form( 'my_test_form' );
+
+		$section = $form->add_section( 'my_test_section' );
+
+		$section->add_control( 'my_test_control', array(
+			'label' => 'My Test Control Field',
+			'type'  => 'text',
 		) );
-
-		$field = $wp_fields->add_field( 'my_test_field', array(
-			'control' => array(
-				'id'      => 'my_test_field_control',
-				'label'   => 'My Test Field',
-				'type'    => 'text',
-				'section' => $section,
-			),
-		) );
-
-		$wp_fields->add_control( 'my_test_control', array(
-			'section' => 'my_test_section',
-			'field'   => $field,
-			'label'   => 'My Test Control Field',
-			'type'    => 'text',
-		) );
-
-		// Control exists
-		$control = $wp_fields->get_control( 'my_test_control' );
-
-		$this->assertNotEmpty( $control );
-
-		$this->assertEquals( 'my_test_control', $control->id );
-		$this->assertEquals( 'my_test_field', $control->get_field()->id );
-		$this->assertEquals( 'my_test_section', $control->parent->id );
 
 		// Remove control
-		$wp_fields->remove_control( 'my_test_control' );
+		$section->remove_control( 'my_test_control' );
 
 		// Control no longer exists
-		$control = $wp_fields->get_control( 'my_test_control' );
+		$control = $section->get_control( 'my_test_control' );
 
 		$this->assertEmpty( $control );
+	}
+
+	/**
+	 * Test WP_Fields_API::get_field()
+	 */
+	public function test_get_field() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Add a field
+		$wp_fields->add_form( $this->object_type, 'my_test_form' );
+
+		// Form exists
+		$form = $wp_fields->get_form( 'my_test_form' );
+
+		$section = $form->add_section( 'my_test_section' );
+
+		$section->add_control( 'my_test_control', array(
+			'field' => array(
+				'id' => 'my_test_control_field',
+			),
+			'label' => 'My Test Control Field',
+			'type'  => 'text',
+		) );
+
+		$wp_fields->add_field( $this->object_type, 'my_test_field' );
+
+		// Control exists
+		$control = $section->get_control( 'my_test_control' );
+
+		// Control Field exists
+		$control_field = $control->get_field();
+
+		$this->assertNotEmpty( $control_field );
+
+		// Field exists
+		$field = $wp_fields->get_field( $this->object_type, 'my_test_field' );
+
+		$this->assertNotEmpty( $field );
+
+		$this->assertEquals( 'my_test_control_field', $control->id );
+		$this->assertEquals( 'my_test_control', $control->parent->id );
+		$this->assertEquals( 'my_test_section', $control->parent->parent->id );
+	}
+
+	/**
+	 * Test WP_Fields_API::remove_field()
+	 */
+	public function test_remove_field() {
+
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		// Add a field
+		$wp_fields->add_form( $this->object_type, 'my_test_form' );
+
+		// Form exists
+		$form = $wp_fields->get_form( 'my_test_form' );
+
+		$section = $form->add_section( 'my_test_section' );
+
+		$section->add_control( 'my_test_control', array(
+			'field' => array(
+				'id' => 'my_test_control_field',
+			),
+			'label' => 'My Test Control Field',
+			'type'  => 'text',
+		) );
+
+		$wp_fields->add_field( $this->object_type, 'my_test_field' );
+
+		// Control exists
+		$control = $section->get_control( 'my_test_control' );
+
+		// Remove Control Field
+		$control->remove_field();
+
+		// Remove Field
+		$wp_fields->remove_field( $this->object_type, 'my_test_field' );
+
+		// Control Field no longer exists
+		$control_field = $control->get_field();
+
+		$this->assertEmpty( $control_field );
+
+		// Field no longer exists
+		$field = $wp_fields->get_field( $this->object_type, 'my_test_field' );
+
+		$this->assertEmpty( $field );
+
 	}
 
 }

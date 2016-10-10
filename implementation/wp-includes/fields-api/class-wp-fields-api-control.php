@@ -66,7 +66,7 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	/**
 	 * Contains field object
 	 *
-	 * @var WP_Fields_API_Field
+	 * @var WP_Fields_API_Field|null
 	 */
 	public $field = null;
 
@@ -123,14 +123,9 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	 */
 	public function __construct( $id, $args = array() ) {
 
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
 		$field = null;
 
-		if ( is_array( $args ) && isset( $args['field'] ) ) {
+		if ( isset( $args['field'] ) ) {
 			if ( ! empty( $args['field'] ) ) {
 				$field = $args['field'];
 			}
@@ -149,48 +144,47 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	/**
 	 * Add field to control
 	 *
+	 * @param string                    $id   Field ID
 	 * @param array|WP_Fields_API_Field $args Field arguments
 	 *
 	 * @return WP_Error|WP_Fields_API_Field
 	 */
-	public function add_field( $args = array() ) {
+	public function add_field( $id, $args = array() ) {
 
 		/**
 		 * @var $wp_fields WP_Fields_API
 		 */
 		global $wp_fields;
 
-		$field = null;
-		$id    = null;
-
 		if ( is_a( $args, 'WP_Fields_API_Field' ) ) {
-			$field = $args;
-			$id    = $field->id;
+			$id = $args->id;
 		} elseif ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
 		}
 
 		if ( empty( $id ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Field ID is required.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-id-required', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		if ( ! empty( $this->field ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Field already exists.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-field-exists', __( 'Field already exists.', 'fields-api' ) );
 		}
 
 		$object_type = $this->get_object_type();
 
 		if ( empty( $object_type ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'Object type is required.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-object-type-required', __( 'Object type is required.', 'fields-api' ) );
 		}
 
-		$field = $wp_fields->add_field( $object_type, $id, $field );
+		$field = $wp_fields->add_field( $object_type, $id, $args );
 
 		if ( $field && ! is_wp_error( $field ) ) {
 			$this->field = $field;
+
+			$field->parent = $this;
 		}
 
 		return $field;
@@ -198,9 +192,24 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	}
 
 	/**
+	 * Get field from control
+	 *
+	 * @return WP_Fields_API_Field|null
+	 */
+	public function get_field() {
+
+		return $this->field;
+
+	}
+
+	/**
 	 * Remove field from control
 	 */
 	public function remove_field() {
+
+		if ( $this->field ) {
+			$this->field->parent = null;
+		}
 
 		$this->field = null;
 
@@ -224,15 +233,6 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 			</p>
 		<?php
 		}
-	}
-
-	/**
-	 * Get associated field
-	 *
-	 * @return null|WP_Fields_API_Field
-	 */
-	public function get_field() {
-		return $this->field;
 	}
 
 	/**

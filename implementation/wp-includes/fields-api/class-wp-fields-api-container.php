@@ -45,8 +45,10 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 	 * Get a child component by id
 	 *
 	 * @access public
+	 *
 	 * @param  string $id ID for child component
-	 * @return object|false
+	 *
+	 * @return WP_Fields_API_Component|false
 	 */
 	public function get_child( $id ) {
 
@@ -100,12 +102,12 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 		if ( empty( $id ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-id-required', __( 'ID is required.', 'fields-api' ) );
 		}
 
 		if ( ! empty( $this->children[ $id ] ) ) {
 			// @todo Need WP_Error code
-			return new WP_Error( '', __( 'ID already exists.', 'fields-api' ) );
+			return new WP_Error( 'fields-api-id-exists', __( 'ID already exists.', 'fields-api' ) );
 		}
 
 		$class = $wp_fields->get_registered_type( $this->child_container_type, 'default' );
@@ -118,7 +120,7 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 		} else {
 			if ( is_object( $args ) ) {
 				// @todo Need WP_Error code
-				return new WP_Error( '', __( 'Unexpected object type.', 'fields-api' ) );
+				return new WP_Error( 'fields-api-unexpected-object', __( 'Unexpected object.', 'fields-api' ) );
 			}
 
 			if ( ! empty( $args['type'] ) ) {
@@ -151,6 +153,8 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 		foreach ( $this->children as $key => $child ) {
 			if ( $id === $child->id || ( is_object( $id ) && $id === $child ) ) {
+				$this->children[ $key ]->parent = null;
+
 				unset( $this->children[ $key ] );
 			}
 		}

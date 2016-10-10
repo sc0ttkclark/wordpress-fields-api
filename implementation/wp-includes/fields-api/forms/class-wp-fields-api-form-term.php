@@ -160,10 +160,10 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 		$registered = true;
 
-		$wp_fields->add_field( 'name' );
-		$wp_fields->add_field( 'slug' );
-		$wp_fields->add_field( 'parent' );
-		$wp_fields->add_field( 'description' );
+		$wp_fields->add_field( $this->object_type, 'name' );
+		$wp_fields->add_field( $this->object_type, 'slug' );
+		$wp_fields->add_field( $this->object_type, 'parent' );
+		$wp_fields->add_field( $this->object_type, 'description' );
 
 	}
 

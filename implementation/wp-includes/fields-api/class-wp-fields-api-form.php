@@ -52,7 +52,7 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		$sections = array();
 
-		if ( is_array( $args ) && isset( $args['sections'] ) ) {
+		if ( isset( $args['sections'] ) ) {
 			if ( ! empty( $args['sections'] ) && is_array( $args['sections'] ) ) {
 				$sections = $args['sections'];
 			}
@@ -62,8 +62,8 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		parent::__construct( $id, $args );
 
-		foreach ( $sections as $section ) {
-			$this->add_section( $section );
+		foreach ( $sections as $section_id => $section ) {
+			$this->add_section( $section_id, $section );
 		}
 
 	}
@@ -71,28 +71,44 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	/**
 	 * Add a section
 	 *
+	 * @param string                      $id   Section ID
 	 * @param array|WP_Fields_API_Section $args Section arguments
 	 *
 	 * @return WP_Error|WP_Fields_API_Section
 	 */
-	public function add_section( $args = array() ) {
-
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 */
-		global $wp_fields;
-
-		$section = null;
-		$id      = null;
+	public function add_section( $id, $args = array() ) {
 
 		if ( is_a( $args, 'WP_Fields_API_Section' ) ) {
-			$section = $args;
-			$id      = $section->id;
+			$id = $args->id;
 		} elseif ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
 		}
 
-		return $this->add_child( $id, $section );
+		return $this->add_child( $id, $args );
+
+	}
+
+	/**
+	 * Get a section
+	 *
+	 * @param string $id Section ID
+	 *
+	 * @return WP_Fields_API_Section|false
+	 */
+	public function get_section( $id ) {
+
+		return $this->get_child( $id );
+
+	}
+
+	/**
+	 * Remove a section
+	 *
+	 * @param string $id Section ID
+	 */
+	public function remove_section( $id ) {
+
+		$this->remove_child( $id );
 
 	}
 

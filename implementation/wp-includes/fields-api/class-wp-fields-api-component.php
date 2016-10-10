@@ -153,20 +153,28 @@ class WP_Fields_API_Component {
 	 * Get object type for a container. We might have to check the parent container
 	 *
 	 * @access public
-	 * @return string
+	 *
+	 * @return string|null
 	 */
 	public function get_object_type() {
-		if ( empty( $parent ) ) {
-			return $this->object_type;
+
+		$object_type = null;
+
+		if ( empty( $this->parent ) ) {
+			$object_type = $this->object_type;
 		} else {
-			return $parent->get_object_type();
+			$object_type = $this->parent->get_object_type();
 		}
+
+		return $object_type;
+
 	}
 
 	/**
 	 * Get internal instance number to use for a new form component
 	 *
 	 * @access public
+	 *
 	 * @return int
 	 */
 	public function get_next_instance_number() {
