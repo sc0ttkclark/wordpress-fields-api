@@ -15,6 +15,9 @@ class WP_Fields_API_Form_User_Edit extends WP_Fields_API_Form {
 	 * {@inheritdoc}
 	 */
 	public function setup() {
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
 		global $wp_fields;
 
 		$control_type_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/control-types/user/';
