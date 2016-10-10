@@ -55,7 +55,7 @@ class WP_Fields_API_Component {
 	 * Parent container
 	 *
 	 * @access public
-	 * @var WP_Fields_API_Component
+	 * @var WP_Fields_API_Container
 	 */
 	public $parent = null;
 
@@ -116,14 +116,12 @@ class WP_Fields_API_Component {
 
 	/**
 	 * Create new component
-	 * 
+	 *
 	 * @access public
 	 * @param string $id              ID for this component
 	 * @param array  $args            Additional container args to set
 	 */
 	public function __construct( $id, $args = array() ) {
-		global $wp_fields;
-
 		$this->id = $id;
 
 		foreach ( $args as $property => $value ) {
@@ -142,8 +140,13 @@ class WP_Fields_API_Component {
 		$this->setup();
 	}
 
+	/**
+	 * Any component specific setup here
+	 */
 	public function setup() {
-		// Nothing todo by default
+
+		// Do nothing by default
+
 	}
 
 

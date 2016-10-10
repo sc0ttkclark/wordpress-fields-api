@@ -100,6 +100,9 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 	 * @return  WP_Fields_API_Container|WP_Error
 	 */
 	public function add_child( $id, $args = array() ) {
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
 		global $wp_fields;
 
 		if ( empty( $id ) ) {
