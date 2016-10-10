@@ -145,11 +145,27 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 		parent::__construct( $id, $args );
 
 		if ( $field ) {
-			$this->add_field( '', $field );
+			$field_id   = $field;
+			$field_args = array();
+
+			if ( ! is_string( $field ) ) {
+				$field_id   = '';
+				$field_args = $field;
+			}
+
+			$this->add_field( $field_id, $field_args );
 		}
 
 		if ( $datasource ) {
-			$this->add_datasource( '', $datasource );
+			$datasource_type = $datasource;
+			$datasource_args = array();
+
+			if ( ! is_string( $datasource ) ) {
+				$datasource_type = '';
+				$datasource_args = $datasource;
+			}
+
+			$this->add_datasource( $datasource_type, $datasource_args );
 		}
 
 	}
@@ -171,6 +187,9 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 
 		if ( is_a( $args, 'WP_Fields_API_Field' ) ) {
 			$id = $args->id;
+		} elseif ( ! is_array( $args ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-unexpected-arguments', __( 'Unexpected arguments.', 'fields-api' ) );
 		} elseif ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
 

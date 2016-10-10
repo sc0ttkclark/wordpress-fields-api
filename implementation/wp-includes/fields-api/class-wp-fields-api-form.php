@@ -80,6 +80,9 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 		if ( is_a( $args, 'WP_Fields_API_Section' ) ) {
 			$id = $args->id;
+		} elseif ( ! is_array( $args ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-unexpected-arguments', __( 'Unexpected arguments.', 'fields-api' ) );
 		} elseif ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
 
