@@ -12,7 +12,12 @@ final class WP_Fields_API {
 	 * Instantiated omponents
 	 *
 	 * @access protected
-	 * @var array
+	 * @var array {
+	 * @type WP_Fields_API_Form[]    form
+	 * @type WP_Fields_API_Section[] section
+	 * @type WP_Fields_API_Control[] control
+	 * @type WP_Fields_API_Field[]   field
+	 * }
 	 */
 	public $components = array(
 		'form'    => array(),
@@ -129,29 +134,32 @@ final class WP_Fields_API {
 	 */
 	public function get_forms( $object_type = null, $object_subtype = null ) {
 
+		/**
+		 * @var $forms WP_Fields_API_Form[]
+		 */
 		$forms = $this->components['form'];
 
 		if ( $object_type !== null || $object_subtype !== null ) {
 			foreach ( $forms as $key => $form ) {
 				if ( $object_type !== null && $form->get_object_type() !== $object_type ) {
-					unset( $forms[$key] );
+					unset( $forms[ $key ] );
 				} elseif ( $object_subtype !== null && $form->object_subtype !== $object_subtype ) {
-					unset( $forms[$key] );
+					unset( $forms[ $key ] );
 				}
 			}
 		}
 
 		return $forms;
-	}
 
+	}
 	/**
 	 * Create a form
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type    Object type.
-	 * @param string $id             Unique form id
-	 * @param array  $args           Additional form arguments
+	 * @param string $object_type Object type.
+	 * @param string $id          Unique form id
+	 * @param array  $args        Additional form arguments
 	 *
 	 * @return WP_Error|WP_Fields_API_Form
 	 */
@@ -161,7 +169,7 @@ final class WP_Fields_API {
 			return new WP_Error( '', __( 'ID is required.', 'fields-api' ) );
 		}
 
-		if ( ! empty( $this->get_form( $id ) ) ) {
+		if ( ! empty( $this->components['form'][ $id ] ) ) {
 			return new WP_Error( '', __( 'Form ID already exists.', 'fields-api' ) );
 		}
 
@@ -190,15 +198,16 @@ final class WP_Fields_API {
 	 * @return WP_Fields_API_Form|false
 	 */
 	public function get_form( $id ) {
+
+		$form = false;
+
 		if ( is_a( $id, 'WP_Fields_API_Form' ) ) {
-			return $id;
+			$form = $id;
+		} elseif ( ! empty( $this->components['form'][ $id ] ) ) {
+			$form = $this->components['form'][ $id ];
 		}
 
-		if ( empty( $this->components['form'][ $id ] ) ) {
-			return false;
-		}
-
-		return $this->components['form'][ $id ];
+		return $form;
 
 	}
 
@@ -223,7 +232,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $object_type Object type
+	 * @param string $object_type    Object type
 	 * @param string $object_subtype Object subtype (for post types and taxonomies).
 	 */
 	public function remove_forms( $object_type = null, $object_subtype = null ) {
@@ -291,8 +300,8 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $id             Unique section id
-	 * @param array  $args           Additional section arguments
+	 * @param string $id   Unique section id
+	 * @param array  $args Additional section arguments
 	 *
 	 * @return WP_Error|WP_Fields_API_Section
 	 */
@@ -302,7 +311,7 @@ final class WP_Fields_API {
 			return new WP_Error( '', __( 'Section ID is required.', 'fields-api' ) );
 		}
 
-		if ( ! empty( $this->get_section( $id ) ) ) {
+		if ( ! empty( $this->components['section'][ $id ] ) ) {
 			return new WP_Error( '', __( 'Section ID already exists.', 'fields-api' ) );
 		}
 
@@ -340,16 +349,21 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $id                      Section ID to get.
+	 * @param string $id Section ID to get.
 	 *
 	 * @return WP_Fields_API_Section|bool
 	 */
 	public function get_section( $id ) {
+
+		$section = false;
+
 		if ( is_a( $id, 'WP_Fields_API_Section' ) ) {
-			return $id;
+			$section = $id;
+		} elseif ( ! empty( $this->components['section'][ $id ] ) ) {
+			$section = $this->components['section'][ $id ];
 		}
 
-		return ( ! empty( $this->components['section'][ $id ] ) ) ? $this->components['section'][ $id ] : false;
+		return $section;
 
 	}
 
@@ -377,8 +391,8 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $id          Fields API Field object, or ID.
-	 * @param array  $args        Field arguments; passed to WP_Fields_API_Field constructor.
+	 * @param string $id   Fields API Field object, or ID.
+	 * @param array  $args Field arguments; passed to WP_Fields_API_Field constructor.
 	 *
 	 * @return WP_Fields_API_Field|WP_Error
 	 */
@@ -415,18 +429,25 @@ final class WP_Fields_API {
 	/**
 	 * Register meta integration for register_meta and REST API
 	 *
-	 * @param string                    $object_type Object type
-	 * @param string                    $id          Field ID
-	 * @param array|WP_Fields_API_Field $field       Field object or options array
+
+	 * @param string                    $object_type    Object type
+	 * @param string                    $id             Field ID
+	 * @param array|WP_Fields_API_Field $field          Field object or options array
 	 * @param string|null               $object_subtype Object subtype
 	 */
 	public function register_meta_integration( $object_type, $id, $field, $object_subtype = null ) {
 
 		// Meta types call register_meta() and register_rest_field() for their fields
-		if ( in_array( $object_type, array( 'post', 'term', 'user', 'comment' ) ) && ! $this->get_field_arg( $field, 'internal' ) ) {
+		if ( in_array( $object_type, array(
+				'post',
+				'term',
+				'user',
+				'comment'
+			) ) && ! $this->get_field_arg( $field, 'internal' )
+		) {
 			// Set callbacks
 			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
-			$auth_callback = $this->get_field_arg( $field, 'meta_auth_callback' );
+			$auth_callback     = $this->get_field_arg( $field, 'meta_auth_callback' );
 
 			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
 
@@ -448,16 +469,22 @@ final class WP_Fields_API {
 	/**
 	 * Get a field from a form
 	 *
-	 * @param string $id          Field ID to get.
+	 * @param string $id Field ID to get.
 	 *
 	 * @return WP_Fields_API_Field|bool Requested section instance.
 	 */
 	public function get_field( $id ) {
+
+		$field = false;
+
 		if ( is_a( $id, 'WP_Fields_API_Field' ) ) {
-			return $id;
+			$field = $id;
+		} elseif ( ! empty( $this->components['field'][ $id ] ) ) {
+			$field = $this->components['field'][ $id ];
 		}
 
-		return ( ! empty( $this->components['field'][ $id ] ) ) ? $this->components['field'][ $id ] : false;
+		return $field;
+
 	}
 
 	/**
@@ -467,8 +494,8 @@ final class WP_Fields_API {
 	 *
 	 * @see    WP_Fields_API_Field
 	 *
-	 * @param string $type         Field type ID.
-	 * @param string $field_class  Name of a custom field type which is a subclass of WP_Fields_API_Field.
+	 * @param string $type        Field type ID.
+	 * @param string $field_class Name of a custom field type which is a subclass of WP_Fields_API_Field.
 	 */
 	public function register_field_type( $type, $field_class = 'WP_Fields_API_Field' ) {
 		$this->registered_types['field'][ $type ] = $field_class;
@@ -552,11 +579,17 @@ final class WP_Fields_API {
 	 * @return WP_Fields_API_Control|bool
 	 */
 	public function get_control( $id ) {
+
+		$control = false;
+
 		if ( is_a( $id, 'WP_Fields_API_Control' ) ) {
-			return $id;
+			$control = $id;
+		} elseif ( ! empty( $this->components['control'][ $id ] ) ) {
+			$control = $this->components['control'][ $id ];
 		}
 
-		return ( ! empty( $this->components['control'][ $id ] ) ) ? $this->components['control'][ $id ] : false;
+		return $control;
+
 	}
 
 	/**
@@ -564,7 +597,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $control     Control ID or object to remove
+	 * @param string $control Control ID or object to remove
 	 */
 	public function remove_control( $control ) {
 		if ( ! is_a( $control, 'WP_Fields_API_Control' ) ) {
@@ -583,7 +616,7 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $field     Field ID or object to remove
+	 * @param string $field Field ID or object to remove
 	 */
 	public function remove_field( $field ) {
 		if ( ! is_a( $field, 'WP_Fields_API_Field' ) ) {
@@ -681,7 +714,7 @@ final class WP_Fields_API {
 	 * Get argument from field array or object
 	 *
 	 * @param array|object $field
-	 * @param string $arg
+	 * @param string       $arg
 	 *
 	 * @return null|mixed
 	 */
