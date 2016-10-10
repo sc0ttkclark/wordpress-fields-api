@@ -160,6 +160,8 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 			$id = $args->id;
 		} elseif ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
+
+			unset( $args['id'] );
 		}
 
 		if ( empty( $id ) ) {

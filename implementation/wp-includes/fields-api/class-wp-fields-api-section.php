@@ -100,6 +100,8 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 			$id = $args->id;
 		} elseif ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
+
+			unset( $args['id'] );
 		}
 
 		return $this->add_child( $id, $args );
