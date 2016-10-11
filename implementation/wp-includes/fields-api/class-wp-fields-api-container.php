@@ -12,15 +12,6 @@
 class WP_Fields_API_Container extends WP_Fields_API_Component {
 
 	/**
-	 * Type of container to use by default if no registered
-	 * type is specified
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $type = 'default';
-
-	/**
 	 * Hold children form components
 	 *
 	 * @access public
@@ -40,6 +31,38 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 	 * @var string
 	 */
 	public $child_container_type;
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __construct( $id, $args = array() ) {
+
+		// Reserved properties
+		if ( isset( $args['container_type'] ) ) {
+			unset( $args['container_type'] );
+		}
+
+		if ( isset( $args['child_container_type'] ) ) {
+			unset( $args['child_container_type'] );
+		}
+
+		if ( isset( $args['children'] ) ) {
+			unset( $args['children'] );
+		}
+
+		parent::__construct( $id, $args );
+
+		if ( $this->container_type ) {
+			if ( $this->id ) {
+				// @todo Hook docs
+				do_action( 'fields_setup_' . $this->container_type . '_' . $this->id, $this );
+			}
+
+			// @todo Hook docs
+			do_action( 'fields_setup_' . $this->container_type, $this );
+		}
+
+	}
 
 	/**
 	 * Get a child component by id
@@ -214,4 +237,5 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 		return $json;
 
 	}
+
 }
