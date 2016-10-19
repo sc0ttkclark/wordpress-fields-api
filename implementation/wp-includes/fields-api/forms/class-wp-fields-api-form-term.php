@@ -16,10 +16,10 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register_fields( $wp_fields ) {
+	public function setup() {
 
 		// Make sure primary term fields are registered for all term forms
-		$this->register_term_fields( $wp_fields );
+		$this->register_term_fields();
 
 		////////////////
 		// Core: Term //
@@ -108,7 +108,7 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 		);
 
 		// Add section
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		/////////////////
 		// Back-compat //
@@ -116,10 +116,6 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 		add_action( "fields_after_render_section_controls_term_{$section_id}", array( $this, '_compat_section_table_hooks' ) );
 		add_filter( "fields_control_datasource_get_args_term_{$control_id_parent}", array( $this, '_compat_control_parent_dropdown_hook' ), 10, 3 );
-
-		// Add example fields (maybe)
-		parent::register_fields( $wp_fields );
-
 	}
 
 	/**
@@ -153,7 +149,8 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 	 *
 	 * @param WP_Fields_API $wp_fields
 	 */
-	public function register_term_fields( $wp_fields ) {
+	public function register_term_fields() {
+		global $wp_fields;
 
 		static $registered;
 

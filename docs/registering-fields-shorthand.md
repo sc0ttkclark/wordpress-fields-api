@@ -25,13 +25,8 @@ Sections are groupings of controls that give context to what they are for.
 Sections and controls can be registered together through the `fields_register` action, using code like this:
 
 ```php
-// Object type and Form ID
-$object_type = 'term';
+// Form ID
 $form_id = 'term-edit';
-	
-// Set this to a specific post type, taxonomy,
-// or comment type you want to register for
-$object_subtype = 'xyz';
 
 // Section ID and options
 $section_id = 'my-section'; // @todo Fill in section ID
@@ -49,5 +44,5 @@ $section_args = array(
 );
 
 // Register section
-$wp_fields->add_section( $object_type, $section_id, $object_subtype, $section_args );
+$wp_fields->add_section( $section_id, $section_args );
 ```

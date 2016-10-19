@@ -64,7 +64,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 		$form_id = $object_type . '-edit';
 
 		// Get form
-		$form = $wp_fields->get_form( $object_type, $form_id, $object_subtype );
+		$form = $wp_fields->get_form( $form_id );
 
 		if ( ! $form ) {
 			return;
@@ -74,7 +74,10 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 		$form->object_subtype = $object_subtype;
 
 		// Get registered sections
-		$sections = $form->get_sections();
+		/**
+		 * @var $sections WP_Fields_API_Section[]
+		 */
+		$sections = $form->get_children();
 
 		foreach ( $sections as $section ) {
 			// Skip non meta boxes
@@ -99,6 +102,7 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 			// Set callback arguments
 			$callback_args = array(
 				'fields_api' => true,
+				'form'       => $form,
 				'section'    => $section,
 			);
 
@@ -171,13 +175,15 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 		 */
 		global $wp_fields;
 
-		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) || empty( $box['args']['section'] ) ) {
+		if ( empty( $box['args'] ) || empty( $box['args']['fields_api'] ) || empty( $box['args']['form'] ) || empty( $box['args']['section'] ) ) {
 			return;
 		}
 
 		/**
-		 * @var WP_Fields_API_Section $section
+		 * @var $form    WP_Fields_API_Form
+		 * @var $section WP_Fields_API_Section
 		 */
+		$form    = $box['args']['form'];
 		$section = $box['args']['section'];
 
 		$item_id     = 0;
@@ -199,12 +205,6 @@ class WP_Fields_API_Meta_Box_Section extends WP_Fields_API_Section {
 					$object_subtype = 'comment';
 				}
 			}
-		}
-
-		$form = $section->get_form();
-
-		if ( ! $form ) {
-			return;
 		}
 
 		$form->item        = $object;

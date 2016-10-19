@@ -7,11 +7,12 @@
  */
 
 /** WordPress Administration Bootstrap */
+//require_once( dirname( __FILE__ ) . '/admin.php' ); // @todo Remove WP Fields API modification
+
 // @todo Remove WP Fields API modification
 if ( !defined('ABSPATH') )
 	die('-1');
-
-global $wp_rewrite, $is_nginx;
+global $wp_rewrite, $is_nginx; // @todo Remove WP Fields API modification
 
 if ( ! current_user_can( 'manage_options' ) )
 	wp_die( __( 'You do not have sufficient permissions to manage options for this site.' ) );
@@ -169,6 +170,10 @@ if ( ! empty( $_GET['settings-updated'] ) ) : ?>
 	<h1><?php echo esc_html( $title ); ?></h1>
 
 	<form name="form" action="options-permalink.php" method="post">
+		<?php wp_nonce_field('update-permalink') ?>
+
+		<p><?php _e( 'WordPress offers you the ability to create a custom URL structure for your permalinks and archives. Custom URL structures can improve the aesthetics, usability, and forward-compatibility of your links. A <a href="https://codex.wordpress.org/Using_Permalinks">number of tags are available</a>, and here are some examples to get you started.' ); ?></p>
+
 		<?php
 		/**
 		 * WP Fields API implementation >>>
@@ -180,7 +185,7 @@ if ( ! empty( $_GET['settings-updated'] ) ) : ?>
 		global $wp_fields;
 
 		// Get form
-		$form = $wp_fields->get_form( 'settings', 'settings-permalink' );
+		$form = $wp_fields->get_form( 'settings-permalink' );
 
 		// Render form controls
 		$form->maybe_render();

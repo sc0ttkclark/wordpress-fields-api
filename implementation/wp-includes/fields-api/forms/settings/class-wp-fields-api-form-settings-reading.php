@@ -14,7 +14,7 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register_fields( $wp_fields ) {
+	public function setup() {
 
 		////////////////////
 		// Core: Optional //
@@ -103,7 +103,7 @@ class WP_Fields_API_Form_Settings_Reading extends WP_Fields_API_Form_Settings {
 			'internal'    => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 	}
 

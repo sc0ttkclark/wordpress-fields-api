@@ -5,12 +5,7 @@
  * @package WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Datasource extends WP_Fields_API_Container {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $container_type = 'datasource';
+class WP_Fields_API_Datasource {
 
 	/**
 	 * Datasource type
@@ -18,10 +13,10 @@ class WP_Fields_API_Datasource extends WP_Fields_API_Container {
 	 * @access public
 	 * @var string
 	 */
-	public $type = '';
+	public $type = 'default';
 
 	/**
-	 * Arguments to send to the datasource or callback
+	 * Arguments to send to the datasource
 	 *
 	 * @access public
 	 * @var array
@@ -29,7 +24,7 @@ class WP_Fields_API_Datasource extends WP_Fields_API_Container {
 	public $get_args = array();
 
 	/**
-	 * Display in hierarchical context (if datasource supports it)
+	 * Display in hierarchical context, if the datasource supports it
 	 *
 	 * @access public
 	 * @var bool
@@ -49,33 +44,25 @@ class WP_Fields_API_Datasource extends WP_Fields_API_Container {
 		'default_title' => '',
 	);
 
-
 	/**
-	 * Choices callback
+	 * Create new component
 	 *
 	 * @access public
 	 *
-	 * @see WP_Fields_API_Datasource::get_data()
-	 *
-	 * @var callable Callback is called with two arguments including the Datasource $args
-	 *               and the instance of WP_Fields_API_Datasource. It returns an array of key=>value data to use.
+	 * @param string $type Type of datasource
+	 * @param array  $args Additional datasource args to set
 	 */
-	public $data_callback = null;
+	public function __construct( $type, $args = array() ) {
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function init( $object_type, $id, $args = array() ) {
+		$this->type = $type;
 
-		// If source has a type, don't override it
-		if ( $object_type && ! $this->type ) {
-			$this->type = $object_type;
+		foreach ( $args as $property => $value ) {
+			if ( isset( $this->{$property} ) && is_array( $this->{$property} ) ) {
+				$this->{$property} = array_merge( $this->{$property}, $value );
+			} else {
+				$this->{$property} = $value;
+			}
 		}
-
-		// We aren't using object types here
-		$object_type = null;
-
-		parent::init( $object_type, $id, $args );
 
 	}
 
@@ -92,12 +79,8 @@ class WP_Fields_API_Datasource extends WP_Fields_API_Container {
 		// Allow overriding of $this->get_args values on-the-fly
 		$args = array_merge( $this->get_args, $args );
 
-		// Handle callback
-		if ( $this->data_callback && is_callable( $this->data_callback ) ) {
-			$data = call_user_func( $this->data_callback, $args, $control, $this );
-		} else {
-			$data = $this->setup_data( $args, $control );
-		}
+		// Get data
+		$data = $this->setup_data( $args, $control );
 
 		// @todo Needs hook doc
 		$data = apply_filters( 'fields_api_datasource_data', $data, $this->type, $args, $control, $this );

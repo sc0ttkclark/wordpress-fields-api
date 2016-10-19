@@ -14,7 +14,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register_fields( $wp_fields ) {
+	public function setup() {
 
 		////////////////////////////
 		// Core: Writing Settings //
@@ -70,7 +70,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 		 * unset( $choices['standard'] );
 		 */
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		/////////////////////////
 		// Core: Post by Email //
@@ -139,7 +139,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 			'internal'         => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 		///////////////////////////
 		// Core: Update Services //
@@ -166,7 +166,7 @@ class WP_Fields_API_Form_Settings_Writing extends WP_Fields_API_Form_Settings {
 			'internal'      => true,
 		);
 
-		$this->add_section( $section_id, $section_args );
+		$this->add_child( $section_id, $section_args );
 
 	}
 
