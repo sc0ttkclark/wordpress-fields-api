@@ -11,7 +11,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Component {
 
 	/**
 	 * Field type
-	 * 
+	 *
 	 * @var string
 	 */
 	public $type = 'text';
@@ -45,70 +45,15 @@ class WP_Fields_API_Field extends WP_Fields_API_Component {
 	public $meta_auth_callback;
 
 	/**
-	 * Whether to register field with register_rest_field.
+	 * Whether to show field in REST API.
 	 *
 	 * @access public
 	 *
-	 * @see register_rest_field
+	 * @see register_meta
 	 *
 	 * @var bool
 	 */
 	public $show_in_rest = false;
-
-	/**
-	 * register_rest_field field type.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var bool
-	 */
-	public $rest_field_type = 'string';
-
-	/**
-	 * register_rest_field field description.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var bool
-	 */
-	public $rest_field_description = '';
-
-	/**
-	 * register_rest_field Get Callback.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var callable
-	 */
-	public $rest_get_callback;
-
-	/**
-	 * register_rest_field Update Callback.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var callable
-	 */
-	public $rest_update_callback;
-
-	/**
-	 * register_rest_field Schema Callback.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var callable
-	 */
-	public $rest_schema_callback;
 
 	/**
 	 * Fields are not renderable
@@ -141,6 +86,15 @@ class WP_Fields_API_Field extends WP_Fields_API_Component {
 	 *               WP_Fields_API_Field.
 	 */
 	public $update_value_callback;
+
+	/**
+	 * Whether or not a field is
+	 *
+	 * @access public
+	 *
+	 * @var bool
+	 */
+	public $internal = false;
 
 	/**
 	 * Check user capabilities and theme supports, and then save
