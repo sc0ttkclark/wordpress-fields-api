@@ -568,25 +568,16 @@ final class WP_Fields_API {
 				'term',
 				'user',
 				'comment'
-			) ) && ! $this->get_field_arg( $field, 'internal' )
+			) ) && ! $field->internal
 		) {
 			// Set callbacks
-			$sanitize_callback = array( $this, 'register_meta_sanitize_callback' );
-			$auth_callback     = $this->get_field_arg( $field, 'meta_auth_callback' );
+			$args = array(
+				'sanitize_callback' => array( $this, 'register_meta_sanitize_callback' ),
+				'auth_callback'     => $field->meta_auth_callback,
+				'show_in_rest'      => $field->show_in_rest,
+			);
 
-			register_meta( $object_type, $id, $sanitize_callback, $auth_callback );
-
-			if ( function_exists( 'register_rest_field' ) && $this->get_field_arg( $field, 'show_in_rest' ) ) {
-				$rest_field_args = array(
-					'get_callback'    => $this->get_field_arg( $field, 'rest_get_callback' ),
-					'update_callback' => $this->get_field_arg( $field, 'rest_update_callback' ),
-					'schema'          => $this->get_field_arg( $field, 'rest_schema_callback' ),
-					'type'            => $this->get_field_arg( $field, 'rest_field_type' ),
-					'description'     => $this->get_field_arg( $field, 'rest_field_description' ),
-				);
-
-				register_rest_field( $object_type, $id, $rest_field_args );
-			}
+			register_meta( $object_type, $id, $args );
 		}
 
 	}
