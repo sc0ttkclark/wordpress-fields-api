@@ -47,9 +47,8 @@
 
 ## Overall tasks
 
-* There's still work to be done to [Restructure classes and simplify code](https://github.com/sc0ttkclark/wordpress-fields-api/pull/79) with major assistance by @tlovett1.
 * Not all control types are working including Media and Color. We need to put additional effort into the JS side of things.
-* Create merge proposal for WordPress 4.7 and path towards implementing Fields API into various admin areas.
+* Create merge proposal for WordPress 4.8 and path towards implementing Fields API into various admin areas.
 
 ---
 
@@ -225,4 +224,3 @@ Looking for contributors
 #### Remaining tasks
 
 * We currently have limited direct integration with the REST API, but we'd like to work with the REST API team towards [implementing REST API options](https://github.com/sc0ttkclark/wordpress-fields-api/issues/39) and building in addition configurations the REST API can consume for it's endpoint(s).
-* `register_meta()` integration for `show_in_rest`
