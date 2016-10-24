@@ -7,6 +7,7 @@
 - [Object Types](#object-types)
 - [Object Subtypes](#object-subtypes)
   - [Default Object Subtypes and Handling](#default-object-subtypes-and-handling)
+- [Core Complications](#core-complications)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -51,3 +52,8 @@ The default Object subtype is based on the object type, it adds an underscore to
 When no Object subtype is provided (or it matches the default Object subtype) then those forms/sections/controls/fields apply to all Object subtypes for an object type and will be inherited.
 
 An example of that can be seen in the `WP_Fields_API_Form_Term` implementation class, which adds the term `name`, `slug`, `parent`, and `description` fields to *all* taxonomies. Visibility ultimately rests with the section or control capabilities callback, which can further limit access to a specific section or control and prevent them from being viewed/used.
+
+## Core Complications
+
+* `register_meta` does not yet support object sub types by default
+* Sub types are difficult to implement for some meta callback usage in which sub type information is not available
