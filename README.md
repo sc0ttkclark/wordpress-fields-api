@@ -22,6 +22,7 @@ Please note: This [Feature Project](https://make.wordpress.org/core/features/) i
 ## Documentation
 
 * [Terminology](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/terminology.md)
+* [API Reference](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/api-reference.md)
 * [Object Types and Object Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md)
 * [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/registering-fields.md)
 * [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/creating-an-implementation.md)
