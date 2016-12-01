@@ -40,14 +40,17 @@ function _wp_fields_api_include() {
 		return;
 	}
 
-	if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) ) {
-		define( 'WP_FIELDS_API_EXAMPLES', false );
-	}
-
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
 	// Init Fields API class
 	$GLOBALS['wp_fields'] = WP_Fields_API::get_instance();
+
+	if ( defined( 'WP_FIELDS_API_EXAMPLES' ) && WP_FIELDS_API_EXAMPLES ) {
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/option/_starter.php' );
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/term/_starter.php' );
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/user/_starter.php' );
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/user/address.php' );
+	}
 
 }
 
