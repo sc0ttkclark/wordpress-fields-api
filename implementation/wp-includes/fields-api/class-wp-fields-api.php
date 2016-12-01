@@ -288,7 +288,8 @@ final class WP_Fields_API {
 	/**
 	 * Get a field from a form
 	 *
-	 * @param string|WP_Fields_API_Field $id Field ID to get.
+	 * @param string                     $object_type Object type
+	 * @param string|WP_Fields_API_Field $id          Field ID to get.
 	 *
 	 * @return WP_Fields_API_Field|bool Requested section instance.
 	 */
@@ -311,8 +312,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $id   Fields API Field object, or ID.
-	 * @param array  $args Field arguments; passed to WP_Fields_API_Field constructor.
+	 * @param string $object_type Object type
+	 * @param string $id          Fields API Field object, or ID.
+	 * @param array  $args        Field arguments; passed to WP_Fields_API_Field constructor.
 	 *
 	 * @return WP_Fields_API_Field|WP_Error
 	 */
@@ -368,7 +370,8 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string|WP_Fields_API_Field $field Field ID or object to remove
+	 * @param string                     $object_type Object type
+	 * @param string|WP_Fields_API_Field $field       Field ID or object to remove
 	 */
 	public function remove_field( $object_type, $field ) {
 
@@ -411,6 +414,9 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
+	 * @param string $component_type Component type
+	 * @param string $type           Registered type
+	 *
 	 * @return string|null
 	 */
 	public function get_registered_type( $component_type, $type ) {
@@ -449,7 +455,7 @@ final class WP_Fields_API {
 	 * @access public
 	 *
 	 * @param string $type          Type slug
-	 * @param string $control_class Name of a custom esction which is a subclass of WP_Fields_API_Section.
+	 * @param string $section_class Name of a custom section which is a subclass of WP_Fields_API_Section.
 	 */
 	public function register_section_type( $type, $section_class = 'WP_Fields_API_Section' ) {
 		$this->registered_types['section'][ $type ] = $section_class;
@@ -486,8 +492,8 @@ final class WP_Fields_API {
 	 *
 	 * @access public
 	 *
-	 * @param string $type          Type slug
-	 * @param string $control_class Name of a custom datasource which is a subclass of WP_Fields_API_Datasource.
+	 * @param string $type             Type slug
+	 * @param string $datasource_class Name of a custom datasource which is a subclass of WP_Fields_API_Datasource.
 	 */
 	public function register_datasource_type( $type, $datasource_class = 'WP_Fields_API_Datasource' ) {
 		$this->registered_types['datasource'][ $type ] = $datasource_class;
