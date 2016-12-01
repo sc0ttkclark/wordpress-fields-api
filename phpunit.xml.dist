@@ -9,7 +9,6 @@
     <testsuites>
         <testsuite>
             <directory prefix="test-" suffix=".php">tests</directory>
-            <!--<directory suffix=".php">tests/core</directory>-->
         </testsuite>
     </testsuites>
 
@@ -22,7 +21,7 @@
 			<file>./wordpress-fields-api.php</file>
 		</whitelist>
 	</filter>
-	
+
 	<logging>
 		<log type="coverage-clover" target="clover.xml"/>
 	</logging>
