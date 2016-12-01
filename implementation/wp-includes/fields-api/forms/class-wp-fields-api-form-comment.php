@@ -21,7 +21,7 @@ class WP_Fields_API_Form_Comment extends WP_Fields_API_Form {
 	 */
 	public function setup() {
 
-		add_action( 'edit_comment', array( $this, 'wp_edit_comment' ), 10, 2 );
+		add_action( 'edit_comment', array( $this, 'wp_edit_comment' ), 10 );
 
 	}
 
@@ -30,7 +30,7 @@ class WP_Fields_API_Form_Comment extends WP_Fields_API_Form {
 	 *
 	 * @param int $comment_ID
 	 */
-	public function wp_edit_comment( $comment_ID, $post ) {
+	public function wp_edit_comment( $comment_ID ) {
 
 		remove_action( 'edit_comment', array( $this, 'wp_edit_comment' ) );
 
