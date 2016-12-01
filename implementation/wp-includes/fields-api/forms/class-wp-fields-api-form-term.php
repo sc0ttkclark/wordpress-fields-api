@@ -146,8 +146,6 @@ class WP_Fields_API_Form_Term extends WP_Fields_API_Form {
 
 	/**
 	 * Register term fields once for all term forms
-	 *
-	 * @param WP_Fields_API $wp_fields
 	 */
 	public function register_term_fields() {
 		global $wp_fields;
