@@ -201,19 +201,16 @@ class WP_Fields_API_Container extends WP_Fields_API_Component {
 	public function json() {
 
 		$json = wp_array_slice_assoc( (array) $this, array( 'container_type', 'id', 'type', 'priority' ) );
-		$json['label'] = html_entity_decode( $this->label, ENT_QUOTES, get_bloginfo( 'charset' ) );
-		$json['description'] = wp_kses_post( $this->description );
-		$json['content'] = $this->get_content();
 		$json['instanceNumber'] = $this->instance_number;
 
 		$json['objectType'] = $this->get_object_type();
-		$json['objectSubtype'] = $this->get_object_subtype();
+		$json['objectSubtype'] = $this->object_subtype;
 
 		// Get parent
 		$json['parent'] = '';
 		$json['parentType'] = '';
 
-		$parent = $this->get_parent();
+		$parent = $this->parent;
 
 		if ( $parent ) {
 			$json['parent'] = $parent->id;
