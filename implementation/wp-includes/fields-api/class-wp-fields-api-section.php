@@ -218,9 +218,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	}
 
 	/**
-	 * Get the container label.
-	 *
-	 * @return string Label of the container.
+	 * Render the container label.
 	 */
 	public function render_label() {
 		if ( $this->label && $this->display_label ) {
@@ -230,8 +228,6 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 
 	/**
 	 * Render hidden controls for section
-	 *
-	 * @param WP_Fields_API_Control[] $controls Control objects
 	 */
 	protected function render_hidden_controls() {
 
@@ -273,9 +269,7 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 	}
 
 	/**
-	 * Get the container description.
-	 *
-	 * @return string Description of the container.
+	 * Remder the container description.
 	 */
 	public function render_description() {
 		if ( is_callable( $this->description_callback ) ) {
@@ -289,6 +283,24 @@ class WP_Fields_API_Section extends WP_Fields_API_Container {
 			</p>
 		<?php
 		}
+	}
+
+	/**
+	 * Gather the parameters passed to client JavaScript via JSON.
+	 *
+	 * @return array The array to be exported to the client as JSON.
+	 */
+	public function json() {
+
+		$json = array();
+
+		$json['label'] = html_entity_decode( $this->label, ENT_QUOTES, get_bloginfo( 'charset' ) );
+		$json['description'] = wp_kses_post( $this->description );
+
+		$json = array_merge( $json, parent::json() );
+
+		return $json;
+
 	}
 
 }
