@@ -330,18 +330,12 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 	 */
 	public function remove_datasource() {
 
-		if ( $this->datasource ) {
-			$this->datasource->parent = null;
-		}
-
 		$this->datasource = null;
 
 	}
 
 	/**
-	 * Get the container description.
-	 *
-	 * @return string Description of the container.
+	 * Render the container description.
 	 */
 	public function render_description() {
 		if ( is_callable( $this->description_callback ) ) {
@@ -409,12 +403,8 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 
 		$value = null;
 
-		if ( null !== $this->value_override ) {
-			$value = $this->value_override;
-		} else {
-			if ( $this->field ) {
-				$value = $this->field->value( $this->get_item_id() );
-			}
+		if ( $this->field ) {
+			$value = $this->field->value( $this->get_item_id() );
 		}
 
 		return $value;
@@ -654,4 +644,5 @@ class WP_Fields_API_Control extends WP_Fields_API_Component {
 		<?php
 
 	}
+
 }
