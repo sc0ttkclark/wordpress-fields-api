@@ -56,7 +56,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Component {
 	public $show_in_rest = false;
 
 	/**
-	 * Fields are not renderable
+	 * Whether to render this field in forms.
 	 *
 	 * @access public
 	 * @var boolean
@@ -171,7 +171,6 @@ class WP_Fields_API_Field extends WP_Fields_API_Component {
 	 * Save the value of the field, using the related API.
 	 *
 	 * @param mixed $value The value to update.
-	 * @param int $item_id Item ID.
 	 *
 	 * @return mixed The result of saving the value.
 	 */
@@ -310,8 +309,6 @@ class WP_Fields_API_Field extends WP_Fields_API_Component {
 
 	/**
 	 * Fetch the value of the field.
-	 *
-	 * @param int $item_id (optional) The Item ID.
 	 *
 	 * @return mixed The value.
 	 */
