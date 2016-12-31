@@ -25,11 +25,11 @@
 
 Forms in the Fields API are more commonly linked to what appear in the WordPress Admin area as WP_Screen. A few come with the Fields API itself, but you can register new forms to your heart's content and output them wherever you'd like.
 
-See [Custom Component Classes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/custom-component-classes.md) for examples of creating forms with custom saving and rendering.
+See [Custom Component Classes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/custom-component-classes.md) for examples of creating forms with custom saving and rendering.
 
 ### Registering forms
 
-When a form needs no custom saving or rendering mechanism (see [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)), it can be registered through the `fields_register` action, using code like this:
+When a form needs no custom saving or rendering mechanism (see [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/creating-an-implementation.md)), it can be registered through the `fields_register` action, using code like this:
 
 ```php
 // Object type and Form ID
@@ -41,7 +41,7 @@ $wp_fields->add_form( $object_type, $form_id, );
 ```
 
 **Please note:** Registering forms are not normally required for working within the existing WordPress Admin area unless you need custom admin forms. They can also be used on the front-end as well.
- 
+
 ## Sections
 
 Sections are groupings of controls that give context to what they are for.
@@ -213,10 +213,10 @@ function example_my_xyz_control_type( $wp_fields ) {
 
 	// Include control type file
 	require_once( $control_type_path . 'class-wp-fields-api-my-xyz-type-control.php' );
-	
+
 	// Register control type
 	$wp_fields->register_control_type( 'my-xyz-type', 'WP_Fields_API_My_XYZ_Type_Control' );
-	
+
 }
 add_action( 'fields_register_controls', 'example_my_xyz_control_type' );
 ```
