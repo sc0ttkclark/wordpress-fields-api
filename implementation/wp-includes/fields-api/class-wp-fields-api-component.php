@@ -171,6 +171,27 @@ class WP_Fields_API_Component {
 	}
 
 	/**
+	 * Get object type for a container. We might have to check the parent container
+	 *
+	 * @access public
+	 *
+	 * @return string|null
+	 */
+	public function get_object_subtype() {
+
+		$object_subtype = null;
+
+		if ( empty( $this->parent ) ) {
+			$object_subtype = $this->object_subtype;
+		} else {
+			$object_subtype = $this->parent->get_object_subtype();
+		}
+
+		return $object_subtype;
+
+	}
+
+	/**
 	 * Get internal instance number to use for a new form component
 	 *
 	 * @access public
