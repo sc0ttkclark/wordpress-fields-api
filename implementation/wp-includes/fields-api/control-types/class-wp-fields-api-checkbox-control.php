@@ -74,7 +74,7 @@ class WP_Fields_API_Checkbox_Control extends WP_Fields_API_Control {
 		}
 		?>
 		<label>
-			<input type="checkbox" value="<?php echo esc_attr( $checkbox_value ); ?>" <?php $this->link(); checked( $checked ); ?> />
+			<input type="checkbox" value="<?php echo esc_attr( $checkbox_value ); ?>" <?php $this->link(); checked( $checked ); ?> <?php $this->input_attrs(); ?> />
 			<?php $this->render_checkbox_label(); ?>
 		</label>
 		<?php
