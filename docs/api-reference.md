@@ -3,10 +3,10 @@ The Fields API is encapsulated by the `$wp_fields` global. That global exposes a
 ## API methods
 
 * `$wp_fields->add_form( $object_type, $id, $args = array() )`
-  * `$object_type` (string) - Object Types are types of objects in WordPress, but can also represent custom objects from plugins or themes. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
+  * `$object_type` (string) - Object Types are types of objects in WordPress, but can also represent custom objects from plugins or themes. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md) for more details.
   * `$id` (string) - Unique form ID
-  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows  
-    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
+  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows
+    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md) for more details.
     * `capability` (string) - WordPress capability required to interact with component. See [Roles and Capabilities](https://codex.wordpress.org/Roles_and_Capabilities).
     * `priority` (integer) - Allows you to sort the component. Higher priority components are shown first.
     * `type` (string) - Allows you to use a registered component type instead of the default. See register type API methods below.
@@ -15,8 +15,8 @@ The Fields API is encapsulated by the `$wp_fields` global. That global exposes a
 
 * `$wp_fields->add_field( $id, $args = array() )`
   * `$id` (string) - Unique field ID
-  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows  
-    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
+  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows
+    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md) for more details.
     * `capability` (string) - WordPress capability required to interact with component. See [Roles and Capabilities](https://codex.wordpress.org/Roles_and_Capabilities).
     * `priority` (integer) - Allows you to sort the component. Higher priority components are shown first.
     * `type` (string) - Allows you to use a registered component type instead of the default. See register type API methods below.
@@ -57,7 +57,7 @@ The Fields API is encapsulated by the `$wp_fields` global. That global exposes a
 * `$form->add_section( $id, $args = array() )`
   * `$id` (string) - Unique section ID
   * `$args` (array|WP_Fields_API_Section) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows
-    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
+    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md) for more details.
     * `capability` (string) - WordPress capability required to interact with component. See [Roles and Capabilities](https://codex.wordpress.org/Roles_and_Capabilities).
     * `priority` (integer) - Allows you to sort the component. Higher priority components are shown first.
     * `type` (string) - Allows you to use a registered component type instead of the default. See register type API methods below.
@@ -80,7 +80,7 @@ The Fields API is encapsulated by the `$wp_fields` global. That global exposes a
 * `$section->add_control( $id, $args = array() )`
   * `$id` (string) - Unique control ID
   * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows
-    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
+    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md) for more details.
     * `capability` (string) - WordPress capability required to interact with component. See [Roles and Capabilities](https://codex.wordpress.org/Roles_and_Capabilities).
     * `priority` (integer) - Allows you to sort the component. Higher priority components are shown first.
     * `type` (string) - Allows you to use a registered component type instead of the default. See register type API methods below.
@@ -103,8 +103,8 @@ The Fields API is encapsulated by the `$wp_fields` global. That global exposes a
 
 * `$control->add_field( $id, $args = array() )`
   * `$id` (string) - Unique field ID
-  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows  
-    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
+  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows
+    * `object_subtype` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md) for more details.
     * `capability` (string) - WordPress capability required to interact with component. See [Roles and Capabilities](https://codex.wordpress.org/Roles_and_Capabilities).
     * `priority` (integer) - Allows you to sort the component. Higher priority components are shown first.
     * `type` (string) - Allows you to use a registered component type instead of the default. See register type API methods below.
@@ -112,8 +112,8 @@ The Fields API is encapsulated by the `$wp_fields` global. That global exposes a
 
 * `$control->add_datasource( $type, $args = array() )`
   * `$type` (string) - Datasource type
-  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows  
-    * `get_args` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
+  * `$args` (array) - Lets you optionally pass arbitrary key value pairs to the component. Supported key/value pairs are as follows
+    * `get_args` (string) - Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-subtypes.md) for more details.
     * `hierarchical` (string) - WordPress capability required to interact with component. See [Roles and Capabilities](https://codex.wordpress.org/Roles_and_Capabilities).
     * `hierarchical_fields` (array) - Allows you to sort the component. Higher priority components are shown first.
   * Returns `$datasource` WP_Fields_API_Datasource
