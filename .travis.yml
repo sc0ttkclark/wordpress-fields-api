@@ -15,6 +15,9 @@ matrix:
 env:
     - WP_VERSION=latest WP_MULTISITE=0
 
+services:
+  - mysql
+
 ## Cache composer bits
 cache:
   directories:
