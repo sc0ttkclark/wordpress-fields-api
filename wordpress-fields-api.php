@@ -33,10 +33,19 @@ define( 'WP_FIELDS_API_URL', plugin_dir_url( __FILE__ ) );
 /**
  * On `plugins_loaded`, create an instance of the Fields API manager class.
  */
-function _wp_fields_api_include( $api_version = "0.1.0" ) {
+function _wp_fields_api_include( $api_version = '0.1.0' ) {
 
 	// Bail if we're already in WP core (depending on the name used)
 	if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
+		$included_fields_version = WP_FIELDS_API_PLUGIN_VERSION;
+		$file = plugin_dir_path( __FILE__ );
+		
+		// echo "A plugin is trying to include an older version "
+		// 	. "($api_version <= $included_fields_version) "
+		// 	. "of the WP Fields API. This might not cause problems, but "
+		// 	. "you should contact the plugin ($file) author and ask "
+		// 	. "them to update their plugin";
+
 		return;
 	}
 
