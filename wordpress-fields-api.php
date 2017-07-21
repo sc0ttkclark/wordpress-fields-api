@@ -59,10 +59,33 @@ class WP_Fields_API_v_0_1_0 {
 		add_action( 'plugins_loaded', array( $this, 'attempt_include' ), $this->priority );
 	}
 
-	public function attempt_include() {
+	/**
+	 * On `plugins_loaded`, create an instance of the Fields API manager class.
+	 */
+	function attempt_include() {
+
+		// Bail if we're already in WP core (depending on the name used)
 		if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
-			add_action( 'admin_notices', array( $this, 'warn_about_multiple_copies' ) );
+			add_action( 'admin_notices', '_wp_fields_api_warn_multiple_copies' );
+
+			return;
 		}
+
+		// Set version number
+		define( 'WP_FIELDS_API_PLUGIN_VERSION', $this->version );
+
+		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
+
+		// Init Fields API class
+		$GLOBALS['wp_fields'] = WP_Fields_API::get_instance();
+
+		if ( defined( 'WP_FIELDS_API_EXAMPLES' ) && WP_FIELDS_API_EXAMPLES ) {
+			include_once( WP_FIELDS_API_DIR . 'docs/examples/option/_starter.php' );
+			include_once( WP_FIELDS_API_DIR . 'docs/examples/term/_starter.php' );
+			include_once( WP_FIELDS_API_DIR . 'docs/examples/user/_starter.php' );
+			include_once( WP_FIELDS_API_DIR . 'docs/examples/user/address.php' );
+		}
+
 	}
 
 	public function warn_about_multiple_copies() {
@@ -84,55 +107,7 @@ class WP_Fields_API_v_0_1_0 {
 	}
 }
 
-function _wp_fields_api_warn_multiple_copies() {
-	$version = '0.1.0';
-	?>
-	<div class="notice notice-warning">
-		<p>
-			A plugin is trying to include an older version
-			(<?php echo $version; ?> <= <?php echo WP_FIELDS_API_PLUGIN_VERSION; ?>)
-			of the <strong>WP Fields API</strong>.
-		</p>
-		<p>
-			This might not cause problems, but
-			you should contact the plugin author and ask
-			them to update their plugin (trying to load the Fields API from
-			<code><?php echo __FILE__; ?></code>).
-		</p>
-	</div>
-	<?php
-}
-
-/**
- * On `plugins_loaded`, create an instance of the Fields API manager class.
- */
-function _wp_fields_api_include( $api_version = '0.1.0' ) {
-
-	// Bail if we're already in WP core (depending on the name used)
-	if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
-		add_action( 'admin_notices', '_wp_fields_api_warn_multiple_copies' );
-
-		return;
-	}
-
-	// Set version number
-	define( 'WP_FIELDS_API_PLUGIN_VERSION', $api_version );
-
-	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
-
-	// Init Fields API class
-	$GLOBALS['wp_fields'] = WP_Fields_API::get_instance();
-
-	if ( defined( 'WP_FIELDS_API_EXAMPLES' ) && WP_FIELDS_API_EXAMPLES ) {
-		include_once( WP_FIELDS_API_DIR . 'docs/examples/option/_starter.php' );
-		include_once( WP_FIELDS_API_DIR . 'docs/examples/term/_starter.php' );
-		include_once( WP_FIELDS_API_DIR . 'docs/examples/user/_starter.php' );
-		include_once( WP_FIELDS_API_DIR . 'docs/examples/user/address.php' );
-	}
-
-}
-
-add_action( 'plugins_loaded', '_wp_fields_api_include', 8, 0 );
+WP_Fields_API_v_0_1_0::initialize();
 
 /**
  * Implement Fields API Customizer instead of WP Core Customizer.

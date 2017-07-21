@@ -24,8 +24,9 @@ class WP_Test_Fields_Plugin_Instantiation extends WP_UnitTestCase {
 		// Try including the plugin with differing versions
 		$LOW_VERSION = '1.0.0';
 		$HIGH_VERSION = '2.0.0';
-		_wp_fields_api_include( $LOW_VERSION );
-		_wp_fields_api_include( $HIGH_VERSION );
+		WP_Fields_API_v_0_1_0::_debug_force_initialize( $LOW_VERSION );
+		WP_Fields_API_v_0_1_0::_debug_force_initialize( $HIGH_VERSION );
+		do_action( 'plugins_loaded' );
 
 		// Verify that the newest version loads
 		$this->assertEquals( WP_FIELDS_API_PLUGIN_VERSION, $HIGH_VERSION );
