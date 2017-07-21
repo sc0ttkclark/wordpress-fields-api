@@ -66,7 +66,7 @@ class WP_Fields_API_v_0_1_0 {
 
 		// Bail if we're already in WP core (depending on the name used)
 		if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
-			add_action( 'admin_notices', '_wp_fields_api_warn_multiple_copies' );
+			add_action( 'admin_notices', array( $this, 'warn_about_multiple_copies' ) );
 
 			return;
 		}
