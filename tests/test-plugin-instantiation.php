@@ -37,12 +37,16 @@ class WP_Test_Fields_Plugin_Instantiation extends WP_UnitTestCase {
 		$LOW_VERSION = '1.0.0';
 		$MIDDLE_VERSION = '1.5.0';
 		$HIGH_VERSION = '2.0.0';
-		_wp_fields_api_include( $LOW_VERSION );
-		_wp_fields_api_include( $HIGH_VERSION );
-		_wp_fields_api_include( $MIDDLE_VERSION );
+		// _wp_fields_api_include( $LOW_VERSION );
+		// _wp_fields_api_include( $HIGH_VERSION );
+		// _wp_fields_api_include( $MIDDLE_VERSION );
+		WP_Fields_API_v_0_1_0::_debug_force_initialize( $LOW_VERSION, 9999 );
+		WP_Fields_API_v_0_1_0::_debug_force_initialize( $HIGH_VERSION, 9997 );
+		WP_Fields_API_v_0_1_0::_debug_force_initialize( $MIDDLE_VERSION, 9998 );
 
 		// Verify that some sort of warning is emitted.
 		ob_start();
+		do_action( 'plugins_loaded' );
 		do_action( 'admin_notices' );
 		$output = ob_get_contents();
 		$this->assertRegExp("/A plugin is trying to include an older version\s+\($LOW_VERSION <= $HIGH_VERSION\)\s+of the <strong>WP Fields API<\/strong>./m", $output);

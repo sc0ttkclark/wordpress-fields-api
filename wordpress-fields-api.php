@@ -30,6 +30,59 @@ if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_G
 define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_FIELDS_API_URL', plugin_dir_url( __FILE__ ) );
 
+class WP_Fields_API_v_0_1_0 {
+	const VERSION = '0.1.0';
+	const PRIORITY = 9999;
+
+	public static $instance = null;
+	public static function initialize() {
+		if( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	// Force creation of this class (effectively try to load this class again)
+	// for debug (specifically for testing version handling)
+	public static function _debug_force_initialize( $version = self::VERSION, $priority = self::PRIORITY ) {
+		return new self( $version, $priority );
+	}
+
+	public $version = '';
+	public $priority = '';
+
+	private function __construct( $version = self::VERSION, $priority = self::PRIORITY ) {
+		$this->version = $version;
+		$this->priority = $priority;
+
+		add_action( 'plugins_loaded', array( $this, 'attempt_include' ), $this->priority );
+	}
+
+	public function attempt_include() {
+		if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
+			add_action( 'admin_notices', array( $this, 'warn_about_multiple_copies' ) );
+		}
+	}
+
+	public function warn_about_multiple_copies() {
+		?>
+		<div class="notice notice-warning">
+			<p>
+				A plugin is trying to include an older version
+				(<?php echo $this->version; ?> <= <?php echo WP_FIELDS_API_PLUGIN_VERSION; ?>)
+				of the <strong>WP Fields API</strong>.
+			</p>
+			<p>
+				This might not cause problems, but
+				you should contact the plugin author and ask
+				them to update their plugin (trying to load the Fields API from
+				<code><?php echo __FILE__; ?></code>).
+			</p>
+		</div>
+		<?php
+	}
+}
 
 function _wp_fields_api_warn_multiple_copies() {
 	$version = '0.1.0';
