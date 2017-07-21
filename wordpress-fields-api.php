@@ -33,12 +33,15 @@ define( 'WP_FIELDS_API_URL', plugin_dir_url( __FILE__ ) );
 /**
  * On `plugins_loaded`, create an instance of the Fields API manager class.
  */
-function _wp_fields_api_include() {
+function _wp_fields_api_include( $api_version = "0.1.0" ) {
 
 	// Bail if we're already in WP core (depending on the name used)
 	if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
 		return;
 	}
+
+	// Set version number
+	define( 'WP_FIELDS_API_PLUGIN_VERSION', $api_version );
 
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
@@ -54,7 +57,7 @@ function _wp_fields_api_include() {
 
 }
 
-add_action( 'plugins_loaded', '_wp_fields_api_include', 8 );
+add_action( 'plugins_loaded', '_wp_fields_api_include', 8, 0 );
 
 /**
  * Implement Fields API Customizer instead of WP Core Customizer.
