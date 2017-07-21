@@ -62,7 +62,7 @@ class WP_Fields_API_v_0_1_0 {
 	/**
 	 * On `plugins_loaded`, create an instance of the Fields API manager class.
 	 */
-	function attempt_include() {
+	public function attempt_include() {
 
 		// Bail if we're already in WP core (depending on the name used)
 		if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
