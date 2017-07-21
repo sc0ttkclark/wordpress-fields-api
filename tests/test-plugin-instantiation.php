@@ -29,20 +29,27 @@ class WP_Test_Fields_Plugin_Instantiation extends WP_UnitTestCase {
 
 		// Verify that the newest version loads
 		$this->assertEquals( WP_FIELDS_API_PLUGIN_VERSION, $HIGH_VERSION );
-
-		// TODO: don't execute hooks if some sort of testing override is defined
 	}
 
 	// test that warnings appear when multiple versions are installed
 	public function test_warns_about_dependency_hell() {
 		// As before, include multiple versions
 		$LOW_VERSION = '1.0.0';
+		$MIDDLE_VERSION = '1.5.0';
 		$HIGH_VERSION = '2.0.0';
 		_wp_fields_api_include( $LOW_VERSION );
 		_wp_fields_api_include( $HIGH_VERSION );
+		_wp_fields_api_include( $MIDDLE_VERSION );
 
 		// Verify that some sort of warning is emitted.
-		$this->expectOutputRegex("/A plugin is trying to include an older version\s+\($LOW_VERSION <= $HIGH_VERSION\)\s+of the <strong>WP Fields API<\/strong>./m");
+		ob_start();
 		do_action( 'admin_notices' );
+		$output = ob_get_contents();
+		$this->assertRegExp("/A plugin is trying to include an older version\s+\($LOW_VERSION <= $HIGH_VERSION\)\s+of the <strong>WP Fields API<\/strong>./m", $output);
+		$this->assertRegExp("/A plugin is trying to include an older version\s+\($MIDDLE_VERSION <= $HIGH_VERSION\)\s+of the <strong>WP Fields API<\/strong>./m", $output);
+		ob_end_clean();
 	}
+
+	// test disabling builtin form override
+	public function test_can_disable_builtin_form_override() {}
 }
