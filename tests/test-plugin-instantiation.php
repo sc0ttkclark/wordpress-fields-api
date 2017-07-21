@@ -42,6 +42,7 @@ class WP_Test_Fields_Plugin_Instantiation extends WP_UnitTestCase {
 		_wp_fields_api_include( $HIGH_VERSION );
 
 		// Verify that some sort of warning is emitted.
-		// TODO: is_admin, show message on plugins screen, eg.
+		$this->expectOutputRegex("/A plugin is trying to include an older version\s+\($LOW_VERSION <= $HIGH_VERSION\)\s+of the <strong>WP Fields API<\/strong>./m");
+		do_action( 'admin_notices' );
 	}
 }
