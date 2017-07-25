@@ -55,6 +55,10 @@ class WP_Test_Fields_Plugin_Instantiation extends WP_UnitTestCase {
 		ob_end_clean();
 	}
 
+	public function test_can_multiple_include_file() {
+		include __DIR__ . "/../wordpress-fields-api.php";
+	}
+
 	// test disabling builtin form override
 	public function test_can_disable_builtin_form_override() {}
 }
