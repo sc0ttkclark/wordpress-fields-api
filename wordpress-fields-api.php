@@ -65,13 +65,16 @@ class WP_Fields_API_v_0_1_0 {
 	public function attempt_include() {
 
 		// Bail if we're already in WP core (depending on the name used)
+		// or if a newer version exists
+		// TODO: modify this warning if the API is part of core
 		if ( class_exists( 'WP_Fields_API' ) || class_exists( 'Fields_API' ) ) {
 			add_action( 'admin_notices', array( $this, 'warn_about_multiple_copies' ) );
 
 			return;
 		}
 
-		// Set version number
+		// This version number is used in warnings created by older versions
+		// (if any exist).
 		define( 'WP_FIELDS_API_PLUGIN_VERSION', $this->version );
 
 		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );

@@ -29,7 +29,7 @@ class WP_Test_Fields_Plugin_Instantiation extends WP_UnitTestCase {
 		do_action( 'plugins_loaded' );
 
 		// Verify that the newest version loads
-		$this->assertEquals( WP_FIELDS_API_PLUGIN_VERSION, $HIGH_VERSION );
+		$this->assertEquals( WP_FIELDS_API_PLUGIN_VERSION, $HIGH_VERSION);
 	}
 
 	// test that warnings appear when multiple versions are installed
