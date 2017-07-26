@@ -57,6 +57,7 @@ class WP_Test_Fields_Plugin_Instantiation extends WP_UnitTestCase {
 
 	public function test_can_multiple_include_file() {
 		include __DIR__ . "/../wordpress-fields-api.php";
+		$this->assertTrue( true ); // Pass this test if include was successful.
 	}
 
 	// test disabling builtin form override
