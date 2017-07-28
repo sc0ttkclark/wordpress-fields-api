@@ -70,6 +70,25 @@ if( ! class_exists( 'WP_Fields_API_v_0_1_0' ) ) {
 			// @todo make this optional!
 	 		add_action( 'fields_register', array( $this, 'include_default_forms' ), 5 );
 
+			// Post
+			add_action( 'load-post.php', array( $this, 'override_page' ), 999 );
+
+			// Term
+			add_action( 'load-edit-tags.php', array( $this, 'override_page' ), 999 );
+
+			// User
+			add_action( 'load-user-edit.php', array( $this, 'override_page' ), 999 );
+			add_action( 'load-profile.php', array( $this, 'override_page' ), 999 );
+
+			// Comment
+			add_action( 'load-comment.php', array( $this, 'override_page' ), 999 );
+
+			// Settings
+			add_action( 'load-options-general.php', array( $this, 'override_page' ), 999 );
+			add_action( 'load-options-writing.php', array( $this, 'override_page' ), 999 );
+			add_action( 'load-options-reading.php', array( $this, 'override_page' ), 999 );
+			add_action( 'load-options-permalink.php', array( $this, 'override_page' ), 999 );
+
 		}
 
 		/**
@@ -203,89 +222,70 @@ if( ! class_exists( 'WP_Fields_API_v_0_1_0' ) ) {
 			$GLOBALS['wp_customize'] = new WP_Customize_Manager;
 
 		}
+
+		public function override_page() {
+
+			global $pagenow;
+
+			static $overridden;
+
+			if ( empty( $overridden ) ) {
+				$overridden = array();
+			}
+
+			$load_path = WP_FIELDS_API_DIR . 'implementation/wp-admin/';
+
+			if ( file_exists( $load_path . $pagenow ) && ! in_array( $pagenow, $overridden ) ) {
+				$overridden[] = $pagenow;
+
+				$this->override_compatibility();
+
+				// Load our override
+				require_once( $load_path . $pagenow );
+
+				// Bail on original core file, don't run the rest
+				exit;
+			}
+
+		}
+
+		/**
+		 * Used to maintain compatibiltiy on all overrides
+		 */
+		private function override_compatibility() {
+
+			global $typenow, $pagenow, $taxnow;
+
+			/*
+			 * The following hooks are fired to ensure backward compatibility.
+			 * In all other cases, 'load-' . $pagenow should be used instead.
+			 */
+			if ( $typenow == 'page' ) {
+				if ( $pagenow == 'post-new.php' )
+					do_action( 'load-page-new.php' );
+				elseif ( $pagenow == 'post.php' )
+					do_action( 'load-page.php' );
+			}  elseif ( $pagenow == 'edit-tags.php' ) {
+				if ( $taxnow == 'category' )
+					do_action( 'load-categories.php' );
+				elseif ( $taxnow == 'link_category' )
+					do_action( 'load-edit-link-categories.php' );
+			}
+
+			if ( ! empty( $_REQUEST['action'] ) ) {
+				/**
+				 * Fires when an 'action' request variable is sent.
+				 *
+				 * The dynamic portion of the hook name, `$_REQUEST['action']`,
+				 * refers to the action derived from the `GET` or `POST` request.
+				 *
+				 * @since 2.6.0
+				 */
+				do_action( 'admin_action_' . $_REQUEST['action'] );
+			}
+
+		}
 	}
 
 	WP_Fields_API_v_0_1_0::initialize();
-
-	// Post
-	add_action( 'load-post.php', '_wp_fields_api_load_include', 999 );
-
-	// Term
-	add_action( 'load-edit-tags.php', '_wp_fields_api_load_include', 999 );
-
-	// User
-	add_action( 'load-user-edit.php', '_wp_fields_api_load_include', 999 );
-	add_action( 'load-profile.php', '_wp_fields_api_load_include', 999 );
-
-	// Comment
-	add_action( 'load-comment.php', '_wp_fields_api_load_include', 999 );
-
-	// Settings
-	add_action( 'load-options-general.php', '_wp_fields_api_load_include', 999 );
-	add_action( 'load-options-writing.php', '_wp_fields_api_load_include', 999 );
-	add_action( 'load-options-reading.php', '_wp_fields_api_load_include', 999 );
-	add_action( 'load-options-permalink.php', '_wp_fields_api_load_include', 999 );
-
-	function _wp_fields_api_load_include() {
-
-		global $pagenow;
-
-		static $overridden;
-
-		if ( empty( $overridden ) ) {
-			$overridden = array();
-		}
-
-		$load_path = WP_FIELDS_API_DIR . 'implementation/wp-admin/';
-
-		if ( file_exists( $load_path . $pagenow ) && ! in_array( $pagenow, $overridden ) ) {
-			$overridden[] = $pagenow;
-
-			_wp_fields_api_override_compatibility();
-
-			// Load our override
-			require_once( $load_path . $pagenow );
-
-			// Bail on original core file, don't run the rest
-			exit;
-		}
-
-	}
-
-	/**
-	 * Used to maintain compatibiltiy on all overrides
-	 */
-	function _wp_fields_api_override_compatibility() {
-
-		global $typenow, $pagenow, $taxnow;
-
-		/*
-		 * The following hooks are fired to ensure backward compatibility.
-		 * In all other cases, 'load-' . $pagenow should be used instead.
-		 */
-		if ( $typenow == 'page' ) {
-			if ( $pagenow == 'post-new.php' )
-				do_action( 'load-page-new.php' );
-			elseif ( $pagenow == 'post.php' )
-				do_action( 'load-page.php' );
-		}  elseif ( $pagenow == 'edit-tags.php' ) {
-			if ( $taxnow == 'category' )
-				do_action( 'load-categories.php' );
-			elseif ( $taxnow == 'link_category' )
-				do_action( 'load-edit-link-categories.php' );
-		}
-
-		if ( ! empty( $_REQUEST['action'] ) ) {
-			/**
-			 * Fires when an 'action' request variable is sent.
-			 *
-			 * The dynamic portion of the hook name, `$_REQUEST['action']`,
-			 * refers to the action derived from the `GET` or `POST` request.
-			 *
-			 * @since 2.6.0
-			 */
-			do_action( 'admin_action_' . $_REQUEST['action'] );
-		}
-
-	}
 }
