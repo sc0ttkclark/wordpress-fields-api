@@ -58,13 +58,19 @@ if( ! class_exists( 'WP_Fields_API_v_0_1_0' ) ) {
 			$this->version = $version;
 			$this->priority = $priority;
 
-			add_action( 'plugins_loaded', array( $this, 'attempt_include' ), $this->priority );
+			add_action( 'plugins_loaded', array( $this, 'attempt_include_core_manager' ), $this->priority );
+
+			// Uncomment if you would like to replace the WP Customizer with
+			// our in-home replacement:
+			/* remove_action( 'plugins_loaded', '_wp_customize_include' );
+			 add_action( 'plugins_loaded', array( $this, 'include_wp_customizer' ), 9 ); */
+
 		}
 
 		/**
 		 * On `plugins_loaded`, create an instance of the Fields API manager class.
 		 */
-		public function attempt_include() {
+		public function attempt_include_core_manager() {
 
 			// Bail if we're already in WP core (depending on the name used)
 			// or if a newer version exists
@@ -110,28 +116,25 @@ if( ! class_exists( 'WP_Fields_API_v_0_1_0' ) ) {
 			</div>
 			<?php
 		}
+
+		/**
+		 * Implement Fields API Customizer instead of WP Core Customizer.
+		 */
+		public function include_wp_customizer() {
+
+			if ( ! ( ( isset( $_REQUEST['wp_customize'] ) && 'on' == $_REQUEST['wp_customize'] ) || ( is_admin() && 'customize.php' == basename( $_SERVER['PHP_SELF'] ) ) ) ) {
+				return;
+			}
+
+			require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-manager.php' );
+
+			// Init Customize class
+			$GLOBALS['wp_customize'] = new WP_Customize_Manager;
+
+		}
 	}
 
 	WP_Fields_API_v_0_1_0::initialize();
-
-	/**
-	 * Implement Fields API Customizer instead of WP Core Customizer.
-	 */
-	function _wp_fields_api_customize_include() {
-
-		if ( ! ( ( isset( $_REQUEST['wp_customize'] ) && 'on' == $_REQUEST['wp_customize'] ) || ( is_admin() && 'customize.php' == basename( $_SERVER['PHP_SELF'] ) ) ) ) {
-			return;
-		}
-
-		require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/class-wp-customize-manager.php' );
-
-		// Init Customize class
-		$GLOBALS['wp_customize'] = new WP_Customize_Manager;
-
-	}
-
-	/*remove_action( 'plugins_loaded', '_wp_customize_include' );
-	add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
 
 	/**
 	 * Include Implementations
