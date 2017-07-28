@@ -24,18 +24,29 @@ if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_G
  * @codeCoverageIgnore
  */
 
-// Don't bother redeclaring our WP_Fields_API class if one exists.
-// We need to do a null check on the singleton instance since PHP hoists
-// classes, so `class_exists()` returns `true` here.
+// Don't bother redeclaring this version of the WP_Fields_API class if one
+// exists. We need to do a null check on the singleton instance since PHP
+// hoists classes, so `class_exists()` returns `true` here.
 if( null !== WP_Fields_API_v_0_1_0::$instance ) {
 	return;
 }
 
 class WP_Fields_API_v_0_1_0 {
+	// @todo we do nothing with `VERSION` at the moment, but it would be nice
+	// if we could have WP autoload only the most recent version. For now
+	// it's `PRIORITY` that does all the work.
 	const VERSION = '0.1.0';
+	// @todo ensure formal system for `PRIORITY` decrement or have `VERSION`-
+	// based loading.
 	const PRIORITY = 9999;
 
 	public static $instance = null;
+	/**
+	 * Initialize this plugin! This is the primary entry point: load the
+	 * stuff you need, set up the hooks you want. Prevents double-inclusion,
+	 * too.
+	 * @return self the instance of this class. Not really useful to most.
+	 */
 	public static function initialize() {
 		if( null === self::$instance ) {
 			self::$instance = new self();
@@ -44,8 +55,17 @@ class WP_Fields_API_v_0_1_0 {
 		return self::$instance;
 	}
 
-	// Force creation of this class (effectively try to load this class again)
-	// for debug (specifically for testing version handling)
+	/**
+	 * Force creation of this class (effectively try to load this class again)
+	 * for debug (specifically for testing version handling).
+	 * 
+	 * You should never have to call this function. It's behavior is only
+	 * defined (and useful) for testing to make sure double-inclusion *can't*
+	 * occur.
+	 * @param string $version `version_compare`-compatible version string
+	 * @param int $priority inclusion priority. Lower is earlier.
+	 * @return self the necromanced version of this class.
+	 */
 	public static function _debug_force_initialize( $version = self::VERSION, $priority = self::PRIORITY ) {
 		return new self( $version, $priority );
 	}
