@@ -58,6 +58,8 @@ if( ! class_exists( 'WP_Fields_API_v_0_1_0' ) ) {
 			$this->version = $version;
 			$this->priority = $priority;
 
+			// Include our mananager so that you can register fields!
+			// @todo we need to think about how to change priority so that only the newest loads
 			add_action( 'plugins_loaded', array( $this, 'attempt_include_core_manager' ), $this->priority );
 
 			// Uncomment if you would like to replace the WP Customizer with
