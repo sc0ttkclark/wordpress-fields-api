@@ -87,7 +87,7 @@ class WP_Fields_API_v_0_1_0 {
 		 add_action( 'plugins_loaded', array( $this, 'include_wp_customizer' ), 9 ); */
 
 		// @todo make this optional!
- 		add_action( 'fields_register', array( $this, 'include_default_forms' ), 5 );
+		add_action( 'fields_register', array( $this, 'include_default_forms' ), 5 );
 
 		// Post
 		add_action( 'load-post.php', array( $this, 'override_page' ), 999 );
@@ -149,7 +149,7 @@ class WP_Fields_API_v_0_1_0 {
 	}
 
 	/**
-	 * Echo a warning on admin pages if multiple copies of this plugin 
+	 * Echo a warning on admin pages if multiple copies of this plugin
 	 * are installed.
 	 * @todo modify this warning if WP Fields is part of core :)
 	 * @return void
@@ -227,9 +227,6 @@ class WP_Fields_API_v_0_1_0 {
 			'type' => 'comment-edit',
 			'object_subtype' => 'comment-edit',
 		) );
-
-
-
 	}
 
 	/**
