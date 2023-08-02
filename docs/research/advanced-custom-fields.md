@@ -1,5 +1,6 @@
-Registering Forms
------------------
+# Advanced Custom Fields
+
+## Registering Forms
 
 > [acf\_register\_form()](https://www.advancedcustomfields.com/resources/acf_register_form/)
 
@@ -33,8 +34,7 @@ You can render forms and specify which field group(s) and/or field(s) to include
 <?php acf_form( $settings ); ?>
 ```
 
-Registering Sections (Field Groups)
------------------------------------
+## Registering Sections (Field Groups)
 
 > [Register fields via PHP](https://www.advancedcustomfields.com/resources/register-fields-via-php/)
 
@@ -58,8 +58,7 @@ function my_acf_add_local_field_groups() {
 }
 ```
 
-Registering Fields
-------------------
+## Registering Fields
 
 > [Register fields via PHP](https://www.advancedcustomfields.com/resources/register-fields-via-php/)
 
