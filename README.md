@@ -2,7 +2,7 @@
 
 # WordPress Fields API
 
-**Please note:** We are currently in the research phase of this project.
+**Please note:** We are in the eternal research phase of this project.
 
 The Fields API project aims to provide a unified PHP API to work with any screen that has a form on it within the
 WordPress admin area.
