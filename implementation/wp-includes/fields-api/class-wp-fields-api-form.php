@@ -16,9 +16,12 @@
 class WP_Fields_API_Form extends WP_Fields_API_Container {
 
 	/**
-	 * {@inheritdoc}
+	 * Object type.
+	 *
+	 * @access public
+	 * @var string
 	 */
-	protected $container_type = 'form';
+	public $object_type;
 
 	/**
 	 * Default section type to use for new sections added to form
@@ -29,162 +32,88 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	public $default_section_type = 'table';
 
 	/**
-	 * Register forms, sections, controls, and fields
+	 * Container children type
 	 *
-	 * @param string      $object_type
-	 * @param string      $form_id
-	 * @param null|string $object_name
-	 * @param array       $args
-	 *
-	 * @return WP_Fields_API_Form
+	 * @var string
 	 */
-	public static function register( $object_type = null, $form_id = null, $object_name = null, $args = array() ) {
+	public $container_type = 'form';
 
-		/**
-		 * @var $wp_fields WP_Fields_API
-		 * @var $form      WP_Fields_API_Form
-		 */
-		global $wp_fields;
+	/**
+	 * Container children type
+	 *
+	 * @var string
+	 */
+	public $child_container_type = 'section';
 
-		// Set object_name if not overridden
-		if ( ! isset( $args['object_name'] ) ) {
-			$args['object_name'] = $object_name;
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __construct( $id, $args = array() ) {
+
+		$sections = array();
+
+		if ( isset( $args['sections'] ) ) {
+			if ( ! empty( $args['sections'] ) && is_array( $args['sections'] ) ) {
+				$sections = $args['sections'];
+			}
+
+			unset( $args['sections'] );
 		}
 
-		$class_name = get_called_class();
+		parent::__construct( $id, $args );
 
-		// Setup form
-		$form = new $class_name( $object_type, $form_id, $args );
-
-		// Add form to Fields API
-		$wp_fields->add_form( $form->object_type, $form, $form->object_name );
-
-		// Register control types for this form
-		$form->register_control_types( $wp_fields );
-
-		// Register fields for this form
-		$form->register_fields( $wp_fields );
-
-		return $form;
+		foreach ( $sections as $section_id => $section ) {
+			$this->add_section( $section_id, $section );
+		}
 
 	}
 
 	/**
-	 * Encapsulated registering of custom control types
+	 * Add a section
 	 *
-	 * @param WP_Fields_API $wp_fields
+	 * @param string                      $id   Section ID
+	 * @param array|WP_Fields_API_Section $args Section arguments
+	 *
+	 * @return WP_Error|WP_Fields_API_Section
 	 */
-	public function register_control_types( $wp_fields ) {
+	public function add_section( $id, $args = array() ) {
 
-		// None by default
+		if ( is_a( $args, 'WP_Fields_API_Section' ) ) {
+			$id = $args->id;
+		} elseif ( ! is_array( $args ) ) {
+			// @todo Need WP_Error code
+			return new WP_Error( 'fields-api-unexpected-arguments', __( 'Unexpected arguments.', 'fields-api' ) );
+		} elseif ( ! empty( $args['id'] ) ) {
+			$id = $args['id'];
+
+			unset( $args['id'] );
+		}
+
+		return $this->add_child( $id, $args );
 
 	}
 
 	/**
-	 * Encapsulated registering of sections, controls, and fields for a form
+	 * Get a section
 	 *
-	 * @param WP_Fields_API $wp_fields
+	 * @param string $id Section ID
+	 *
+	 * @return WP_Fields_API_Section|false
 	 */
-	public function register_fields( $wp_fields ) {
+	public function get_section( $id ) {
 
-		// @todo Remove this when done testing
+		return $this->get_child( $id );
 
-		if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) || ! WP_FIELDS_API_EXAMPLES ) {
-			return;
-		}
+	}
 
-		//////////////
-		// Examples //
-		//////////////
+	/**
+	 * Remove a section
+	 *
+	 * @param string $id Section ID
+	 */
+	public function remove_section( $id ) {
 
-		$total_examples = 1;
-
-		if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_GET['fields-api-memory-test'] ) ) {
-			$total_examples = 25;
-
-			if ( 1 < $_GET['fields-api-memory-test'] ) {
-				$total_examples = absint( $_GET['fields-api-memory-test'] );
-			}
-		}
-
-		for ( $x = 1; $x <= $total_examples; $x ++ ) {
-			// Section
-			$section_id   = $this->id . '-example-my-fields-' . $x;
-			$section_args = array(
-				'label'    => __( 'Fields API Example - My Fields', 'fields-api' ),
-				'form'     => $this->id,
-			);
-
-			if ( 1 < $total_examples ) {
-				$section_args['label'] .= ' ' . $x;
-			}
-
-			if ( in_array( $this->object_type, array( 'post', 'comment' ) ) ) {
-				$section_args['type'] = 'meta-box';
-			}
-
-			$wp_fields->add_section( $this->object_type, $section_id, $this->object_name, $section_args );
-
-			// Add example for each control type
-			$control_types = array(
-				'text',
-				'textarea',
-				'checkbox',
-				'multi-checkbox',
-				'radio',
-				'select',
-				'dropdown-pages',
-				'dropdown-terms',
-				'color',
-				'media',
-				'media-file',
-			);
-
-			$option_types = array(
-				'multi-checkbox',
-				'radio',
-				'select',
-			);
-
-			foreach ( $control_types as $control_type ) {
-				$field_id = 'example_my_' . $x . '_' . $control_type . '_field';
-				$label    = sprintf( __( '%s Field' ), ucwords( str_replace( '-', ' ', $control_type ) ) );
-
-				$field_args = array(
-					// Add a control to the field at the same time
-					'control' => array(
-						'type'        => $control_type,
-						'id'          => $this->id . '-' . $field_id,
-						'section'     => $section_id,
-						'label'       => $label,
-						'description' => 'Example field description',
-					),
-				);
-
-				if ( in_array( $control_type, $option_types ) ) {
-					$field_args['control']['choices'] = array(
-						''         => 'N/A',
-						'option-1' => 'Option 1',
-						'option-2' => 'Option 2',
-						'option-3' => 'Option 3',
-						'option-4' => 'Option 4',
-						'option-5' => 'Option 5',
-					);
-
-					if ( 'multi-checkbox' == $control_type ) {
-						unset( $field_args['control']['choices'][''] );
-					}
-				} elseif ( 'checkbox' == $control_type ) {
-					$field_args['control']['checkbox_label'] = 'Example checkbox label';
-				}
-
-				if ( 'dropdown-terms' == $control_type ) {
-					$field_args['control']['taxonomy'] = 'category';
-				}
-
-				$wp_fields->add_field( $this->object_type, $field_id, $this->object_name, $field_args );
-			}
-		}
+		$this->remove_child( $id );
 
 	}
 
@@ -192,88 +121,123 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 * Handle saving of fields
 	 *
 	 * @param int|null    $item_id     Item ID
-	 * @param string|null $object_name Object name
+	 * @param string|null $object_subtype Object subtype
 	 *
-	 * @return int|WP_Error|null New item ID, WP_Error if there was a problem, null if no $item_id used
+	 * @return bool|array false if saving doesn't occur, true if there are no errors, array if there are error(s)
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		if ( ! empty( $item_id ) ) {
 			$this->item_id = $item_id;
 		}
 
-		if ( ! empty( $object_name ) ) {
-			$this->object_name = $object_name;
+		if ( ! empty( $object_subtype ) ) {
+			$this->object_subtype = $object_subtype;
 		}
 
-		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
+		$form_nonce = $this->object_type . '_' . $this->id;
 
 		if ( ! empty( $_REQUEST['wp_fields_api_fields_save'] ) && false !== wp_verify_nonce( $_REQUEST['wp_fields_api_fields_save'], $form_nonce ) ) {
-			/**
-			 * @var $wp_fields WP_Fields_API
-			 */
-			global $wp_fields;
-
-			$controls = $wp_fields->get_controls( $this->object_type, $this->object_name );
-
 			$values = array();
 
-			foreach ( $controls as $control ) {
-				if ( empty( $control->field ) || $control->internal ) {
+			/**
+			 * @var $sections WP_Fields_API_Section[]
+			 */
+			$sections = $this->get_children();
+
+			$errors = array();
+
+			foreach ( $sections as $section ) {
+				if ( ! $section->check_capabilities() ) {
 					continue;
 				}
 
-				// Pass $object_name into control
-				$control->object_name = $this->object_name;
+				/**
+				 * @var $controls WP_Fields_API_Control[]
+				 */
+				$controls = $section->get_children();
 
-				$field = $control->field;
+				// Get values, handle validation first
+				foreach ( $controls as $control ) {
+					if ( ! $control->check_capabilities() ) {
+						continue;
+					}
 
-				// Pass $object_name into field
-				$field->object_name = $this->object_name;
+					if ( $control->internal && 'readonly' !== $control->type ) {
+						continue;
+					}
 
-				// Get value from $_POST
-				$value = null;
+					$field = $control->field;
 
-				$input_name = $control->id;
+					if ( ! $field ) {
+						continue;
+					}
 
-				if ( ! empty( $control->input_name ) ) {
-					$input_name = $control->input_name;
+					// Pass $object_subtype into control
+					$control->object_subtype = $this->object_subtype;
+
+					// Pass $object_subtype into field
+					$field->object_subtype = $this->object_subtype;
+
+					// Get value from $_POST
+					$value = null;
+
+					$input_attrs = $control->get_input_attrs();
+					$input_name  = $input_attrs['name'];
+
+					if ( ! empty( $_POST[ $input_name ] ) ) {
+						$value = $_POST[ $input_name ];
+					}
+
+					// Sanitize
+					$value = $field->sanitize( $value );
+
+					if ( is_wp_error( $value ) ) {
+						$control->error = $value;
+						$errors[ $field->id ] =  $value;
+					} else {
+						$values[ $field->id ] = $value;
+					}
 				}
 
-				if ( ! empty( $_POST[ $input_name ] ) ) {
-					$value = $_POST[ $input_name ];
+				/**
+				 * Allow user to short circuit all saving if an error occurs
+				 */
+				if ( apply_filters( 'wp_fields_api_skip_save_on_error', false, $this, $errors, $values ) ) {
+					return $errors;
 				}
 
-				// Sanitize
-				$value = $field->sanitize( $value );
+				// Save values once validation completes
+				foreach ( $controls as $control ) {
+					if ( $control->internal && 'readonly' !== $control->type ) {
+						continue;
+					}
 
-				if ( is_wp_error( $value ) ) {
-					return $value;
+					$field = $control->field;
+
+					if ( ! $field || ! isset( $values[ $field->id ] ) ) {
+						continue;
+					}
+
+					$value = $values[ $field->id ];
+
+					// Save value
+					$success = $field->save( $value, $item_id );
+
+					if ( is_wp_error( $success ) ) {
+						$errors[ $field->id ] = $success;
+					}
 				}
-
-				$values[ $field->id ] = $value;
 			}
 
-			foreach ( $controls as $control ) {
-				if ( empty( $control->field ) || $control->internal ) {
-					continue;
-				}
-
-				$field = $control->field;
-
-				$value = $values[ $field->id ];
-
-				// Save value
-				$success = $field->save( $value );
-
-				if ( is_wp_error( $success ) ) {
-					return $success;
-				}
+			if ( ! empty( $errors ) ) {
+				return $errors;
 			}
+
+			return true;
 		}
 
-		return $this->item_id;
-
+		return false;
 	}
 
 	/**
@@ -281,25 +245,33 @@ class WP_Fields_API_Form extends WP_Fields_API_Container {
 	 */
 	protected function render() {
 
-		$form_nonce = $this->object_type . '_' . $this->id . '_' . $this->item_id;
+		/**
+		 * @var $wp_fields WP_Fields_API
+		 */
+		global $wp_fields;
+
+		$form_nonce = $this->object_type . '_' . $this->id;
 
 		wp_nonce_field( $form_nonce, 'wp_fields_api_fields_save' );
 
-		$sections = $this->get_sections();
+		$sections = $this->get_children();
 
 		if ( ! empty( $sections ) ) {
 			?>
-				<div class="fields-form-<?php echo esc_attr( $this->object_type ); ?> form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
-					<?php
-						foreach ( $sections as $section ) {
-							// Pass $object_name into section
-							$section->object_name = $this->object_name;
+			<div class="fields-form-<?php echo esc_attr( $this->get_object_type() ); ?> form-<?php echo esc_attr( $this->id ); ?>-wrap fields-api-form">
+				<?php
+				foreach ( $sections as $section ) {
+					// Pass $object_subtype into section
+					$section->object_subtype = $this->object_subtype;
 
-							$section->maybe_render();
-						}
-					?>
-				</div>
+					$section->maybe_render();
+				}
+				?>
+			</div>
 			<?php
+
+			// Render control templates
+			add_action( 'admin_print_footer_scripts', array( $wp_fields, 'render_control_templates' ), 5 );
 		}
 
 	}

@@ -19,7 +19,11 @@ class WP_Fields_API_Form_Term_Add extends WP_Fields_API_Form_Term {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
+
+		if ( null === $object_subtype ) {
+			$object_subtype = $this->get_object_subtype();
+		}
 
 		$term_name = '';
 
@@ -29,7 +33,7 @@ class WP_Fields_API_Form_Term_Add extends WP_Fields_API_Form_Term {
 		}
 
 		// Save new term
-		$success = wp_insert_term( $term_name, $object_name, $_POST );
+		$success = wp_insert_term( $term_name, $object_subtype, $_POST );
 
 		// Return if not successful
 		if ( is_wp_error( $success ) ) {
@@ -37,7 +41,7 @@ class WP_Fields_API_Form_Term_Add extends WP_Fields_API_Form_Term {
 		}
 
 		// Save additional fields
-		return parent::save_fields( $item_id, $object_name );
+		return parent::save_fields( $item_id, $object_subtype );
 
 	}
 

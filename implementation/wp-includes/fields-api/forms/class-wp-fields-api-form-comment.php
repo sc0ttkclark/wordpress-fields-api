@@ -19,20 +19,38 @@ class WP_Fields_API_Form_Comment extends WP_Fields_API_Form {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function register_fields( $wp_fields ) {
+	public function setup() {
 
-		// Add example fields (maybe)
-		parent::register_fields( $wp_fields );
+		add_action( 'edit_comment', array( $this, 'wp_edit_comment' ), 10 );
+
+	}
+
+	/**
+	 * Save fields based on the current comment
+	 *
+	 * @param int $comment_ID
+	 */
+	public function wp_edit_comment( $comment_ID ) {
+
+		remove_action( 'edit_comment', array( $this, 'wp_edit_comment' ) );
+
+		$comment = get_comment( $comment_ID );
+
+		if ( $comment ) {
+			$this->save_fields( $comment->comment_ID, $comment->comment_type );
+		}
+
+		add_action( 'edit_comment', array( $this, 'wp_edit_comment' ), 10, 2 );
 
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function save_fields( $item_id = null, $object_name = null ) {
+	public function save_fields( $item_id = null, $object_subtype = null ) {
 
 		// Save additional fields
-		return parent::save_fields( $item_id, $object_name );
+		return parent::save_fields( $item_id, $object_subtype );
 
 	}
 

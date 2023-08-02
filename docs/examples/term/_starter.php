@@ -9,8 +9,8 @@ function example_my_term_starter( $wp_fields ) {
 	// Object type: Term
 	$object_type = 'term';
 
-	// Object name: Category
-	$object_name = 'category'; // @todo Change to any taxonomy name
+	// Object subtype: Category
+	$object_subtype = 'category'; // @todo Change to any taxonomy name
 
 	// Form: Term Edit
 	$form_id = 'term-edit'; // @todo Also available is term-add
@@ -19,27 +19,23 @@ function example_my_term_starter( $wp_fields ) {
 	// Section: My Section //
 	/////////////////////////
 
-	$section_id   = ''; // @todo Fill in section ID
+	$section_id   = 'my-section'; // @todo Update section ID
 	$section_args = array(
-		'title' => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
-		'form'  => $form_id,
+		'label'    => __( '', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+		'form'     => $form_id,
+		'controls' => array(), // We will add our controls below
 	);
-
-	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
 
 	// My Field
-	$field_id   = '';
-	$field_args = array(
-		// You can register a control for this field at the same time
-		'control' => array(
-			'type'        => 'text', // @todo Change control type if needed
-			'section'     => $section_id,
-			'label'       => __( '', 'my-text-domain' ), // @todo Fill in label, update text domain
-			'description' => __( '', 'my-text-domain' ), // @todo Fill in description, update text domain
-		),
+	// @todo Update control ID
+	$section_args['controls']['my-field'] = array(
+		'type'        => 'text', // @todo Change control type if needed
+		'label'       => __( '', 'my-text-domain' ), // @todo Fill in label, update text domain
+		'description' => __( '', 'my-text-domain' ), // @todo Fill in description, update text domain
 	);
 
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+	// Add the section
+	$wp_fields->add_section( $object_type, $section_id, $object_subtype, $section_args );
 
 }
 

@@ -1,11 +1,13 @@
 === Fields API - A proposal for WordPress core ===
 Contributors: sc0ttkclark, helen, technosailor, idealien, nicholasio, celloexpressions, diddledan
 Tags: beta, custom fields, fields
-Requires at least: 4.4
-Tested up to: 4.4
-Stable tag: 0.1
+Requires at least: 4.6
+Tested up to: 4.7
+Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+Fields API is a core proposal for a new wide-reaching API.
 
 This is a core proposal for a new wide-reaching API for WordPress core. It is currently an evolving prototype that can be installed as a plugin for easy testing and usage throughout development.
 
@@ -15,21 +17,22 @@ This was initially a project of the [WordPress core Options/Metadata team](http:
 
 = Documentation =
 
-* [Terminology](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/terminology.md)
-* [Object Types and Object Names](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md)
-* [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md)
-* [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)
+* [Terminology](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/terminology.md)
+* [API Reference](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/api-reference.md)
+* [Object Types and Object Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/object-types-and-names.md)
+* [Registering Fields (in depth)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/registering-fields.md)
+* [Creating an Implementation (advanced)](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/creating-an-implementation.md)
 
 = Example Code =
 
 **User Profile Form:**
 
-* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/_starter.php)
-* [Address section and fields example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/user/address.php)
+* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/examples/user/_starter.php)
+* [Address section and fields example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/examples/user/address.php)
 
 **Term Add / Edit Form:**
 
-* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/examples/term/_starter.php)
+* [Starter example](https://github.com/sc0ttkclark/wordpress-fields-api/blob/develop/docs/examples/term/_starter.php)
 
 = Related links =
 

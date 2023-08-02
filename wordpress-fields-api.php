@@ -3,13 +3,13 @@
  * Plugin Name: Fields API
  * Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
  * Description: WordPress Fields API prototype and proposal for WordPress core
- * Version: 0.0.6 Beta
+ * Version: 0.1.0 Alpha
  * Author: Scott Kingsley Clark
  * Author URI: http://scottkclark.com/
  * License: GPL2+
  * GitHub Plugin URI: https://github.com/sc0ttkclark/wordpress-fields-api
- * GitHub Branch: master
- * Requires WP: 4.4
+ * GitHub Branch: develop
+ * Requires WP: 4.6
  */
 
 // @todo Remove this when done testing
@@ -28,6 +28,7 @@ if ( defined( 'WP_FIELDS_API_TESTING' ) && WP_FIELDS_API_TESTING && ! empty( $_G
  * The absolute server path to the fields API directory.
  */
 define( 'WP_FIELDS_API_DIR', plugin_dir_path( __FILE__ ) );
+define( 'WP_FIELDS_API_URL', plugin_dir_url( __FILE__ ) );
 
 /**
  * On `plugins_loaded`, create an instance of the Fields API manager class.
@@ -39,14 +40,17 @@ function _wp_fields_api_include() {
 		return;
 	}
 
-	if ( ! defined( 'WP_FIELDS_API_EXAMPLES' ) ) {
-		define( 'WP_FIELDS_API_EXAMPLES', false );
-	}
-
 	require_once( WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/class-wp-fields-api.php' );
 
 	// Init Fields API class
 	$GLOBALS['wp_fields'] = WP_Fields_API::get_instance();
+
+	if ( defined( 'WP_FIELDS_API_EXAMPLES' ) && WP_FIELDS_API_EXAMPLES ) {
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/option/_starter.php' );
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/term/_starter.php' );
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/user/_starter.php' );
+		include_once( WP_FIELDS_API_DIR . 'docs/examples/user/address.php' );
+	}
 
 }
 
@@ -75,6 +79,7 @@ add_action( 'plugins_loaded', '_wp_fields_api_customize_include', 9 );*/
  * Include Implementations
  */
 function _wp_fields_api_implementations() {
+	global $wp_fields;
 
 	$implementation_dir = WP_FIELDS_API_DIR . 'implementation/wp-includes/fields-api/forms/';
 
@@ -84,36 +89,48 @@ function _wp_fields_api_implementations() {
 	// Post
 	require_once( $implementation_dir . 'class-wp-fields-api-form-post.php' );
 
-	WP_Fields_API_Form_Post::register( 'post', 'post-edit' );
+	$wp_fields->register_form_type( 'post-edit', 'WP_Fields_API_Form_Post' );
+	$wp_fields->add_form( 'post', 'post-edit', array(
+		'type' => 'post-edit',
+		'object_subtype' => 'post-edit',
+	) );
 
 	// Term
 	require_once( $implementation_dir . 'class-wp-fields-api-form-term.php' );
 	require_once( $implementation_dir . 'class-wp-fields-api-form-term-add.php' );
 
-	WP_Fields_API_Form_Term::register( 'term', 'term-edit' );
-	WP_Fields_API_Form_Term_Add::register( 'term', 'term-add' );
+	$wp_fields->register_form_type( 'term-edit', 'WP_Fields_API_Form_Term' );
+	$wp_fields->register_form_type( 'term-add', 'WP_Fields_API_Form_Term_Add' );
+
+	$wp_fields->add_form( 'term', 'term-edit', array(
+		'type' => 'term-edit',
+		'object_subtype' => 'term-edit',
+	) );
+
+	$wp_fields->add_form( 'term', 'term-add', array(
+		'type' => 'term-add',
+		'object_subtype' => 'term-add',
+	) );
 
 	// User
 	require_once( $implementation_dir . 'class-wp-fields-api-form-user-edit.php' );
 
-	WP_Fields_API_Form_User_Edit::register( 'user', 'user-edit' );
+	$wp_fields->register_form_type( 'user-edit', 'WP_Fields_API_Form_User_Edit' );
+	$wp_fields->add_form( 'user', 'user-edit', array(
+		'type' => 'user-edit',
+		'object_subtype' => 'user-edit',
+	) );
 
 	// Comment
 	require_once( $implementation_dir . 'class-wp-fields-api-form-comment.php' );
 
-	WP_Fields_API_Form_Comment::register( 'comment', 'comment-edit' );
+	$wp_fields->register_form_type( 'comment-edit', 'WP_Fields_API_Form_Comment' );
+	$wp_fields->add_form( 'comment', 'comment-edit', array(
+		'type' => 'comment-edit',
+		'object_subtype' => 'comment-edit',
+	) );
 
-	// Settings
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings.php' );
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-form-settings-general.php' );
 
-	WP_Fields_API_Form_Settings_General::register( 'settings', 'general' );
-
-	// Settings API compatibility
-	require_once( $implementation_dir . 'settings/class-wp-fields-api-settings-api.php' );
-
-	// Run Settings API compatibility (has it's own hooks)
-	new WP_Fields_API_Settings_API;
 
 }
 add_action( 'fields_register', '_wp_fields_api_implementations', 5 );
@@ -133,6 +150,9 @@ add_action( 'load-comment.php', '_wp_fields_api_load_include', 999 );
 
 // Settings
 add_action( 'load-options-general.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-writing.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-reading.php', '_wp_fields_api_load_include', 999 );
+add_action( 'load-options-permalink.php', '_wp_fields_api_load_include', 999 );
 
 function _wp_fields_api_load_include() {
 

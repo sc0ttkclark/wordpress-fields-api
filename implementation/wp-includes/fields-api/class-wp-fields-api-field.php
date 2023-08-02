@@ -7,7 +7,14 @@
  * @package    WordPress
  * @subpackage Fields_API
  */
-class WP_Fields_API_Field extends WP_Fields_API_Container {
+class WP_Fields_API_Field extends WP_Fields_API_Component {
+
+	/**
+	 * Field type
+	 *
+	 * @var string
+	 */
+	public $type = 'text';
 
 	/**
 	 * Default value for field
@@ -38,70 +45,23 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	public $meta_auth_callback;
 
 	/**
-	 * Whether to register field with register_rest_field.
+	 * Whether to show field in REST API.
 	 *
 	 * @access public
 	 *
-	 * @see register_rest_field
+	 * @see register_meta
 	 *
 	 * @var bool
 	 */
 	public $show_in_rest = false;
 
 	/**
-	 * register_rest_field field type.
+	 * Whether to render this field in forms.
 	 *
 	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var bool
+	 * @var boolean
 	 */
-	public $rest_field_type = 'string';
-
-	/**
-	 * register_rest_field field description.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var bool
-	 */
-	public $rest_field_description = '';
-
-	/**
-	 * register_rest_field Get Callback.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var callable
-	 */
-	public $rest_get_callback;
-
-	/**
-	 * register_rest_field Update Callback.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var callable
-	 */
-	public $rest_update_callback;
-
-	/**
-	 * register_rest_field Schema Callback.
-	 *
-	 * @access public
-	 *
-	 * @see register_rest_field
-	 *
-	 * @var callable
-	 */
-	public $rest_schema_callback;
+	public $can_render = false;
 
 	/**
 	 * Value Callback.
@@ -128,42 +88,25 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	public $update_value_callback;
 
 	/**
-	 * Secondary constructor; Any supplied $args override class property defaults.
+	 * Whether or not a field is
 	 *
-	 * @param string $object_type   Object type.
-	 * @param string $id            A specific ID of the field. Can be a
-	 *                              theme mod or option name.
-	 * @param array  $args          Field arguments.
+	 * @access public
 	 *
-	 * @return WP_Fields_API_Field $field
+	 * @var bool
 	 */
-	public function init( $object_type, $id, $args = array() ) {
-
-		parent::init( $object_type, $id, $args );
-
-		// Parse the ID for array keys.
-		$this->id_data['keys'] = preg_split( '/\[/', str_replace( ']', '', $this->id ) );
-		$this->id_data['base'] = array_shift( $this->id_data['keys'] );
-
-		// Rebuild the ID.
-		$this->id = $this->id_data['base'];
-
-		if ( ! empty( $this->id_data['keys'] ) ) {
-			$this->id .= '[' . implode( '][', $this->id_data['keys'] ) . ']';
-		}
-
-	}
+	public $internal = false;
 
 	/**
 	 * Check user capabilities and theme supports, and then save
 	 * the value of the field.
 	 *
-	 * @param mixed    $value   The value to save.
-	 * @param int|null $item_id The Item ID.
+	 * @param mixed    $value    The value to save.
+	 * @param int|null $item_id  The Item ID.
+	 * @param boolean  $sanitize Sanitize value before saving
 	 *
 	 * @return false|mixed False if cap check fails or value isn't set.
 	 */
-	public function save( $value, $item_id = null ) {
+	public function save( $value, $item_id = null, $sanitize = false ) {
 
 		if ( null === $item_id ) {
 			$item_id = $this->get_item_id();
@@ -173,7 +116,13 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 			return false;
 		}
 
-		$value = $this->sanitize( $value );
+		if ( $sanitize ) {
+			$value = $this->sanitize( $value );
+
+			if ( is_wp_error( $value ) ) {
+				return $value;
+			}
+		}
 
 		/**
 		 * Fires when the WP_Fields_API_Field::save() method is called.
@@ -214,7 +163,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 		 * @param mixed               $value Value of the field.
 		 * @param WP_Fields_API_Field $this  WP_Fields_API_Field instance.
 		 */
-		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->object_name}_{$this->id}", $value, $this );
+		return apply_filters( "fields_sanitize_{$this->object_type}_{$this->object_subtype}_{$this->id}", $value, $this );
 
 	}
 
@@ -222,7 +171,6 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	 * Save the value of the field, using the related API.
 	 *
 	 * @param mixed $value The value to update.
-	 * @param int $item_id Item ID.
 	 *
 	 * @return mixed The result of saving the value.
 	 */
@@ -362,8 +310,6 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 	/**
 	 * Fetch the value of the field.
 	 *
-	 * @param int $item_id (optional) The Item ID.
-	 *
 	 * @return mixed The value.
 	 */
 	public function value() {
@@ -403,7 +349,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 				 * @param mixed $default The field default value. Default empty.
 				 * @param int   $item_id (optional) The Item ID.
 				 */
-				$value = apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_name . '_' . $this->id_data['base'], $this->default, $item_id );
+				$value = apply_filters( 'fields_value_' . $this->object_type . '_' . $this->object_subtype . '_' . $this->id_data['base'], $this->default, $item_id );
 				
 				/**
 				 * Fires when the {@see WP_Fields_API_Field::value()} method is called for fields
@@ -416,6 +362,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 				 * @param WP_Fields_API_Field $this    WP_Fields_API_Field instance.
 				 */
 				$value = apply_filters( "fields_value_{$this->object_type}", $value, $item_id, $this );
+
 				break;
 		}
 
@@ -526,7 +473,7 @@ class WP_Fields_API_Field extends WP_Fields_API_Container {
 		 * @param mixed                $value The field value.
 		 * @param WP_Fields_API_Field $this  {@see WP_Fields_API_Field} instance.
 		 */
-		$value = apply_filters( "fields_sanitize_js_{$this->object_type}_{$this->object_name}_{$this->id}", $value, $this );
+		$value = apply_filters( "fields_sanitize_js_{$this->object_type}_{$this->object_subtype}_{$this->id}", $value, $this );
 
 		if ( is_string( $value ) ) {
 			return html_entity_decode( $value, ENT_QUOTES, 'UTF-8' );

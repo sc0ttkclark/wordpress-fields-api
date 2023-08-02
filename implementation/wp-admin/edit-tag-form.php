@@ -5,20 +5,16 @@
  * @package WordPress
  * @subpackage Administration
  */
-// don't load directly
-if ( !defined('ABSPATH') )
-	die('-1');
 
-if ( empty($tag_ID) ) { ?>
-	<div id="message" class="updated notice is-dismissible"><p><strong><?php _e( 'You did not select an item for editing.' ); ?></strong></p></div>
-	<?php
-	return;
+// don't load directly
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
 }
 
 // Back compat hooks
 if ( 'category' == $taxonomy ) {
 	/**
-	 * Fires before the Edit Category form.
+ 	 * Fires before the Edit Category form.
 	 *
 	 * @since 2.1.0
 	 * @deprecated 3.0.0 Use {$taxonomy}_pre_edit_form instead.
@@ -53,7 +49,7 @@ if ( 'category' == $taxonomy ) {
  */
 wp_reset_vars( array( 'wp_http_referer' ) );
 
-global $wp_http_referer;
+global $wp_http_referer; // @todo Remove WP Fields API modification
 $wp_http_referer = remove_query_arg( array( 'action', 'message', 'tag_ID' ), $wp_http_referer );
 
 /** Also used by Edit Tags */
@@ -103,10 +99,10 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			<input type="hidden" name="action" value="editedtag" />
 			<input type="hidden" name="tag_ID" value="<?php echo esc_attr($tag->term_id) ?>" />
 			<input type="hidden" name="taxonomy" value="<?php echo esc_attr($taxonomy) ?>" />
-			<?php wp_original_referer_field(true, 'previous'); wp_nonce_field('update-tag_' . $tag_ID); ?>
-
-
 			<?php
+			wp_original_referer_field( true, 'previous' );
+			wp_nonce_field( 'update-tag_' . $tag_ID );
+
 			/**
 			 * WP Fields API implementation >>>
 			 */
@@ -117,14 +113,15 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 			global $wp_fields;
 
 			// Get form
-			$form = $wp_fields->get_form( 'term', 'term-edit' );
+			$form_edit = $wp_fields->get_form( 'term-edit' );
 
-			// Set taxonomy object name
-			$form->item_id     = $tag_ID;
-			$form->object_name = $taxonomy;
+			// Set taxonomy Object subtype
+			$form_edit->item        = $tag;
+			$form_edit->item_id     = $tag_ID;
+			$form_edit->object_subtype = $taxonomy;
 
 			// Render form controls
-			$form->maybe_render();
+			$form_edit->maybe_render();
 
 			/**
 			 * <<< WP Fields API implementation

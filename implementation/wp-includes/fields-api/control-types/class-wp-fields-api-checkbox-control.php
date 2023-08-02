@@ -50,7 +50,11 @@ class WP_Fields_API_Checkbox_Control extends WP_Fields_API_Control {
 		}
 
 		if ( $label && $this->display_label ) {
-			echo esc_html( $label );
+			echo wp_kses( $label, array(
+				'a'     => array(
+					'href'  => true,
+				),
+			) );
 		}
 
 	}
@@ -72,6 +76,21 @@ class WP_Fields_API_Checkbox_Control extends WP_Fields_API_Control {
 		<label>
 			<input type="checkbox" value="<?php echo esc_attr( $checkbox_value ); ?>" <?php $this->link(); checked( $checked ); ?> />
 			<?php $this->render_checkbox_label(); ?>
+		</label>
+		<?php
+
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function content_template() {
+
+		?>
+		<label>
+			<input type="checkbox" name="{{ data.input_name }}" value="{{ data.checkbox_value }}"
+				id="{{ data.input_id }}" {{{ data.checked }}} />
+			{{ data.label }}
 		</label>
 		<?php
 

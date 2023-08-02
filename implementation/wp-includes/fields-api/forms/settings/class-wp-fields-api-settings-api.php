@@ -11,7 +11,7 @@
  */
 class WP_Fields_API_Settings_API {
 
-	public function __construct() {
+	public function setup() {
 
 		// Add hook
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
@@ -25,85 +25,99 @@ class WP_Fields_API_Settings_API {
 		 */
 		global $wp_fields;
 
-		$sections = $wp_fields->get_sections( 'settings' );
+		$forms = $wp_fields->get_forms( 'settings' );
 
-		foreach ( $sections as $section ) {
-			if ( ! $section->check_capabilities() ) {
-				continue;
-			}
+		foreach ( $forms as $form ) {
+			/**
+			 * @var $sections WP_Fields_API_Section[]
+			 */
+			$sections = $form->get_children();
 
-			// Get Form
-			$form = $section->get_form();
+			foreach ( $sections as $section ) {
+				if ( ! $section->check_capabilities() ) {
+					continue;
+				}
 
-			if ( ! $form ) {
-				continue;
-			}
+				$form_id = $form->id;
+				$section_id = $section->id;
+				$section_title = $section->label;
 
-			$form_id = $form->id;
-			$section_id = $section->id;
-			$section_title = $section->label;
+				// Remove our namespace
+				$setting_page_id = str_replace( 'settings-', '', $form_id );
 
-			if ( ! $section->display_label ) {
-				$section_title = '';
-			}
+				if ( ! $section->display_label ) {
+					$section_title = '';
+				}
 
-			// Get Setting Controls
-			$controls = $section->get_controls();
+				// Get Setting Controls
+				/**
+				 * @var $controls WP_Fields_API_Control[]
+				 */
+				$controls = $section->get_children();
 
-			if ( $controls ) {
-				$added_section = false;
+				if ( $controls ) {
+					$added_section = false;
 
-				foreach ( $controls as $control ) {
-					$field = $control->get_field();
+					foreach ( $controls as $control ) {
+						$field = $control->field;
 
-					if ( empty( $field ) ) {
-						continue;
-					}
+						if ( empty( $field ) ) {
+							continue;
+						}
 
-					if ( ! $control->check_capabilities() ) {
-						continue;
-					}
+						if ( ! $control->check_capabilities() ) {
+							continue;
+						}
 
-					if ( ! $added_section ) {
-						add_settings_section(
-							$section_id,
-							$section_title,
-							array( $section, 'render_description' ),
-							$form_id
+						if ( ! $added_section ) {
+							add_settings_section(
+								$section_id,
+								$section_title,
+								array( $section, 'render_description' ),
+								$setting_page_id
+							);
+
+							$added_section = true;
+						}
+
+						$sanitize_callback = array( $field, 'sanitize' );
+
+						$field_id = $field->id;
+
+						$settings_args = array(
+							'fields_api' => true,
+							'label_for'  => $field_id,
+							'control'    => $control,
 						);
 
-						$added_section = true;
+						$control_label   = $control->label;
+						$render_callback = array( $this, 'render_control' );
+
+						if ( 'hidden' === $control->type ) {
+							$control_label   = null;
+							$render_callback = '__return_null';
+						}
+
+						// Add Settings API field
+						add_settings_field(
+							$field_id,
+							$control_label,
+							$render_callback,
+							$setting_page_id,
+							$section_id,
+							$settings_args
+						);
+
+						// Register Setting
+						register_setting(
+							$setting_page_id,
+							$field_id,
+							$sanitize_callback
+						);
 					}
-
-					$sanitize_callback = array( $field, 'sanitize' );
-
-					$field_id = $field->id;
-
-					$settings_args = array(
-						'fields_api' => true,
-						'label_for'  => $field_id,
-						'control'    => $control,
-					);
-
-					// Add Settings API field
-					add_settings_field(
-						$field_id,
-						$control->label,
-						array( $this, 'render_control' ),
-						$form_id,
-						$section_id,
-						$settings_args
-					);
-
-					// Register Setting
-					register_setting(
-						$form_id,
-						$field_id,
-						$sanitize_callback
-					);
 				}
-			}
 
+			}
 		}
 
 	}
@@ -123,10 +137,6 @@ class WP_Fields_API_Settings_API {
 		 * @var $control WP_Fields_API_Control
 		 */
 		$control = $settings_args['control'];
-
-		if ( ! $control->check_capabilities() ) {
-			return;
-		}
 
 		$description = trim( $control->description );
 

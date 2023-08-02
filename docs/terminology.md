@@ -1,16 +1,34 @@
 # Fields API Terminology
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Object Types](#object-types)
+- [Object Subtypes](#object-subtypes)
+- [Forms](#forms)
+- [Sections](#sections)
+- [Controls](#controls)
+  - [Control Types](#control-types)
+  - [Datasources](#datasources)
+- [Fields](#fields)
+- [Visual Structure for Forms, Sections, and Controls](#visual-structure-for-forms-sections-and-controls)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Object Types
 
 Object Types are types of objects in WordPress, but can also represent custom objects from plugins or themes.
 
-See [Object Types and Names](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md) for more details.
+See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details.
 
-## Object Names
+## Object Subtypes
 
-Object Names are names of subsets of data, like Post Types, Taxonomies, or Comment Types. 
+Object Subtypes are names of subsets of data, like Post Types, Taxonomies, or Comment Types. 
 
-See [Object Types and Names](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-names.md) for more details
+See [Object Types and Subtypes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/object-types-and-subtypes.md) for more details
 
 ## Forms
 
@@ -36,9 +54,13 @@ Control types are the types of controls that are registered and available for ge
 
 See [Registering Fields](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md) for more details and examples.
 
+### Datasources
+
+Datasources are used by multiple option Control types to provide data in an abstract way. Some are included with the Fields API, but custom datasources can also be registered for advanced usage.
+
 ## Fields
 
-Fields handle getting and saving of values and should be namespaced properly (`{my_}field_name`) for your project. They should be unique for the object type and object name you use it on, otherwise it will be overwritten each time a duplicate one is added.
+Fields handle getting and saving of values and should be namespaced properly (`{my_}field_name`) for your project. They should be unique for the object type and Object subtype you use it on, otherwise it will be overwritten each time a duplicate one is added.
 
 See [Registering Fields](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/registering-fields.md) for more details and examples.
 

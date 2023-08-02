@@ -1,26 +1,43 @@
 # Fields API Registration
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Forms](#forms)
+  - [Registering forms](#registering-forms)
+- [Sections](#sections)
+  - [Registering sections](#registering-sections)
+- [Controls](#controls)
+  - [Control Types](#control-types)
+  - [Registering controls](#registering-controls)
+- [Fields](#fields)
+  - [Registering fields (and control)](#registering-fields-and-control)
+  - [Registering fields (standalone)](#registering-fields-standalone)
+- [Bringing it all together to register your configuration](#bringing-it-all-together-to-register-your-configuration)
+- [Custom Control Types](#custom-control-types)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Forms
 
 Forms in the Fields API are more commonly linked to what appear in the WordPress Admin area as WP_Screen. A few come with the Fields API itself, but you can register new forms to your heart's content and output them wherever you'd like.
 
-See [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md) for examples of creating your own intelligent forms.
+See [Custom Component Classes](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/custom-component-classes.md) for examples of creating forms with custom saving and rendering.
 
 ### Registering forms
 
-When a form needs no saving or rendering mechanism (see [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)), it can be registered through the `fields_register` action, using code like this:
+When a form needs no custom saving or rendering mechanism (see [Creating an Implementation](https://github.com/sc0ttkclark/wordpress-fields-api/blob/master/docs/creating-an-implementation.md)), it can be registered through the `fields_register` action, using code like this:
 
 ```php
 // Object type and Form ID
 $object_type = 'my-xyz';
 $form_id = 'my-form';
-	
-// Set this to a specific post type, taxonomy,
-// or comment type you want to register for
-$object_name = null;
 
 // Register form
-$wp_fields->add_form( $object_type, $form_id, $object_name );
+$wp_fields->add_form( $object_type, $form_id, );
 ```
 
 **Please note:** Registering forms are not normally required for working within the existing WordPress Admin area unless you need custom admin forms. They can also be used on the front-end as well.
@@ -34,23 +51,18 @@ Sections are groupings of controls that give context to what they are for.
 Sections can be registered through the `fields_register` action, using code like this:
 
 ```php
-// Object type and Form ID
-$object_type = 'term';
+// Form ID
 $form_id = 'term-edit';
-	
-// Set this to a specific post type, taxonomy,
-// or comment type you want to register for
-$object_name = 'xyz';
 
 // Section ID and options
 $section_id = 'my-section'; // @todo Fill in section ID
 $section_args = array(
-	'title'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+	'label'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
 	'form' => $form_id,
 );
 
 // Register section
-$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
+$wp_fields->add_section( $section_id, $section_args );
 ```
 
 ## Controls
@@ -79,16 +91,11 @@ Control types are the types of controls that are registered and available for ge
 Controls can be registered through the `fields_register` action, using code like this:
 
 ```php
-// Object type and Form ID
-$object_type = 'term';
-$form_id = 'term-edit';
-	
-// Set this to a specific post type, taxonomy,
-// or comment type you want to register for
-$object_name = 'xyz';
+// Section ID
+$section_id = 'term-edit';
 
 // Control ID and options
-$control_id = 'my-control'; // @todo Fill in control ID
+$control_id = 'my-control';
 $control_args = array(
 	'type'        => 'text', // @todo Change control type if needed
 	'section'     => $section_id,
@@ -98,25 +105,18 @@ $control_args = array(
 );
 
 // Register control
-$wp_fields->add_control( $object_type, $control_id, $object_name, $control_args );
+$wp_fields->add_control( $control_id, $control_args );
 ```
 
 ## Fields
 
-Fields handle getting and saving of values and should be namespaced properly (`{my_}field_name`) for your project. They should be unique for the object type and object name you use it on, otherwise it will be overwritten each time a duplicate one is added.
+Fields handle getting and saving of values and should be namespaced properly (`{my_}field_name`) for your project. They should be completely unique, otherwise it will be overwritten each time a duplicate one is added.
 
 ### Registering fields (and control)
 
 Fields can be registered through the `fields_register` action, using code like this:
 
 ```php
-// Object type
-$object_type = 'term';
-	
-// Set this to a specific post type, taxonomy,
-// or comment type you want to register for
-$object_name = 'xyz';
-
 // Section ID
 $section_id = 'my-section'; // @todo Fill in section ID
 
@@ -134,7 +134,7 @@ $field_args = array(
 );
 
 // Register field (and control)
-$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+$wp_fields->add_field( $field_id, $field_args );
 ```
 
 ### Registering fields (standalone)
@@ -142,19 +142,12 @@ $wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
 Fields can be registered on their own, without associating to a control, through the `fields_register` action, using code like this:
 
 ```php
-// Object type
-$object_type = 'term';
-	
-// Set this to a specific post type, taxonomy,
-// or comment type you want to register for
-$object_name = 'xyz';
-
 // Field ID and options
 $field_id = 'my-field'; // @todo Fill in field ID
 $field_args = array();
 
 // Register field
-$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+$wp_fields->add_field( $field_id, $field_args );
 ```
 
 ## Bringing it all together to register your configuration
@@ -170,9 +163,6 @@ function example_my_term_xyz( $wp_fields ) {
 	// Object type: Term
 	$object_type = 'term';
 
-	// Object name: XYZ
-	$object_name = 'xyz'; // @todo Change to any taxonomy name
-
 	// Form: Term Edit
 	$form_id = 'term-edit'; // @todo Also available is term-add
 
@@ -182,11 +172,11 @@ function example_my_term_xyz( $wp_fields ) {
 
 	$section_id = 'my-section'; // @todo Fill in section ID
 	$section_args = array(
-		'title'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
+		'label'  => __( 'My Section', 'my-text-domain' ), // @todo Fill in section heading, update text domain
 		'form' => $form_id,
 	);
 
-	$wp_fields->add_section( $object_type, $section_id, $object_name, $section_args );
+	$wp_fields->add_section( $section_id, $section_args );
 
 	// My Field
 	$field_id = 'my-field';
@@ -200,7 +190,7 @@ function example_my_term_xyz( $wp_fields ) {
 		),
 	);
 
-	$wp_fields->add_field( $object_type, $field_id, $object_name, $field_args );
+	$wp_fields->add_field( $field_id, $field_args );
 
 
 }
@@ -230,3 +220,4 @@ function example_my_xyz_control_type( $wp_fields ) {
 }
 add_action( 'fields_register_controls', 'example_my_xyz_control_type' );
 ```
+`WP_Fields_API_My_XYZ_Type_Control` must extend `WP_Fields_API_Control`
