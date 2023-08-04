@@ -8,8 +8,11 @@ via [custom models](https://docs.metabox.io/extensions/mb-custom-table/#custom-m
 
 [https://docs.metabox.io/extensions/mb-custom-table/#custom-models](https://docs.metabox.io/extensions/mb-custom-table/#custom-models)
 
+To register a new menu item with the label 'Transactions' that will send data to a table called transactions:
+
 ```php
-add_action( 'init', function () {
+add_action( 'init', 'my_mb_register_model' );
+function my_mb_register_model() {
 	mb_register_model(
 		'transaction',
 		[
@@ -21,10 +24,10 @@ add_action( 'init', function () {
 			'menu_icon' => 'dashicons-money-alt',
 		]
 	);
-} );
+}
 ```
 
-The above registers a new menu item with the label 'Transactions' that will send data to a table called' transactions.
+To register a custom table for storing data in the registered model:
 
 ```php
 add_action( 'init', function () {
@@ -47,7 +50,7 @@ add_action( 'init', function () {
 } );
 ```
 
-The above registers a custom table for storing data in the registered model.
+Outside of custom database models, Meta Box is mostly based on extending existing forms:
 
 ```php
 // Step 3: Register fields for model, corresponding to the custom table structure.
@@ -125,9 +128,6 @@ function prefix_register_transaction_fields( $meta_boxes ) {
 }
 ```
 
-The above generates the custom form. Outside of custom database models, Meta Box is mostly based on extending existing
-forms.
-
 ## Registering Sections
 
 [https://docs.metabox.io/fields/fieldset-text/](https://docs.metabox.io/fields/fieldset-text/)
@@ -137,7 +137,8 @@ forms.
 ### Create a collection of ordered fields.
 
 ```php
-add_filter( 'rwmb_meta_boxes', function ( $meta_boxes ) {
+add_filter( 'rwmb_meta_boxes', 'rwmb_meta_boxes' );
+function my_rwmb_meta_boxes( $meta_boxes ) {
 	$meta_boxes[] = [
 		'title'      => 'Event details',
 		'post_types' => 'event',
@@ -165,12 +166,12 @@ add_filter( 'rwmb_meta_boxes', function ( $meta_boxes ) {
 	// $meta_boxes[] = ...
 
 	return $meta_boxes;
-} );
+}
 ```
 
 ### Declare a group of fields
 
-Creates a group of fields within a fieldset. Only supports simple text fields.
+Create a group of fields within a fieldset (only supports simple text fields):
 
 ```php
 ...
