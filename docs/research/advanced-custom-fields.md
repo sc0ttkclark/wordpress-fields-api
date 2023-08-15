@@ -134,3 +134,9 @@ With ACF, you choose to add a group of fields to existing content types. Newer v
 ACF's approach is popular for developers and the easy-to-use UI has led to a high adoption rate.
 
 Whether we could effectively follow a similar approach using location-based rules with the Fields API remains to be seen.
+
+ACF uses function calls to register groups and fields instead of hooking into a filter.
+
+| Registration Type  | Supports JSON Files | Supports Multiple Content Types   | Form / HTML markup required   |
+|--------------------|---------------------|-----------------------------------|-------------------------------|
+| PHP function calls | Yes                 | Yes, with conditional logic rules | No, the API does this for you |

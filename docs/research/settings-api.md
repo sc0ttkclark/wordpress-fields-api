@@ -153,3 +153,15 @@ Prints all settings registered for this section & page. Each field is inside one
 ```php
 do_settings_fields( $page, $section );
 ```
+
+# Lessons to be learned from the Settings API approach
+
+The Settings API has been around since the end of 2008 and is a core API within WordPress itself.
+
+The Settings API itself is mostly data structure related and still requires a lot of HTML markup to be written by the developer to piece together the implementation of a custom settings page.
+
+Function calls are used everywhere in the Settings API for registering settings and outputting them.
+
+| Registration Type  | Supports JSON Files | Supports Multiple Content Types | Form / HTML markup required |
+|--------------------|---------------------|---------------------------------|-----------------------------|
+| PHP function calls | No                  | No, this is only for Settings   | Yes                         |

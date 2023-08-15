@@ -194,3 +194,15 @@ See above. Fields are declared within arrays, and can't be assigned to a form ou
 group.
 
 **_There is no code for this_** as you cannot currently register fields to a section/form separately.
+
+# Lessons to be learned from the Meta Box approach
+
+Meta Box uses a very similar approach to ACF in the handling of groups of fields being able to be registered across multiple "models" (content types).
+
+The main difference is that Meta Box uses basic arrays of which content types to assign the meta boxes to, while ACF allows for conditional logic rules to be used in more complicated use-cases.
+
+ACF uses function calls to register groups and fields instead of hooking into a filter.
+
+| Registration Type | Supports JSON Files | Supports Multiple Content Types | Form / HTML markup required   |
+|-------------------|---------------------|---------------------------------|-------------------------------|
+| Filter and add    | No                  | Yes, but only by name           | No, the API does this for you |
