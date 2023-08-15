@@ -79,7 +79,9 @@ function my_acf_add_local_fields() {
 
 > [Local JSON](https://www.advancedcustomfields.com/resources/local-json/)
 
-ACF allows for registering groups of fields through JSON structures. These are handled by the ACF Pro feature for Local JSON. When a file is detected, it still must be manually imported to "sync" to the database. Any changes within the admin dashboard can also be "synced" to the JSON file too.
+ACF allows for registering groups of fields through JSON structures. These are handled by the ACF Pro feature for Local
+JSON. When a file is detected, it still must be manually imported to "sync" to the database. Any changes within the
+admin dashboard can also be "synced" to the JSON file too.
 
 The JSON files can look something like this:
 
@@ -127,13 +129,16 @@ The JSON files can look something like this:
 
 # Lessons to be learned from the ACF approach
 
-ACF has chosen to attach groups of fields to single/multiple content types at once. The approach is less architecture focused and more use-case focused.
+ACF has chosen to attach groups of fields to single/multiple content types at once. The approach is less architecture
+focused and more use-case focused.
 
-With ACF, you choose to add a group of fields to existing content types. Newer versions of ACF includes the ability to create custom post types and custom taxonomies but the result is the same in the end.
+With ACF, you choose to add a group of fields to existing content types. Newer versions of ACF includes the ability to
+create custom post types and custom taxonomies but the result is the same in the end.
 
 ACF's approach is popular for developers and the easy-to-use UI has led to a high adoption rate.
 
-Whether we could effectively follow a similar approach using location-based rules with the Fields API remains to be seen.
+Whether we could effectively follow a similar approach using location-based rules with the Fields API remains to be
+seen.
 
 ACF uses function calls to register groups and fields instead of hooking into a filter.
 

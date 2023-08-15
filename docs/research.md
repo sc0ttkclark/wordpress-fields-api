@@ -2,12 +2,36 @@
 
 ## Overview
 
-This section is to help gather research about different APIs for custom field plugins and others with their own Fields
+We will gather research about different APIs for custom field plugins and others with their own Fields
 APIs for their forms.
 
-* [Advanced Custom Fields](research/advanced-custom-fields.md)
-* [Meta Box](research/meta-box.md)
-* [Settings API](research/settings-api.md)
+The research we gather will give us a better picture of where things are at and what we can learn from each
+implementation.
+
+### Core
+
+* [Settings API](research/core/settings-api.md)
+* Meta Box API (Post Types, Media, Comments)
+* Taxonomies
+    * Add term form
+    * Edit term form (separate from the Add term form in how you work with it)
+* Users
+    * User profile
+    * Add new user form
+    * Add existing user to site form (WP Multisite)
+* Media - Media modal
+* Comments - Add new comment (front of site)
+* Customizer API
+* Nav Menus
+    * Nav Menu Item form
+* Widgets (classic)
+    * Widget form
+
+### Third Party
+
+* [Advanced Custom Fields](research/third-party/advanced-custom-fields.md)
+* [Meta Box](research/third-party/meta-box.md)
+* Pods
 
 ## What makes a Fields API?
 

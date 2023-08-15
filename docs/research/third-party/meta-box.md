@@ -197,9 +197,11 @@ group.
 
 # Lessons to be learned from the Meta Box approach
 
-Meta Box uses a very similar approach to ACF in the handling of groups of fields being able to be registered across multiple "models" (content types).
+Meta Box uses a very similar approach to ACF in the handling of groups of fields being able to be registered across
+multiple "models" (content types).
 
-The main difference is that Meta Box uses basic arrays of which content types to assign the meta boxes to, while ACF allows for conditional logic rules to be used in more complicated use-cases.
+The main difference is that Meta Box uses basic arrays of which content types to assign the meta boxes to, while ACF
+allows for conditional logic rules to be used in more complicated use-cases.
 
 ACF uses function calls to register groups and fields instead of hooking into a filter.
 
