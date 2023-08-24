@@ -116,3 +116,7 @@ add_action( 'manage_posts_custom_column', 'my_custom_cell_value', 5, 2 );
 
 ### Third Party List Table Integration
 > Third Party developers cannot use the _get_list_table() function directly, as it is a private function, instead to use the `WP_List_Table`, a new class that extends the original must be created. the class should be extended and instantiated manually, and the prepare_items() and display() methods called explicitly on the instance.
+```php
+class Example_List_Table extends WP_List_Table {}
+$example_list_table = new Example_List_Table();
+```
