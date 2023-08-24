@@ -19,9 +19,9 @@ implementation.
     * Add term form
     * Edit term form (separate from the Add term form in how you work with it)
 * Users
-    * User profile
-    * Add new user form
-    * Add existing user to site form (WP Multisite)
+    * Add new user 
+    * Add new user (multi-site)
+    * [Update User Profile/Form](research/core/users.md)
 * Media - Media modal
 * Comments - Add new comment (front of site)
 * Block Editor
