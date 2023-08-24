@@ -190,7 +190,142 @@ export default function Save( { attributes } ) {
 
 ## Custom Block that Interacts with Post Meta
 
-TO DO
+Creating a custom block that renders & updates a post meta field is a lot of work. It requires everything from the previous example, plus:
+
+* Registering a post meta field
+* Format the block as a dynamic block
+* Handle reading and writing the post meta field in the editor
+* Render the block on the front-end with PHP
+
+### Registering Post Meta
+
+When registering post meta, you need to specify `'show_in_rest' => true` to interact with the post meta field in the block editor.
+
+```php
+function fields_test_custom_block_register_meta() {
+	register_post_meta(
+		'post',
+		'subtitle',
+		array(
+			'show_in_rest' => true,
+			'single'       => true,
+			'type'         => 'string',
+		)
+	);
+}
+add_action('init', 'fields_test_custom_block_register_meta');
+```
+
+### Format the Block as a Dynamic Block
+
+When displaying post meta, the blook needs to be a "dynamic block" that is rendered with PHP. We need to render the block and attributes output as HTML.
+
+To alter our examples above to work as a dynamic block, we need to change 3 things:
+1. Remove the `save` function from `index.js` and remove the `save.js` file.
+2. Add the `render` and `usesContext` properties to the block registration in `block.json`.
+3. Add the render.php file.
+
+Our `index.js` file now looks like this, with `save` removed:
+
+**index.js**:
+```js
+import { registerBlockType } from '@wordpress/blocks';
+
+import './style.scss';
+
+import edit from './edit';
+import metadata from './block.json';
+
+registerBlockType( metadata.name, {
+	/**
+	 * @see ./edit.js
+	 */
+	edit,
+} );
+```
+
+Our `block.json` file now looks like this, with `attributes` removed and `render` + `usesContext` added:
+
+**block.json**:
+```json
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fields-test/custom-block",
+	"version": "0.1.0",
+	"title": "Fields Test Custom Block",
+	"category": "widgets",
+	"icon": "smiley",
+	"usesContext": [ "postId", "postType" ],
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
+```
+
+We need to consume the `postId` and `postType` context to interact with the post meta value in the editor as well as when rendering on the front end.
+
+Lastly, we add the `render.php` file, which is detailed below.
+
+### Handle Reading and Writing the Post Meta Field in the Editor
+
+Instead of interacting with block attributes, we need to consume and update post meta values in the `edit` function. We can use the `useContext` hook to consume the `postId` context, and the `useEntityProp` hook to interact with the post meta value. Here we're just using the `TextControl` component to render the input field in the `InspectorControls`, but it could also be added to the block with the `RichText` component.
+
+Note that we don't read and write directly to a single post meta value, but rather an object containing all post meta values for the post type when using `useEntityProp`. When updating the value, we need to pass the entire object back to the `setMeta` function.
+
+**edit.js**:
+```js
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { TextControl, PanelBody } from '@wordpress/components';
+import { useContext } from '@wordpress/element';
+
+export default function Edit( { attributes, setAttributes, context } ) {
+	const { postId, postType } = useContext( 'postId' );
+	const [ meta, setMeta ] = useEntityProp( 'postType', postType, 'meta' );
+
+	const { subtitle } = meta;
+
+	return (
+		<>
+			<InspectorControls key="settings">
+				<PanelBody title="Fields Test">
+					<TextControl
+						value={ subtitle }
+						onChange={ ( content ) => setMeta( { ...meta, subtitle: content } ) } // Pass the entire object back to setMeta with object destructuring and the new value added
+						placeholder={ __( 'Subtitle...' ) }
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<p { ...useBlockProps() }>
+				{ subtitle }
+			</p>
+		</>
+	);
+}
+```
+
+### Render the Block on the Front-End with PHP
+
+Now we can create the `render.php` file to render the block that outputs post meta on the front-end:
+
+**render.php**:
+```php
+<?php
+/**
+ * Block: fields-test/custom-block, render.
+ *
+ * Global vars: $attributes, $content, $block.
+ *
+ * @package fields-test
+ */
+
+$subtitle = get_post_meta( $block->context['postId'], 'subtitle', true );
+?>
+<p <?php echo get_block_wrapper_attributes(); ?>>
+	<?php echo esc_html( $subtitle ); ?>
+</p>
+```
 
 ## Lessons to be learned from the Custom Block approach
 
