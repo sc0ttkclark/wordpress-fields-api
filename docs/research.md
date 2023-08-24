@@ -26,6 +26,9 @@ implementation.
     * Nav Menu Item form
 * Widgets (classic)
     * Widget form
+* Block Editor
+    * Post sections/attributes (on the Post/Page tab)
+    * Block sections/controls for Inspector panel
 
 ### Third Party
 
