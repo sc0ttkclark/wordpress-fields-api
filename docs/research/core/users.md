@@ -17,7 +17,9 @@ public function setup_personal_options() {
         <label for="new_meta_key">New Meta Name</label>
     </th>
     <td>
-        <input type="text" name="new_meta_key" id="new_meta_key" value="" class="regular-text">
+		<input type="text" name="new_meta_key" id="new_meta_key"
+			value="<?php echo esc_attr( get_user_meta( $user->ID, 'new_meta_key', true ) ); ?>"
+			class="regular-text"/>
     </td>
     <?php
 }
@@ -46,9 +48,9 @@ public function setup_user_fields( $user ) {
 		  <tr>
 			  <th><label for="new_meta_key">New Meta Name</label></th>
 			  <td>
-				  <input type="text" name="new_meta_key" id="new_meta_key"
-						 value="<?php echo esc_attr(get_user_meta($user->ID, 'new_meta_key', true)); ?>"
-						 class="regular-text"/><br/>
+				<input type="text" name="new_meta_key" id="new_meta_key"
+						value="<?php echo esc_attr( get_user_meta( $user->ID, 'new_meta_key', true ) ); ?>"
+						class="regular-text"/>
 			  </td>
 		  </tr>
 	  </table>
@@ -70,6 +72,6 @@ public function attach_new_meta_field() {
 		return [];
 	}
 	
-	return array( 'new_meta_key' => sanitize_text_fields( $_POST['new_meta_key'] ) ); 
+	return array( 'new_meta_key' => sanitize_text_field( $_POST['new_meta_key'] ) ); 
 }
 ```
