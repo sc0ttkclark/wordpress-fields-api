@@ -337,7 +337,7 @@ $subtitle = get_post_meta( $block->context['postId'], 'subtitle', true );
 
 ## Lessons to be learned from the Custom Block approach
 
-The core approach to custom blocks with attributes or post meta provides little in the way of field content validation other than attribute type and output escaping, other than defining the format of the field value. The `RichText` component allows for rich text formatting, but there is no standard way to customize the validation of the content of the field. The `TextControl` component is a simple text entry field, and validation would be left up to the developer. Various other field components are available in the `@wordpress/components` package.
+The core approach to custom blocks with attributes or post meta provides little in the way of field content validation other than defining the format of the field value and output escaping in PHP. The `RichText` component allows for rich text formatting, but there is no standard way to customize the validation of the content of the field. The `TextControl` component is a simple text entry field, and validation would be left up to the developer. Various other field components are available in the `@wordpress/components` package.
 
 It does provide an example of JSON usage for configuration that could be an example for or even extended by the Fields API to provide a standard way to define fields and field groups. Potentially, defining these fields could handle input field creation, validation, and output escaping automatically.
 
