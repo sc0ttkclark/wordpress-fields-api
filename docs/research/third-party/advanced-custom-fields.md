@@ -10,16 +10,16 @@ function my_acf_form_init() {
 	// Check function exists.
 	if ( function_exists( 'acf_register_form' ) ) {
 		// Register form.
-		acf_register_form( array(
-			'id'           => 'new-event',
-			'post_id'      => 'new_post',
-			'new_post'     => array(
+		acf_register_form( [
+			'id'		   => 'new-event',
+			'post_id'	   => 'new_post',
+			'new_post'	   => [
 				'post_type'   => 'event',
-				'post_status' => 'publish'
-			),
+				'post_status' => 'publish',
+			],
 			'post_title'   => true,
 			'post_content' => true,
-		) );
+		] );
 	}
 }
 ```
@@ -41,20 +41,20 @@ You can render forms and specify which field group(s) and/or field(s) to include
 ```php
 add_action( 'acf/init', 'my_acf_add_local_field_groups' );
 function my_acf_add_local_field_groups() {
-	acf_add_local_field_group( array(
-		'key'      => 'group_1',
-		'title'    => 'My Group',
-		'fields'   => array(),
-		'location' => array(
-			array(
-				array(
-					'param'    => 'post_type',
+	acf_add_local_field_group( [
+		'key'	  => 'group_1',
+		'title'	=> 'My Group',
+		'fields'   => [],
+		'location' => [
+			[
+				[
+					'param'	=> 'post_type',
 					'operator' => '==',
-					'value'    => 'post',
-				),
-			),
-		),
-	) );
+					'value'	=> 'post',
+				],
+			],
+		],
+	] );
 }
 ```
 
@@ -65,13 +65,13 @@ function my_acf_add_local_field_groups() {
 ```php
 add_action( 'acf/init', 'my_acf_add_local_fields' );
 function my_acf_add_local_fields() {
-	acf_add_local_field( array(
-		'key'    => 'field_1',
+	acf_add_local_field( [
+		'key'	=> 'field_1',
 		'label'  => 'Sub Title',
 		'name'   => 'sub_title',
 		'type'   => 'text',
-		'parent' => 'group_1'
-	) );
+		'parent' => 'group_1',
+	] );
 }
 ```
 
@@ -88,41 +88,41 @@ The JSON files can look something like this:
 ```json
 [
   {
-    "key": "group_UNIQUEID",
-    "title": "Field group title here",
-    "fields": [
-      {
-        "key": "field_UNIQUEID",
-        "label": "Field label here",
-        "name": "field_name_here",
-        "type": "text",
-        "instructions": "",
-        "required": 0,
-        "conditional_logic": 0,
-        "wrapper": {
-          "width": "50",
-          "class": "",
-          "id": ""
-        },
-        "default_value": "",
-        "placeholder": "",
-        "prepend": "",
-        "append": "",
-        "maxlength": ""
-      }
-    ],
-    "location": [
-      [
-        {
-          "param": "post_type",
-          "operator": "==",
-          "value": "post"
-        }
-      ]
-    ],
-    "menu_order": 0,
-    "position": "normal",
-    "active": 1
+	"key": "group_UNIQUEID",
+	"title": "Field group title here",
+	"fields": [
+	  {
+		"key": "field_UNIQUEID",
+		"label": "Field label here",
+		"name": "field_name_here",
+		"type": "text",
+		"instructions": "",
+		"required": 0,
+		"conditional_logic": 0,
+		"wrapper": {
+		  "width": "50",
+		  "class": "",
+		  "id": ""
+		},
+		"default_value": "",
+		"placeholder": "",
+		"prepend": "",
+		"append": "",
+		"maxlength": ""
+	  }
+	],
+	"location": [
+	  [
+		{
+		  "param": "post_type",
+		  "operator": "==",
+		  "value": "post"
+		}
+	  ]
+	],
+	"menu_order": 0,
+	"position": "normal",
+	"active": 1
   }
 ]
 ```

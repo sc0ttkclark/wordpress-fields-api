@@ -47,7 +47,7 @@ Next, write the renderer for the input field & values.
 function fields_test_render() {
 	$options = get_option( 'fields_test_setting' );
 	?>
-    <input type='text' name='fields_test_setting' value='<?php echo esc_attr( $options ); ?>'>
+	<input type='text' name='fields_test_setting' value='<?php echo esc_attr( $options ); ?>'>
 	<?php
 }
 ```
@@ -66,9 +66,9 @@ Define the output for your admin settings page:
 ```php
 function fields_test_options() {
 	?>
-    <form action='options.php' method='post'>
+	<form action='options.php' method='post'>
 
-        <h1>Fields Test Settings API Admin Page</h1>
+		<h1>Fields Test Settings API Admin Page</h1>
 
 		<?php
 		settings_fields( 'your-setting-form' );
@@ -76,7 +76,7 @@ function fields_test_options() {
 		submit_button();
 		?>
 
-    </form>
+	</form>
 	<?php
 }
 ```
@@ -93,11 +93,11 @@ add_settings_section(
 	$title,
 	$callback,
 	$page,
-	array(
-		'before_section',
-		'after_section',
-		'section_class',
-	),
+	[
+		'before_section' => '',
+		'after_section'  => '',
+		'section_class'  => '',
+	],
 );
 ```
 
@@ -117,13 +117,18 @@ register a field, but is required to save the field.
 register_setting(
 	$option_group,
 	$option_name,
-	array(
-		'type',
-		'description',
-		'sanitize_callback',
-		'show_in_rest',
-		'default'
-	)
+	[
+		'type' => 'string',
+		'description' => '',
+		'sanitize_callback' => '',
+		'show_in_rest' => [
+			'name'   => 'email',
+			'schema' => [
+				'format' => 'email',
+			],
+		],
+		'default' => '',
+	]
 );
 ```
 
@@ -141,10 +146,10 @@ add_settings_field(
 	$callback,
 	$page,
 	$section,
-	array(
-		'label_for',
-		'class'
-	)
+	[
+		'label_for' => 'some-id',
+		'class' => 'some-css-class',
+	]
 );
 ```
 

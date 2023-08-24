@@ -103,11 +103,11 @@ Registering fields for meta boxes requires no special calls but the saving of th
 add_action( 'save_post', 'my_meta_box_save' );
 
 function my_meta_box_save( $post_id ) {
-    if ( isset( $_POST['my-meta-box-field'] ) ) {
-        $value_to_save = sanitize_text_field( $_POST['my-meta-box-field'] );
+	if ( isset( $_POST['my-meta-box-field'] ) ) {
+		$value_to_save = sanitize_text_field( $_POST['my-meta-box-field'] );
 
-        update_post_meta( $post_id, 'my-meta-box-field', $value_to_save );
-    }
+		update_post_meta( $post_id, 'my-meta-box-field', $value_to_save );
+	}
 }
 ```
 
@@ -117,11 +117,11 @@ function my_meta_box_save( $post_id ) {
 add_action( 'save_post', 'my_meta_box_save_for_post' );
 
 function my_meta_box_save_for_post( $post_id ) {
-    if ( isset( $_POST['my-meta-box-field-for-post'] ) ) {
-        $value_to_save = sanitize_text_field( $_POST['my-meta-box-field-for-post'] );
+	if ( isset( $_POST['my-meta-box-field-for-post'] ) ) {
+		$value_to_save = sanitize_text_field( $_POST['my-meta-box-field-for-post'] );
 
-        update_post_meta( $post_id, 'my-meta-box-field-for-post', $value_to_save );
-    }
+		update_post_meta( $post_id, 'my-meta-box-field-for-post', $value_to_save );
+	}
 }
 ```
 
@@ -131,11 +131,11 @@ function my_meta_box_save_for_post( $post_id ) {
 add_action( 'edit_comment', 'my_meta_box_save_for_comment' );
 
 function my_meta_box_save_for_comment( $comment_id ) {
-    if ( isset( $_POST['my-meta-box-field-for-comment'] ) ) {
-        $value_to_save = sanitize_text_field( $_POST['my-meta-box-field-for-comment'] );
+	if ( isset( $_POST['my-meta-box-field-for-comment'] ) ) {
+		$value_to_save = sanitize_text_field( $_POST['my-meta-box-field-for-comment'] );
 
-        update_comment_meta( $comment_id, 'my-meta-box-field-for-comment', $value_to_save );
-    }
+		update_comment_meta( $comment_id, 'my-meta-box-field-for-comment', $value_to_save );
+	}
 }
 ```
 
