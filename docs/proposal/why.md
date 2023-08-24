@@ -1,4 +1,4 @@
-# placeholder for the new proposal for make.wp.org
+# Benefit of Core Fields API
 
 [Original Proposal](https://make.wordpress.org/core/2016/03/14/fields-api-where-were-at/)
 
