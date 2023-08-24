@@ -12,27 +12,27 @@ implementation.
 
 * [Settings API](research/core/settings-api.md)
 * [Meta Box API](research/core/meta-box-api.md) (Post Types, Media, Comments)
-* [List Tables](research/core/wp_list_table.md)
+* [List Tables](research/core/list-tables.md)
   * Quick Edit
   * Custom Columns
-* Taxonomies
+* [Taxonomies](research/core/taxonomies.md)
     * Add term form
     * Edit term form (separate from the Add term form in how you work with it)
 * Users
-    * Add new user 
-    * Add new user (multi-site)
-    * [Update User Profile/Form](research/core/users.md)
+    * [User profile / edit form](research/core/users.md)
+    * Add new user form
+    * Add new user form (/network/ variation)
+    * Add existing user to site form (Multisite)
 * Media - Media modal
 * Comments - Add new comment (front of site)
 * Block Editor
-    * Post sections/attributes (on the Post/Page tab)
-    * [Block sections/controls for Inspector panel](research/core/custom-block.md)
+    * [Post sections/attributes](research/core/object-settings-sidebar.md) (on the Post/Page tab)
+    * [Block sections/controls for Inspector panel](research/core/block-settings-sidebar.md)
 * Customizer API
 * Nav Menus (classic)
     * Nav Menu form 
     * Nav Menu Item form
-* Widgets (classic)
-    * Widget form
+* [Widgets (classic)](research/core/widgets.md)
 
 ### Third Party
 
