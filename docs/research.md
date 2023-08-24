@@ -24,14 +24,14 @@ implementation.
     * Add existing user to site form (WP Multisite)
 * Media - Media modal
 * Comments - Add new comment (front of site)
+* Block Editor
+  * Post sections/attributes (on the Post/Page tab)
+  * Block sections/controls for Inspector panel
 * Customizer API
 * Nav Menus
     * Nav Menu Item form
 * Widgets (classic)
     * Widget form
-* Block Editor
-    * Post sections/attributes (on the Post/Page tab)
-    * Block sections/controls for Inspector panel
 
 ### Third Party
 
