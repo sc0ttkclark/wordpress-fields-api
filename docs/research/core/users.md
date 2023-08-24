@@ -9,25 +9,22 @@ This research covers user meta in the context of the user management feature in 
 The `*_user_profile` actions fire near the bottom of the user edit form (see [wp-admin/user-edit.php](https://github.com/WordPress/WordPress/blob/30ffb247b7667516a388d5dd968c2cbd1766cddb/wp-admin/user-edit.php#L834-L854)).
 
 ```php
-add_action('show_user_profile', 'setup_user_fields');
-add_action('edit_user_profile', 'setup_user_fields');
+add_action( 'show_user_profile', 'setup_user_fields' );
+add_action( 'edit_user_profile', 'setup_user_fields' );
 
-public function setup_user_fields($user) : void
-{
-    $meta_name = 'new_meta_name';
-    $meta_key = 'new_meta_key';
-    ?>
-      <table class="form-table">
-          <tr>
-              <th><label for="<?= $meta_name ?>">New Meta Name</label></th>
-              <td>
-                  <input type="text" name="<?= $meta_name ?>" id="<?= $meta_name ?>"
-                         value="<?= esc_attr(get_user_meta($user->ID, $meta_key, true)); ?>"
-                         class="regular-text"/><br/>
-              </td>
-          </tr>
-      </table>
-    <?php
+public function setup_user_fields( $user ) {
+	?>
+	  <table class="form-table">
+		  <tr>
+			  <th><label for="<?= $meta_name ?>">New Meta Name</label></th>
+			  <td>
+				  <input type="text" name="new_meta_key" id="new_meta_key"
+						 value="<?php echo esc_attr(get_user_meta($user->ID, 'new_meta_key', true)); ?>"
+						 class="regular-text"/><br/>
+			  </td>
+		  </tr>
+	  </table>
+	<?php
 }
 ```
 
@@ -42,10 +39,13 @@ The `insert_custom_user_meta` filter appends an arbitrary array immediately prio
 To attach a new meta we inform `wp_insert_user()` about the previously unassigned `$_POST` value. 
 
 ```php
-add_filter('insert_custom_user_meta', 'attach_new_meta_field');
+add_filter( 'insert_custom_user_meta', 'attach_new_meta_field' );
 
-public function attach_new_meta_field() : array
-{
-    return ['new_meta_key' => $_POST['new_meta_name']]; 
+public function attach_new_meta_field() {
+	if ( ! isset( $POST['new_meta_key'] ) ) {
+		return [];
+	}
+	
+	return array( 'new_meta_key' => sanitize_text_fields( $_POST['new_meta_key'] ) ); 
 }
 ```
