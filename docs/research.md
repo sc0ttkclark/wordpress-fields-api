@@ -25,10 +25,11 @@ implementation.
 * Media - Media modal
 * Comments - Add new comment (front of site)
 * Block Editor
-  * Post sections/attributes (on the Post/Page tab)
-  * Block sections/controls for Inspector panel
+    * Post sections/attributes (on the Post/Page tab)
+    * Block sections/controls for Inspector panel
 * Customizer API
-* Nav Menus
+* Nav Menus (classic)
+    * Nav Menu form 
     * Nav Menu Item form
 * Widgets (classic)
     * Widget form
