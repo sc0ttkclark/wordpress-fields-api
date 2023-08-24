@@ -12,6 +12,9 @@ implementation.
 
 * [Settings API](research/core/settings-api.md)
 * Meta Box API (Post Types, Media, Comments)
+* List Tables
+  * Quick Edit
+  * Custom Columns
 * Taxonomies
     * Add term form
     * Edit term form (separate from the Add term form in how you work with it)
