@@ -18,7 +18,7 @@ add_action( 'add_tag_form_fields', 'taxonomy_urls_add_url_field_to_add_term_form
 
 function taxonomy_urls_add_url_field_to_add_term_form() {
     ?>
-    <h3><?php esc_html_e( 'Custom attributes' ); ?></h3>
+    <h3><?php esc_html_e( 'Custom attributes' ); ?></h3><!-- section title -->
 
     <div class="form-field">
         <label for="tag-url"><?php esc_html_e( 'URL' ); ?></label>
@@ -36,7 +36,7 @@ add_action( 'category_add_form_fields', 'taxonomy_urls_add_url_field_to_add_term
 
 function taxonomy_urls_add_url_field_to_add_term_form() {
     ?>
-    <h3><?php esc_html_e( 'Custom attributes' ); ?></h3>
+    <h3><?php esc_html_e( 'Custom attributes' ); ?></h3><!-- section title -->
 
     <div class="form-field">
         <label for="tag-url"><?php esc_html_e( 'URL' ); ?></label>
