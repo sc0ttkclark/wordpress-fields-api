@@ -1,6 +1,6 @@
 # Admin Columns
 
-[Admin Columns](https://wordpress.org/plugins/admin-columns/) integrates an editable experience into [`WP_List_Table`](https://developer.wordpress.org/reference/classes/wp_list_table/) for Post Types (including Custom), Users, and Media. The ability to leverage a uniform API for List Tables and Quick Edit is paramount for improving adoption and unified experience.
+[Admin Columns](https://wordpress.org/plugins/codepress-admin-columns/) integrates an editable experience into [`WP_List_Table`](https://developer.wordpress.org/reference/classes/wp_list_table/) for Post Types (including Custom), Users, and Media. The ability to leverage a uniform API for List Tables and Quick Edit is paramount for improving adoption and unified experience.
 
 Reference: [Hooks & Filters](https://docs.admincolumns.com/article/15-hooks-and-filters)
 
