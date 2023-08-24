@@ -12,7 +12,7 @@ implementation.
 
 * [Settings API](research/core/settings-api.md)
 * [Meta Box API](research/core/meta-box-api.md) (Post Types, Media, Comments)
-* List Tables
+* [List Tables](research/core/wp_list_table.md)
   * Quick Edit
   * Custom Columns
 * Taxonomies
