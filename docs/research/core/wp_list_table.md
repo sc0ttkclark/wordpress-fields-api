@@ -1,8 +1,16 @@
 # List Table API
 
-[Handbook](https://developer.wordpress.org/reference/classes/wp_list_table/) This class is used to generate the List Tables that populate WordPress’ various admin screens. It has an advantage over previous implementations in that it can be dynamically altered with AJAX and may be hooked in future WordPress releases.
+A List Table is the output of the generic WP_List_Table class object on various admin screens that list various WordPress data types in table form such as posts, pages, media, etc.
 
-## Using WP_List_Table 
+* [Custom List Table Columns](#custom-list-table-columns)
+* [Using WP_List_Table](#using-wp_list_table)
+
+## Custom List Table Columns
+[Handbook](https://make.wordpress.org/docs/plugin-developer-handbook/10-plugin-components/custom-list-table-columns/): To add a custom column to the List Table, a developer must first add its name to the array of column header names. This is done by hooking into the 'manage_{$screen->id}_columns' filter.
+
+## Using WP_List_Table
+[Handbook](https://developer.wordpress.org/reference/classes/wp_list_table/):  This class is used to generate the List Tables that populate WordPress’ various admin screens. It has an advantage over previous implementations in that it can be dynamically altered with AJAX and may be hooked in future WordPress releases.
+
 > The WordPress core loads and returns its classes dynamically by using the _get_list_table() function, which automatically loads the appropriate extended class and instantiates it. This is a private function, however, and should not be used by developers.
 
 ### Uses in Core
@@ -69,7 +77,7 @@
 210:   $wp_list_table = _get_list_table( 'WP_MS_Users_List_Table' );
 ```
 
-#### Unit Tests
+#### Unit Tests <a id="unit"></a>
 * tests/phpunit/tests/admin/wpUsersListTable.php
 * tests/phpunit/tests/admin/wpThemeInstallListTable.php
 * tests/phpunit/tests/admin/wpPostCommentsListTable.php
