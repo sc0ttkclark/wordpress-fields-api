@@ -13,7 +13,7 @@ A List Table is the output of the generic WP_List_Table class object on various 
 [Handbook](https://make.wordpress.org/docs/plugin-developer-handbook/10-plugin-components/custom-list-table-columns/): To add a custom column to the List Table, a developer must first add its name to the array of column header names. This is done by hooking into the 'manage_{$screen->id}_columns' filter.
 ```php
 function my_custom_posts_column( $columns ) {
-    $columns["metabox"] = "Metabox";
+    $columns['metabox'] = 'Metabox';
     return $columns;
 }
 add_filter('manage_posts_columns', 'my_custom_posts_column');
@@ -26,7 +26,7 @@ After defining the column, adding sortable filter `manage_{$screen->id}_sortable
 ```php
 function page_custom_column_views( $column_name, $post_id ) {
 	if ( $column_name === 'metabox' ) {
-		echo get_post_meta( $post_id , 'custom_field_key' , true );
+		echo esc_html( get_post_meta( $post_id , 'custom_field_key' , true ) );
 	}
 }
 add_action( 'manage_posts_custom_column', 'my_custom_cell_value', 5, 2 );
