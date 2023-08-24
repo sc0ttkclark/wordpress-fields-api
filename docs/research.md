@@ -11,7 +11,7 @@ implementation.
 ### Core
 
 * [Settings API](research/core/settings-api.md)
-* Meta Box API (Post Types, Media, Comments)
+* [Meta Box API](research/core/meta-box-api.md) (Post Types, Media, Comments)
 * List Tables
   * Quick Edit
   * Custom Columns
