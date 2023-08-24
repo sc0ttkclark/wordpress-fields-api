@@ -158,7 +158,7 @@ do_settings_fields( $page, $section );
 
 The Settings API has been around since the end of 2008 and is a core API within WordPress itself.
 
-The Settings API itself is mostly data structure related and still requires a lot of HTML markup to be written by the
+The Settings API itself is mostly data structure and still requires a lot of HTML markup to be written by the
 developer to piece together the implementation of a custom settings page.
 
 Function calls are used everywhere in the Settings API for registering settings and outputting them.
