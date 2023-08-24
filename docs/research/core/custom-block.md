@@ -103,6 +103,8 @@ The `block.json` file is used to describe the block and its [attributes](https:/
 
 ### Create the Block Editor Script and Custom Input Fields
 
+#### Example 1: Using the RichText Component to Render an Editable Field in the Block
+
 The `edit.js` file is where we define the block editor script and import components from WordPress packages or build them ourselves. In this example, we are using the `RichText` component from `@wordpress/block-editor` to render an editable text field directly inside the block.
 
 **edit.js**:
@@ -122,6 +124,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	);
 }
 ```
+
+#### Example 2: Using the TextControl Component to Render an Input Field in the Block Settings Sidebar
 
 If instead we want to provide an input field in the block settings sidebar, we can use the `InspectorControls` component from `@wordpress/block-editor` to render a custom field in the block sidebar. In this example, we are using the `TextControl` component from `@wordpress/components` to render the input field, and `PanelBody` to group our custom fields together.
 
@@ -156,6 +160,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 To render a block on the front-end with custom block attributes, we are defining a "static block" that is saved as HTML in the post content on save. We need to render the block component with the attributes output as it should be rendered on the front-end.
 
+#### Example 1: Outputting the RichText Value
+
 In this example, we output the `RichText` field content:
 
 **save.js**:
@@ -172,6 +178,8 @@ export default function Save( { attributes } ) {
 	);
 }
 ```
+
+#### Example 2: Outputting the TextControl Value
 
 To render the second example using the `TextControl` component, we need to output the `attributes.content` value directly:
 
