@@ -67,8 +67,6 @@ add_action( 'manage_posts_custom_column', 'my_custom_cell_value', 5, 2 );
 * `src/wp-admin/user-edit.php`
 ```
 813:   $application_passwords_list_table = _get_list_table( 'WP_Application_Passwords_List_Table', array( 'screen' => 'application-passwords-user' ) );
-814:   $application_passwords_list_table->prepare_items();
-815:   $application_passwords_list_table->display();
 ```
 * `src/wp-admin/network/sites.php`
 ```
@@ -119,4 +117,6 @@ add_action( 'manage_posts_custom_column', 'my_custom_cell_value', 5, 2 );
 ```php
 class Example_List_Table extends WP_List_Table {}
 $example_list_table = new Example_List_Table();
+$example_list_table->prepare_items();
+$example_list_table->display();
 ```
