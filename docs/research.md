@@ -26,7 +26,7 @@ implementation.
 * Comments - Add new comment (front of site)
 * Block Editor
     * Post sections/attributes (on the Post/Page tab)
-    * Block sections/controls for Inspector panel
+    * [Block sections/controls for Inspector panel](research/core/custom-block.md)
 * Customizer API
 * Nav Menus (classic)
     * Nav Menu form 
