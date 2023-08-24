@@ -118,6 +118,8 @@ This will render the first instance of the widget found in any registered sideba
 
 Using the Widgets API is an excercise in boilerplate. You have to handle saving, rendering and field markup yourself, as well as including standard hooks for things like `widget_title` and other required output from passed-in arguments. The field markup in particular can be a pain point if you care about whether the form looks like other forms in the admin (in which case you need to find the undocumented classnames other fields are using), as well as a potential accessibility concern if not done properly. There is no field configuration for specifying field value type or any built-in field validation.
 
+You are also responsible for handling any custom form styling or JavaScript for validation yourself.
+
 | Registration Type  | Supports JSON Files | Supports Multiple Content Types | Form / HTML markup required |
 |--------------------|---------------------|---------------------------------|-----------------------------|
 | PHP function calls | No                  | No                              | Yes                         |
