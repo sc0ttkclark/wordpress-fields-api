@@ -1,0 +1,19 @@
+[
+  {
+    "id": "field_name",
+    "datastore": {
+      "type": "option",
+      "data_type": "string",
+      "show_in_rest": true,
+      "default": "default-value",
+      "group": "general"
+    },
+    "controls": {
+      "control_id": {
+        "type": "settings_page_text_input",
+        "section": "default",
+        "description": "A basic field sample"
+      }
+    }
+  }
+]
