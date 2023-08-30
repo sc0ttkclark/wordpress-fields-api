@@ -18,11 +18,9 @@ implementation.
 * [Taxonomies](research/core/taxonomies.md)
     * Add term form
     * Edit term form (separate from the Add term form in how you work with it)
-* Users
-    * [User profile / edit form](research/core/users.md)
-    * Add new user form
-    * Add new user form (/network/ variation)
-    * Add existing user to site form (Multisite)
+* [Users](research/core/users.md)
+    * [User profile / edit form](research/core/user-edit.md)
+    * [Add new user form](research/core/user-new.md)
 * Media - Media modal
 * Comments - Add new comment (front of site)
 * Block Editor
