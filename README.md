@@ -19,7 +19,7 @@ We created a [comparison sheet](https://docs.google.com/spreadsheets/d/1GE9129Gj
     * Lead Developer of the Pods Framework
     * Previously Co-Lead of the Fields API project from 2013-2016 and then Lead Developer since 2016
 * Cory Hughart - [@cr0ybot](https://github.com/cr0ybot) ([.org profile](https://profiles.wordpress.org/cr0ybot/))
-    * Lead Technologist & host of In The Loop podcast at Blackbird Digital
+    * Senior Web Dev at Alpha Particle
 * Ryan Neudorf - [@ohryan](https://github.com/ohryan) ([.org profile](https://profiles.wordpress.org/ohryan/))
     * Senior Software Engineer at GoDaddy (Managed WooCommerce)
 
