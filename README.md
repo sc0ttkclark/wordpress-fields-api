@@ -9,9 +9,10 @@ WordPress admin area.
 
 ## Previous iterations
 
-* https://github.com/sc0ttkclark/wordpress-fields-api-2023
-* https://github.com/sc0ttkclark/wordpress-fields-api-2017
-* https://github.com/sc0ttkclark/wordpress-fields-api-2015
+* [Fields API proposal for WordPress Core (2023)](https://github.com/sc0ttkclark/wordpress-fields-api-2023)
+* [Fields API proposal for WordPress Core (2015-2017)](https://github.com/sc0ttkclark/wordpress-fields-api-2017)
+* [The old WP Metadata API / UI repository](https://github.com/sc0ttkclark/wordpress-fields-api-2015)
+* Related: [A proof of concept Administration UI for the WP Fields API (2016)](https://github.com/sc0ttkclark/wordpress-fields-admin-ui)
 
 ## Current Contributors
 
