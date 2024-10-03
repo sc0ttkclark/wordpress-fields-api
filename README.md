@@ -7,10 +7,12 @@
 The Fields API project aims to provide a unified PHP API to work with any screen that has a form on it within the
 WordPress admin area.
 
-Currently, WordPress has [many different APIs, hooks, and techniques](docs/research.md) to work with various areas of WordPress. Each of
-these areas are entirely separate and some are hardcoded within WordPress itself so they cannot be further enhanced.
+## Previous iterations
 
-We created a [comparison sheet](https://docs.google.com/spreadsheets/d/1GE9129GjBz1s0K4Gv2SFhOWIENWB6gv33rGKoK_QZ-Q/edit#gid=3) to review the different screens and third party plugins with how they each work.
+* [Fields API proposal for WordPress Core (2023)](https://github.com/sc0ttkclark/wordpress-fields-api-2023)
+* [Fields API proposal for WordPress Core (2015-2017)](https://github.com/sc0ttkclark/wordpress-fields-api-2017)
+* [The old WP Metadata API / UI repository](https://github.com/sc0ttkclark/wordpress-fields-api-2015)
+* Related: [A proof of concept Administration UI for the WP Fields API (2016)](https://github.com/sc0ttkclark/wordpress-fields-admin-ui)
 
 ## Current Contributors
 
