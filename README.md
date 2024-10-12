@@ -1,5 +1,16 @@
 ![WordPress Fields API](https://raw.githubusercontent.com/sc0ttkclark/wordpress-fields-api/assets/banner-github.png)
 
+# Goodbye notice
+
+I am officially terminating my core contributions and involvement with the WordPress project. This project was something I poured hundreds of hours into and it greatly pains me to just stop here.
+
+Anyone is free to lead the project again in the #core-fields channel of Slack. I am done making excuses for Matt's actions and will not associate myself with core any longer.
+
+The content below represents the latest revision of the readme as it was prior to me leaving.
+
+- Scott Kingsley Clark
+October 12th, 2024
+
 # WordPress Fields API (2024)
 
 **Please note:** We are currently in the research phase of this project.
