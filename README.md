@@ -2,14 +2,17 @@
 
 # Goodbye notice
 
+Date: October 12th, 2024
+
 I am officially terminating my core contributions and involvement with the WordPress project. This project was something I poured hundreds of hours into and it greatly pains me to just stop here.
 
 Anyone is free to lead the project again in the #core-fields channel of Slack. I am done making excuses for Matt's actions and will not associate myself with core any longer.
 
 The content below represents the latest revision of the readme as it was prior to me leaving.
 
-- Scott Kingsley Clark
-October 12th, 2024
+Yours previously fully,
+
+Scott Kingsley Clark
 
 # WordPress Fields API (2024)
 
